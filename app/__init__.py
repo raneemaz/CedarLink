@@ -18,6 +18,6 @@ def create_app():
     # from .routes.auth_routes import auth_bp
     # app.register_blueprint(auth_bp, url_prefix="/api/auth")
 
-    from app.models import User
+    import app.models  # noqa: F401
 
     return app
