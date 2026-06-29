@@ -1,5 +1,6 @@
 import json
 
+
 def terminator(id_, x, y, w, h, text):
     return {"id": id_, "type": "terminator", "boundingBox": {"x": x, "y": y, "w": w, "h": h},
             "text": text, "style": {"fill": {"type": "color", "color": "#D1FAE5"}}}
@@ -8,16 +9,20 @@ def process(id_, x, y, w, h, text):
     return {"id": id_, "type": "process", "boundingBox": {"x": x, "y": y, "w": w, "h": h},
             "text": text, "style": {"fill": {"type": "color", "color": "#DBEAFE"}}}
 
+
 def decision(id_, x, y, w, h, text):
     return {"id": id_, "type": "decision", "boundingBox": {"x": x, "y": y, "w": w, "h": h},
             "text": text, "style": {"fill": {"type": "color", "color": "#FEF3C7"}}}
 
+
 def header(id_, x, y, w, h, text):
     return {"id": id_, "type": "text", "boundingBox": {"x": x, "y": y, "w": w, "h": h}, "text": text}
+
 
 shapes = []
 lines = []
 line_n = [0]
+
 
 def link(a, b, label=None):
     line_n[0] += 1
@@ -28,6 +33,7 @@ def link(a, b, label=None):
     if label:
         l["text"] = [{"text": label, "position": 0.5, "side": "top"}]
     lines.append(l)
+
 
 W = 260
 X_CUST, X_VEND, X_ADMIN = 40, 380, 720
