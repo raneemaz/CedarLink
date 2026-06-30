@@ -3,7 +3,7 @@
 
 This plan turns the established CedarLink documentation (Functional/Non-Functional Requirements, User Stories, System Actors, Three-Tier Architecture, and the 11-entity ERD) into an executable build order. It covers environment setup, database implementation, the full REST API, core business logic, frontend integration, testing, and deployment — then maps every piece back to the original requirements.
 
-**Stack (per established architecture):** HTML/CSS/JS (frontend) → Python Flask (backend) → MySQL (data layer).
+**Stack (per established architecture):** HTML/CSS/JS (frontend) → Python Flask (backend) → SQLite (data layer).
 
 ---
 
@@ -309,7 +309,7 @@ Responsive layout (Bootstrap or hand-rolled CSS grid) covers the Usability NFR's
 | Layer | Choice |
 |---|---|
 | WSGI server | Gunicorn behind Nginx (reverse proxy + static file serving) |
-| Database | Managed MySQL instance, daily backups |
+| Database | Managed SQLite instance, daily backups |
 | Secrets | `.env` (never committed); separate Dev/Staging/Prod config classes |
 | Process | `flask db upgrade` on deploy, then restart Gunicorn workers |
 
@@ -321,7 +321,7 @@ This satisfies the Availability NFR ("accessible 24/7") with a conventional alwa
 
 | Phase | Focus | Exit criteria |
 |---|---|---|
-| A | Env setup, repo, Flask app factory, DB connection | `flask run` boots, connects to MySQL |
+| A | Env setup, repo, Flask app factory, DB connection | `flask run` boots, connects to SQLite |
 | B | User model + migrations | Table exists, can insert via shell |
 | C | Auth (register/login/JWT) + role decorators | Can register all 3 roles, get a working token |
 | D | Store CRUD | Vendor can create/edit/deactivate a store |
