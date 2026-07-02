@@ -1,6 +1,6 @@
 from flask import Flask
-from .config import Config
-from .extensions import db, migrate
+from app.config import Config
+from app.extensions import db, migrate, jwt
 
 
 def create_app():
@@ -13,11 +13,17 @@ def create_app():
     # init extensions
     db.init_app(app)
     migrate.init_app(app, db)
+    jwt.init_app(app)
 
-    # register blueprints later
-    # from .routes.auth_routes import auth_bp
-    # app.register_blueprint(auth_bp, url_prefix="/api/auth")
+    # import + register blueprints HERE (important fix)
+    from app.routes.auth_routes import auth_bp
+    from app.routes.test_routes import test_bp
 
-    import app.models  # noqa: F401
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(test_bp)
+
+    # load models (safe here). Use a different name so we do not
+    # overwrite the local Flask instance named `app`.
+    from . import models as _models  # noqa: F401
 
     return app

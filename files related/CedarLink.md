@@ -288,7 +288,7 @@ Responsibilities:
 
 Technology:
 
-- MySQL
+- SQLite
 
 Responsibilities:
 
@@ -320,7 +320,7 @@ Responsibilities:
            | SQL Queries
            v
 +----------------------+
-|      MySQL DB        |
+|      SQLite DB        |
 +----------------------+
 ```
 
@@ -329,7 +329,7 @@ Responsibilities:
 1. The user interacts with the frontend through a web browser.
 2. The frontend sends HTTP requests to the Flask backend.
 3. Flask processes the request and applies business logic.
-4. Flask retrieves or updates data in the MySQL database.
+4. Flask retrieves or updates data in the SQLite database.
 5. The response is returned to the frontend and displayed to the user.
 
 ---
