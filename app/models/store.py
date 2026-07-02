@@ -1,4 +1,6 @@
 from app.extensions import db
+from flask import jsonify, request
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 
 class Store(db.Model):
@@ -39,7 +41,6 @@ class Store(db.Model):
         }
 
 
-@store_bp.route("/<int:store_id>", methods=["PUT"])
 @jwt_required()
 def update_store(store_id):
     user_id = get_jwt_identity()
@@ -67,7 +68,6 @@ def update_store(store_id):
     }), 200
 
 
-@store_bp.route("/<int:store_id>/status", methods=["PATCH"])
 @jwt_required()
 def toggle_store_status(store_id):
     user_id = get_jwt_identity()
@@ -86,4 +86,3 @@ def toggle_store_status(store_id):
         "message": "Store status updated ✅",
         "is_active": store.is_active
     }), 200
-

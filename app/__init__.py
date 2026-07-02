@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, app
 from app.config import Config
 from .extensions import db, migrate, jwt
 
@@ -20,9 +20,15 @@ def create_app():
     from app.routes.auth_routes import auth_bp
     from app.routes.test_routes import test_bp
     from app.routes.store_routes import store_bp
+    from app.routes.category_routes import category_bp
+    from app.routes.product_routes import product_bp
+    from app.routes.product_image_routes import product_image_bp
+    app.register_blueprint(product_image_bp, url_prefix="/api")
+    app.register_blueprint(product_bp, url_prefix="/api")
+    app.register_blueprint(category_bp, url_prefix="/api")
     app.register_blueprint(auth_bp)
     app.register_blueprint(test_bp)
-    app.register_blueprint(store_bp) 
+    app.register_blueprint(store_bp)
 
     # load models (safe here). Use a different name so we do not
     # overwrite the local Flask instance named `app`.
