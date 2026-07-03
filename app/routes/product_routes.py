@@ -3,30 +3,75 @@ from app.extensions import db
 from app.models.product import Product
 from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
 from app.models.store import Store
+from sqlalchemy import or_
+
 
 product_bp = Blueprint("product_bp", __name__)
 
 
 @product_bp.route("/products", methods=["GET"])
-def test_products():
-    return jsonify({"message": "Product routes working"}), 200
-
-
-@product_bp.route("/products", methods=["GET"])
 def get_products():
-    products = Product.query.all()
+    query = Product.query
+    sort = request.args.get("sort")
+    keyword = request.args.get("keyword")
+    category_id = request.args.get("category_id", type=int)
+    store_id = request.args.get("store_id", type=int)
+    min_price = request.args.get("min_price", type=float)
+    max_price = request.args.get("max_price", type=float)
+    page = request.args.get("page", 1, type=int)
+    per_page = request.args.get("limit", 10, type=int)
+
+    if keyword:
+        query = query.filter(
+            or_(
+                Product.name.ilike(f"%{keyword}%"),
+                Product.description.ilike(f"%{keyword}%")
+            )
+        )
+    if category_id:
+        query = query.filter(Product.category_id == category_id)
+    if store_id:
+        query = query.filter(Product.store_id == store_id)
+    if min_price is not None:
+        query = query.filter(Product.price >= min_price)
+    if max_price is not None:
+        query = query.filter(Product.price <= max_price)
+
+    if sort == "price_asc":
+        query = query.order_by(Product.price.asc())
+    if sort == "price_desc":
+        query = query.order_by(Product.price.desc())
+    if sort == "newest":
+        query = query.order_by(Product.created_at.desc())
+    else:
+        query = query.order_by(Product.id.desc())
+    
+    products = query.paginate(
+        page=page,
+        per_page=per_page,
+        error_out=False
+    )
     result = []
-    for p in products:
+
+    for p in products.items:
+        first_image = p.images[0].image_url if p.images else None
         result.append({
             "id": p.id,
             "name": p.name,
             "price": p.price,
             "stock": p.stock,
+            "description": p.description,
             "store_id": p.store_id,
-            "category_id": p.category_id
+            "category_id": p.category_id,
+            "image": first_image
         })
 
-        return jsonify(result), 200
+    return jsonify({
+        "products": result,
+        "page": products.page,
+        "pages": products.pages,
+        "total": products.total
+    }), 200
 
 
 @product_bp.route("/products/<int:id>", methods=["GET"])
