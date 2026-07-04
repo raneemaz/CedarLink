@@ -22,6 +22,15 @@ class Product(db.Model):
 
     store = db.relationship("Store", backref="products")
     category = db.relationship("Category", backref="products")
+    cart_items = db.relationship(
+        "CartItem",
+        back_populates="product"
+    )
+    images = db.relationship(
+        "ProductImage",
+        back_populates="product",
+        cascade="all, delete-orphan"
+    )
     created_at = db.Column(db.DateTime, default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 

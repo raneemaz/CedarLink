@@ -23,6 +23,8 @@ def create_app():
     from app.routes.category_routes import category_bp
     from app.routes.product_routes import product_bp
     from app.routes.product_image_routes import product_image_bp
+    from app.routes.cart_routes import cart_bp
+    app.register_blueprint(cart_bp, url_prefix="/cart")
     app.register_blueprint(product_image_bp, url_prefix="/api")
     app.register_blueprint(product_bp, url_prefix="/api")
     app.register_blueprint(category_bp, url_prefix="/api")
