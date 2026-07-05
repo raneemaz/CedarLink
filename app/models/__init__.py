@@ -5,3 +5,5 @@ from app.models.product import Product  # noqa: F401
 from app.models.product_image import ProductImage  # noqa: F401
 from app.models.cart import Cart  # noqa: F401
 from app.models.cart_item import CartItem  # noqa: F401
+from app.models.order import Order  # noqa: F401
+from app.models.order_item import OrderItem  # noqa: F401
