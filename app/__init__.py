@@ -25,6 +25,8 @@ def create_app():
     from app.routes.product_image_routes import product_image_bp
     from app.routes.cart_routes import cart_bp
     from app.routes.order_routes import order_bp
+    from app.routes.payment_routes import payment_bp
+    app.register_blueprint(payment_bp)
     app.register_blueprint(order_bp, url_prefix="/api")
     app.register_blueprint(cart_bp, url_prefix="/cart")
     app.register_blueprint(product_image_bp, url_prefix="/api")
