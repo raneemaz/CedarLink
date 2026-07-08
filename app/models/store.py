@@ -22,7 +22,24 @@ class Store(db.Model):
 
     contact_info = db.Column(db.String(255))
 
-    is_active = db.Column(db.Boolean, default=True)
+    is_active = db.Column(
+        db.Boolean,
+        default=True,
+        nullable=False
+    )
+
+    # Phase J — Delivery settings
+    delivery_fee = db.Column(
+        db.Numeric(10, 2),
+        default=0.00,
+        nullable=False
+    )
+
+    delivery_available = db.Column(
+        db.Boolean,
+        default=True,
+        nullable=False
+    )
 
     owner = db.relationship(
         "User",
@@ -38,51 +55,86 @@ class Store(db.Model):
             "location": self.location,
             "contact_info": self.contact_info,
             "is_active": self.is_active,
+            "delivery_fee": float(self.delivery_fee or 0),
+            "delivery_available": self.delivery_available,
         }
 
 
 @jwt_required()
 def update_store(store_id):
-    user_id = get_jwt_identity()
-    store = Store.query.get(store_id)
+    user_id = int(get_jwt_identity())
+    store = db.session.get(Store, store_id)
 
     if not store:
-        return jsonify({"message": "Store not found ❌"}), 404
+        return jsonify({"message": "Store not found"}), 404
 
-    # ownership check (we enforce in 5.9 too, but here early)
-    if not check_owner(store, user_id):
-        return jsonify({"message": "Not allowed ❌"}), 403
+    if store.owner_id != user_id:
+        return jsonify({"message": "Not allowed"}), 403
 
-    data = request.get_json()
+    data = request.get_json() or {}
 
     store.name = data.get("name", store.name)
-    store.description = data.get("description", store.description)
-    store.location = data.get("location", store.location)
-    store.contact_info = data.get("contact_info", store.contact_info)
+    store.description = data.get(
+        "description",
+        store.description
+    )
+    store.location = data.get(
+        "location",
+        store.location
+    )
+    store.contact_info = data.get(
+        "contact_info",
+        store.contact_info
+    )
+
+    # Phase J — update delivery settings
+    if "delivery_fee" in data:
+        try:
+            delivery_fee = float(data["delivery_fee"])
+
+            if delivery_fee < 0:
+                return jsonify({
+                    "message": "Delivery fee cannot be negative"
+                }), 400
+
+            store.delivery_fee = delivery_fee
+
+        except (TypeError, ValueError):
+            return jsonify({
+                "message": "Invalid delivery fee"
+            }), 400
+
+    if "delivery_available" in data:
+        if not isinstance(data["delivery_available"], bool):
+            return jsonify({
+                "message": "delivery_available must be true or false"
+            }), 400
+
+        store.delivery_available = data["delivery_available"]
 
     db.session.commit()
 
     return jsonify({
-        "message": "Store updated successfully ✅",
+        "message": "Store updated successfully",
         "store": store.to_dict()
     }), 200
 
 
 @jwt_required()
 def toggle_store_status(store_id):
-    user_id = get_jwt_identity()
-    store = Store.query.get(store_id)
+    user_id = int(get_jwt_identity())
+    store = db.session.get(Store, store_id)
 
     if not store:
-        return jsonify({"message": "Store not found ❌"}), 404
+        return jsonify({"message": "Store not found"}), 404
 
     if store.owner_id != user_id:
-        return jsonify({"message": "Not allowed ❌"}), 403
+        return jsonify({"message": "Not allowed"}), 403
 
     store.is_active = not store.is_active
     db.session.commit()
 
     return jsonify({
-        "message": "Store status updated ✅",
+        "message": "Store status updated",
         "is_active": store.is_active
     }), 200

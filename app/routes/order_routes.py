@@ -33,7 +33,9 @@ def checkout():
             "error": "Cart is empty"
         }), 400
 
-    cart_items = CartItem.query.filter_by(cart_id=cart.id).all()
+    cart_items = CartItem.query.filter_by(
+        cart_id=cart.id
+    ).all()
 
     if not cart_items:
         return jsonify({
@@ -42,6 +44,7 @@ def checkout():
 
     items_by_store = {}
 
+    # Validate products and group them by store
     for item in cart_items:
         product = db.session.get(Product, item.product_id)
 
@@ -72,11 +75,35 @@ def checkout():
 
         for store_id, grouped_items in items_by_store.items():
 
-            total_price = sum(
+            # Get the store
+            store = db.session.get(Store, store_id)
+
+            if not store:
+                db.session.rollback()
+
+                return jsonify({
+                    "error": f"Store {store_id} not found"
+                }), 404
+
+            # Phase J — check delivery availability
+            if not store.delivery_available:
+                db.session.rollback()
+
+                return jsonify({
+                    "error": "Delivery is not available for this store",
+                    "store_id": store.id,
+                    "store_name": store.name
+                }), 400
+
+            subtotal = sum(
                 item_data["product"].price
                 * item_data["cart_item"].quantity
                 for item_data in grouped_items
             )
+
+            delivery_fee = store.delivery_fee or 0
+
+            total_price = subtotal + delivery_fee
 
             order = Order(
                 user_id=user_id,
@@ -87,7 +114,6 @@ def checkout():
             )
 
             db.session.add(order)
-
             db.session.flush()
 
             for item_data in grouped_items:
@@ -105,7 +131,11 @@ def checkout():
 
                 product.stock -= cart_item.quantity
 
-            created_orders.append(order)
+            created_orders.append({
+                "order": order,
+                "subtotal": subtotal,
+                "delivery_fee": delivery_fee
+            })
 
         for item in cart_items:
             db.session.delete(item)
@@ -116,20 +146,25 @@ def checkout():
             "message": "Checkout successful",
             "orders": [
                 {
-                    "id": order.id,
-                    "store_id": order.store_id,
-                    "status": order.status,
-                    "total_price": float(order.total_price)
+                    "id": item["order"].id,
+                    "store_id": item["order"].store_id,
+                    "status": item["order"].status,
+                    "subtotal": float(item["subtotal"]),
+                    "delivery_fee": float(item["delivery_fee"]),
+                    "total_price": float(
+                        item["order"].total_price
+                    )
                 }
-                for order in created_orders
+                for item in created_orders
             ]
         }), 201
 
-    except Exception:
+    except Exception as e:
         db.session.rollback()
 
         return jsonify({
-            "error": "Checkout failed"
+            "error": "Checkout failed",
+            "details": str(e)
         }), 500
 
 
