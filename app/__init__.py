@@ -27,6 +27,8 @@ def create_app():
     from app.routes.order_routes import order_bp
     from app.routes.payment_routes import payment_bp
     from app.routes.delivery_routes import delivery_bp
+    from app.routes.admin_routes import admin_bp
+    app.register_blueprint(admin_bp, url_prefix="/api/admin")
     app.register_blueprint(delivery_bp)
     app.register_blueprint(payment_bp)
     app.register_blueprint(order_bp, url_prefix="/api")
