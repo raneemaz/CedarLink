@@ -11,7 +11,8 @@ class Payment(db.Model):
     order_id = db.Column(
         db.Integer,
         db.ForeignKey("orders.id"),
-        nullable=False
+        nullable=False,
+        unique=True
     )
 
     amount = db.Column(

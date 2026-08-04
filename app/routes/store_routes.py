@@ -1,8 +1,7 @@
-from flask import Blueprint
-from flask import request, jsonify
+from flask import Blueprint, request, jsonify
+from flask_jwt_extended import get_jwt_identity
 from app.extensions import db
 from app.models.store import Store
-from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.utils.decorators import role_required
 
 store_bp = Blueprint("store", __name__, url_prefix="/api/stores")
@@ -13,15 +12,42 @@ store_bp = Blueprint("store", __name__, url_prefix="/api/stores")
 def create_store():
     data = request.get_json()
 
-    user_id = get_jwt_identity()
+    if not data:
+        return jsonify({"message": "Request body is required"}), 400
 
-    # create store
+    required_fields = ["name", "description", "location", "contact_info",
+                       "inside_city_delivery_fee", "outside_city_delivery_fee"]
+
+    for field in required_fields:
+        value = data.get(field)
+
+        if value is None or str(value).strip() == "":
+            return jsonify({"message": f"{field} is required"}), 400
+
+    user_id = int(get_jwt_identity())
+
+    try:
+        inside_fee = float(data["inside_city_delivery_fee"])
+        outside_fee = float(data["outside_city_delivery_fee"])
+
+        if inside_fee < 0 or outside_fee < 0:
+            return jsonify({
+                "message": "Delivery fees cannot be negative"
+            }), 400
+
+    except (TypeError, ValueError):
+        return jsonify({
+            "message": "Delivery fees must be numeric"
+        }), 400
+
     store = Store(
         owner_id=user_id,
-        name=data.get("name"),
-        description=data.get("description"),
-        location=data.get("location"),
-        contact_info=data.get("contact_info"),
+        name=data["name"],
+        description=data["description"],
+        location=data["location"],
+        contact_info=data["contact_info"],
+        inside_city_delivery_fee=inside_fee,
+        outside_city_delivery_fee=outside_fee,
     )
 
     db.session.add(store)
@@ -31,7 +57,6 @@ def create_store():
         "message": "Store created successfully",
         "store": store.to_dict()
     }), 201
-
 
 
 @store_bp.route("", methods=["GET"])
@@ -46,11 +71,143 @@ def get_stores():
 
 @store_bp.route("/<int:store_id>", methods=["GET"])
 def get_store(store_id):
-    store = Store.query.get(store_id)
+    store = db.session.get(Store, store_id)
 
     if not store:
-        return jsonify({"message": "Store not found ❌"}), 404
+        return jsonify({"message": "Store not found"}), 404
 
     return jsonify({
+        "store": store.to_dict()
+    }), 200
+
+
+@store_bp.route("/<int:store_id>", methods=["PUT"])
+@role_required("vendor")
+def update_store(store_id):
+    store = db.session.get(Store, store_id)
+
+    if not store:
+        return jsonify({"message": "Store not found"}), 404
+
+    current_user = int(get_jwt_identity())
+
+    if int(store.owner_id) != current_user:
+        return jsonify({
+            "message": "You can only update your own store"
+        }), 403
+
+    data = request.get_json()
+
+    if not data:
+        return jsonify({"message": "Request body is required"}), 400
+
+    if "name" in data:
+        if not str(data["name"]).strip():
+            return jsonify({"message": "name cannot be empty"}), 400
+        store.name = data["name"]
+
+    if "description" in data:
+        if not str(data["description"]).strip():
+            return jsonify({"message": "description cannot be empty"}), 400
+        store.description = data["description"]
+
+    if "location" in data:
+        if not str(data["location"]).strip():
+            return jsonify({"message": "location cannot be empty"}), 400
+        store.location = data["location"]
+
+    if "contact_info" in data:
+        if not str(data["contact_info"]).strip():
+            return jsonify({"message": "contact_info cannot be empty"}), 400
+        store.contact_info = data["contact_info"]
+
+    if "inside_city_delivery_fee" in data:
+        try:
+            fee = float(data["inside_city_delivery_fee"])
+
+            if fee < 0:
+                return jsonify({
+                    "message": "Inside city delivery fee cannot be negative"
+                }), 400
+
+            store.inside_city_delivery_fee = fee
+
+        except (TypeError, ValueError):
+            return jsonify({
+                "message": "Invalid inside city delivery fee"
+            }), 400
+
+    if "outside_city_delivery_fee" in data:
+        try:
+            fee = float(data["outside_city_delivery_fee"])
+
+            if fee < 0:
+                return jsonify({
+                    "message": "Outside city delivery fee cannot be negative"
+                }), 400
+
+            store.outside_city_delivery_fee = fee
+
+        except (TypeError, ValueError):
+            return jsonify({
+                "message": "Invalid outside city delivery fee"
+            }), 400
+
+    if "delivery_available" in data:
+        if not isinstance(data["delivery_available"], bool):
+            return jsonify({
+                "message": "delivery_available must be true or false"
+            }), 400
+
+        store.delivery_available = data["delivery_available"]
+
+    db.session.commit()
+
+    return jsonify({
+        "message": "Store updated successfully",
+        "store": store.to_dict()
+    }), 200
+
+
+@store_bp.route("/<int:store_id>/status", methods=["PATCH"])
+@role_required("vendor")
+def toggle_store_status(store_id):
+    store = db.session.get(Store, store_id)
+
+    if not store:
+        return jsonify({
+            "message": "Store not found"
+        }), 404
+
+    current_user = int(get_jwt_identity())
+
+    if int(store.owner_id) != current_user:
+        return jsonify({
+            "message": "You can only update your own store"
+        }), 403
+
+    data = request.get_json()
+
+    if not data:
+        return jsonify({
+            "message": "Request body is required"
+        }), 400
+
+    if "is_active" not in data:
+        return jsonify({
+            "message": "is_active is required"
+        }), 400
+
+    if not isinstance(data["is_active"], bool):
+        return jsonify({
+            "message": "is_active must be true or false"
+        }), 400
+
+    store.is_active = data["is_active"]
+
+    db.session.commit()
+
+    return jsonify({
+        "message": "Store status updated successfully",
         "store": store.to_dict()
     }), 200

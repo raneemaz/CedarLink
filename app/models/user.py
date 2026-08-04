@@ -7,21 +7,54 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     first_name = db.Column(db.String(50), nullable=False)
-
     last_name = db.Column(db.String(50), nullable=False)
 
-    email = db.Column(db.String(120), unique=True, nullable=False)
+    email = db.Column(
+        db.String(120),
+        unique=True,
+        nullable=False
+    )
 
-    password = db.Column(db.String(255), nullable=False)
+    password = db.Column(
+        db.String(255),
+        nullable=False
+    )
 
     phone = db.Column(db.String(20))
 
-    role = db.Column(db.Enum("customer", "vendor", "admin"),
-                     nullable=False)
+    role = db.Column(
+        db.Enum("customer", "vendor", "admin"),
+        nullable=False
+    )
 
-    created_at = db.Column(db.DateTime,
-                           server_default=db.func.now())
+    created_at = db.Column(
+        db.DateTime,
+        server_default=db.func.now()
+    )
 
-    updated_at = db.Column(db.DateTime,
-                           server_default=db.func.now(),
-                           onupdate=db.func.now())
+    updated_at = db.Column(
+        db.DateTime,
+        server_default=db.func.now(),
+        onupdate=db.func.now()
+    )
+
+    # Relationships
+
+    cart = db.relationship(
+        "Cart",
+        back_populates="user",
+        uselist=False,
+        cascade="all, delete-orphan"
+    )
+
+    stores = db.relationship(
+        "Store",
+        back_populates="owner",
+        cascade="all, delete-orphan"
+    )
+
+    orders = db.relationship(
+        "Order",
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )

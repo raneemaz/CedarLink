@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from app.extensions import db
 from app.models.category import Category
 from flask_jwt_extended import jwt_required, get_jwt
+from app.models.product import Product
 
 category_bp = Blueprint("category_bp", __name__)
 
@@ -24,12 +25,28 @@ def get_categories():
 @jwt_required()
 def create_category():
     claims = get_jwt()
+
     if claims.get("role") != "admin":
         return jsonify({"message": "Admin only"}), 403
+
     data = request.get_json()
 
+    name = data.get("name", "").strip()
+
+    if not name:
+        return jsonify({
+            "message": "Category name is required"
+        }), 400
+
+    existing_category = Category.query.filter_by(name=name).first()
+
+    if existing_category:
+        return jsonify({
+            "message": "Category already exists"
+        }), 400
+
     new_category = Category(
-        name=data.get("name"),
+        name=name,
         description=data.get("description")
     )
 
@@ -51,7 +68,21 @@ def update_category(id):
     category = Category.query.get_or_404(id)
     data = request.get_json()
 
-    category.name = data.get("name", category.name)
+    name = data.get("name", category.name).strip()
+
+    if not name:
+        return jsonify({
+            "message": "Category name is required"
+        }), 400
+
+    existing_category = Category.query.filter_by(name=name).first()
+
+    if existing_category and existing_category.id != category.id:
+        return jsonify({
+            "message": "Category already exists"
+        }), 400
+
+    category.name = name
     category.description = data.get("description", category.description)
 
     db.session.commit()
@@ -67,8 +98,17 @@ def delete_category(id):
     claims = get_jwt()
     if claims.get("role") != "admin":
         return jsonify({"message": "Admin only"}), 403
-    category = Category.query.get_or_404(id)
+    category = Category.query.get(id)
 
+    if not category:
+        return jsonify({
+            "message": "Category not found"
+        }), 404
+
+    if Product.query.filter_by(category_id=id).first():
+        return jsonify({
+            "message": "Cannot delete category because it contains products"
+        }), 400
     db.session.delete(category)
     db.session.commit()
 

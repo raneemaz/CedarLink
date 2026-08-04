@@ -16,7 +16,10 @@ class ProductImage(db.Model):
         nullable=False
     )
 
-    product = db.relationship("Product", backref="images")
+    product = db.relationship(
+        "Product",
+        back_populates="images"
+    )
 
     def __repr__(self):
         return f"<ProductImage {self.id}>"

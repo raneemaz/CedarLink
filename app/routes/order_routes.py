@@ -21,9 +21,16 @@ def checkout():
     data = request.get_json() or {}
     delivery_address = data.get("delivery_address")
 
+    delivery_city = data.get("delivery_city")
+
     if not delivery_address or not delivery_address.strip():
         return jsonify({
             "error": "Delivery address is required"
+        }), 400
+
+    if not delivery_city or not delivery_city.strip():
+        return jsonify({
+            "error": "Delivery city is required"
         }), 400
 
     cart = Cart.query.filter_by(user_id=user_id).first()
@@ -72,6 +79,7 @@ def checkout():
 
     try:
         created_orders = []
+        checkout_price = 0
 
         for store_id, grouped_items in items_by_store.items():
 
@@ -101,7 +109,10 @@ def checkout():
                 for item_data in grouped_items
             )
 
-            delivery_fee = store.delivery_fee or 0
+            if delivery_city.strip().lower() == store.location.strip().lower():
+                delivery_fee = float(store.inside_city_delivery_fee)
+            else:
+                delivery_fee = float(store.outside_city_delivery_fee)
 
             total_price = subtotal + delivery_fee
 
@@ -136,6 +147,7 @@ def checkout():
                 "subtotal": subtotal,
                 "delivery_fee": delivery_fee
             })
+            checkout_price += float(order.total_price)
 
         for item in cart_items:
             db.session.delete(item)
@@ -144,12 +156,14 @@ def checkout():
 
         return jsonify({
             "message": "Checkout successful",
+            "checkout_price": checkout_price,
             "orders": [
                 {
                     "id": item["order"].id,
                     "store_id": item["order"].store_id,
                     "status": item["order"].status,
                     "subtotal": float(item["subtotal"]),
+                    "delivery_city": delivery_city,
                     "delivery_fee": float(item["delivery_fee"]),
                     "total_price": float(
                         item["order"].total_price
@@ -333,13 +347,6 @@ def update_order_status(id):
             "error": "Status is required"
         }), 400
 
-    store = Store.query.filter_by(owner_id=user_id).first()
-
-    if not store:
-        return jsonify({
-            "error": "Store not found for this vendor"
-        }), 404
-
     order = db.session.get(Order, id)
 
     if not order:
@@ -347,7 +354,9 @@ def update_order_status(id):
             "error": "Order not found"
         }), 404
 
-    if order.store_id != store.id:
+    store = db.session.get(Store, order.store_id)
+
+    if not store or store.owner_id != user_id:
         return jsonify({
             "error": "You are not authorized to update this order"
         }), 403
@@ -410,6 +419,8 @@ def cancel_order(id):
             "error": "You are not authorized to cancel this order"
         }), 403
 
+    print("Order ID:", order.id)
+    print("Order Status:", order.status)
     if order.status != "pending":
         return jsonify({
             "error": "Only pending orders can be canceled",

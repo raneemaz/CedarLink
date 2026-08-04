@@ -32,9 +32,3 @@ class CartItem(db.Model):
         "Product",
         back_populates="cart_items"
     )
-
-    cart_items = db.relationship(
-        "CartItem",
-        back_populates="product"
-    )
-    

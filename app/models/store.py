@@ -28,11 +28,16 @@ class Store(db.Model):
         nullable=False
     )
 
-    # Phase J — Delivery settings
-    delivery_fee = db.Column(
+    inside_city_delivery_fee = db.Column(
         db.Numeric(10, 2),
-        default=0.00,
-        nullable=False
+        nullable=False,
+        default=0.00
+    )
+
+    outside_city_delivery_fee = db.Column(
+        db.Numeric(10, 2),
+        nullable=False,
+        default=0.00
     )
 
     delivery_available = db.Column(
@@ -43,7 +48,19 @@ class Store(db.Model):
 
     owner = db.relationship(
         "User",
-        backref=db.backref("stores", lazy=True)
+        back_populates="stores"
+    )
+
+    products = db.relationship(
+        "Product",
+        back_populates="store",
+        cascade="all, delete-orphan"
+    )
+
+    orders = db.relationship(
+        "Order",
+        back_populates="store",
+        cascade="all, delete-orphan"
     )
 
     def to_dict(self):
@@ -55,7 +72,10 @@ class Store(db.Model):
             "location": self.location,
             "contact_info": self.contact_info,
             "is_active": self.is_active,
-            "delivery_fee": float(self.delivery_fee or 0),
+            "inside_city_delivery_fee": float(self.inside_city_delivery_fee
+                                              or 0),
+            "outside_city_delivery_fee": float(self.outside_city_delivery_fee
+                                               or 0),
             "delivery_available": self.delivery_available,
         }
 

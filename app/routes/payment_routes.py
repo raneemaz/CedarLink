@@ -8,6 +8,7 @@ from flask_jwt_extended import (
 )
 
 from app.extensions import db
+from app.models import order
 from app.models.payment import Payment
 from app.models.order import Order
 
@@ -46,17 +47,24 @@ def create_payment():
 
     if order.user_id != current_user_id:
         return jsonify({
-            "message": "You are not authorized to pay for this order"
+            "message": "only the owner of the order can initiate a payment"
         }), 403
 
-    existing_completed_payment = Payment.query.filter_by(
-        order_id=order.id,
-        status="completed"
+    if order.status != "pending":
+        return jsonify({
+            "message": "Payments can only be initiated for pending orders"
+        }), 400
+
+    existing_payment = Payment.query.filter_by(
+        order_id=order.id
     ).first()
 
-    if existing_completed_payment:
+    if existing_payment:
         return jsonify({
-            "message": "This order has already been paid successfully"
+            "message": (
+                "A payment already exists for this order. "
+                f"Current payment status: {existing_payment.status}"
+            )
         }), 409
 
     payment = Payment(
@@ -96,6 +104,11 @@ def get_payment(payment_id):
             return jsonify({
                 "message": "You are not authorized to view this payment"
             }), 403
+
+    if order.status != "pending":
+        return jsonify({
+            "message": "Payments can only be initiated for pending orders"
+        }), 400
 
     elif current_user_role == "vendor":
         if order.store.owner_id != current_user_id:

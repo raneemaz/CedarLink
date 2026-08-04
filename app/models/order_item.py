@@ -31,21 +31,8 @@ class OrderItem(db.Model):
         "Order",
         back_populates="items"
     )
+
     product = db.relationship(
         "Product",
         back_populates="order_items"
-    )
-    orders = db.relationship(
-        "Order",
-        back_populates="user",
-        cascade="all, delete-orphan"
-    )
-    orders = db.relationship(
-        "Order",
-        back_populates="store",
-        cascade="all, delete-orphan"
-    )
-    order_items = db.relationship(
-        "OrderItem",
-        back_populates="product"
     )

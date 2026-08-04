@@ -11,5 +11,13 @@ class Cart(db.Model):
         nullable=False,
         unique=True
     )
+    items = db.relationship(
+        "CartItem",
+        back_populates="cart",
+        cascade="all, delete-orphan"
+    )
 
-    
+    user = db.relationship(
+        "User",
+        back_populates="cart"
+    )

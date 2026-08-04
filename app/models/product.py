@@ -20,12 +20,25 @@ class Product(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey("categories.id"),
                             nullable=False)
 
-    store = db.relationship("Store", backref="products")
-    category = db.relationship("Category", backref="products")
+    store = db.relationship(
+        "Store",
+        back_populates="products"
+    )
+    category = db.relationship(
+        "Category",
+        back_populates="products"
+    )
     cart_items = db.relationship(
         "CartItem",
         back_populates="product"
     )
+
+    order_items = db.relationship(
+        "OrderItem",
+        back_populates="product",
+        cascade="all, delete-orphan"
+    )
+
     images = db.relationship(
         "ProductImage",
         back_populates="product",
@@ -36,4 +49,3 @@ class Product(db.Model):
 
     def __repr__(self):
         return f"<Product {self.name}>"
-    

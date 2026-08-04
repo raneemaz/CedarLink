@@ -1,7 +1,7 @@
 """create users table
 
 Revision ID: 17ad14140cd3
-Revises:
+Revises:z
 Create Date: 2026-06-29 17:42:42.981431
 
 """
