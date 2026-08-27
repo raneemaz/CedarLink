@@ -1,0 +1,163 @@
+{
+  "common": {
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "backToSettings": "العودة إلى الإعدادات ←"
+  },
+
+  "navbar": {
+    "logoAlt": "شعار",
+    "home": "الرئيسية",
+    "products": "المنتجات",
+    "categories": "الفئات",
+    "stores": "المتاجر",
+    "search": "ابحث عن المنتجات...",
+    "cart": "السلة",
+    "login": "تسجيل الدخول",
+    "register": "إنشاء حساب",
+    "profile": "الملف الشخصي",
+    "myProfile": "ملفي الشخصي",
+    "settings": "الإعدادات",
+    "logout": "تسجيل الخروج",
+    "menu": "القائمة"
+  },
+
+  "language": {
+    "title": "اللغة",
+    "subtitle": "اختر اللغة المفضلة لاستخدام CedarLink.",
+    "preferredLanguage": "اللغة المفضلة",
+    "description": "اختر اللغة التي ترغب في استخدامها على CedarLink.",
+    "english": "الإنجليزية",
+    "arabic": "العربية",
+    "french": "الفرنسية",
+    "saveLanguage": "حفظ اللغة",
+    "saved": "تم حفظ تفضيل اللغة بنجاح."
+  },
+
+  "currency": {
+    "title": "العملة",
+    "subtitle": "اختر العملة التي تُعرض بها الأسعار أثناء التصفح.",
+    "preferredCurrency": "العملة المفضلة",
+    "description": "تُحدَّد أسعار المنتجات بالدولار الأمريكي. اختيارك يغيّر طريقة عرض الأسعار لك فقط.",
+    "usd": "الدولار الأمريكي",
+    "lbp": "الليرة اللبنانية",
+    "saveCurrency": "حفظ العملة",
+    "saving": "جارٍ الحفظ...",
+    "saved": "تم حفظ تفضيل العملة بنجاح.",
+    "loading": "جارٍ تحميل تفضيل العملة...",
+    "loadError": "تعذّر تحميل تفضيل العملة.",
+    "saveError": "فشل حفظ تفضيل العملة. حاول مرة أخرى.",
+    "approxNote": "المبالغ المحوّلة تقريبية. تتم معالجة السلة والدفع دائمًا بالدولار الأمريكي."
+  },
+
+  "settings": {
+    "title": "الإعدادات",
+    "subtitle": "إدارة حسابك على CedarLink وتفضيلات التسوق والخصوصية.",
+
+    "accountProfile": {
+      "title": "الحساب والملف الشخصي",
+      "description": "إدارة معلوماتك الشخصية وأمان حسابك."
+    },
+
+    "personalInformation": {
+      "title": "المعلومات الشخصية",
+      "description": "إدارة الاسم والبريد الإلكتروني ورقم الهاتف."
+    },
+
+    "savedAddresses": {
+      "title": "العناوين المحفوظة",
+      "description": "إدارة عناوين التوصيل والفوترة."
+    },
+
+    "loginSecurity": {
+      "title": "تسجيل الدخول والأمان",
+      "description": "تغيير كلمة المرور وإدارة أمان الحساب."
+    },
+
+    "language": {
+      "title": "اللغة",
+      "description": "اختر لغتك المفضلة في CedarLink."
+    },
+
+    "currency": {
+      "title": "العملة",
+      "description": "اختر العملة التي تُعرض بها الأسعار."
+    },
+
+    "shoppingOrders": {
+      "title": "التسوق والطلبات",
+      "description": "إدارة تفضيلات التسوق وخيارات الدفع."
+    },
+
+    "paymentMethods": {
+      "title": "طرق الدفع",
+      "description": "إدارة طرق الدفع المحفوظة."
+    },
+
+    "shoppingPreferences": {
+      "title": "تفضيلات التسوق",
+      "description": "إدارة تفضيلات التسوق والطلبات."
+    },
+
+    "notifications": {
+      "title": "الإشعارات",
+      "description": "اختر الطريقة التي يبقيك بها CedarLink على اطلاع."
+    },
+
+    "notificationPreferences": {
+      "title": "تفضيلات الإشعارات",
+      "description": "إدارة إشعارات الطلبات والتسوق والعروض."
+    },
+
+    "privacyData": {
+      "title": "الخصوصية والبيانات",
+      "description": "إدارة خصوصيتك وبيانات حساب CedarLink.",
+      "itemDescription": "إدارة تفضيلات الخصوصية وبيانات حسابك."
+    },
+
+    "account": {
+      "title": "الحساب",
+      "description": "إدارة حسابك على CedarLink."
+    },
+
+    "deleteAccount": "حذف الحساب"
+  },
+"home": {
+  "hero": {
+    "badge": "كل ما تحتاجه في مكان واحد",
+    "title": "تسوق بسهولة واكتشف منتجات رائعة",
+    "description": "اكتشف منتجات من متاجر مختلفة واستمتع بتجربة تسوق بسيطة ومريحة مع CedarLink.",
+    "browseProducts": "تصفح المنتجات",
+    "browseStores": "تصفح المتاجر"
+  },
+
+  "categories": {
+    "title": "استكشف الفئات",
+    "grocery": "البقالة",
+    "fashion": "الأزياء",
+    "electronics": "الإلكترونيات",
+    "home": "المنزل والمعيشة"
+  },
+
+  "featuredProducts": {
+    "title": "منتجات مميزة",
+    "description": "اكتشف أحدث المنتجات المتوفرة على CedarLink.",
+    "viewAll": "عرض الكل"
+  },
+
+  "loadingProducts": "جارٍ تحميل المنتجات...",
+
+  "productCard": {
+    "imageAvailable": "الصورة متوفرة",
+    "noImage": "لا توجد صورة",
+    "noDescription": "لا يوجد وصف متوفر.",
+    "stock": "المخزون"
+  },
+
+  "guestExperience": {
+    "title": "مرحبًا بك في CedarLink",
+    "description": "سجّل الدخول أو أنشئ حسابًا للاستمتاع بتجربة CedarLink الكاملة."
+  }
+}
+  
+}

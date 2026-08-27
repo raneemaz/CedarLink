@@ -17,10 +17,6 @@ env/
 
 # Node / Frontend
 node_modules/
-frontend/
-src/
-package.json
-package-lock.json
 
 # Build files
 dist/

@@ -1,0 +1,162 @@
+{
+  "common": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "backToSettings": "← Retour aux paramètres"
+  },
+
+  "navbar": {
+    "logoAlt": "Logo CedarLink",
+    "home": "Accueil",
+    "products": "Produits",
+    "categories": "Catégories",
+    "stores": "Magasins",
+    "search": "Rechercher des produits...",
+    "cart": "Panier",
+    "login": "Connexion",
+    "register": "Créer un compte",
+    "profile": "Profil",
+    "myProfile": "Mon profil",
+    "settings": "Paramètres",
+    "logout": "Déconnexion",
+    "menu": "Menu"
+  },
+
+  "language": {
+    "title": "Langue",
+    "subtitle": "Choisissez votre langue préférée pour CedarLink.",
+    "preferredLanguage": "Langue préférée",
+    "description": "Sélectionnez la langue que vous souhaitez utiliser sur CedarLink.",
+    "english": "Anglais",
+    "arabic": "Arabe",
+    "french": "Français",
+    "saveLanguage": "Enregistrer la langue",
+    "saved": "Préférence de langue enregistrée avec succès."
+  },
+
+  "currency": {
+    "title": "Devise",
+    "subtitle": "Choisissez la devise d'affichage des prix pendant la navigation.",
+    "preferredCurrency": "Devise préférée",
+    "description": "Les prix des produits sont fixés en USD. Votre choix ne modifie que l'affichage des prix.",
+    "usd": "Dollar américain",
+    "lbp": "Livre libanaise",
+    "saveCurrency": "Enregistrer la devise",
+    "saving": "Enregistrement...",
+    "saved": "Préférence de devise enregistrée avec succès.",
+    "loading": "Chargement de votre préférence de devise...",
+    "loadError": "Impossible de charger votre préférence de devise.",
+    "saveError": "Échec de l'enregistrement de votre préférence de devise. Réessayez.",
+    "approxNote": "Les montants convertis sont approximatifs. Le panier et les paiements sont toujours traités en USD."
+  },
+
+  "settings": {
+    "title": "Paramètres",
+    "subtitle": "Gérez votre compte CedarLink, vos préférences d'achat et votre confidentialité.",
+
+    "accountProfile": {
+      "title": "Compte et profil",
+      "description": "Gérez vos informations personnelles et la sécurité de votre compte."
+    },
+
+    "personalInformation": {
+      "title": "Informations personnelles",
+      "description": "Gérez votre nom, votre e-mail et votre numéro de téléphone."
+    },
+
+    "savedAddresses": {
+      "title": "Adresses enregistrées",
+      "description": "Gérez vos adresses de livraison et de facturation."
+    },
+
+    "loginSecurity": {
+      "title": "Connexion et sécurité",
+      "description": "Modifiez votre mot de passe et gérez la sécurité de votre compte."
+    },
+
+    "language": {
+      "title": "Langue",
+      "description": "Choisissez votre langue préférée pour CedarLink."
+    },
+
+    "currency": {
+      "title": "Devise",
+      "description": "Choisissez la devise d'affichage des prix."
+    },
+
+    "shoppingOrders": {
+      "title": "Achats et commandes",
+      "description": "Gérez vos préférences d'achat et vos options de paiement."
+    },
+
+    "paymentMethods": {
+      "title": "Méthodes de paiement",
+      "description": "Gérez vos méthodes de paiement enregistrées."
+    },
+
+    "shoppingPreferences": {
+      "title": "Préférences d'achat",
+      "description": "Gérez vos préférences d'achat et de commande."
+    },
+
+    "notifications": {
+      "title": "Notifications",
+      "description": "Choisissez comment CedarLink vous tient informé."
+    },
+
+    "notificationPreferences": {
+      "title": "Préférences de notification",
+      "description": "Gérez les alertes concernant les commandes, les achats et les promotions."
+    },
+
+    "privacyData": {
+      "title": "Confidentialité et données",
+      "description": "Gérez votre confidentialité et les données de votre compte CedarLink.",
+      "itemDescription": "Gérez vos préférences de confidentialité et les données de votre compte."
+    },
+
+    "account": {
+      "title": "Compte",
+      "description": "Gérez votre compte CedarLink."
+    },
+
+    "deleteAccount": "Supprimer le compte"
+  },
+"home": {
+  "hero": {
+    "badge": "Tout ce dont vous avez besoin en un seul endroit",
+    "title": "Achetez facilement et découvrez d'excellents produits",
+    "description": "Découvrez des produits de différents magasins et profitez d'une expérience d'achat simple et pratique avec CedarLink.",
+    "browseProducts": "Parcourir les produits",
+    "browseStores": "Parcourir les magasins"
+  },
+
+  "categories": {
+    "title": "Explorer les catégories",
+    "grocery": "Épicerie",
+    "fashion": "Mode",
+    "electronics": "Électronique",
+    "home": "Maison et vie"
+  },
+
+  "featuredProducts": {
+    "title": "Produits en vedette",
+    "description": "Découvrez les derniers produits disponibles sur CedarLink.",
+    "viewAll": "Voir tout"
+  },
+
+  "loadingProducts": "Chargement des produits...",
+
+  "productCard": {
+    "imageAvailable": "Image disponible",
+    "noImage": "Aucune image",
+    "noDescription": "Aucune description disponible.",
+    "stock": "Stock"
+  },
+
+  "guestExperience": {
+    "title": "Bienvenue sur CedarLink",
+    "description": "Connectez-vous ou créez un compte pour profiter pleinement de l'expérience CedarLink."
+  }
+}
+}
