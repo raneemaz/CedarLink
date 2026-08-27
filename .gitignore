@@ -1,0 +1,31 @@
+# Environment variables
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Node / Frontend
+node_modules/
+frontend/
+src/
+package.json
+package-lock.json
+
+# Build files
+dist/
+build/
+
+# OS
+.DS_Store
+Thumbs.db

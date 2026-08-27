@@ -8,9 +8,9 @@ from flask_jwt_extended import (
 )
 
 from app.extensions import db
-from app.models import order
 from app.models.payment import Payment
 from app.models.order import Order
+from app.models.payment_method import PaymentMethod
 
 
 payment_bp = Blueprint("payments", __name__)
@@ -23,6 +23,11 @@ PAYMENT_STATUS_TRANSITIONS = {
     "refunded": set()
 }
 
+PAYMENT_PROVIDERS = {
+    "card": "cedarlink",
+    "cash_on_delivery": "cedarlink"
+}
+
 
 @payment_bp.route("/payments", methods=["POST"])
 @jwt_required()
@@ -32,11 +37,54 @@ def create_payment():
 
     order_id = data.get("order_id")
     method = data.get("method")
+    payment_method_id = data.get("payment_method_id")
 
     if not order_id or not method:
         return jsonify({
             "message": "order_id and method are required"
         }), 400
+
+    if method not in PAYMENT_PROVIDERS:
+        return jsonify({
+            "message": (
+                "Invalid payment method. "
+                "Allowed methods: card, cash_on_delivery"
+            )
+        }), 400
+
+    provider = PAYMENT_PROVIDERS[method]
+
+    saved_payment_method = None
+
+    if method == "cash_on_delivery" and payment_method_id is not None:
+        return jsonify({
+            "message": "Cash on Delivery cannot use a saved payment method"
+        }), 400
+
+    if method == "card" and payment_method_id is None:
+        return jsonify({
+            "message": "A saved card is required for card payments"
+        }), 400
+
+    if payment_method_id is not None:
+        saved_payment_method = PaymentMethod.query.filter_by(
+            id=payment_method_id,
+            user_id=current_user_id,
+            type="card"
+        ).first()
+
+        if not saved_payment_method:
+            return jsonify({
+                "message": "Saved payment method not found"
+            }), 404
+
+        if saved_payment_method.type != method:
+            return jsonify({
+                "message": (
+                    "The selected payment method does not match "
+                    "the payment method type"
+                )
+            }), 400
 
     order = db.session.get(Order, order_id)
 
@@ -71,6 +119,12 @@ def create_payment():
         order_id=order.id,
         amount=order.total_price,
         method=method,
+        provider=provider,
+        payment_method_id=(
+            saved_payment_method.id
+            if saved_payment_method
+            else None
+        ),
         status="pending"
     )
 
@@ -104,11 +158,6 @@ def get_payment(payment_id):
             return jsonify({
                 "message": "You are not authorized to view this payment"
             }), 403
-
-    if order.status != "pending":
-        return jsonify({
-            "message": "Payments can only be initiated for pending orders"
-        }), 400
 
     elif current_user_role == "vendor":
         if order.store.owner_id != current_user_id:
@@ -144,6 +193,9 @@ def payment_webhook(provider):
             "message": "Invalid webhook signature"
         }), 401
 
+    if provider not in set(PAYMENT_PROVIDERS.values()):
+        return jsonify({"message": "Unknown payment provider"}), 404
+
     payment_id = data.get("payment_id")
     result = data.get("status")
     transaction_id = data.get("transaction_id")
@@ -171,6 +223,11 @@ def payment_webhook(provider):
     if not payment:
         return jsonify({
             "message": "Payment not found"
+        }), 404
+
+    if payment.provider != provider:
+        return jsonify({
+            "message": "Payment does not belong to this provider"
         }), 404
 
     # Allow repeated successful webhook delivery

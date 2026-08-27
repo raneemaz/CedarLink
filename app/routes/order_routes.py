@@ -6,11 +6,159 @@ from app.models.order import Order
 from app.models.order_item import OrderItem
 from app.models.cart import Cart
 from app.models.cart_item import CartItem
+from app.models.payment_method import PaymentMethod
 from app.models.product import Product
 from app.models.store import Store
 
 
 order_bp = Blueprint("order_bp", __name__)
+
+
+def validate_checkout_payment_method(user_id, data):
+    method = data.get("payment_method")
+    payment_method_id = data.get("payment_method_id")
+
+    # Keep compatibility with the existing checkout payload while the UI
+    # moves to an explicit card/COD selection.
+    if not method and payment_method_id is not None:
+        method = "card"
+
+    if method == "cash_on_delivery":
+        if payment_method_id not in (None, ""):
+            return "Cash on Delivery cannot use a saved card"
+        return None
+
+    if method != "card":
+        return "Please select a card or Cash on Delivery"
+
+    if payment_method_id in (None, ""):
+        return "Please select a saved card"
+
+    try:
+        payment_method_id = int(payment_method_id)
+    except (TypeError, ValueError):
+        return "Invalid saved card"
+
+    saved_card = PaymentMethod.query.filter_by(
+        id=payment_method_id,
+        user_id=user_id,
+        type="card"
+    ).first()
+
+    if not saved_card:
+        return "Selected saved card not found"
+
+    return None
+
+
+@order_bp.route("/orders/preview", methods=["POST"])
+@jwt_required()
+def checkout_preview():
+    user_id = int(get_jwt_identity())
+
+    data = request.get_json() or {}
+    delivery_city = data.get("delivery_city")
+
+    if not delivery_city or not delivery_city.strip():
+        return jsonify({
+            "error": "Delivery city is required"
+        }), 400
+
+    cart = Cart.query.filter_by(user_id=user_id).first()
+
+    if not cart:
+        return jsonify({
+            "error": "Cart is empty"
+        }), 400
+
+    cart_items = CartItem.query.filter_by(
+        cart_id=cart.id
+    ).all()
+
+    if not cart_items:
+        return jsonify({
+            "error": "Cart is empty"
+        }), 400
+
+    items_by_store = {}
+
+    # Group cart items by store
+    for item in cart_items:
+        product = db.session.get(Product, item.product_id)
+
+        if not product:
+            return jsonify({
+                "error": f"Product {item.product_id} not found"
+            }), 404
+
+        if product.stock < item.quantity:
+            return jsonify({
+                "error": "Insufficient stock",
+                "product_id": product.id,
+                "product_name": product.name,
+                "available_stock": product.stock,
+                "requested_quantity": item.quantity
+            }), 400
+
+        if product.store_id not in items_by_store:
+            items_by_store[product.store_id] = []
+
+        items_by_store[product.store_id].append({
+            "cart_item": item,
+            "product": product
+        })
+
+    stores = []
+    subtotal_total = 0
+    delivery_total = 0
+
+    for store_id, grouped_items in items_by_store.items():
+
+        store = db.session.get(Store, store_id)
+
+        if not store:
+            return jsonify({
+                "error": f"Store {store_id} not found"
+            }), 404
+
+        if not store.delivery_available:
+            return jsonify({
+                "error": "Delivery is not available for this store",
+                "store_id": store.id,
+                "store_name": store.name
+            }), 400
+
+        subtotal = sum(
+            item_data["product"].price
+            * item_data["cart_item"].quantity
+            for item_data in grouped_items
+        )
+
+        if delivery_city.strip().lower() == store.location.strip().lower():
+            delivery_fee = float(store.inside_city_delivery_fee)
+        else:
+            delivery_fee = float(store.outside_city_delivery_fee)
+
+        store_total = float(subtotal) + delivery_fee
+
+        stores.append({
+            "store_id": store.id,
+            "store_name": store.name,
+            "subtotal": float(subtotal),
+            "delivery_fee": delivery_fee,
+            "total": store_total
+        })
+
+        subtotal_total += float(subtotal)
+        delivery_total += delivery_fee
+
+    return jsonify({
+        "delivery_city": delivery_city.strip(),
+        "subtotal": subtotal_total,
+        "delivery_fee": delivery_total,
+        "total": subtotal_total + delivery_total,
+        "stores": stores
+    }), 200
 
 
 @order_bp.route("/orders", methods=["POST"])
@@ -20,8 +168,12 @@ def checkout():
 
     data = request.get_json() or {}
     delivery_address = data.get("delivery_address")
-
     delivery_city = data.get("delivery_city")
+
+    payment_error = validate_checkout_payment_method(user_id, data)
+
+    if payment_error:
+        return jsonify({"error": payment_error}), 400
 
     if not delivery_address or not delivery_address.strip():
         return jsonify({
@@ -121,6 +273,7 @@ def checkout():
                 store_id=store_id,
                 status="pending",
                 delivery_address=delivery_address.strip(),
+                delivery_city=delivery_city.strip(),
                 total_price=total_price
             )
 
@@ -203,6 +356,7 @@ def get_orders():
             "delivery_address": order.delivery_address,
             "total_price": float(order.total_price),
             "created_at": order.created_at.isoformat(),
+            "delivery_city": order.delivery_city,
             "items": []
         }
 
@@ -261,6 +415,7 @@ def get_order(id):
             "total_price": float(order.total_price),
             "created_at": order.created_at.isoformat(),
             "updated_at": order.updated_at.isoformat(),
+            "delivery_city": order.delivery_city,
             "items": items
         }
     }), 200
@@ -307,9 +462,17 @@ def get_vendor_orders():
         order_data = {
             "id": order.id,
             "user_id": order.user_id,
+            "customer": {
+                "id": order.user.id,
+                "first_name": order.user.first_name,
+                "last_name": order.user.last_name,
+                "email": order.user.email,
+                "phone": order.user.phone
+            },
             "store_id": order.store_id,
             "status": order.status,
             "delivery_address": order.delivery_address,
+            "delivery_city": order.delivery_city,
             "total_price": float(order.total_price),
             "created_at": order.created_at.isoformat(),
             "items": []

@@ -29,6 +29,11 @@ class Order(db.Model):
         nullable=False
     )
 
+    delivery_city = db.Column(
+        db.String(100),
+        nullable=False
+    )
+
     total_price = db.Column(
         db.Numeric(10, 2),
         nullable=False

@@ -211,7 +211,7 @@ Base path: `/api`. Auth column: **Public**, **Auth** (any logged-in user), or a 
 |---|---|---|---|
 | POST | `/payments` | Customer | Initiate payment for an order (`order_id`, `method`) |
 | GET | `/payments/{id}` | Customer / Vendor / Admin | Payment status |
-| POST | `/payments/webhook/{provider}` | Public (gateway-signed) | Async confirmation from Wish Money / OMT Pay / card processor |
+| POST | `/payments/webhook/{provider}` | Public (gateway-signed) | Async confirmation from Whish Money / OMT Pay / card processor |
 
 ### 4.9 Delivery
 

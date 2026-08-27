@@ -240,7 +240,7 @@ An external system that processes online payments.
 
 Examples:
 
-- Wish Money
+- Whish Money
 - OMT Pay
 - Credit Card Processors
 
