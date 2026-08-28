@@ -7,4 +7,10 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  server: {
+    port: 5173,
+    // Fail loudly if 5173 is taken instead of silently drifting to 5174
+    // (which then breaks CORS against the backend).
+    strictPort: true,
+  },
 });
