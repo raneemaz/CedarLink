@@ -3,8 +3,55 @@ from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.extensions import db
 from app.models import User
+from app.services import notification_service, shopping_preferences_service
+from app.services.account_service import (
+    AccountActionBlocked,
+    deactivate_account,
+    delete_account,
+)
+from app.services.two_factor_service import (
+    TwoFactorError,
+    verify_security_challenge,
+)
 
 user_bp = Blueprint("users", __name__, url_prefix="/api/users")
+
+
+def _serialize_notification_preferences(user):
+    return notification_service.serialize_preferences(
+        notification_service.get_or_create_preferences(user.id)
+    )
+
+
+def _serialize_shopping_preferences(user):
+    return shopping_preferences_service.serialize_preferences(
+        shopping_preferences_service.get_or_create_preferences(user.id)
+    )
+
+
+def _reauth_error(user, data):
+    """Verify the current password (and a 2FA security challenge when 2FA is
+    enabled). Returns an ``(payload, status)`` tuple on failure, else ``None``.
+    """
+    current_password = data.get("current_password")
+
+    if not current_password or not check_password_hash(
+        user.password, current_password
+    ):
+        return {"message": "Current password is incorrect"}, 401
+
+    if user.two_factor_enabled:
+        try:
+            verify_security_challenge(
+                user,
+                data.get("challenge_token"),
+                data.get("code"),
+                data.get("use_recovery_code") is True,
+            )
+        except TwoFactorError as error:
+            return {"message": str(error)}, error.status_code
+
+    return None
 
 
 @user_bp.route("/<int:user_id>", methods=["GET"])
@@ -34,6 +81,11 @@ def get_user(user_id):
                     "phone": user.phone,
                     "language": user.language,
                     "currency": user.currency,
+                    "is_active": user.is_active,
+                    "notification_preferences":
+                        _serialize_notification_preferences(user),
+                    "shopping_preferences":
+                        _serialize_shopping_preferences(user),
                     "role": user.role,
                 }
             }
@@ -102,6 +154,11 @@ def update_user(user_id):
                     "phone": user.phone,
                     "language": user.language,
                     "currency": user.currency,
+                    "is_active": user.is_active,
+                    "notification_preferences":
+                        _serialize_notification_preferences(user),
+                    "shopping_preferences":
+                        _serialize_shopping_preferences(user),
                     "role": user.role,
                 },
             }
@@ -204,6 +261,184 @@ def update_currency(user_id):
         ),
         200,
     )
+
+
+@user_bp.route(
+    "/<int:user_id>/notification-preferences", methods=["PUT"]
+)
+@jwt_required()
+def update_notification_preferences(user_id):
+    current_user_id = int(get_jwt_identity())
+
+    if current_user_id != user_id:
+        return jsonify({"message": "Access denied"}), 403
+
+    user = User.query.get(user_id)
+
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+
+    data = request.get_json() or {}
+
+    prefs = notification_service.get_or_create_preferences(user.id)
+
+    ok, error = notification_service.apply_preference_updates(prefs, data)
+
+    if not ok:
+        return jsonify({"message": error}), 400
+
+    db.session.commit()
+
+    return (
+        jsonify(
+            {
+                "message": (
+                    "Notification preferences updated successfully"
+                ),
+                "user": {
+                    "id": user.id,
+                    "notification_preferences":
+                        notification_service.serialize_preferences(prefs),
+                },
+            }
+        ),
+        200,
+    )
+
+
+@user_bp.route(
+    "/<int:user_id>/shopping-preferences", methods=["GET"]
+)
+@jwt_required()
+def get_shopping_preferences(user_id):
+    current_user_id = int(get_jwt_identity())
+
+    if current_user_id != user_id:
+        return jsonify({"message": "Access denied"}), 403
+
+    user = User.query.get(user_id)
+
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+
+    return (
+        jsonify(
+            {"shopping_preferences": _serialize_shopping_preferences(user)}
+        ),
+        200,
+    )
+
+
+@user_bp.route(
+    "/<int:user_id>/shopping-preferences", methods=["PUT"]
+)
+@jwt_required()
+def update_shopping_preferences(user_id):
+    current_user_id = int(get_jwt_identity())
+
+    if current_user_id != user_id:
+        return jsonify({"message": "Access denied"}), 403
+
+    user = User.query.get(user_id)
+
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+
+    data = request.get_json() or {}
+
+    prefs = shopping_preferences_service.get_or_create_preferences(user.id)
+
+    ok, error = shopping_preferences_service.apply_preference_updates(
+        prefs, data
+    )
+
+    if not ok:
+        return jsonify({"message": error}), 400
+
+    db.session.commit()
+
+    return (
+        jsonify(
+            {
+                "message": "Shopping preferences updated successfully",
+                "user": {
+                    "id": user.id,
+                    "shopping_preferences":
+                        shopping_preferences_service.serialize_preferences(
+                            prefs
+                        ),
+                },
+            }
+        ),
+        200,
+    )
+
+
+@user_bp.route("/<int:user_id>/deactivate", methods=["POST"])
+@jwt_required()
+def deactivate_user_account(user_id):
+    current_user_id = int(get_jwt_identity())
+
+    if current_user_id != user_id:
+        return jsonify({"message": "Access denied"}), 403
+
+    user = User.query.get(user_id)
+
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+
+    data = request.get_json() or {}
+
+    error = _reauth_error(user, data)
+    if error:
+        payload, status = error
+        return jsonify(payload), status
+
+    deactivate_account(user)
+
+    return (
+        jsonify({"message": "Your account has been deactivated."}),
+        200,
+    )
+
+
+@user_bp.route("/<int:user_id>", methods=["DELETE"])
+@jwt_required()
+def delete_user_account(user_id):
+    current_user_id = int(get_jwt_identity())
+
+    if current_user_id != user_id:
+        return jsonify({"message": "Access denied"}), 403
+
+    user = User.query.get(user_id)
+
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+
+    data = request.get_json() or {}
+
+    error = _reauth_error(user, data)
+    if error:
+        payload, status = error
+        return jsonify(payload), status
+
+    try:
+        delete_account(user)
+    except AccountActionBlocked as blocked:
+        return jsonify({"message": blocked.message}), 409
+    except Exception:
+        return (
+            jsonify(
+                {
+                    "message": (
+                        "We could not delete your account. Please try again."
+                    )
+                }
+            ),
+            500,
+        )
+
+    return jsonify({"message": "Your account has been deleted."}), 200
 
 
 @user_bp.route("/<int:user_id>/password", methods=["PUT"])

@@ -87,6 +87,9 @@ def get_products():
                 Product.description.ilike(f"%{keyword}%")
             )
         )
+
+    if request.args.get("in_stock", "").lower() == "true":
+        query = query.filter(Product.stock > 0)
     if min_price is not None and max_price is not None:
         if min_price > max_price:
             return jsonify({

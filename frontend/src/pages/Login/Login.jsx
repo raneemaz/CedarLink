@@ -20,6 +20,9 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
 
+  const [deactivated, setDeactivated] = useState(false);
+  const [reactivating, setReactivating] = useState(false);
+
   const navigate = useNavigate();
   const { login } = useAuth();
 
@@ -46,6 +49,7 @@ function Login() {
 
     try {
       setLoading(true);
+      setDeactivated(false);
 
       const response = await api.post("/auth/login", {
         email,
@@ -90,6 +94,15 @@ function Login() {
     } catch (error) {
       console.log(error);
 
+      if (error.response?.data?.account_deactivated) {
+        setDeactivated(true);
+        toast.info(
+          error.response.data.message ||
+            "Your account is deactivated.",
+        );
+        return;
+      }
+
       const message =
         error.response?.data?.message ||
         error.message ||
@@ -98,6 +111,29 @@ function Login() {
       toast.error(message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleReactivate = async () => {
+    setReactivating(true);
+    try {
+      const response = await api.post("/auth/reactivate", {
+        email,
+        password,
+      });
+      toast.success(
+        response.data?.message ||
+          "Your account has been reactivated.",
+      );
+      setDeactivated(false);
+      await handleLogin();
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message ||
+          "Could not reactivate your account.",
+      );
+    } finally {
+      setReactivating(false);
     }
   };
 
@@ -312,10 +348,29 @@ function Login() {
         <Button
           className="w-full cursor-pointer mt-2"
           onClick={handleLogin}
-          disabled={loading}
+          disabled={loading || reactivating}
         >
           {loading ? "Logging in..." : "Login"}
         </Button>
+
+        {deactivated && (
+          <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm">
+            <p className="font-medium text-amber-800">
+              Your account is deactivated.
+            </p>
+            <p className="mt-1 text-amber-700">
+              Reactivate it to sign back in with all your data.
+            </p>
+            <button
+              type="button"
+              onClick={handleReactivate}
+              disabled={reactivating}
+              className="mt-3 cursor-pointer rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-amber-700 disabled:opacity-60"
+            >
+              {reactivating ? "Reactivating..." : "Reactivate my account"}
+            </button>
+          </div>
+        )}
 
         <p className="text-center text-sm text-gray-600 mt-5">
           Don't have an account?{" "}

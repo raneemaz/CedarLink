@@ -9,6 +9,11 @@ from app.models.cart_item import CartItem
 from app.models.payment_method import PaymentMethod
 from app.models.product import Product
 from app.models.store import Store
+from app.services.notification_service import (
+    notify_order_canceled,
+    notify_order_placed,
+    notify_order_status_changed,
+)
 
 
 order_bp = Blueprint("order_bp", __name__)
@@ -307,6 +312,10 @@ def checkout():
 
         db.session.commit()
 
+        # Business transaction is durable; notifications are best-effort.
+        for created in created_orders:
+            notify_order_placed(created["order"])
+
         return jsonify({
             "message": "Checkout successful",
             "checkout_price": checkout_price,
@@ -547,6 +556,8 @@ def update_order_status(id):
         order.status = new_status
         db.session.commit()
 
+        notify_order_status_changed(order)
+
         return jsonify({
             "message": "Order status updated successfully",
             "order": {
@@ -600,6 +611,8 @@ def cancel_order(id):
                 product.stock += item.quantity
 
         db.session.commit()
+
+        notify_order_canceled(order)
 
         return jsonify({
             "message": "Order canceled successfully",

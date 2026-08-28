@@ -41,6 +41,7 @@ def create_app():
     from app.routes.delivery_routes import delivery_bp
     from app.routes.admin_routes import admin_bp
     from app.routes.currency_routes import currency_bp
+    from app.routes.notification_routes import notification_bp
 
     app.register_blueprint(admin_bp, url_prefix="/api/admin")
     app.register_blueprint(delivery_bp)
@@ -56,12 +57,18 @@ def create_app():
     app.register_blueprint(auth_bp)
     app.register_blueprint(user_bp)
     app.register_blueprint(currency_bp)
+    app.register_blueprint(notification_bp)
     app.register_blueprint(test_bp)
     app.register_blueprint(store_bp)
 
     # load models (safe here). Use a different name so we do not
     # overwrite the local Flask instance named `app`.
     from . import models as _models  # noqa: F401
+
+    # custom CLI commands (e.g. `flask create-admin`)
+    from app.cli import register_cli
+
+    register_cli(app)
 
     print("🔵 Store routes loaded")
 

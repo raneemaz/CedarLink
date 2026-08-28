@@ -11,6 +11,10 @@ from app.extensions import db
 from app.models.payment import Payment
 from app.models.order import Order
 from app.models.payment_method import PaymentMethod
+from app.services.notification_service import (
+    notify_payment_completed,
+    notify_payment_refunded,
+)
 
 
 payment_bp = Blueprint("payments", __name__)
@@ -281,6 +285,13 @@ def payment_webhook(provider):
         payment.order.status = "canceled"
 
     db.session.commit()
+
+    # Only reached on a real status transition (idempotent re-delivery returns
+    # earlier). Notifications are best-effort and isolated from the webhook.
+    if result == "completed":
+        notify_payment_completed(payment.order)
+    elif result == "refunded":
+        notify_payment_refunded(payment.order)
 
     return jsonify({
         "message": f"Payment webhook processed for {provider}",

@@ -48,26 +48,94 @@ function Checkout() {
     fetchCart();
   }, []);
 
-  // Load saved cards separately. Cash on Delivery is always available below.
+  // Load saved cards, plus the user's shopping preferences and default
+  // address so checkout can pre-fill. Cash on Delivery is always available.
   useEffect(() => {
-    const fetchPaymentMethods = async () => {
+    const getStoredUserId = () => {
+      try {
+        return JSON.parse(localStorage.getItem("user"))?.id ?? null;
+      } catch {
+        return null;
+      }
+    };
+
+    // Return an exact value from the existing checkout city <select> that
+    // corresponds to `raw` (a governorate name or a stored city string).
+    const matchCity = (raw) => {
+      if (!raw) return "";
+      const lower = String(raw).trim().toLowerCase();
+      const hit = lebanonLocations.find((l) => {
+        const gov = String(l.governorate || "").toLowerCase();
+        return (
+          gov === lower ||
+          `${gov}, ${String(l.district || "").toLowerCase()}` === lower ||
+          (lower && gov.includes(lower)) ||
+          (gov && lower.includes(gov))
+        );
+      });
+      return hit ? `${hit.governorate}, ${hit.district}` : "";
+    };
+
+    const load = async () => {
       try {
         setPaymentMethodsLoading(true);
         setPaymentMethodsError("");
 
-        const response = await api.get("/payment-methods");
+        const userId = getStoredUserId();
 
-        const methods = response.data.payment_methods || response.data || [];
-        const savedCards = methods.filter((method) => method.type === "card");
-        const defaultCard = savedCards.find((method) => method.is_default);
+        const [methodsRes, userRes, addressesRes] = await Promise.allSettled([
+          api.get("/payment-methods"),
+          userId ? api.get(`/users/${userId}`) : Promise.resolve(null),
+          userId ? api.get("/addresses") : Promise.resolve(null),
+        ]);
 
+        const methodsData =
+          methodsRes.status === "fulfilled"
+            ? methodsRes.value.data.payment_methods ||
+              methodsRes.value.data ||
+              []
+            : [];
+        const savedCards = methodsData.filter((m) => m.type === "card");
+        const defaultCard =
+          savedCards.find((m) => m.is_default) || savedCards[0];
         setPaymentMethods(savedCards);
-        setSelectedPaymentMethod(
-          defaultCard ? String(defaultCard.id) : "cash_on_delivery",
-        );
-      } catch (error) {
-        console.error("Failed to load payment methods:", error);
 
+        const prefs =
+          userRes.status === "fulfilled" && userRes.value
+            ? userRes.value.data?.user?.shopping_preferences
+            : null;
+
+        // Preferred payment method: card only if the user prefers it AND has one.
+        const preferCard = prefs?.preferred_payment_method === "card";
+        setSelectedPaymentMethod(
+          preferCard && defaultCard
+            ? String(defaultCard.id)
+            : "cash_on_delivery",
+        );
+
+        const addresses =
+          addressesRes.status === "fulfilled" && addressesRes.value
+            ? addressesRes.value.data.addresses || []
+            : [];
+        const defaultAddress =
+          addresses.find((a) => a.is_default) || addresses[0];
+
+        if (prefs?.autofill_default_address && defaultAddress) {
+          if (defaultAddress.address_line) {
+            setDeliveryAddress((prev) => prev || defaultAddress.address_line);
+          }
+          const cityFromAddress = matchCity(defaultAddress.city);
+          if (cityFromAddress) {
+            setDeliveryCity((prev) => prev || cityFromAddress);
+          }
+        }
+
+        const cityFromPref = matchCity(prefs?.default_delivery_city);
+        if (cityFromPref) {
+          setDeliveryCity((prev) => prev || cityFromPref);
+        }
+      } catch (error) {
+        console.error("Failed to load checkout details:", error);
         setPaymentMethodsError(
           error.response?.data?.error ||
             error.response?.data?.message ||
@@ -78,7 +146,7 @@ function Checkout() {
       }
     };
 
-    fetchPaymentMethods();
+    load();
   }, []);
 
   // Calculate delivery preview

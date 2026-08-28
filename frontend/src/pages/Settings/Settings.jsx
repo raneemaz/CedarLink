@@ -67,7 +67,7 @@ function Settings() {
           icon: ShoppingBag,
           title: t("settings.shoppingPreferences.title"),
           description: t("settings.shoppingPreferences.description"),
-          path: "#shopping-preferences",
+          path: "/settings/shopping",
         },
       ],
     },
@@ -81,7 +81,7 @@ function Settings() {
           description: t(
             "settings.notificationPreferences.description",
           ),
-          path: "#notifications",
+          path: "/settings/notifications",
         },
       ],
     },
@@ -93,7 +93,7 @@ function Settings() {
           icon: ShieldCheck,
           title: t("settings.privacyData.title"),
           description: t("settings.privacyData.itemDescription"),
-          path: "#privacy-data",
+          path: "/settings/privacy",
         },
       ],
     },
@@ -174,28 +174,6 @@ function Settings() {
             </section>
           ))}
         </div>
-
-        {/* Account Actions */}
-        <section className="mt-6 overflow-hidden rounded-2xl bg-white shadow-sm">
-          <div className="px-6 py-5">
-            <h2 className="text-xl font-semibold text-gray-900">
-              {t("settings.account.title")}
-            </h2>
-
-            <p className="mt-1 text-sm text-gray-500">
-              {t("settings.account.description")}
-            </p>
-          </div>
-
-          <div className="border-t border-gray-100">
-            <button
-              type="button"
-              className="w-full px-6 py-5 text-left text-sm font-medium text-red-600 transition hover:bg-red-50"
-            >
-              {t("settings.deleteAccount")}
-            </button>
-          </div>
-        </section>
       </div>
     </div>
   );

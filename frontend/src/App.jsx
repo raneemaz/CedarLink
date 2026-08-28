@@ -26,6 +26,10 @@ import AddPaymentMethod from "./pages/settings/AddPaymentMethod";
 import EditPaymentMethod from "./pages/Settings/EditPaymentMethod";
 import Language from "./pages/Settings/Language";
 import Currency from "./pages/Settings/Currency";
+import Notifications from "./pages/Settings/Notifications";
+import ShoppingPreferences from "./pages/Settings/ShoppingPreferences";
+import PrivacyData from "./pages/Settings/PrivacyData";
+import NotificationsPage from "./pages/Notifications/Notifications";
 
 function App() {
   return (
@@ -38,6 +42,7 @@ function App() {
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/orders/:id" element={<OrderDetails />} />
+        <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/settings/addresses" element={<SavedAddresses />} />
@@ -65,16 +70,27 @@ function App() {
           path="/settings/currency"
           element={<Currency />}
         />
+        <Route
+          path="/settings/notifications"
+          element={<Notifications />}
+        />
+        <Route
+          path="/settings/shopping"
+          element={<ShoppingPreferences />}
+        />
+        <Route
+          path="/settings/privacy"
+          element={<PrivacyData />}
+        />
+        <Route
+          path="/settings/payment-methods/:id/edit"
+          element={<EditPaymentMethod />}
+        />
+        <Route
+          path="/settings/language"
+          element={<Language />}
+        />
       </Route>
-
-      <Route
-        path="/settings/payment-methods/:id/edit"
-        element={<EditPaymentMethod />}
-      />
-      <Route
-        path="/settings/language"
-        element={<Language />}
-      />
 
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />

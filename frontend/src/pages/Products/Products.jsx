@@ -8,12 +8,36 @@ function Products() {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    const getStoredUserId = () => {
+      try {
+        return JSON.parse(localStorage.getItem("user"))?.id ?? null;
+      } catch {
+        return null;
+      }
+    };
+
     const fetchProducts = async () => {
       try {
         setLoading(true);
         setError("");
 
-        const response = await api.get("/products");
+        const params = {};
+        const userId = getStoredUserId();
+
+        if (userId) {
+          try {
+            const prefsRes = await api.get(
+              `/users/${userId}/shopping-preferences`,
+            );
+            if (prefsRes.data?.shopping_preferences?.hide_out_of_stock) {
+              params.in_stock = "true";
+            }
+          } catch {
+            /* browse without the filter if preferences can't be read */
+          }
+        }
+
+        const response = await api.get("/products", { params });
 
         setProducts(response.data.products);
       } catch (err) {

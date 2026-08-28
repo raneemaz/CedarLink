@@ -42,6 +42,15 @@ class User(db.Model):
 
     two_factor_totp_secret = db.Column(db.Text, nullable=True)
 
+    is_active = db.Column(
+        db.Boolean,
+        nullable=False,
+        default=True,
+        server_default=db.true(),
+    )
+
+    deleted_at = db.Column(db.DateTime, nullable=True)
+
     created_at = db.Column(db.DateTime, server_default=db.func.now())
 
     updated_at = db.Column(
@@ -53,6 +62,27 @@ class User(db.Model):
         back_populates="user",
         uselist=False,
         cascade="all, delete-orphan",
+    )
+
+    notification_preferences = db.relationship(
+        "NotificationPreferences",
+        back_populates="user",
+        uselist=False,
+        cascade="all, delete-orphan",
+    )
+
+    shopping_preferences = db.relationship(
+        "ShoppingPreferences",
+        back_populates="user",
+        uselist=False,
+        cascade="all, delete-orphan",
+    )
+
+    notifications = db.relationship(
+        "Notification",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        order_by="Notification.created_at.desc()",
     )
 
     stores = db.relationship(

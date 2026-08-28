@@ -7,6 +7,7 @@ from app.extensions import db
 from app.models.delivery_assignment import DeliveryAssignment
 from app.models.order import Order
 from app.models.store import Store
+from app.services.notification_service import notify_delivery_update
 
 
 delivery_bp = Blueprint("delivery_bp", __name__)
@@ -77,6 +78,8 @@ def create_delivery_assignment():
 
         db.session.add(assignment)
         db.session.commit()
+
+        notify_delivery_update(order, "assigned")
 
         return jsonify({
             "message": "Delivery assignment created successfully",
@@ -227,6 +230,8 @@ def update_delivery_status(id):
             assignment.delivered_at = datetime.utcnow()
 
         db.session.commit()
+
+        notify_delivery_update(order, assignment.status)
 
         return jsonify({
             "message": "Delivery status updated successfully",

@@ -6,6 +6,7 @@ import api from "../../../services/api";
 import logo from "../../../assets/Logoo.png";
 
 import { Search, ShoppingCart, User, Menu } from "lucide-react";
+import NotificationBell from "../../notifications/NotificationBell";
 
 const Navbar = () => {
   const { user, logout, isAuthenticated } = useAuth();
@@ -156,6 +157,8 @@ const Navbar = () => {
             </div>
           ) : (
             <div className="flex items-center gap-3">
+              <NotificationBell />
+
               <div className="group relative">
                 <button
                   type="button"

@@ -13,3 +13,6 @@ from app.models.address import Address  # noqa: F401
 from app.models.payment_method import PaymentMethod  # noqa: F401
 from app.models.two_factor_challenge import TwoFactorChallenge  # noqa: F401
 from app.models.two_factor_recovery_code import TwoFactorRecoveryCode  # noqa: F401
+from app.models.notification_preferences import NotificationPreferences  # noqa: F401
+from app.models.notification import Notification  # noqa: F401
+from app.models.shopping_preferences import ShoppingPreferences  # noqa: F401

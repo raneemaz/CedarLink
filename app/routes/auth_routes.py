@@ -11,6 +11,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from app.extensions import db
 from app.models import User
+from app.services.account_service import reactivate_account
 from app.services.two_factor_service import (
     TwoFactorError,
     create_login_challenge,
@@ -27,6 +28,11 @@ logger = logging.getLogger(__name__)
 
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/api/auth")
+
+# Public registration may only ever create these roles. "admin" is never
+# assignable through a public endpoint — it is created out of band via the
+# `flask create-admin` CLI command (see app/cli.py).
+PUBLIC_REGISTRATION_ROLES = ("customer", "vendor")
 
 
 def error_response(error):
@@ -49,7 +55,8 @@ def register():
     email = data.get("email")
     password = data.get("password")
     phone = data.get("phone")
-    role = data.get("role")
+    # Default to the least-privileged role when the client omits it.
+    role = data.get("role") or "customer"
     verification_method = data.get("verification_method")
 
     if email:
@@ -61,16 +68,18 @@ def register():
         email,
         password,
         phone,
-        role,
         verification_method
     ]):
         return jsonify({
             "message": "Missing required fields"
         }), 400
 
-    if role not in ["customer", "vendor", "admin"]:
+    # Public registration can only create a customer or a vendor. Any other
+    # value (notably "admin") is rejected outright — privilege roles are never
+    # assignable from an unauthenticated request.
+    if role not in PUBLIC_REGISTRATION_ROLES:
         return jsonify({
-            "message": "Invalid role"
+            "message": "Invalid role. Allowed roles: customer, vendor"
         }), 400
 
     if verification_method not in [
@@ -203,6 +212,19 @@ def login():
             "message": "Please verify your account before logging in"
         }), 403
 
+    if user.deleted_at is not None:
+        return jsonify({
+            "message": "This account has been deleted."
+        }), 403
+
+    if not user.is_active:
+        return jsonify({
+            "message": (
+                "Your account is deactivated. Reactivate it to sign in."
+            ),
+            "account_deactivated": True
+        }), 403
+
     try:
         challenge = create_login_challenge(user)
     except TwoFactorError as error:
@@ -300,6 +322,11 @@ def refresh():
             "message": "User not found"
         }), 404
 
+    if user.deleted_at is not None or not user.is_active:
+        return jsonify({
+            "message": "This account is no longer active."
+        }), 403
+
     new_access_token = create_access_token(
         identity=str(user.id),
         additional_claims={
@@ -309,6 +336,44 @@ def refresh():
 
     return jsonify({
         "access_token": new_access_token
+    }), 200
+
+
+@auth_bp.route("/reactivate", methods=["POST"])
+def reactivate():
+    data = request.get_json() or {}
+
+    email = data.get("email")
+    password = data.get("password")
+
+    if not email or not password:
+        return jsonify({
+            "message": "Missing email or password"
+        }), 400
+
+    user = User.query.filter_by(
+        email=email.strip().lower()
+    ).first()
+
+    if not user or not check_password_hash(user.password, password):
+        return jsonify({
+            "message": "Invalid credentials"
+        }), 401
+
+    if user.deleted_at is not None:
+        return jsonify({
+            "message": "This account has been deleted and cannot be restored."
+        }), 409
+
+    if user.is_active:
+        return jsonify({
+            "message": "This account is already active."
+        }), 200
+
+    reactivate_account(user)
+
+    return jsonify({
+        "message": "Your account has been reactivated. You can sign in now."
     }), 200
 
 
