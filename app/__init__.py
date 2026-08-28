@@ -11,9 +11,25 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
+    # Allowed browser origins for /api/*. Defaults cover the common Vite dev
+    # ports (5173 drifts to 5174/5175 when a port is busy). Override with the
+    # CORS_ORIGINS env var (comma-separated) in production.
+    _default_cors_origins = (
+        "http://localhost:5173,"
+        "http://localhost:5174,"
+        "http://localhost:5175"
+    )
+    _cors_origins = [
+        origin.strip()
+        for origin in os.getenv("CORS_ORIGINS", _default_cors_origins).split(
+            ","
+        )
+        if origin.strip()
+    ]
+
     CORS(
         app,
-        resources={r"/api/*": {"origins": "http://localhost:5173"}},
+        resources={r"/api/*": {"origins": _cors_origins}},
         supports_credentials=True,
     )
 
