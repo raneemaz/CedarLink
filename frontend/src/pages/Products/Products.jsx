@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -64,6 +70,42 @@ function Products() {
     () => setSearchParams({}, { replace: true }),
     [setSearchParams],
   );
+
+  // The "hide out of stock" shopping preference is a default, not an
+  // override: apply it only when the URL says nothing about in_stock.
+  // Toggling the control sets in_stock explicitly (true/false), so this
+  // runs at most once and never fights the user's choice.
+  const prefChecked = useRef(false);
+
+  useEffect(() => {
+    if (prefChecked.current || searchParams.has("in_stock")) return;
+    prefChecked.current = true;
+
+    let userId = null;
+    try {
+      userId = JSON.parse(localStorage.getItem("user"))?.id ?? null;
+    } catch {
+      /* not logged in */
+    }
+    if (!userId) return;
+
+    let cancelled = false;
+    api
+      .get(`/users/${userId}/shopping-preferences`)
+      .then((response) => {
+        if (
+          !cancelled &&
+          response.data?.shopping_preferences?.hide_out_of_stock
+        ) {
+          setFilter("in_stock", "true");
+        }
+      })
+      .catch(() => {});
+
+    return () => {
+      cancelled = true;
+    };
+  }, [searchParams, setFilter]);
 
   // --- Debounced keyword input -----------------------------------------
   const [keywordDraft, setKeywordDraft] = useState(urlKeyword);
@@ -258,7 +300,10 @@ function Products() {
                 type="checkbox"
                 checked={inStock}
                 onChange={(event) =>
-                  setFilter("in_stock", event.target.checked ? "true" : "")
+                  setFilter(
+                    "in_stock",
+                    event.target.checked ? "true" : "false",
+                  )
                 }
                 className="h-4 w-4 rounded border-gray-300 text-emerald-700 focus:ring-emerald-600"
               />
