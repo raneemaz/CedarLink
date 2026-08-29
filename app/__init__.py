@@ -69,7 +69,9 @@ def create_app(config_object=None):
     from app.routes.vendor_routes import vendor_bp
 
     app.register_blueprint(admin_bp, url_prefix="/api/admin")
-    app.register_blueprint(delivery_bp)
+    # Delivery routes are defined as /delivery/... — mount them under /api so
+    # they share the API surface every other blueprint uses.
+    app.register_blueprint(delivery_bp, url_prefix="/api")
     app.register_blueprint(payment_bp)
     app.register_blueprint(payment_method_bp)
     app.register_blueprint(two_factor_bp)
