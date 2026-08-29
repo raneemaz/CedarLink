@@ -27,13 +27,18 @@ export function NotificationsProvider({ children }) {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  // Only the request for the currently-authenticated user may write state.
+  // Latest values mirrored into refs so the stable callbacks below can read
+  // them without being recreated: activeUserRef gates state writes to the
+  // currently-authenticated user; listLengthRef feeds the poll's page size.
+  // Synced in an effect rather than during render — writing a ref in render
+  // is unsafe under concurrent rendering (react-hooks/refs).
   const activeUserRef = useRef(userId);
-  activeUserRef.current = userId;
-
-  // Read current list length inside stable callbacks without re-creating them.
   const listLengthRef = useRef(0);
-  listLengthRef.current = notifications.length;
+
+  useEffect(() => {
+    activeUserRef.current = userId;
+    listLengthRef.current = notifications.length;
+  });
 
   // Reload the first page. Fetches at least as many rows as are currently
   // shown so a poll never shrinks a list the user has paged through.
