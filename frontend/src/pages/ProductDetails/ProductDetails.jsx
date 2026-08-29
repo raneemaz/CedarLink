@@ -108,7 +108,7 @@ function ProductDetails() {
 
   const images =
     product.images && product.images.length > 0
-      ? product.images
+      ? product.images.map((img) => img.url)
       : product.image
       ? [product.image]
       : [];

@@ -1,5 +1,6 @@
 import os
-from flask import Flask
+from flask import Flask, jsonify
+from werkzeug.exceptions import RequestEntityTooLarge
 from werkzeug.middleware.proxy_fix import ProxyFix
 from app.config import get_config
 from .extensions import db, migrate, jwt
@@ -94,5 +95,14 @@ def create_app(config_object=None):
     from app.cli import register_cli
 
     register_cli(app)
+
+    @app.errorhandler(RequestEntityTooLarge)
+    def handle_request_too_large(_error):
+        # MAX_CONTENT_LENGTH aborts the request before the view runs, so this
+        # has to be an app-level handler. Without it Flask returns HTML that
+        # the axios error handler cannot read.
+        return jsonify({
+            "message": "Image is too large. Maximum size is 5 MB."
+        }), 413
 
     return app
