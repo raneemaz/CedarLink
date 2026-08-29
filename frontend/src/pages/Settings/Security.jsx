@@ -4,6 +4,43 @@ import { Eye, EyeOff, LockKeyhole, ShieldCheck, ShieldOff } from "lucide-react";
 import { toast } from "react-toastify";
 import api from "../../services/api";
 
+// Module scope: a component declared inside Security()'s body gets a new
+// identity every render, so React unmounts and remounts it on each
+// keystroke and the field loses focus. Confirmed before moving it.
+function PasswordInput({ label, value, onChange, show, setShow, placeholder }) {
+  return (
+    <div>
+      <label className="mb-2 block text-sm font-medium text-gray-700">
+        {label}
+      </label>
+
+      <div className="relative">
+        <input
+          type={show ? "text" : "password"}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          autoComplete={
+            label === "Current Password"
+              ? "current-password"
+              : "new-password"
+          }
+          className="w-full rounded-lg border border-gray-300 px-4 py-3 pr-12 text-sm outline-none transition focus:border-green-600 focus:ring-2 focus:ring-green-100"
+        />
+
+        <button
+          type="button"
+          onClick={() => setShow(!show)}
+          className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-700"
+          aria-label={show ? "Hide password" : "Show password"}
+        >
+          {show ? <EyeOff size={19} /> : <Eye size={19} />}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function Security() {
   const navigate = useNavigate();
 
@@ -510,43 +547,6 @@ function Security() {
 
     setRegenerateCode("");
   };
-
-  const PasswordInput = ({
-    label,
-    value,
-    onChange,
-    show,
-    setShow,
-    placeholder,
-  }) => (
-    <div>
-      <label className="mb-2 block text-sm font-medium text-gray-700">
-        {label}
-      </label>
-
-      <div className="relative">
-        <input
-          type={show ? "text" : "password"}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
-          autoComplete={
-            label === "Current Password" ? "current-password" : "new-password"
-          }
-          className="w-full rounded-lg border border-gray-300 px-4 py-3 pr-12 text-sm outline-none transition focus:border-green-600 focus:ring-2 focus:ring-green-100"
-        />
-
-        <button
-          type="button"
-          onClick={() => setShow(!show)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-700"
-          aria-label={show ? "Hide password" : "Show password"}
-        >
-          {show ? <EyeOff size={19} /> : <Eye size={19} />}
-        </button>
-      </div>
-    </div>
-  );
 
   return (
     <div className="min-h-screen bg-gray-50 px-6 py-10">
