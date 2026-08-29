@@ -246,13 +246,6 @@
 
   "loadingProducts": "جارٍ تحميل المنتجات...",
 
-  "productCard": {
-    "imageAvailable": "الصورة متوفرة",
-    "noImage": "لا توجد صورة",
-    "noDescription": "لا يوجد وصف متوفر.",
-    "stock": "المخزون"
-  },
-
   "guestExperience": {
     "title": "مرحبًا بك في CedarLink",
     "description": "سجّل الدخول أو أنشئ حسابًا للاستمتاع بتجربة CedarLink الكاملة."

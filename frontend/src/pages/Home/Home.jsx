@@ -2,50 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import api from "../../services/api";
-import Price from "../../components/common/Price";
-
-function ProductCard({ product }) {
-  const { t } = useTranslation();
-
-  return (
-    <Link
-      to={`/products/${product.id}`}
-      className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md"
-    >
-      <div className="flex h-44 items-center justify-center bg-slate-100">
-        {product.image ? (
-          <div className="text-sm text-slate-500">
-            {t("home.productCard.imageAvailable")}
-          </div>
-        ) : (
-          <div className="text-sm text-slate-400">
-            {t("home.productCard.noImage")}
-          </div>
-        )}
-      </div>
-
-      <div className="p-4">
-        <h3 className="text-lg font-semibold">{product.name}</h3>
-
-        <p className="mt-1 text-sm text-slate-500 line-clamp-2">
-          {product.description ||
-            t("home.productCard.noDescription")}
-        </p>
-
-        <div className="mt-4 flex items-center justify-between">
-          <Price
-            amount={product.price}
-            className="font-semibold text-emerald-700"
-          />
-
-          <span className="text-xs text-slate-500">
-            {t("home.productCard.stock")}: {product.stock}
-          </span>
-        </div>
-      </div>
-    </Link>
-  );
-}
+import ProductCard from "../../components/product/ProductCard";
 
 export default function Home() {
   const { t } = useTranslation();

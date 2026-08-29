@@ -32,6 +32,12 @@ function ProductCard({ product }) {
           {product.store_name || "Local Store"}
         </p>
 
+        {product.description && (
+          <p className="mt-1 line-clamp-2 text-sm text-gray-500">
+            {product.description}
+          </p>
+        )}
+
         <div className="mt-4 flex items-center justify-between">
 
           <Price
@@ -47,6 +53,12 @@ function ProductCard({ product }) {
           </Link>
 
         </div>
+
+        {typeof product.stock === "number" && (
+          <p className="mt-2 text-xs text-gray-400">
+            In stock: {product.stock}
+          </p>
+        )}
 
       </div>
     </div>
