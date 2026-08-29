@@ -1,7 +1,7 @@
 import os
 import uuid
 from werkzeug.utils import secure_filename
-from flask import current_app
+from flask import current_app, url_for
 
 
 def allowed_file(filename):
@@ -34,6 +34,18 @@ def save_image(file):
     file.save(path)
 
     return filename
+
+
+def product_image_url(filename):
+    """Turn a stored image filename into a URL the browser can load."""
+    if not filename:
+        return None
+
+    return url_for(
+        "product_image_bp.serve_product_image",
+        filename=filename,
+        _external=True,
+    )
 
 
 def delete_image_file(filename):

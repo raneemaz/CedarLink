@@ -1,5 +1,6 @@
 import os
 from flask import Flask
+from werkzeug.middleware.proxy_fix import ProxyFix
 from app.config import get_config
 from .extensions import db, migrate, jwt
 from flask_cors import CORS
@@ -10,6 +11,12 @@ from app.routes.address_routes import address_bp
 def create_app(config_object=None):
     app = Flask(__name__)
     app.config.from_object(config_object or get_config())
+
+    # Trust one layer of reverse-proxy headers so url_for(_external=True)
+    # emits the public host and scheme in production rather than localhost.
+    app.wsgi_app = ProxyFix(
+        app.wsgi_app, x_for=1, x_proto=1, x_host=1
+    )
 
     # Allowed browser origins for /api/*. Defaults cover the common Vite dev
     # ports (5173 drifts to 5174/5175 when a port is busy). Override with the

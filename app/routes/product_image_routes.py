@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, send_from_directory
 from app.extensions import db
 from app.models.product import Product
 from app.models.product_image import ProductImage
@@ -11,11 +11,20 @@ from flask_jwt_extended import (
 from app.utils.file_utils import (
     allowed_file,
     save_image,
-    delete_image_file
+    delete_image_file,
+    product_image_url
 )
 from flask import current_app
 
 product_image_bp = Blueprint("product_image_bp", __name__)
+
+
+@product_image_bp.route("/uploads/products/<filename>", methods=["GET"])
+def serve_product_image(filename):
+    return send_from_directory(
+        current_app.config["UPLOAD_FOLDER"],
+        filename,
+    )
 
 
 @product_image_bp.route("/products/<int:product_id>/images", methods=["POST"])
@@ -89,7 +98,7 @@ def add_image(product_id):
         "message": "Image uploaded successfully",
         "image": {
             "id": image.id,
-            "image_url": image.image_url,
+            "image_url": product_image_url(image.image_url),
             "product_id": image.product_id
         }
     }), 201
