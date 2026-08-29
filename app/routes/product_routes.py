@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from flask import Blueprint, request, jsonify
 from app.extensions import db
 from app.models.product import Product
@@ -13,7 +15,8 @@ product_bp = Blueprint("product_bp", __name__)
 
 @product_bp.route("/products", methods=["GET"])
 def get_products():
-    query = Product.query
+    # Soft-deleted products are gone from the storefront and the vendor list.
+    query = Product.query.filter(Product.deleted_at.is_(None))
 
     sort = request.args.get("sort")
     keyword = request.args.get("keyword")
@@ -156,7 +159,7 @@ def get_products():
 def get_product(id):
     product = Product.query.get(id)
 
-    if not product:
+    if not product or product.deleted_at is not None:
         return jsonify({
             "message": "Product not found"
         }), 404
@@ -377,7 +380,13 @@ def delete_product(id):
             "message": "Not allowed to delete this product"
         }), 403
 
-    db.session.delete(product)
+    if product.deleted_at is not None:
+        return jsonify({
+            "message": "Product not found"
+        }), 404
+
+    # Soft delete — the row stays so past orders keep their line items.
+    product.deleted_at = datetime.now(timezone.utc)
     db.session.commit()
 
     return jsonify({

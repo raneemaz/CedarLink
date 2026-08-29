@@ -96,6 +96,16 @@ def checkout_preview():
                 "error": f"Product {item.product_id} not found"
             }), 404
 
+        if product.deleted_at is not None:
+            return jsonify({
+                "error": (
+                    f"\"{product.name}\" is no longer available. "
+                    "Remove it from your cart to continue."
+                ),
+                "product_id": product.id,
+                "product_name": product.name
+            }), 400
+
         if product.stock < item.quantity:
             return jsonify({
                 "error": "Insufficient stock",
@@ -216,6 +226,16 @@ def checkout():
             return jsonify({
                 "error": f"Product {item.product_id} not found"
             }), 404
+
+        if product.deleted_at is not None:
+            return jsonify({
+                "error": (
+                    f"\"{product.name}\" is no longer available. "
+                    "Remove it from your cart to continue."
+                ),
+                "product_id": product.id,
+                "product_name": product.name
+            }), 400
 
         if product.stock < item.quantity:
             return jsonify({

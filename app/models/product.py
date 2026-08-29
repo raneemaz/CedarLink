@@ -33,10 +33,12 @@ class Product(db.Model):
         back_populates="product"
     )
 
+    # No delete-orphan cascade: order history must survive a product being
+    # removed. Products are soft-deleted (deleted_at) instead — see
+    # docs/decisions/0003-soft-delete-products.md.
     order_items = db.relationship(
         "OrderItem",
-        back_populates="product",
-        cascade="all, delete-orphan"
+        back_populates="product"
     )
 
     images = db.relationship(
@@ -46,6 +48,7 @@ class Product(db.Model):
     )
     created_at = db.Column(db.DateTime, default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
+    deleted_at = db.Column(db.DateTime, nullable=True)
 
     def __repr__(self):
         return f"<Product {self.name}>"
