@@ -243,13 +243,6 @@
       "viewAll": "View all"
     },
 
-    "productCard": {
-      "imageAvailable": "Image available",
-      "noImage": "No image yet",
-      "noDescription": "No description available.",
-      "stock": "Stock"
-    },
-
     "loadingProducts": "Loading products...",
 
     "guestExperience": {

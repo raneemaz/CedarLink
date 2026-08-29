@@ -246,13 +246,6 @@
 
   "loadingProducts": "Chargement des produits...",
 
-  "productCard": {
-    "imageAvailable": "Image disponible",
-    "noImage": "Aucune image",
-    "noDescription": "Aucune description disponible.",
-    "stock": "Stock"
-  },
-
   "guestExperience": {
     "title": "Bienvenue sur CedarLink",
     "description": "Connectez-vous ou créez un compte pour profiter pleinement de l'expérience CedarLink."
