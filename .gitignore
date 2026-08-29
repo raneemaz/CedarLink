@@ -17,6 +17,13 @@ env/
 *.sqlite3
 test.db
 
+# Uploaded / seed-generated product images (per-database, not committed).
+# The two sample files already in the repo stay tracked.
+uploads/products/*.png
+uploads/products/*.jpg
+uploads/products/*.jpeg
+uploads/products/*.webp
+
 # Node / Frontend
 node_modules/
 
