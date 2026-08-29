@@ -17,11 +17,10 @@ import Checkout from "./pages/Checkout/Checkout";
 import Orders from "./pages/Orders/Orders";
 import OrderDetails from "./pages/Orders/OrderDetails";
 import Profile from "./pages/Profile/Profile";
-import VendorDashboard from "./pages/Vendor/VendorDashboard";
 import VendorStore from "./pages/Vendor/VendorStore";
 import VendorProducts from "./pages/Vendor/VendorProducts";
 import VendorProductForm from "./pages/Vendor/VendorProductForm";
-import VendorComingSoon from "./pages/Vendor/VendorComingSoon";
+import VendorOrders from "./pages/Vendor/VendorOrders";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 import Settings from "./pages/Settings/Settings";
 import SavedAddresses from "./pages/Settings/SavedAddresses";
@@ -124,20 +123,8 @@ function App() {
           path="products/:id/edit"
           element={<VendorProductForm />}
         />
-        <Route
-          path="orders"
-          element={<VendorComingSoon title="Orders" />}
-        />
+        <Route path="orders" element={<VendorOrders />} />
       </Route>
-
-      <Route
-        path="/vendor/dashboard"
-        element={
-          <ProtectedRoute roles={["vendor"]}>
-            <VendorDashboard />
-          </ProtectedRoute>
-        }
-      />
 
       <Route
         path="/admin/dashboard"
