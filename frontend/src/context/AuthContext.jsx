@@ -1,29 +1,35 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 
 const AuthContext = createContext();
 
+// Read the persisted session synchronously so `user` is already correct on
+// the first render — otherwise ProtectedRoute bounces an authenticated user
+// to /login on a hard reload before an effect can hydrate the state.
+function readStoredUser() {
+  const savedUser = localStorage.getItem("user");
+  const savedToken = localStorage.getItem("token");
+
+  if (
+    !savedUser ||
+    savedUser === "undefined" ||
+    savedUser === "null" ||
+    !savedToken
+  ) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(savedUser);
+  } catch {
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    localStorage.removeItem("refresh_token");
+    return null;
+  }
+}
+
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const savedUser = localStorage.getItem("user");
-    const savedToken = localStorage.getItem("token");
-
-    if (
-      savedUser &&
-      savedUser !== "undefined" &&
-      savedUser !== "null" &&
-      savedToken
-    ) {
-      try {
-        setUser(JSON.parse(savedUser));
-      } catch {
-        localStorage.removeItem("user");
-        localStorage.removeItem("token");
-        localStorage.removeItem("refresh_token");
-      }
-    }
-  }, []);
+  const [user, setUser] = useState(readStoredUser);
 
   const login = (userData, token, refreshToken) => {
     if (userData) {
