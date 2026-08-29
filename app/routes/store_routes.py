@@ -66,7 +66,10 @@ def get_stores():
     Query params: keyword (name match), location (exact, case-insensitive),
     page, limit, sort=name|newest. Response shape mirrors GET /api/products.
     """
-    query = Store.query.filter(Store.is_active.is_(True))
+    query = Store.query.filter(
+        Store.is_active.is_(True),
+        Store.deleted_at.is_(None),
+    )
 
     keyword = request.args.get("keyword", "").strip()
     if keyword:
@@ -114,9 +117,9 @@ def get_stores():
 def get_store(store_id):
     store = db.session.get(Store, store_id)
 
-    # Deactivated stores are absent from the public storefront. The owning
-    # vendor manages theirs through /api/vendor/store.
-    if not store or not store.is_active:
+    # Deactivated or admin-removed stores are absent from the public
+    # storefront. The owning vendor manages theirs via /api/vendor/store.
+    if not store or not store.is_visible:
         return jsonify({"message": "Store not found"}), 404
 
     return jsonify({

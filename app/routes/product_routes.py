@@ -126,10 +126,12 @@ def get_products():
     if store_id is not None:
         query = query.filter(Product.store_id == store_id)
 
-    # Hide products from deactivated stores on the storefront (CL-12), but
-    # not when the store's own vendor is browsing their catalogue.
+    # A store removed by an admin (CL-24) is hidden from everyone. A merely
+    # deactivated store (CL-12) is hidden from the storefront but still
+    # visible to its own vendor browsing their catalogue.
+    query = query.join(Store).filter(Store.deleted_at.is_(None))
     if not _owns_store(store_id):
-        query = query.join(Store).filter(Store.is_active.is_(True))
+        query = query.filter(Store.is_active.is_(True))
 
     if min_price is not None:
         query = query.filter(Product.price >= min_price)
@@ -191,9 +193,12 @@ def get_product(id):
             "message": "Product not found"
         }), 404
 
-    # A product in a deactivated store is hidden from the storefront but
-    # still reachable by that store's own vendor (CL-12).
-    if not product.store.is_active and not _owns_store(product.store_id):
+    # A removed store's products are hidden from everyone (CL-24); a merely
+    # deactivated store's products stay reachable by its own vendor (CL-12).
+    if product.store.deleted_at is not None or (
+        not product.store.is_active
+        and not _owns_store(product.store_id)
+    ):
         return jsonify({
             "message": "Product not found"
         }), 404
