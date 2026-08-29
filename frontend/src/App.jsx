@@ -1,6 +1,7 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import Layout from "./components/layout/Layout";
+import VendorLayout from "./components/layout/VendorLayout";
 import ProtectedRoute from "./routes/ProtectedRoute";
 
 import Home from "./pages/Home/Home";
@@ -17,6 +18,8 @@ import Orders from "./pages/Orders/Orders";
 import OrderDetails from "./pages/Orders/OrderDetails";
 import Profile from "./pages/Profile/Profile";
 import VendorDashboard from "./pages/Vendor/VendorDashboard";
+import VendorStore from "./pages/Vendor/VendorStore";
+import VendorComingSoon from "./pages/Vendor/VendorComingSoon";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 import Settings from "./pages/Settings/Settings";
 import SavedAddresses from "./pages/Settings/SavedAddresses";
@@ -102,6 +105,26 @@ function App() {
         path="/register/verify"
         element={<RegisterVerify />}
       />
+
+      <Route
+        path="/vendor"
+        element={
+          <ProtectedRoute roles={["vendor"]}>
+            <VendorLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<Navigate to="store" replace />} />
+        <Route path="store" element={<VendorStore />} />
+        <Route
+          path="products"
+          element={<VendorComingSoon title="Products" />}
+        />
+        <Route
+          path="orders"
+          element={<VendorComingSoon title="Orders" />}
+        />
+      </Route>
 
       <Route
         path="/vendor/dashboard"
