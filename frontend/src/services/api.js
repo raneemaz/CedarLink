@@ -1,7 +1,17 @@
 import axios from "axios";
 
+// Single source of truth for the API origin. Set VITE_API_URL in the
+// environment (see frontend/.env.example); never hardcode a host.
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
+if (!API_BASE_URL) {
+  throw new Error(
+    "VITE_API_URL is not set — copy .env.example to .env"
+  );
+}
+
 const api = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -43,7 +53,7 @@ api.interceptors.response.use(
         const refreshToken = localStorage.getItem("refresh_token");
 
         const response = await axios.post(
-          "http://localhost:5000/api/auth/refresh",
+          `${API_BASE_URL}/auth/refresh`,
           {},
           {
             headers: {

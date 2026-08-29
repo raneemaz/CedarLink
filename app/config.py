@@ -6,11 +6,19 @@ load_dotenv()
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, ".."))
 
+# Used as a stand-in secret in development and testing only. ProdConfig
+# refuses to start if the real values are not supplied by the environment.
+_PLACEHOLDER_SECRET = "change-this-to-a-long-secret-key"
+# A syntactically valid Fernet key so the 2FA service can import under tests
+# without a real key being configured.
+_PLACEHOLDER_FERNET_KEY = "ZmDfcTF7_60GrrY167zsiPd67pEvs0aGOv2oasOM1Pg="
+
 
 class Config:
-    SECRET_KEY = os.getenv("SECRET_KEY", "change-this-to-a-long-secret-key")
-    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY",
-                               "change-this-to-a-long-secret-key")
+    # Secrets have no usable default at this level. DevConfig / TestConfig
+    # supply placeholders; ProdConfig requires the environment to set them.
+    SECRET_KEY = os.getenv("SECRET_KEY")
+    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 
     JWT_ACCESS_TOKEN_EXPIRES = 15 * 60  # 15 minutes
     JWT_REFRESH_TOKEN_EXPIRES = 30 * 24 * 60 * 60
@@ -42,7 +50,10 @@ class Config:
         "false"
     ).lower() == "true"
 
-    SQLALCHEMY_DATABASE_URI = "sqlite:///cedarlink.db"
+    SQLALCHEMY_DATABASE_URI = os.getenv(
+        "DATABASE_URL",
+        "sqlite:///cedarlink.db",
+    )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Currency preference / display conversion.
@@ -67,3 +78,74 @@ class Config:
     MAX_CONTENT_LENGTH = 5 * 1024 * 1024  # 5 MB
     ALLOWED_IMAGE_EXTENSIONS = {"jpg", "jpeg", "png", "webp"}
     MAX_IMAGES_PER_PRODUCT = 5
+
+    @classmethod
+    def validate(cls):
+        """Hook for environment-specific config guards. No-op by default."""
+
+
+class DevConfig(Config):
+    DEBUG = True
+
+    SECRET_KEY = os.getenv("SECRET_KEY", _PLACEHOLDER_SECRET)
+    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", _PLACEHOLDER_SECRET)
+
+
+class TestConfig(Config):
+    TESTING = True
+
+    # File-based, not sqlite:///:memory: — an in-memory URL gives every
+    # connection its own empty database, which makes pytest fail
+    # intermittently with "no such table".
+    SQLALCHEMY_DATABASE_URI = os.getenv(
+        "TEST_DATABASE_URL",
+        "sqlite:///" + os.path.join(PROJECT_ROOT, "test.db"),
+    )
+
+    SECRET_KEY = os.getenv("SECRET_KEY", _PLACEHOLDER_SECRET)
+    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", _PLACEHOLDER_SECRET)
+    TWO_FACTOR_ENCRYPTION_KEY = os.getenv(
+        "TWO_FACTOR_ENCRYPTION_KEY",
+        _PLACEHOLDER_FERNET_KEY,
+    )
+    MAIL_SUPPRESS_SEND = True
+
+
+class ProdConfig(Config):
+    DEBUG = False
+
+    # Secrets that must never fall back to a committed placeholder.
+    REQUIRED_ENV = (
+        "SECRET_KEY",
+        "JWT_SECRET_KEY",
+        "TWO_FACTOR_ENCRYPTION_KEY",
+    )
+
+    @classmethod
+    def validate(cls):
+        missing = [name for name in cls.REQUIRED_ENV if not os.getenv(name)]
+        if missing:
+            raise RuntimeError(
+                "ProdConfig requires these environment variables to be set: "
+                + ", ".join(missing)
+            )
+
+
+_CONFIGS = {
+    "development": DevConfig,
+    "testing": TestConfig,
+    "production": ProdConfig,
+}
+
+
+def get_config(name=None):
+    """Resolve a config class from an explicit name or FLASK_CONFIG.
+
+    Defaults to development. The selected class is validated before it is
+    returned, so a production process with missing secrets fails at startup
+    rather than serving requests signed with a placeholder key.
+    """
+    name = (name or os.getenv("FLASK_CONFIG") or "development").lower()
+    config_class = _CONFIGS.get(name, DevConfig)
+    config_class.validate()
+    return config_class
