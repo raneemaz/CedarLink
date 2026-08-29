@@ -33,7 +33,7 @@ function Login() {
     }
 
     if (user.role === "admin") {
-      navigate("/admin/dashboard");
+      navigate("/admin");
     } else if (user.role === "vendor") {
       navigate("/vendor/store");
     } else {
