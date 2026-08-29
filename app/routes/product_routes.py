@@ -5,6 +5,7 @@ from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
 from app.models.store import Store
 from sqlalchemy import or_
 from app.models.category import Category
+from app.utils.file_utils import product_image_url
 
 
 product_bp = Blueprint("product_bp", __name__)
@@ -140,7 +141,7 @@ def get_products():
             "description": product.description,
             "store_id": product.store_id,
             "category_id": product.category_id,
-            "image": first_image
+            "image": product_image_url(first_image)
         })
 
     return jsonify({
@@ -160,6 +161,11 @@ def get_product(id):
             "message": "Product not found"
         }), 404
 
+    images = [
+        product_image_url(img.image_url)
+        for img in product.images
+    ]
+
     return jsonify({
         "id": product.id,
         "name": product.name,
@@ -167,7 +173,9 @@ def get_product(id):
         "price": product.price,
         "stock": product.stock,
         "store_id": product.store_id,
-        "category_id": product.category_id
+        "category_id": product.category_id,
+        "images": images,
+        "image": images[0] if images else None
     }), 200
 
 
