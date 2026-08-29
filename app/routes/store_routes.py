@@ -60,12 +60,53 @@ def create_store():
 
 
 @store_bp.route("", methods=["GET"])
-@role_required("vendor")
 def get_stores():
-    stores = Store.query.all()
+    """Public store directory — active stores only.
+
+    Query params: keyword (name match), location (exact, case-insensitive),
+    page, limit, sort=name|newest. Response shape mirrors GET /api/products.
+    """
+    query = Store.query.filter(Store.is_active.is_(True))
+
+    keyword = request.args.get("keyword", "").strip()
+    if keyword:
+        query = query.filter(Store.name.ilike(f"%{keyword}%"))
+
+    location = request.args.get("location", "").strip()
+    if location:
+        query = query.filter(
+            db.func.lower(Store.location) == location.lower()
+        )
+
+    if request.args.get("sort") == "newest":
+        query = query.order_by(Store.id.desc())
+    else:
+        query = query.order_by(Store.name.asc())
+
+    try:
+        page = int(request.args.get("page", 1))
+        per_page = int(request.args.get("limit", 10))
+    except (TypeError, ValueError):
+        return jsonify({
+            "message": "page and limit must be integers"
+        }), 400
+
+    if page < 1 or per_page < 1:
+        return jsonify({
+            "message": "page and limit must be greater than 0"
+        }), 400
+
+    pagination = query.paginate(
+        page=page,
+        per_page=per_page,
+        error_out=False
+    )
 
     return jsonify({
-        "stores": [store.to_dict() for store in stores]
+        "stores": [store.to_dict() for store in pagination.items],
+        "page": pagination.page,
+        "pages": max(pagination.pages, 1),
+        "total": pagination.total
     }), 200
 
 
@@ -73,7 +114,9 @@ def get_stores():
 def get_store(store_id):
     store = db.session.get(Store, store_id)
 
-    if not store:
+    # Deactivated stores are absent from the public storefront. The owning
+    # vendor manages theirs through /api/vendor/store.
+    if not store or not store.is_active:
         return jsonify({"message": "Store not found"}), 404
 
     return jsonify({
