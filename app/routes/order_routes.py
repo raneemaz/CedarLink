@@ -488,6 +488,8 @@ def get_vendor_orders():
     result = []
 
     for order in orders:
+        assignment = order.delivery_assignment
+
         order_data = {
             "id": order.id,
             "user_id": order.user_id,
@@ -504,6 +506,9 @@ def get_vendor_orders():
             "delivery_city": order.delivery_city,
             "total_price": float(order.total_price),
             "created_at": order.created_at.isoformat(),
+            "delivery_assignment": (
+                assignment.to_dict() if assignment else None
+            ),
             "items": []
         }
 
