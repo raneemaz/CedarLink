@@ -12,6 +12,9 @@ import ResetPassword from "./pages/ResetPassword/ResetPassword";
 import RegisterVerify from "./pages/Register/RegisterVerify";
 import Products from "./pages/Products/Products";
 import ProductDetails from "./pages/ProductDetails/ProductDetails";
+import Stores from "./pages/Stores/Stores";
+import StoreDetails from "./pages/Stores/StoreDetails";
+import Categories from "./pages/Categories/Categories";
 import Cart from "./pages/Cart/Cart";
 import Checkout from "./pages/Checkout/Checkout";
 import Orders from "./pages/Orders/Orders";
@@ -45,6 +48,9 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<Products />} />
         <Route path="/products/:id" element={<ProductDetails />} />
+        <Route path="/stores" element={<Stores />} />
+        <Route path="/stores/:id" element={<StoreDetails />} />
+        <Route path="/categories" element={<Categories />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/orders" element={<Orders />} />
