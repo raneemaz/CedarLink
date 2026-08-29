@@ -14,6 +14,13 @@ const Navbar = () => {
   const { t } = useTranslation();
 
   const [cartCount, setCartCount] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearchSubmit = (event) => {
+    event.preventDefault();
+    const query = searchQuery.trim();
+    navigate(query ? `/products?keyword=${encodeURIComponent(query)}` : "/products");
+  };
 
   useEffect(() => {
     const fetchCartCount = async () => {
@@ -113,17 +120,22 @@ const Navbar = () => {
         </div>
 
         {/* Search */}
-        <div className="mx-8 hidden w-full max-w-md xl:flex">
+        <form
+          onSubmit={handleSearchSubmit}
+          className="mx-8 hidden w-full max-w-md xl:flex"
+        >
           <div className="flex w-full items-center rounded-full border border-slate-300 bg-slate-50 px-4">
             <Search size={18} className="text-slate-400" />
 
             <input
               type="text"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
               placeholder={t("navbar.search")}
               className="w-full bg-transparent px-3 py-2 outline-none"
             />
           </div>
-        </div>
+        </form>
 
         {/* Right */}
         <div className="flex items-center gap-5">
