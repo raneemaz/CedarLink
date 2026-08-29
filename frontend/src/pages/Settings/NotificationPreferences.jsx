@@ -32,7 +32,7 @@ function getStoredUser() {
   }
 }
 
-function Notifications() {
+function NotificationPreferences() {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -218,4 +218,4 @@ function Notifications() {
   );
 }
 
-export default Notifications;
+export default NotificationPreferences;

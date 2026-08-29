@@ -32,10 +32,11 @@ import AddPaymentMethod from "./pages/Settings/AddPaymentMethod";
 import EditPaymentMethod from "./pages/Settings/EditPaymentMethod";
 import Language from "./pages/Settings/Language";
 import Currency from "./pages/Settings/Currency";
-import Notifications from "./pages/Settings/Notifications";
+import NotificationPreferences from "./pages/Settings/NotificationPreferences";
 import ShoppingPreferences from "./pages/Settings/ShoppingPreferences";
 import PrivacyData from "./pages/Settings/PrivacyData";
-import NotificationsPage from "./pages/Notifications/Notifications";
+import NotificationsFeed from "./pages/Notifications/NotificationsFeed";
+import NotFound from "./pages/NotFound/NotFound";
 
 function App() {
   return (
@@ -48,7 +49,7 @@ function App() {
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/orders/:id" element={<OrderDetails />} />
-        <Route path="/notifications" element={<NotificationsPage />} />
+        <Route path="/notifications" element={<NotificationsFeed />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/settings/addresses" element={<SavedAddresses />} />
@@ -78,7 +79,7 @@ function App() {
         />
         <Route
           path="/settings/notifications"
-          element={<Notifications />}
+          element={<NotificationPreferences />}
         />
         <Route
           path="/settings/shopping"
@@ -96,6 +97,8 @@ function App() {
           path="/settings/language"
           element={<Language />}
         />
+
+        <Route path="*" element={<NotFound />} />
       </Route>
 
       <Route path="/login" element={<Login />} />
@@ -124,6 +127,7 @@ function App() {
           element={<VendorProductForm />}
         />
         <Route path="orders" element={<VendorOrders />} />
+        <Route path="*" element={<NotFound />} />
       </Route>
 
       <Route

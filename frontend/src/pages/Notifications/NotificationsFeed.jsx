@@ -25,7 +25,7 @@ const TYPE_ICON = {
   delivery_update: Truck,
 };
 
-function NotificationsPage() {
+function NotificationsFeed() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const { isAuthenticated } = useAuth();
@@ -237,4 +237,4 @@ function NotificationsPage() {
   );
 }
 
-export default NotificationsPage;
+export default NotificationsFeed;
