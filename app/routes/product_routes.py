@@ -168,6 +168,7 @@ def get_products():
             "stock": product.stock,
             "description": product.description,
             "store_id": product.store_id,
+            "store_name": product.store.name,
             "category_id": product.category_id,
             "image": product_image_url(first_image)
         })
@@ -209,6 +210,7 @@ def get_product(id):
         "price": product.price,
         "stock": product.stock,
         "store_id": product.store_id,
+        "store_name": product.store.name,
         "category_id": product.category_id,
         "images": images,
         "image": images[0]["url"] if images else None
