@@ -83,7 +83,7 @@ def add_to_cart():
 
     product = db.session.get(Product, product_id)
 
-    if not product:
+    if not product or product.deleted_at is not None:
         return jsonify({
             "error": "Product not found"
         }), 404
