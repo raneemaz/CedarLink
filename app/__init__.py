@@ -1,15 +1,15 @@
 import os
 from flask import Flask
-from app.config import Config
+from app.config import get_config
 from .extensions import db, migrate, jwt
 from flask_cors import CORS
 from app.routes.user_routes import user_bp
 from app.routes.address_routes import address_bp
 
 
-def create_app():
+def create_app(config_object=None):
     app = Flask(__name__)
-    app.config.from_object(Config)
+    app.config.from_object(config_object or get_config())
 
     # Allowed browser origins for /api/*. Defaults cover the common Vite dev
     # ports (5173 drifts to 5174/5175 when a port is busy). Override with the
