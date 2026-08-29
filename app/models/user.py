@@ -42,6 +42,8 @@ class User(db.Model):
 
     two_factor_totp_secret = db.Column(db.Text, nullable=True)
 
+    # User-controlled self-deactivation. The user can clear this via
+    # POST /auth/reactivate.
     is_active = db.Column(
         db.Boolean,
         nullable=False,
@@ -50,6 +52,11 @@ class User(db.Model):
     )
 
     deleted_at = db.Column(db.DateTime, nullable=True)
+
+    # Admin-controlled. Kept separate from is_active on purpose: a suspended
+    # user must not be able to lift their own suspension via /auth/reactivate.
+    suspended_at = db.Column(db.DateTime, nullable=True)
+    suspension_reason = db.Column(db.String(255), nullable=True)
 
     created_at = db.Column(db.DateTime, server_default=db.func.now())
 
