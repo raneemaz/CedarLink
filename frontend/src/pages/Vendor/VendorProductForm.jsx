@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 
 import api from "../../services/api";
 import Button from "../../components/common/Button/Button";
+import ProductImageManager from "./ProductImageManager";
 
 const fieldClass =
   "w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none " +
@@ -319,17 +320,6 @@ function VendorProductForm() {
             )}
           </div>
 
-          {isEdit && (
-            <div className="rounded-xl border border-dashed border-gray-300 p-5">
-              <p className="text-sm font-medium text-gray-700">
-                Product images
-              </p>
-              <p className="mt-1 text-xs text-gray-500">
-                Uploading and reordering images is coming in the next
-                update.
-              </p>
-            </div>
-          )}
         </div>
 
         <div className="flex justify-end gap-3 border-t border-gray-100 px-6 py-4">
@@ -349,6 +339,12 @@ function VendorProductForm() {
           </Button>
         </div>
       </form>
+
+      {isEdit && (
+        <div className="mt-6">
+          <ProductImageManager productId={id} />
+        </div>
+      )}
     </div>
   );
 }
