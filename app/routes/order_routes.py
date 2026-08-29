@@ -593,8 +593,6 @@ def cancel_order(id):
             "error": "You are not authorized to cancel this order"
         }), 403
 
-    print("Order ID:", order.id)
-    print("Order Status:", order.status)
     if order.status != "pending":
         return jsonify({
             "error": "Only pending orders can be canceled",

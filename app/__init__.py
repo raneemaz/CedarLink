@@ -86,7 +86,4 @@ def create_app():
 
     register_cli(app)
 
-    print("🔵 Store routes loaded")
-
-    print(app.url_map)
     return app
