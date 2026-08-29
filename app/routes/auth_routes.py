@@ -261,6 +261,15 @@ def login():
             "message": "Please verify your account before logging in"
         }), 403
 
+    if user.suspended_at is not None:
+        message = "This account has been suspended by an administrator."
+        if user.suspension_reason:
+            message += f" Reason: {user.suspension_reason}"
+        return jsonify({
+            "message": message,
+            "account_suspended": True
+        }), 403
+
     if user.deleted_at is not None:
         return jsonify({
             "message": "This account has been deleted."
@@ -371,7 +380,11 @@ def refresh():
             "message": "User not found"
         }), 404
 
-    if user.deleted_at is not None or not user.is_active:
+    if (
+        user.deleted_at is not None
+        or user.suspended_at is not None
+        or not user.is_active
+    ):
         return jsonify({
             "message": "This account is no longer active."
         }), 403
@@ -408,6 +421,14 @@ def reactivate():
         return jsonify({
             "message": "Invalid credentials"
         }), 401
+
+    if user.suspended_at is not None:
+        return jsonify({
+            "message": (
+                "This account has been suspended by an administrator and "
+                "cannot be reactivated."
+            )
+        }), 403
 
     if user.deleted_at is not None:
         return jsonify({
