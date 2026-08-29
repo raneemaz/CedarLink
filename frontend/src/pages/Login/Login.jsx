@@ -353,6 +353,15 @@ function Login() {
           {loading ? "Logging in..." : "Login"}
         </Button>
 
+        <p className="text-center text-sm mt-3">
+          <Link
+            to="/forgot-password"
+            className="text-green-700 cursor-pointer font-semibold hover:underline"
+          >
+            Forgot your password?
+          </Link>
+        </p>
+
         {deactivated && (
           <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm">
             <p className="font-medium text-amber-800">

@@ -17,8 +17,10 @@ from app.services.two_factor_service import (
     create_login_challenge,
     create_registration_challenge,
     issue_auth_tokens,
+    request_password_reset,
     resend_login_code,
     resend_registration_code,
+    reset_password,
     verify_login_challenge,
     verify_registration_challenge,
 )
@@ -175,6 +177,53 @@ def resend_registration_verification_code():
     return jsonify({
         "message": "A new verification code was sent",
         **payload
+    }), 200
+
+
+# The request endpoint returns this same body whether or not the email is
+# registered, so it cannot be used to enumerate accounts. (Registration
+# still leaks existence via "Email already exists" — noted, not fixed here.)
+PASSWORD_RESET_REQUEST_MESSAGE = (
+    "If an account exists for that email, a password reset code has "
+    "been sent."
+)
+
+
+@auth_bp.route("/password-reset/request", methods=["POST"])
+def password_reset_request():
+    data = request.get_json() or {}
+
+    email = data.get("email")
+
+    if not email or not str(email).strip():
+        return jsonify({
+            "message": "Email is required"
+        }), 400
+
+    payload = request_password_reset(email)
+
+    return jsonify({
+        "message": PASSWORD_RESET_REQUEST_MESSAGE,
+        "challenge_token": payload["challenge_token"],
+        "method": payload["method"],
+    }), 200
+
+
+@auth_bp.route("/password-reset/confirm", methods=["POST"])
+def password_reset_confirm():
+    data = request.get_json() or {}
+
+    try:
+        reset_password(
+            data.get("challenge_token"),
+            data.get("code"),
+            data.get("new_password"),
+        )
+    except TwoFactorError as error:
+        return error_response(error)
+
+    return jsonify({
+        "message": "Your password has been reset. You can sign in now."
     }), 200
 
 

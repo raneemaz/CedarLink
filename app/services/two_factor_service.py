@@ -21,6 +21,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from app.extensions import db
 from app.models.two_factor_challenge import TwoFactorChallenge
 from app.models.two_factor_recovery_code import TwoFactorRecoveryCode
+from app.models.user import User
 
 EMAIL_METHOD = "email"
 SMS_METHOD = "sms"
@@ -42,6 +43,9 @@ LOGIN_PURPOSE = "login"
 SETUP_PURPOSE = "setup"
 SECURITY_PURPOSE = "security"
 REGISTRATION_PURPOSE = "registration"
+PASSWORD_RESET_PURPOSE = "password_reset"
+
+PASSWORD_RESET_MIN_LENGTH = 8
 
 
 class TwoFactorError(Exception):
@@ -609,6 +613,92 @@ def resend_registration_code(challenge_token):
         challenge_token,
         REGISTRATION_PURPOSE,
     )
+
+
+def _account_can_reset(user):
+    return (
+        user is not None
+        and user.deleted_at is None
+        and user.is_active
+    )
+
+
+def request_password_reset(email):
+    """Start a password-reset challenge for a registered, active account.
+
+    Returns a challenge payload either way: a real one when the email
+    belongs to an account that may reset, and an indistinguishable decoy
+    otherwise, so the caller cannot use this to probe for accounts. The
+    verification code only ever reaches a real account, by email.
+    """
+    email = str(email or "").strip().lower()
+
+    user = (
+        User.query.filter_by(email=email).first()
+        if email
+        else None
+    )
+
+    if _account_can_reset(user):
+        try:
+            return _create_delivery_challenge(
+                user,
+                PASSWORD_RESET_PURPOSE,
+                EMAIL_METHOD,
+            )
+
+        except (TwoFactorError, TwoFactorConfigurationError):
+            current_app.logger.exception(
+                "Password reset delivery failed for a registered account"
+            )
+
+    return {
+        "challenge_token": secrets.token_urlsafe(32),
+        "method": EMAIL_METHOD,
+    }
+
+
+def reset_password(challenge_token, code, new_password):
+    """Consume a password-reset challenge and set a new password hash."""
+    new_password = str(new_password or "")
+
+    if len(new_password) < PASSWORD_RESET_MIN_LENGTH:
+        raise TwoFactorError(
+            "Password must be at least "
+            f"{PASSWORD_RESET_MIN_LENGTH} characters long"
+        )
+
+    challenge = _get_active_challenge(
+        challenge_token,
+        PASSWORD_RESET_PURPOSE,
+    )
+
+    user = challenge.user
+
+    if not _account_can_reset(user):
+        challenge.consumed_at = utcnow()
+
+        db.session.commit()
+
+        raise TwoFactorError("This account can no longer be reset")
+
+    if not _verify_challenge_code(
+        challenge,
+        user,
+        code,
+    ):
+        _record_failed_attempt(challenge)
+
+        raise TwoFactorError("Verification code is invalid")
+
+    user.password = generate_password_hash(new_password)
+
+    # Single use — the challenge cannot be replayed.
+    challenge.consumed_at = utcnow()
+
+    db.session.commit()
+
+    return user
 
 
 def start_setup(user, method=None):
