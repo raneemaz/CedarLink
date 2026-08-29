@@ -19,6 +19,8 @@ import OrderDetails from "./pages/Orders/OrderDetails";
 import Profile from "./pages/Profile/Profile";
 import VendorDashboard from "./pages/Vendor/VendorDashboard";
 import VendorStore from "./pages/Vendor/VendorStore";
+import VendorProducts from "./pages/Vendor/VendorProducts";
+import VendorProductForm from "./pages/Vendor/VendorProductForm";
 import VendorComingSoon from "./pages/Vendor/VendorComingSoon";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 import Settings from "./pages/Settings/Settings";
@@ -116,9 +118,11 @@ function App() {
       >
         <Route index element={<Navigate to="store" replace />} />
         <Route path="store" element={<VendorStore />} />
+        <Route path="products" element={<VendorProducts />} />
+        <Route path="products/new" element={<VendorProductForm />} />
         <Route
-          path="products"
-          element={<VendorComingSoon title="Products" />}
+          path="products/:id/edit"
+          element={<VendorProductForm />}
         />
         <Route
           path="orders"
