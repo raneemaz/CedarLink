@@ -14,6 +14,7 @@ function ConfirmDialog({
   loading = false,
   onConfirm,
   onCancel,
+  children,
 }) {
   if (!open) return null;
 
@@ -25,6 +26,8 @@ function ConfirmDialog({
         {message && (
           <p className="mt-2 text-sm text-gray-600">{message}</p>
         )}
+
+        {children && <div className="mt-4">{children}</div>}
 
         <div className="mt-6 flex justify-end gap-3">
           <Button

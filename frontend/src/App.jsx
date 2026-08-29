@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 
 import Layout from "./components/layout/Layout";
 import VendorLayout from "./components/layout/VendorLayout";
+import AdminLayout from "./components/layout/AdminLayout";
 import ProtectedRoute from "./routes/ProtectedRoute";
 
 import Home from "./pages/Home/Home";
@@ -24,7 +25,10 @@ import VendorStore from "./pages/Vendor/VendorStore";
 import VendorProducts from "./pages/Vendor/VendorProducts";
 import VendorProductForm from "./pages/Vendor/VendorProductForm";
 import VendorOrders from "./pages/Vendor/VendorOrders";
-import AdminDashboard from "./pages/Admin/AdminDashboard";
+import AdminOverview from "./pages/Admin/AdminOverview";
+import AdminUsers from "./pages/Admin/AdminUsers";
+import AdminStores from "./pages/Admin/AdminStores";
+import AdminCategories from "./pages/Admin/AdminCategories";
 import Settings from "./pages/Settings/Settings";
 import SavedAddresses from "./pages/Settings/SavedAddresses";
 import AddAddress from "./pages/Settings/AddAddress";
@@ -137,13 +141,20 @@ function App() {
       </Route>
 
       <Route
-        path="/admin/dashboard"
+        path="/admin"
         element={
           <ProtectedRoute roles={["admin"]}>
-            <AdminDashboard />
+            <AdminLayout />
           </ProtectedRoute>
         }
-      />
+      >
+        <Route index element={<Navigate to="overview" replace />} />
+        <Route path="overview" element={<AdminOverview />} />
+        <Route path="users" element={<AdminUsers />} />
+        <Route path="stores" element={<AdminStores />} />
+        <Route path="categories" element={<AdminCategories />} />
+        <Route path="*" element={<NotFound />} />
+      </Route>
     </Routes>
   );
 }
