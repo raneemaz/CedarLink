@@ -86,7 +86,7 @@ def add_to_cart():
     if (
         not product
         or product.deleted_at is not None
-        or not product.store.is_active
+        or not product.store.is_visible
     ):
         return jsonify({
             "error": "Product not found"

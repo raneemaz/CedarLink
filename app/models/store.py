@@ -44,22 +44,32 @@ class Store(db.Model):
         nullable=False
     )
 
+    # Set when an admin removes the store. See
+    # docs/decisions/0004-soft-delete-stores.md.
+    deleted_at = db.Column(db.DateTime, nullable=True)
+
     owner = db.relationship(
         "User",
         back_populates="stores"
     )
 
+    # No delete-orphan on products or orders: removing a store must not
+    # destroy customers' order history (CL-24). Products are already
+    # soft-deleted (CL-23); the store's removal hides the rest.
     products = db.relationship(
         "Product",
-        back_populates="store",
-        cascade="all, delete-orphan"
+        back_populates="store"
     )
 
     orders = db.relationship(
         "Order",
-        back_populates="store",
-        cascade="all, delete-orphan"
+        back_populates="store"
     )
+
+    @property
+    def is_visible(self):
+        """Shown on the storefront: active and not removed by an admin."""
+        return self.is_active and self.deleted_at is None
 
     def to_dict(self):
         return {
@@ -70,6 +80,9 @@ class Store(db.Model):
             "location": self.location,
             "contact_info": self.contact_info,
             "is_active": self.is_active,
+            "deleted_at": (
+                self.deleted_at.isoformat() if self.deleted_at else None
+            ),
             "inside_city_delivery_fee": float(self.inside_city_delivery_fee
                                               or 0),
             "outside_city_delivery_fee": float(self.outside_city_delivery_fee
