@@ -52,7 +52,6 @@ def create_app(config_object=None):
     # import + register blueprints HERE (important fix)
 
     from app.routes.auth_routes import auth_bp
-    from app.routes.test_routes import test_bp
     from app.routes.store_routes import store_bp
     from app.routes.category_routes import category_bp
     from app.routes.product_routes import product_bp
@@ -72,7 +71,7 @@ def create_app(config_object=None):
     # Delivery routes are defined as /delivery/... — mount them under /api so
     # they share the API surface every other blueprint uses.
     app.register_blueprint(delivery_bp, url_prefix="/api")
-    app.register_blueprint(payment_bp)
+    app.register_blueprint(payment_bp, url_prefix="/api")
     app.register_blueprint(payment_method_bp)
     app.register_blueprint(two_factor_bp)
     app.register_blueprint(order_bp, url_prefix="/api")
@@ -85,7 +84,6 @@ def create_app(config_object=None):
     app.register_blueprint(user_bp)
     app.register_blueprint(currency_bp)
     app.register_blueprint(notification_bp)
-    app.register_blueprint(test_bp)
     app.register_blueprint(store_bp)
     app.register_blueprint(vendor_bp)
 
