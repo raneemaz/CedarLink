@@ -10,6 +10,7 @@ function ProductDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [quantity, setQuantity] = useState(1);
+  const [activeImage, setActiveImage] = useState(0);
 
   const [addingToCart, setAddingToCart] = useState(false);
   const [cartMessage, setCartMessage] = useState("");
@@ -23,6 +24,7 @@ function ProductDetails() {
         const response = await api.get(`/products/${id}`);
 
         setProduct(response.data);
+        setActiveImage(0);
       } catch (err) {
         console.error("Failed to fetch product:", err);
 
@@ -104,6 +106,13 @@ function ProductDetails() {
     );
   }
 
+  const images =
+    product.images && product.images.length > 0
+      ? product.images
+      : product.image
+      ? [product.image]
+      : [];
+
   return (
     <div className="min-h-screen bg-gray-50 px-6 py-10 lg:px-10">
       <div className="mx-auto max-w-6xl">
@@ -118,11 +127,46 @@ function ProductDetails() {
         {/* Product */}
         <div className="mt-6 grid overflow-hidden rounded-xl border border-gray-200 bg-white md:grid-cols-2">
           {/* Image */}
-          <div className="flex min-h-[400px] items-center justify-center bg-gray-100">
-            <div className="text-center text-gray-400">
-              <p className="mt-3 text-sm">No image available</p>
+          {images.length > 0 ? (
+            <div className="flex flex-col gap-3 bg-gray-100 p-4">
+              <div className="flex min-h-[360px] flex-1 items-center justify-center overflow-hidden rounded-lg bg-white">
+                <img
+                  src={images[activeImage]}
+                  alt={product.name}
+                  className="max-h-[440px] w-full object-contain"
+                />
+              </div>
+
+              {images.length > 1 && (
+                <div className="flex flex-wrap gap-2">
+                  {images.map((src, index) => (
+                    <button
+                      key={src}
+                      type="button"
+                      onClick={() => setActiveImage(index)}
+                      className={`h-16 w-16 shrink-0 overflow-hidden rounded-md border-2 transition ${
+                        index === activeImage
+                          ? "border-emerald-600"
+                          : "border-transparent hover:border-gray-300"
+                      }`}
+                    >
+                      <img
+                        src={src}
+                        alt={`${product.name} ${index + 1}`}
+                        className="h-full w-full object-cover"
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
-          </div>
+          ) : (
+            <div className="flex min-h-[400px] items-center justify-center bg-gray-100">
+              <div className="text-center text-gray-400">
+                <p className="mt-3 text-sm">No image available</p>
+              </div>
+            </div>
+          )}
 
           {/* Information */}
           <div className="p-8 lg:p-10">
