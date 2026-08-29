@@ -96,7 +96,7 @@ def checkout_preview():
                 "error": f"Product {item.product_id} not found"
             }), 404
 
-        if product.deleted_at is not None:
+        if product.deleted_at is not None or not product.store.is_active:
             return jsonify({
                 "error": (
                     f"\"{product.name}\" is no longer available. "
@@ -227,7 +227,7 @@ def checkout():
                 "error": f"Product {item.product_id} not found"
             }), 404
 
-        if product.deleted_at is not None:
+        if product.deleted_at is not None or not product.store.is_active:
             return jsonify({
                 "error": (
                     f"\"{product.name}\" is no longer available. "

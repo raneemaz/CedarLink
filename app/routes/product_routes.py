@@ -13,7 +13,27 @@ from app.utils.file_utils import product_image_url
 product_bp = Blueprint("product_bp", __name__)
 
 
+def _owns_store(store_id):
+    """True when the current request is the store's own vendor (or an admin).
+
+    Used to let the vendor console keep listing its products while the store
+    is deactivated, without exposing those products to the storefront.
+    """
+    identity = get_jwt_identity()
+
+    if identity is None or store_id is None:
+        return False
+
+    store = db.session.get(Store, store_id)
+
+    if store is None:
+        return False
+
+    return get_jwt().get("role") == "admin" or store.owner_id == int(identity)
+
+
 @product_bp.route("/products", methods=["GET"])
+@jwt_required(optional=True)
 def get_products():
     # Soft-deleted products are gone from the storefront and the vendor list.
     query = Product.query.filter(Product.deleted_at.is_(None))
@@ -106,6 +126,11 @@ def get_products():
     if store_id is not None:
         query = query.filter(Product.store_id == store_id)
 
+    # Hide products from deactivated stores on the storefront (CL-12), but
+    # not when the store's own vendor is browsing their catalogue.
+    if not _owns_store(store_id):
+        query = query.join(Store).filter(Store.is_active.is_(True))
+
     if min_price is not None:
         query = query.filter(Product.price >= min_price)
 
@@ -156,10 +181,18 @@ def get_products():
 
 
 @product_bp.route("/products/<int:id>", methods=["GET"])
+@jwt_required(optional=True)
 def get_product(id):
     product = Product.query.get(id)
 
     if not product or product.deleted_at is not None:
+        return jsonify({
+            "message": "Product not found"
+        }), 404
+
+    # A product in a deactivated store is hidden from the storefront but
+    # still reachable by that store's own vendor (CL-12).
+    if not product.store.is_active and not _owns_store(product.store_id):
         return jsonify({
             "message": "Product not found"
         }), 404
