@@ -33,7 +33,12 @@ def add_image(product_id):
     claims = get_jwt()
     user_id = int(get_jwt_identity())
 
-    product = Product.query.get_or_404(product_id)
+    product = Product.query.get(product_id)
+
+    if product is None or product.deleted_at is not None:
+        return jsonify({
+            "message": "Product not found"
+        }), 404
 
     if claims.get("role") not in ["admin", "vendor"]:
         return jsonify({

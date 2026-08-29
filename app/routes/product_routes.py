@@ -165,7 +165,7 @@ def get_product(id):
         }), 404
 
     images = [
-        product_image_url(img.image_url)
+        {"id": img.id, "url": product_image_url(img.image_url)}
         for img in product.images
     ]
 
@@ -178,7 +178,7 @@ def get_product(id):
         "store_id": product.store_id,
         "category_id": product.category_id,
         "images": images,
-        "image": images[0] if images else None
+        "image": images[0]["url"] if images else None
     }), 200
 
 
