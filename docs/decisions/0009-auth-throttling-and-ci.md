@@ -62,6 +62,13 @@ application code only — `files related/` holds one-off doc-render scripts,
 and the space in that path defeats flake8's exclude matching, so CI names
 `app tests run.py` explicitly.
 
+CI surfaced a latent bug from item 4a: the suite only ran under
+`python -m pytest` (which puts the CWD on `sys.path`), not the bare
+`pytest` console script CI uses — `import app` in `conftest.py` failed with
+`ModuleNotFoundError`. Fixed with `pythonpath = .` in `pytest.ini`, which
+works for both invocations. This is exactly the class of problem CI exists
+to catch.
+
 The README carries the build-status badge.
 
 ## Consequences
