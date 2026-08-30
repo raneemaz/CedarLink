@@ -9,6 +9,8 @@ result. Business-rule failures are raised as ``OrderError`` carrying the
 exact HTTP status and JSON body the route should return.
 """
 
+from sqlalchemy import select, update
+
 from app.extensions import db
 from app.models.cart import Cart
 from app.models.cart_item import CartItem
@@ -216,6 +218,34 @@ def serialize_quote(pricing):
 # Checkout — prices with the same function, then persists
 # --------------------------------------------------------------------------- #
 
+def _reserve_stock(product, quantity):
+    """Decrement stock in one conditional statement (CL-06).
+
+    ``UPDATE products SET stock = stock - :qty WHERE id = :id AND stock >= :qty``
+    A rowcount of 0 means someone else took the last units between pricing
+    and here — raise the same "Insufficient stock" error the pre-check does.
+    """
+    reserved = db.session.execute(
+        update(Product)
+        .where(Product.id == product.id, Product.stock >= quantity)
+        .values(stock=Product.stock - quantity)
+    )
+
+    if reserved.rowcount == 0:
+        on_hand = db.session.execute(
+            select(Product.stock).where(Product.id == product.id)
+        ).scalar_one()
+
+        raise OrderError(
+            "Insufficient stock",
+            400,
+            product_id=product.id,
+            product_name=product.name,
+            available_stock=on_hand,
+            requested_quantity=quantity,
+        )
+
+
 def checkout(user_id, delivery_address, delivery_city):
     """Turn the priced cart into one order per store and empty the cart.
 
@@ -243,14 +273,14 @@ def checkout(user_id, delivery_address, delivery_city):
         db.session.flush()
 
         for entry in group["items"]:
+            _reserve_stock(entry["product"], entry["cart_item"].quantity)
+
             db.session.add(OrderItem(
                 order_id=order.id,
                 product_id=entry["product"].id,
                 quantity=entry["cart_item"].quantity,
                 unit_price=entry["product"].price,
             ))
-
-            entry["product"].stock -= entry["cart_item"].quantity
 
         created.append({
             "order": order,

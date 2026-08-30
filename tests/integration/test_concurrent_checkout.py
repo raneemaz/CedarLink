@@ -1,19 +1,19 @@
 """CL-06 — checkout must not oversell under concurrent requests.
 
-The stock decrement is check-then-write today: each request reads the stock
-into Python, both pass the check against the same value, then both write.
-Two checkouts for the last unit both succeed.
+The stock decrement is a single conditional statement
+(``UPDATE products SET stock = stock - :qty WHERE id = :id AND stock >= :qty``);
+a rowcount of 0 is the out-of-stock error. So exactly as many concurrent
+checkouts succeed as there are units, no matter the interleaving.
 
 Determinism: every checkout thread is held at a barrier the instant it has
 finished pricing — all the stock reads are done, nothing is written yet and
 no lock is held — then all threads are released together. Whichever thread
-reaches the write first commits; the rest must see the decrement. No sleeps,
-no reliance on wall-clock scheduling.
+reaches the write first commits; the rest see the decrement and fail
+cleanly. No sleeps, no reliance on wall-clock scheduling.
 """
 
 import threading
 
-import pytest
 from flask_jwt_extended import create_access_token
 
 import app.services.order_service as order_service
@@ -106,11 +106,7 @@ def _units_ordered(product):
     )
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="CL-06: stock decrement is check-then-write, not a conditional UPDATE",
-)
-def test_concurrent_checkout_does_not_oversell(
+def test_two_checkouts_for_the_last_unit_only_one_succeeds(
     app, monkeypatch, make_product, make_user
 ):
     product = make_product(stock=1, price=10.0)
@@ -123,7 +119,26 @@ def test_concurrent_checkout_does_not_oversell(
 
     results = _run_concurrent_checkouts(app, monkeypatch, buyers)
 
-    assert _units_ordered(product) <= 1, (
-        f"oversold: {_units_ordered(product)} units from stock of 1 "
-        f"(results: {results})"
-    )
+    assert sorted(results.values()) == [201, 400], results
+    assert _units_ordered(product) == 1
+    db.session.expire_all()
+    assert db.session.get(Product, product.id).stock == 0
+
+
+def test_three_checkouts_against_stock_of_two_two_succeed(
+    app, monkeypatch, make_product, make_user
+):
+    product = make_product(stock=2, price=10.0)
+    buyers = [
+        (name, make_user("customer", email=f"rush-{name}@test.local"))
+        for name in ("a", "b", "c")
+    ]
+    for _, user in buyers:
+        _put_in_cart(user, product, 1)
+
+    results = _run_concurrent_checkouts(app, monkeypatch, buyers)
+
+    assert sorted(results.values()) == [201, 201, 400], results
+    assert _units_ordered(product) == 2
+    db.session.expire_all()
+    assert db.session.get(Product, product.id).stock == 0
