@@ -25,6 +25,7 @@ from app.models.shopping_preferences import ShoppingPreferences
 from app.models.store import Store
 from app.models.two_factor_challenge import TwoFactorChallenge
 from app.models.two_factor_recovery_code import TwoFactorRecoveryCode
+from app.services.token_service import revoke_all_tokens
 
 IN_PROGRESS_ORDER_STATUSES = ("pending", "processing")
 DELETED_ADDRESS_SENTINEL = "[deleted]"
@@ -45,6 +46,9 @@ def deactivate_account(user):
     if user.role == "vendor":
         for store in Store.query.filter_by(owner_id=user.id).all():
             store.is_active = False
+
+    # Kill every live session (CL-09).
+    revoke_all_tokens(user)
 
     db.session.commit()
     current_app.logger.info("Account deactivated: user_id=%s", user.id)

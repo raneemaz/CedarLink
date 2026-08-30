@@ -3,6 +3,7 @@ import logging
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import (
     create_access_token,
+    get_jwt,
     get_jwt_identity,
     jwt_required,
 )
@@ -12,6 +13,10 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from app.extensions import db
 from app.models import User
 from app.services.account_service import reactivate_account
+from app.services.token_service import (
+    revoke_current_token,
+    revoke_refresh_token,
+)
 from app.services.two_factor_service import (
     TwoFactorError,
     create_login_challenge,
@@ -399,6 +404,20 @@ def refresh():
     return jsonify({
         "access_token": new_access_token
     }), 200
+
+
+@auth_bp.route("/logout", methods=["POST"])
+@jwt_required()
+def logout():
+    revoke_current_token(get_jwt())
+
+    # The browser also holds a long-lived refresh token; kill it too so the
+    # axios interceptor cannot silently mint a fresh session after logout.
+    refresh_token = (request.get_json(silent=True) or {}).get("refresh_token")
+    if refresh_token:
+        revoke_refresh_token(refresh_token)
+
+    return jsonify({"message": "Logged out"}), 200
 
 
 @auth_bp.route("/reactivate", methods=["POST"])

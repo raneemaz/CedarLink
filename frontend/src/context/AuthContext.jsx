@@ -1,5 +1,7 @@
 import { createContext, useContext, useState } from "react";
 
+import api from "../services/api";
+
 const AuthContext = createContext();
 
 // Read the persisted session synchronously so `user` is already correct on
@@ -46,7 +48,18 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    // Revoke the access token server-side before we drop it — otherwise it
+    // stays valid until it expires (CL-09). Best-effort: a failed call
+    // must not trap the user in a logged-in UI.
+    try {
+      await api.post("/auth/logout", {
+        refresh_token: localStorage.getItem("refresh_token"),
+      });
+    } catch {
+      // already expired, offline, or revoked — nothing more to do
+    }
+
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     localStorage.removeItem("refresh_token");

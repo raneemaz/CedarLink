@@ -9,6 +9,7 @@ from app.models.user import User
 from app.models.store import Store
 from app.models.product import Product
 from app.models.order import Order
+from app.services.token_service import revoke_all_tokens
 
 
 admin_bp = Blueprint("admin", __name__)
@@ -82,6 +83,8 @@ def suspend_user(user_id):
 
     user.suspended_at = datetime.now(timezone.utc)
     user.suspension_reason = reason
+    # Their live access token stops working on the next request (CL-09).
+    revoke_all_tokens(user)
     db.session.commit()
 
     return jsonify({
