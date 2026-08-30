@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import api from "../../services/api";
+import BackLink from "../../components/common/BackLink";
 
 function EditAddress() {
   const navigate = useNavigate();
@@ -106,13 +107,12 @@ function EditAddress() {
 
         {/* Header */}
         <div className="mb-8">
-          <button
-            type="button"
+          <BackLink
             onClick={() => navigate("/settings/addresses")}
-            className="mb-4 cursor-pointer text-sm text-green-700 hover:underline"
+            className="mb-4"
           >
-            ← Back to Saved Addresses
-          </button>
+            Back to Saved Addresses
+          </BackLink>
 
           <h1 className="text-3xl font-bold text-gray-900">
             Edit Address

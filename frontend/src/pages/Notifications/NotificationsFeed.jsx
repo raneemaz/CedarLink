@@ -184,7 +184,7 @@ function NotificationsFeed() {
                 <button
                   type="button"
                   onClick={() => handleRowClick(notification)}
-                  className={`flex w-full cursor-pointer items-start gap-4 rounded-2xl border p-4 text-left shadow-sm transition hover:bg-slate-50 ${
+                  className={`flex w-full cursor-pointer items-start gap-4 rounded-2xl border p-4 text-start shadow-sm transition hover:bg-slate-50 ${
                     notification.is_read
                       ? "border-slate-200 bg-white"
                       : "border-emerald-200 bg-emerald-50/50"

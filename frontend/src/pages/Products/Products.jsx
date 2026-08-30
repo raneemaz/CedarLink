@@ -320,7 +320,7 @@ function Products() {
                   onChange={(event) =>
                     setFilter("limit", event.target.value)
                   }
-                  className="ml-1 rounded border border-gray-300 px-2 py-1"
+                  className="ms-1 rounded border border-gray-300 px-2 py-1"
                 >
                   {LIMIT_OPTIONS.map((option) => (
                     <option key={option} value={option}>

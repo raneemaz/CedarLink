@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import BackLink from "../../components/common/BackLink";
 import api from "../../services/api";
 
 function AddAddress() {
@@ -56,13 +57,12 @@ function AddAddress() {
       <div className="mx-auto max-w-3xl">
         {/* Header */}
         <div className="mb-8">
-          <button
-            type="button"
+          <BackLink
             onClick={() => navigate("/settings/addresses")}
-            className="mb-4 text-sm text-green-700 hover:underline"
+            className="mb-4"
           >
-            ← Back to Saved Addresses
-          </button>
+            Back to Saved Addresses
+          </BackLink>
 
           <h1 className="text-3xl font-bold text-gray-900">
             Add New Address

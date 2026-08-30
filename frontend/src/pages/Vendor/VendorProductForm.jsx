@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
+import BackLink from "../../components/common/BackLink";
 import { toast } from "react-toastify";
 
 import api from "../../services/api";
@@ -193,12 +194,7 @@ function VendorProductForm() {
   return (
     <div>
       <div className="mb-8">
-        <Link
-          to="/vendor/products"
-          className="text-sm text-emerald-700 hover:underline"
-        >
-          &larr; Back to products
-        </Link>
+        <BackLink to="/vendor/products">Back to products</BackLink>
         <h1 className="mt-2 text-3xl font-bold text-gray-900">
           {isEdit ? "Edit product" : "Add product"}
         </h1>

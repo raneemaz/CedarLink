@@ -46,7 +46,7 @@ function AdminLayout() {
             to="/"
             className="mt-6 flex items-center gap-2 px-3 text-sm text-gray-500 hover:text-emerald-700"
           >
-            <ArrowLeft size={16} />
+            <ArrowLeft size={16} className="rtl:rotate-180" />
             Back to CedarLink
           </Link>
         </aside>

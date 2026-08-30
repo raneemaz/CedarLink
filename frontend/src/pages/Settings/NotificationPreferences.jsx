@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 
 import api from "../../services/api";
 import Toggle from "../../components/common/Toggle/Toggle";
+import BackLink from "../../components/common/BackLink";
 
 const DEFAULT_PREFERENCES = {
   order_updates: true,
@@ -119,12 +120,9 @@ function NotificationPreferences() {
       <div className="mx-auto max-w-4xl">
         {/* Header */}
         <div className="mb-8">
-          <button
-            onClick={() => navigate("/settings")}
-            className="mb-4 cursor-pointer text-sm text-green-700 hover:underline"
-          >
+          <BackLink onClick={() => navigate("/settings")} className="mb-4">
             {t("common.backToSettings")}
-          </button>
+          </BackLink>
 
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">

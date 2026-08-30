@@ -159,10 +159,10 @@ function AdminCategories() {
       <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
         <table className="min-w-full text-sm">
           <thead>
-            <tr className="border-b border-gray-100 text-left text-xs uppercase tracking-wide text-gray-400">
+            <tr className="border-b border-gray-100 text-start text-xs uppercase tracking-wide text-gray-400">
               <th className="px-4 py-3 font-medium">Name</th>
               <th className="px-4 py-3 font-medium">Description</th>
-              <th className="px-4 py-3 font-medium text-right">Actions</th>
+              <th className="px-4 py-3 font-medium text-end">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">

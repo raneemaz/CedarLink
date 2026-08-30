@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import api from "../../services/api";
+import BackLink from "../../components/common/BackLink";
 
 function SavedAddresses() {
   const navigate = useNavigate();
@@ -91,12 +92,9 @@ function SavedAddresses() {
       <div className="mx-auto max-w-4xl">
         {/* Header */}
         <div className="mb-8">
-          <button
-            onClick={() => navigate("/settings")}
-            className="mb-4 text-sm text-green-700 hover:underline"
-          >
-            ← Back to Settings
-          </button>
+          <BackLink onClick={() => navigate("/settings")} className="mb-4">
+            Back to Settings
+          </BackLink>
 
           <h1 className="text-3xl font-bold text-gray-900">
             Saved Addresses

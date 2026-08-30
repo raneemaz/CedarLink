@@ -79,14 +79,14 @@ function NotificationBell() {
         <Bell size={24} />
 
         {badge && (
-          <span className="absolute -right-2 -top-2 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-emerald-700 px-1 text-xs text-white">
+          <span className="absolute -end-2 -top-2 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-emerald-700 px-1 text-xs text-white">
             {badge}
           </span>
         )}
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg">
+        <div className="absolute end-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg">
           <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
             <span className="text-sm font-semibold text-slate-900">
               {t("notificationsFeed.title")}
@@ -116,7 +116,7 @@ function NotificationBell() {
                     type="button"
                     key={notification.id}
                     onClick={() => handleRowClick(notification)}
-                    className={`flex w-full items-start gap-3 border-b border-slate-50 px-4 py-3 text-left transition hover:bg-slate-50 ${
+                    className={`flex w-full items-start gap-3 border-b border-slate-50 px-4 py-3 text-start transition hover:bg-slate-50 ${
                       notification.is_read ? "" : "bg-emerald-50/50"
                     }`}
                   >

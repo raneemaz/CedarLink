@@ -2,7 +2,7 @@
   "common": {
     "save": "Save",
     "cancel": "Cancel",
-    "backToSettings": "← Back to Settings"
+    "backToSettings": "Back to Settings"
   },
   "navbar": {
     "logoAlt": "CedarLink Logo",

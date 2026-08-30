@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import api from "../../services/api";
+import BackLink from "../../components/common/BackLink";
 
 function OrderDetails() {
   const { id } = useParams();
@@ -46,12 +47,9 @@ function OrderDetails() {
         <div className="rounded-xl border border-red-200 bg-red-50 p-5">
           <p className="text-red-700">{error}</p>
 
-          <Link
-            to="/orders"
-            className="mt-4 inline-block font-medium text-emerald-700 hover:underline"
-          >
-            ← Back to Orders
-          </Link>
+          <BackLink to="/orders" className="mt-4">
+            Back to Orders
+          </BackLink>
         </div>
       </div>
     );
@@ -73,12 +71,7 @@ const total = Number(order.total_price || 0);
     <div className="mx-auto max-w-6xl px-6 py-10">
       {/* Header */}
       <div className="mb-8">
-        <Link
-          to="/orders"
-          className="text-sm font-medium text-emerald-700 hover:underline"
-        >
-          ← Back to Orders
-        </Link>
+        <BackLink to="/orders">Back to Orders</BackLink>
 
         <div className="mt-4 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>

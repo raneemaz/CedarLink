@@ -221,7 +221,7 @@ function Cart() {
                       </div>
 
                       {/* Subtotal */}
-                      <div className="w-24 text-right font-semibold text-gray-900">
+                      <div className="w-24 text-end font-semibold text-gray-900">
                         ${Number(item.subtotal).toFixed(2)}
                       </div>
 

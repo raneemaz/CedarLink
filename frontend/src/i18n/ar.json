@@ -2,7 +2,7 @@
   "common": {
     "save": "حفظ",
     "cancel": "إلغاء",
-    "backToSettings": "العودة إلى الإعدادات ←"
+    "backToSettings": "العودة إلى الإعدادات"
   },
 
   "navbar": {

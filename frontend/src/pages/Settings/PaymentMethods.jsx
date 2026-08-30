@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { CreditCard } from "lucide-react";
+import BackLink from "../../components/common/BackLink";
 import api from "../../services/api";
 
 function PaymentMethods() {
@@ -101,13 +102,9 @@ function PaymentMethods() {
       <div className="mx-auto max-w-4xl">
         {/* Header */}
         <div className="mb-8">
-          <button
-            type="button"
-            onClick={() => navigate("/settings")}
-            className="mb-4 text-sm text-green-700 hover:underline"
-          >
-            ← Back to Settings
-          </button>
+          <BackLink onClick={() => navigate("/settings")} className="mb-4">
+            Back to Settings
+          </BackLink>
 
           <h1 className="text-3xl font-bold text-gray-900">
             Payment Methods

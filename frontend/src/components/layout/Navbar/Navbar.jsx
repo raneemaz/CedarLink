@@ -164,7 +164,7 @@ const Navbar = () => {
           >
             <ShoppingCart size={24} />
 
-            <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-700 text-xs text-white">
+            <span className="absolute -end-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-700 text-xs text-white">
               {cartCount}
             </span>
           </Link>
@@ -204,7 +204,7 @@ const Navbar = () => {
                 </button>
 
                 {/* Profile Dropdown */}
-                <div className="absolute right-0 top-full mt-1 hidden w-48 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg group-hover:block">
+                <div className="absolute end-0 top-full mt-1 hidden w-48 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg group-hover:block">
                   {roleLinks.map((link) => (
                     <Link
                       key={link.to}
@@ -306,7 +306,7 @@ const Navbar = () => {
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="mt-1 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-red-600 hover:bg-red-50"
+                  className="mt-1 rounded-lg px-3 py-2.5 text-start text-sm font-medium text-red-600 hover:bg-red-50"
                 >
                   {t("navbar.logout")}
                 </button>
