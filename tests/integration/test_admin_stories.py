@@ -6,7 +6,6 @@ import pytest
 
 from app.extensions import db
 from app.models.order import Order
-from app.models.store import Store
 
 
 def test_admin_lists_all_users(client, auth, admin, make_user):

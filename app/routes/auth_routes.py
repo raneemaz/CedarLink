@@ -1,6 +1,7 @@
 import logging
 
 from flask import Blueprint, jsonify, request
+from flask_limiter.util import get_remote_address
 from flask_jwt_extended import (
     create_access_token,
     get_jwt,
@@ -10,7 +11,7 @@ from flask_jwt_extended import (
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from app.extensions import db
+from app.extensions import db, limiter
 from app.models import User
 from app.services.account_service import reactivate_account
 from app.services.token_service import (
@@ -21,6 +22,7 @@ from app.services.two_factor_service import (
     TwoFactorError,
     create_login_challenge,
     create_registration_challenge,
+    decoy_registration_challenge,
     issue_auth_tokens,
     request_password_reset,
     resend_login_code,
@@ -42,6 +44,25 @@ auth_bp = Blueprint("auth", __name__, url_prefix="/api/auth")
 PUBLIC_REGISTRATION_ROLES = ("customer", "vendor")
 
 
+# Per-IP limits stop a single host hammering an endpoint; per-account limits
+# stop a botnet spreading a credential-stuffing run for one victim across
+# many IPs. Both apply (CL-10).
+LOGIN_IP_LIMIT = "10 per minute"
+LOGIN_ACCOUNT_LIMIT = "5 per minute"
+REGISTER_IP_LIMIT = "5 per minute"
+REGISTER_ACCOUNT_LIMIT = "5 per hour"
+RESEND_IP_LIMIT = "5 per minute"
+PASSWORD_RESET_IP_LIMIT = "5 per minute"
+PASSWORD_RESET_ACCOUNT_LIMIT = "5 per hour"
+
+
+def _account_key():
+    """Rate-limit key = the account named in the request, else the caller IP."""
+    data = request.get_json(silent=True) or {}
+    email = (data.get("email") or "").strip().lower()
+    return email or get_remote_address()
+
+
 def error_response(error):
     payload = {
         "message": str(error)
@@ -54,6 +75,8 @@ def error_response(error):
 
 
 @auth_bp.route("/register", methods=["POST"])
+@limiter.limit(REGISTER_IP_LIMIT)
+@limiter.limit(REGISTER_ACCOUNT_LIMIT, key_func=_account_key)
 def register():
     data = request.get_json() or {}
 
@@ -98,14 +121,17 @@ def register():
             "message": "Invalid verification method"
         }), 400
 
-    existing_user = User.query.filter_by(
-        email=email
-    ).first()
-
-    if existing_user:
+    if User.query.filter_by(email=email).first():
+        # Do not confirm the address is taken — that is a free account
+        # enumeration oracle (CL-10). Answer exactly as we would for a new
+        # email, with a decoy challenge that verifies to nothing. Hash the
+        # password anyway so the response time matches the real path.
+        generate_password_hash(password)
         return jsonify({
-            "message": "Email already exists"
-        }), 400
+            "message": "Registration successful. Verification is required.",
+            "registration_verification_required": True,
+            **decoy_registration_challenge(email, phone, verification_method),
+        }), 201
 
     new_user = User(
         first_name=first_name.strip(),
@@ -141,7 +167,6 @@ def register():
     return jsonify({
         "message": "Registration successful. Verification is required.",
         "registration_verification_required": True,
-        "user_id": new_user.id,
         **challenge
     }), 201
 
@@ -169,6 +194,7 @@ def verify_registration():
 
 
 @auth_bp.route("/register/resend", methods=["POST"])
+@limiter.limit(RESEND_IP_LIMIT)
 def resend_registration_verification_code():
     data = request.get_json() or {}
 
@@ -195,6 +221,8 @@ PASSWORD_RESET_REQUEST_MESSAGE = (
 
 
 @auth_bp.route("/password-reset/request", methods=["POST"])
+@limiter.limit(PASSWORD_RESET_IP_LIMIT)
+@limiter.limit(PASSWORD_RESET_ACCOUNT_LIMIT, key_func=_account_key)
 def password_reset_request():
     data = request.get_json() or {}
 
@@ -233,6 +261,8 @@ def password_reset_confirm():
 
 
 @auth_bp.route("/login", methods=["POST"])
+@limiter.limit(LOGIN_IP_LIMIT)
+@limiter.limit(LOGIN_ACCOUNT_LIMIT, key_func=_account_key)
 def login():
     data = request.get_json() or {}
 
@@ -319,6 +349,7 @@ def verify_login():
 
 
 @auth_bp.route("/login/resend", methods=["POST"])
+@limiter.limit(RESEND_IP_LIMIT)
 def resend_login_verification_code():
     data = request.get_json() or {}
 
@@ -354,6 +385,7 @@ def verify_two_factor_login():
 
 
 @auth_bp.route("/2fa/resend", methods=["POST"])
+@limiter.limit(RESEND_IP_LIMIT)
 def resend_two_factor_login_code():
     data = request.get_json() or {}
 

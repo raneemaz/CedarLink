@@ -582,6 +582,29 @@ def create_registration_challenge(user, method):
     )
 
 
+def decoy_registration_challenge(email, phone, method):
+    """A registration response for an email that is already taken.
+
+    Same shape as a real ``create_registration_challenge`` payload, so
+    ``/register`` cannot be used to tell which emails exist (CL-10). No user
+    row, no code, no message sent — the challenge_token verifies to nothing.
+    """
+    method = str(method or "").strip().lower()
+
+    payload = {
+        "challenge_token": secrets.token_urlsafe(32),
+        "method": method,
+        "expires_at": _challenge_expiration().isoformat(),
+    }
+
+    if method == EMAIL_METHOD:
+        payload["email"] = email
+    elif method in {SMS_METHOD, WHATSAPP_METHOD}:
+        payload["phone"] = phone
+
+    return payload
+
+
 def verify_registration_challenge(challenge_token, code):
     challenge = _get_active_challenge(
         challenge_token,

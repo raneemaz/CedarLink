@@ -110,6 +110,12 @@ class TestConfig(Config):
     )
     MAIL_SUPPRESS_SEND = True
 
+    # The limiter is fully installed under tests so its behaviour is
+    # exercised, but conftest resets its storage after every test so counts
+    # never leak between them. Individual tests stay well under the limits;
+    # the throttling tests deliberately blow past them.
+    RATELIMIT_ENABLED = True
+
 
 class ProdConfig(Config):
     DEBUG = False
