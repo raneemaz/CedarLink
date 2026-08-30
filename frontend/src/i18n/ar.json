@@ -2,9 +2,21 @@
   "common": {
     "save": "حفظ",
     "cancel": "إلغاء",
-    "backToSettings": "العودة إلى الإعدادات"
+    "backToSettings": "العودة إلى الإعدادات",
+    "confirm": "تأكيد",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "working": "جارٍ التنفيذ…",
+    "loading": "جارٍ التحميل…",
+    "next": "التالي",
+    "previous": "السابق",
+    "tryAgain": "إعادة المحاولة",
+    "actions": "إجراءات",
+    "status": "الحالة",
+    "default": "افتراضي",
+    "setAsDefault": "تعيين كافتراضي",
+    "backToCedarLink": "العودة إلى CedarLink"
   },
-
   "navbar": {
     "logoAlt": "شعار",
     "home": "الرئيسية",
@@ -24,7 +36,6 @@
     "menu": "القائمة",
     "notifications": "الإشعارات"
   },
-
   "notificationsFeed": {
     "title": "الإشعارات",
     "subtitle": "تحديثات حول طلباتك وعمليات التوصيل.",
@@ -41,7 +52,6 @@
     "deletedAll": "تم حذف جميع الإشعارات.",
     "deleteError": "فشل حذف الإشعارات. حاول مرة أخرى."
   },
-
   "language": {
     "title": "اللغة",
     "subtitle": "اختر اللغة المفضلة لاستخدام CedarLink.",
@@ -53,7 +63,6 @@
     "saveLanguage": "حفظ اللغة",
     "saved": "تم حفظ تفضيل اللغة بنجاح."
   },
-
   "currency": {
     "title": "العملة",
     "subtitle": "اختر العملة التي تُعرض بها الأسعار أثناء التصفح.",
@@ -69,7 +78,6 @@
     "saveError": "فشل حفظ تفضيل العملة. حاول مرة أخرى.",
     "approxNote": "المبالغ المحوّلة تقريبية. تتم معالجة السلة والدفع دائمًا بالدولار الأمريكي."
   },
-
   "notifications": {
     "title": "الإشعارات",
     "subtitle": "اختر ما يُعلمك به CedarLink وكيفية ذلك.",
@@ -92,7 +100,6 @@
     "loadError": "تعذّر تحميل تفضيلات الإشعارات.",
     "saveError": "فشل حفظ تفضيلات الإشعارات. حاول مرة أخرى."
   },
-
   "shoppingPreferences": {
     "title": "تفضيلات التسوق",
     "subtitle": "حدّد الإعدادات الافتراضية التي يستخدمها CedarLink عند التسوق والدفع.",
@@ -118,7 +125,6 @@
     "hideOosLabel": "إخفاء المنتجات غير المتوفرة",
     "hideOosDesc": "استبعاد المنتجات غير المتوفرة من قائمة المنتجات."
   },
-
   "privacyData": {
     "title": "الخصوصية والبيانات",
     "subtitle": "إلغاء تنشيط حسابك في CedarLink أو حذفه نهائيًا.",
@@ -150,108 +156,123 @@
     "working": "جارٍ التنفيذ...",
     "actionError": "حدث خطأ ما. حاول مرة أخرى."
   },
-
   "settings": {
     "title": "الإعدادات",
     "subtitle": "إدارة حسابك على CedarLink وتفضيلات التسوق والخصوصية.",
-
     "accountProfile": {
       "title": "الحساب والملف الشخصي",
       "description": "إدارة معلوماتك الشخصية وأمان حسابك."
     },
-
     "personalInformation": {
       "title": "المعلومات الشخصية",
       "description": "إدارة الاسم والبريد الإلكتروني ورقم الهاتف."
     },
-
     "savedAddresses": {
       "title": "العناوين المحفوظة",
       "description": "إدارة عناوين التوصيل والفوترة."
     },
-
     "loginSecurity": {
       "title": "تسجيل الدخول والأمان",
       "description": "تغيير كلمة المرور وإدارة أمان الحساب."
     },
-
     "language": {
       "title": "اللغة",
       "description": "اختر لغتك المفضلة في CedarLink."
     },
-
     "currency": {
       "title": "العملة",
       "description": "اختر العملة التي تُعرض بها الأسعار."
     },
-
     "shoppingOrders": {
       "title": "التسوق والطلبات",
       "description": "إدارة تفضيلات التسوق وخيارات الدفع."
     },
-
     "paymentMethods": {
       "title": "طرق الدفع",
       "description": "إدارة طرق الدفع المحفوظة."
     },
-
     "shoppingPreferences": {
       "title": "تفضيلات التسوق",
       "description": "إدارة تفضيلات التسوق والطلبات."
     },
-
     "notifications": {
       "title": "الإشعارات",
       "description": "اختر الطريقة التي يبقيك بها CedarLink على اطلاع."
     },
-
     "notificationPreferences": {
       "title": "تفضيلات الإشعارات",
       "description": "إدارة إشعارات الطلبات والتسوق والعروض."
     },
-
     "privacyData": {
       "title": "الخصوصية والبيانات",
       "description": "إدارة خصوصيتك وبيانات حساب CedarLink.",
       "itemDescription": "إدارة تفضيلات الخصوصية وبيانات حسابك."
     },
-
     "account": {
       "title": "الحساب",
       "description": "إدارة حسابك على CedarLink."
     },
-
     "deleteAccount": "حذف الحساب"
   },
-"home": {
-  "hero": {
-    "badge": "كل ما تحتاجه في مكان واحد",
-    "title": "تسوق بسهولة واكتشف منتجات رائعة",
-    "description": "اكتشف منتجات من متاجر مختلفة واستمتع بتجربة تسوق بسيطة ومريحة مع CedarLink.",
-    "browseProducts": "تصفح المنتجات",
-    "browseStores": "تصفح المتاجر"
+  "home": {
+    "hero": {
+      "badge": "كل ما تحتاجه في مكان واحد",
+      "title": "تسوق بسهولة واكتشف منتجات رائعة",
+      "description": "اكتشف منتجات من متاجر مختلفة واستمتع بتجربة تسوق بسيطة ومريحة مع CedarLink.",
+      "browseProducts": "تصفح المنتجات",
+      "browseStores": "تصفح المتاجر"
+    },
+    "categories": {
+      "title": "استكشف الفئات",
+      "grocery": "البقالة",
+      "fashion": "الأزياء",
+      "electronics": "الإلكترونيات",
+      "home": "المنزل والمعيشة"
+    },
+    "featuredProducts": {
+      "title": "منتجات مميزة",
+      "description": "اكتشف أحدث المنتجات المتوفرة على CedarLink.",
+      "viewAll": "عرض الكل"
+    },
+    "loadingProducts": "جارٍ تحميل المنتجات...",
+    "guestExperience": {
+      "title": "مرحبًا بك في CedarLink",
+      "description": "سجّل الدخول أو أنشئ حسابًا للاستمتاع بتجربة CedarLink الكاملة."
+    }
   },
-
-  "categories": {
-    "title": "استكشف الفئات",
-    "grocery": "البقالة",
-    "fashion": "الأزياء",
-    "electronics": "الإلكترونيات",
-    "home": "المنزل والمعيشة"
+  "adminLayout": {
+    "console": "لوحة المشرف",
+    "overview": "نظرة عامة",
+    "users": "المستخدمون",
+    "stores": "المتاجر",
+    "categories": "الفئات"
   },
-
-  "featuredProducts": {
-    "title": "منتجات مميزة",
-    "description": "اكتشف أحدث المنتجات المتوفرة على CedarLink.",
-    "viewAll": "عرض الكل"
+  "vendorLayout": {
+    "console": "لوحة البائع",
+    "store": "المتجر",
+    "products": "المنتجات",
+    "orders": "الطلبات",
+    "removedTitle": "أزال أحد المشرفين هذا المتجر",
+    "removedBody": "لم تعد منتجاتك مدرجة ولا يمكنك استقبال طلبات جديدة. الطلبات التي سبق تقديمها غير متأثرة. تواصل مع الدعم إذا كنت تعتقد أن هذا خطأ.",
+    "pendingTitle": "متجرك في انتظار موافقة المشرف.",
+    "pendingBody": "قم بإعداده وأضف المنتجات الآن — لن يتمكن العملاء من رؤيته حتى تتم الموافقة عليه.",
+    "rejectedTitle": "لم تتم الموافقة على متجرك.",
+    "rejectedBodyDefault": "تواصل مع الدعم لمعرفة التفاصيل."
   },
-
-  "loadingProducts": "جارٍ تحميل المنتجات...",
-
-  "guestExperience": {
-    "title": "مرحبًا بك في CedarLink",
-    "description": "سجّل الدخول أو أنشئ حسابًا للاستمتاع بتجربة CedarLink الكاملة."
+  "productCard": {
+    "noImage": "لا توجد صورة",
+    "localStore": "متجر محلي",
+    "view": "عرض",
+    "inStock": "المتوفر: {{count}}"
+  },
+  "notFound": {
+    "title": "الصفحة غير موجودة",
+    "body": "الصفحة التي تبحث عنها غير موجودة أو تم نقلها.",
+    "backHome": "العودة إلى الصفحة الرئيسية"
+  },
+  "confirmDialog": {
+    "confirm": "تأكيد",
+    "cancel": "إلغاء",
+    "working": "جارٍ التنفيذ…"
   }
-}
-  
 }

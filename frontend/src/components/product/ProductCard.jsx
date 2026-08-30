@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import Price from "../common/Price";
 
 function ProductCard({ product }) {
+  const { t } = useTranslation();
+
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white transition duration-200 hover:-translate-y-1 hover:shadow-md">
 
@@ -15,8 +18,7 @@ function ProductCard({ product }) {
           />
         ) : (
           <div className="flex flex-col items-center gap-2 text-gray-400">
-            
-            <span className="text-xs">No image</span>
+            <span className="text-xs">{t("productCard.noImage")}</span>
           </div>
         )}
       </div>
@@ -29,7 +31,7 @@ function ProductCard({ product }) {
         </h3>
 
         <p className="mt-1 text-sm text-gray-500">
-          {product.store_name || "Local Store"}
+          {product.store_name || t("productCard.localStore")}
         </p>
 
         {product.description && (
@@ -49,14 +51,14 @@ function ProductCard({ product }) {
             to={`/products/${product.id}`}
             className="rounded-md border border-emerald-700 px-3 py-1.5 text-sm font-medium text-emerald-700 transition hover:bg-emerald-700 hover:text-white"
           >
-            View
+            {t("productCard.view")}
           </Link>
 
         </div>
 
         {typeof product.stock === "number" && (
           <p className="mt-2 text-xs text-gray-400">
-            In stock: {product.stock}
+            {t("productCard.inStock", { count: product.stock })}
           </p>
         )}
 

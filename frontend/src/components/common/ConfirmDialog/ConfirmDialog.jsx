@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 import Button from "../Button/Button";
 
 /**
@@ -8,14 +10,16 @@ function ConfirmDialog({
   open,
   title,
   message,
-  confirmLabel = "Confirm",
-  cancelLabel = "Cancel",
+  confirmLabel,
+  cancelLabel,
   variant = "danger",
   loading = false,
   onConfirm,
   onCancel,
   children,
 }) {
+  const { t } = useTranslation();
+
   if (!open) return null;
 
   return (
@@ -35,7 +39,7 @@ function ConfirmDialog({
             onClick={onCancel}
             disabled={loading}
           >
-            {cancelLabel}
+            {cancelLabel || t("confirmDialog.cancel")}
           </Button>
 
           <Button
@@ -43,7 +47,9 @@ function ConfirmDialog({
             onClick={onConfirm}
             disabled={loading}
           >
-            {loading ? "Working..." : confirmLabel}
+            {loading
+              ? t("confirmDialog.working")
+              : confirmLabel || t("confirmDialog.confirm")}
           </Button>
         </div>
       </div>

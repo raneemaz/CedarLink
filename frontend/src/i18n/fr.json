@@ -2,9 +2,21 @@
   "common": {
     "save": "Enregistrer",
     "cancel": "Annuler",
-    "backToSettings": "Retour aux paramètres"
+    "backToSettings": "Retour aux paramètres",
+    "confirm": "Confirmer",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "working": "En cours…",
+    "loading": "Chargement…",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "tryAgain": "Réessayer",
+    "actions": "Actions",
+    "status": "Statut",
+    "default": "Par défaut",
+    "setAsDefault": "Définir par défaut",
+    "backToCedarLink": "Retour à CedarLink"
   },
-
   "navbar": {
     "logoAlt": "Logo CedarLink",
     "home": "Accueil",
@@ -24,7 +36,6 @@
     "menu": "Menu",
     "notifications": "Notifications"
   },
-
   "notificationsFeed": {
     "title": "Notifications",
     "subtitle": "Mises à jour sur vos commandes et livraisons.",
@@ -41,7 +52,6 @@
     "deletedAll": "Toutes les notifications ont été supprimées.",
     "deleteError": "Échec de la suppression des notifications. Réessayez."
   },
-
   "language": {
     "title": "Langue",
     "subtitle": "Choisissez votre langue préférée pour CedarLink.",
@@ -53,7 +63,6 @@
     "saveLanguage": "Enregistrer la langue",
     "saved": "Préférence de langue enregistrée avec succès."
   },
-
   "currency": {
     "title": "Devise",
     "subtitle": "Choisissez la devise d'affichage des prix pendant la navigation.",
@@ -69,7 +78,6 @@
     "saveError": "Échec de l'enregistrement de votre préférence de devise. Réessayez.",
     "approxNote": "Les montants convertis sont approximatifs. Le panier et les paiements sont toujours traités en USD."
   },
-
   "notifications": {
     "title": "Notifications",
     "subtitle": "Choisissez ce dont CedarLink vous informe et par quel moyen.",
@@ -92,7 +100,6 @@
     "loadError": "Impossible de charger vos préférences de notification.",
     "saveError": "Échec de l'enregistrement de vos préférences de notification. Réessayez."
   },
-
   "shoppingPreferences": {
     "title": "Préférences d'achat",
     "subtitle": "Définissez les valeurs par défaut utilisées par CedarLink lors de vos achats et paiements.",
@@ -118,7 +125,6 @@
     "hideOosLabel": "Masquer les produits en rupture de stock",
     "hideOosDesc": "Exclure les produits sans stock de la liste des produits."
   },
-
   "privacyData": {
     "title": "Confidentialité et données",
     "subtitle": "Désactivez ou supprimez définitivement votre compte CedarLink.",
@@ -150,107 +156,123 @@
     "working": "Traitement...",
     "actionError": "Une erreur s'est produite. Réessayez."
   },
-
   "settings": {
     "title": "Paramètres",
     "subtitle": "Gérez votre compte CedarLink, vos préférences d'achat et votre confidentialité.",
-
     "accountProfile": {
       "title": "Compte et profil",
       "description": "Gérez vos informations personnelles et la sécurité de votre compte."
     },
-
     "personalInformation": {
       "title": "Informations personnelles",
       "description": "Gérez votre nom, votre e-mail et votre numéro de téléphone."
     },
-
     "savedAddresses": {
       "title": "Adresses enregistrées",
       "description": "Gérez vos adresses de livraison et de facturation."
     },
-
     "loginSecurity": {
       "title": "Connexion et sécurité",
       "description": "Modifiez votre mot de passe et gérez la sécurité de votre compte."
     },
-
     "language": {
       "title": "Langue",
       "description": "Choisissez votre langue préférée pour CedarLink."
     },
-
     "currency": {
       "title": "Devise",
       "description": "Choisissez la devise d'affichage des prix."
     },
-
     "shoppingOrders": {
       "title": "Achats et commandes",
       "description": "Gérez vos préférences d'achat et vos options de paiement."
     },
-
     "paymentMethods": {
       "title": "Méthodes de paiement",
       "description": "Gérez vos méthodes de paiement enregistrées."
     },
-
     "shoppingPreferences": {
       "title": "Préférences d'achat",
       "description": "Gérez vos préférences d'achat et de commande."
     },
-
     "notifications": {
       "title": "Notifications",
       "description": "Choisissez comment CedarLink vous tient informé."
     },
-
     "notificationPreferences": {
       "title": "Préférences de notification",
       "description": "Gérez les alertes concernant les commandes, les achats et les promotions."
     },
-
     "privacyData": {
       "title": "Confidentialité et données",
       "description": "Gérez votre confidentialité et les données de votre compte CedarLink.",
       "itemDescription": "Gérez vos préférences de confidentialité et les données de votre compte."
     },
-
     "account": {
       "title": "Compte",
       "description": "Gérez votre compte CedarLink."
     },
-
     "deleteAccount": "Supprimer le compte"
   },
-"home": {
-  "hero": {
-    "badge": "Tout ce dont vous avez besoin en un seul endroit",
-    "title": "Achetez facilement et découvrez d'excellents produits",
-    "description": "Découvrez des produits de différents magasins et profitez d'une expérience d'achat simple et pratique avec CedarLink.",
-    "browseProducts": "Parcourir les produits",
-    "browseStores": "Parcourir les magasins"
+  "home": {
+    "hero": {
+      "badge": "Tout ce dont vous avez besoin en un seul endroit",
+      "title": "Achetez facilement et découvrez d'excellents produits",
+      "description": "Découvrez des produits de différents magasins et profitez d'une expérience d'achat simple et pratique avec CedarLink.",
+      "browseProducts": "Parcourir les produits",
+      "browseStores": "Parcourir les magasins"
+    },
+    "categories": {
+      "title": "Explorer les catégories",
+      "grocery": "Épicerie",
+      "fashion": "Mode",
+      "electronics": "Électronique",
+      "home": "Maison et vie"
+    },
+    "featuredProducts": {
+      "title": "Produits en vedette",
+      "description": "Découvrez les derniers produits disponibles sur CedarLink.",
+      "viewAll": "Voir tout"
+    },
+    "loadingProducts": "Chargement des produits...",
+    "guestExperience": {
+      "title": "Bienvenue sur CedarLink",
+      "description": "Connectez-vous ou créez un compte pour profiter pleinement de l'expérience CedarLink."
+    }
   },
-
-  "categories": {
-    "title": "Explorer les catégories",
-    "grocery": "Épicerie",
-    "fashion": "Mode",
-    "electronics": "Électronique",
-    "home": "Maison et vie"
+  "adminLayout": {
+    "console": "Console d’administration",
+    "overview": "Vue d’ensemble",
+    "users": "Utilisateurs",
+    "stores": "Magasins",
+    "categories": "Catégories"
   },
-
-  "featuredProducts": {
-    "title": "Produits en vedette",
-    "description": "Découvrez les derniers produits disponibles sur CedarLink.",
-    "viewAll": "Voir tout"
+  "vendorLayout": {
+    "console": "Console vendeur",
+    "store": "Magasin",
+    "products": "Produits",
+    "orders": "Commandes",
+    "removedTitle": "Ce magasin a été supprimé par un administrateur",
+    "removedBody": "Vos produits ne sont plus affichés et vous ne pouvez plus recevoir de commandes. Les commandes déjà passées ne sont pas affectées. Contactez le support si vous pensez qu’il s’agit d’une erreur.",
+    "pendingTitle": "Votre magasin est en attente d’approbation par un administrateur.",
+    "pendingBody": "Configurez-le et ajoutez des produits dès maintenant — les clients ne le verront pas tant qu’il n’est pas approuvé.",
+    "rejectedTitle": "Votre magasin n’a pas été approuvé.",
+    "rejectedBodyDefault": "Contactez le support pour plus de détails."
   },
-
-  "loadingProducts": "Chargement des produits...",
-
-  "guestExperience": {
-    "title": "Bienvenue sur CedarLink",
-    "description": "Connectez-vous ou créez un compte pour profiter pleinement de l'expérience CedarLink."
+  "productCard": {
+    "noImage": "Aucune image",
+    "localStore": "Magasin local",
+    "view": "Voir",
+    "inStock": "En stock : {{count}}"
+  },
+  "notFound": {
+    "title": "Page introuvable",
+    "body": "La page que vous recherchez n’existe pas ou a été déplacée.",
+    "backHome": "Retour à l’accueil"
+  },
+  "confirmDialog": {
+    "confirm": "Confirmer",
+    "cancel": "Annuler",
+    "working": "En cours…"
   }
-}
 }
