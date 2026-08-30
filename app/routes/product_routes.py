@@ -131,10 +131,7 @@ def get_products():
     # the storefront but still visible to its own vendor.
     query = query.join(Store).filter(Store.deleted_at.is_(None))
     if not _owns_store(store_id):
-        query = query.filter(
-            Store.is_active.is_(True),
-            Store.approval_status == "approved",
-        )
+        query = query.filter(Store.is_visible)
 
     if min_price is not None:
         query = query.filter(Product.price >= min_price)
@@ -189,7 +186,7 @@ def get_products():
 @product_bp.route("/products/<int:id>", methods=["GET"])
 @jwt_required(optional=True)
 def get_product(id):
-    product = Product.query.get(id)
+    product = db.session.get(Product, id)
 
     if not product or product.deleted_at is not None:
         return jsonify({
@@ -199,10 +196,8 @@ def get_product(id):
     # A removed store's products are hidden from everyone (CL-24). Products
     # of a deactivated or unapproved store stay reachable by its own vendor.
     store = product.store
-    owner = _owns_store(product.store_id)
     if store.deleted_at is not None or (
-        not owner
-        and (not store.is_active or store.approval_status != "approved")
+        not _owns_store(product.store_id) and not store.is_visible
     ):
         return jsonify({
             "message": "Product not found"
@@ -324,7 +319,7 @@ def create_product():
         }), 403
 
     # Validate category exists
-    category = Category.query.get(category_id)
+    category = db.session.get(Category, category_id)
 
     if not category:
         return jsonify({
@@ -355,7 +350,10 @@ def create_product():
 def update_product(id):
     claims = get_jwt()
     user_id = int(get_jwt_identity())
-    product = Product.query.get_or_404(id)
+    product = db.session.get(Product, id)
+
+    if not product:
+        return jsonify({"message": "Product not found"}), 404
 
     if claims.get("role") != "admin" and product.store.owner_id != user_id:
         return jsonify({"message": "Not allowed to edit this product"}), 403
@@ -398,9 +396,7 @@ def update_product(id):
         except (TypeError, ValueError):
             return jsonify({"message": "Category ID must be an integer"}), 400
 
-        from app.models.category import Category
-
-        category = Category.query.get(category_id)
+        category = db.session.get(Category, category_id)
         if not category:
             return jsonify({"message": "Invalid category"}), 404
 
@@ -418,7 +414,10 @@ def update_product(id):
 def delete_product(id):
     claims = get_jwt()
     user_id = int(get_jwt_identity())
-    product = Product.query.get_or_404(id)
+    product = db.session.get(Product, id)
+
+    if not product:
+        return jsonify({"message": "Product not found"}), 404
 
     if claims.get("role") != "admin" and product.store.owner_id != user_id:
         return jsonify({

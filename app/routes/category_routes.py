@@ -65,7 +65,11 @@ def update_category(id):
     claims = get_jwt()
     if claims.get("role") != "admin":
         return jsonify({"message": "Admin only"}), 403
-    category = Category.query.get_or_404(id)
+    category = db.session.get(Category, id)
+
+    if not category:
+        return jsonify({"message": "Category not found"}), 404
+
     data = request.get_json()
 
     name = data.get("name", category.name).strip()
@@ -98,7 +102,7 @@ def delete_category(id):
     claims = get_jwt()
     if claims.get("role") != "admin":
         return jsonify({"message": "Admin only"}), 403
-    category = Category.query.get(id)
+    category = db.session.get(Category, id)
 
     if not category:
         return jsonify({
