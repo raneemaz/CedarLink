@@ -1,0 +1,17 @@
+[flake8]
+max-line-length = 100
+# E203/W503: disagree with black-style slicing and line breaks before operators.
+extend-ignore = E203, W503
+# CI lints `app tests run.py` explicitly (see .github/workflows/ci.yml).
+# `files related/` holds one-off doc-render scripts, not application code, and
+# its space in the path defeats flake8's exclude matching — lint app code only.
+exclude =
+    .git,
+    __pycache__,
+    venv,
+    .venv,
+    migrations,
+    node_modules,
+    build,
+    dist,
+    frontend

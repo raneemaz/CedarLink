@@ -1,5 +1,7 @@
 # CedarLink
 
+[![CI](https://github.com/raneemaz/CedarLink/actions/workflows/ci.yml/badge.svg)](https://github.com/raneemaz/CedarLink/actions/workflows/ci.yml)
+
 CedarLink is a multi-vendor marketplace for Lebanese local stores — a Flask +
 SQLAlchemy JSON API and a React single-page app, with trilingual UI (English,
 Arabic, French) and USD / LBP price display. It runs cash-on-delivery, the
