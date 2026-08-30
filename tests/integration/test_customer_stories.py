@@ -9,6 +9,8 @@
 - cancel a pending order
 """
 
+from decimal import Decimal
+
 from app.extensions import db
 from app.models.order import Order
 from app.models.product import Product
@@ -199,6 +201,36 @@ def test_checkout_decrements_stock(
 
     db.session.expire_all()
     assert db.session.get(Product, product.id).stock == 3
+
+
+def test_checkout_total_is_exact_not_float_drifted(
+    client, auth, add_to_cart, make_store, make_product, customer
+):
+    # 0.10 * 3 = 0.30 exactly; float arithmetic gives 0.30000000000000004.
+    store = make_store(
+        location="Beirut",
+        inside_city_delivery_fee=0,
+        outside_city_delivery_fee=0,
+    )
+    product = make_product(store=store, price=Decimal("0.10"), stock=10)
+    add_to_cart(customer, product, 3)
+
+    quote = client.post(
+        "/api/orders/preview",
+        json={"delivery_city": "Beirut"},
+        headers=auth(customer),
+    ).get_json()
+    assert quote["total"] == 0.3
+    assert quote["subtotal"] == 0.3
+
+    resp = _checkout(client, auth(customer))
+    assert resp.status_code == 201
+    order = resp.get_json()["orders"][0]
+    assert order["subtotal"] == 0.3
+    assert order["total_price"] == 0.3
+
+    db.session.expire_all()
+    assert db.session.get(Order, order["id"]).total_price == Decimal("0.30")
 
 
 def test_checkout_with_empty_cart_is_rejected(client, auth, customer):

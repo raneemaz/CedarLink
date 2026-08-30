@@ -166,7 +166,7 @@ def get_products():
         result.append({
             "id": product.id,
             "name": product.name,
-            "price": product.price,
+            "price": float(product.price),
             "stock": product.stock,
             "description": product.description,
             "store_id": product.store_id,
@@ -212,7 +212,7 @@ def get_product(id):
         "id": product.id,
         "name": product.name,
         "description": product.description,
-        "price": product.price,
+        "price": float(product.price),
         "stock": product.stock,
         "store_id": product.store_id,
         "store_name": product.store.name,

@@ -9,6 +9,8 @@ result. Business-rule failures are raised as ``OrderError`` carrying the
 exact HTTP status and JSON body the route should return.
 """
 
+from decimal import Decimal
+
 from sqlalchemy import select, update
 
 from app.extensions import db
@@ -144,8 +146,8 @@ def price_cart(user_id, delivery_city):
         )
 
     stores = []
-    subtotal_total = 0
-    delivery_total = 0
+    subtotal_total = Decimal("0")
+    delivery_total = Decimal("0")
 
     for store_id, grouped_items in items_by_store.items():
         store = db.session.get(Store, store_id)
@@ -161,27 +163,32 @@ def price_cart(user_id, delivery_city):
                 store_name=store.name,
             )
 
+        # Decimal end to end — Product.price is Numeric now (CL-07).
         subtotal = sum(
-            entry["product"].price * entry["cart_item"].quantity
-            for entry in grouped_items
+            (
+                entry["product"].price * entry["cart_item"].quantity
+                for entry in grouped_items
+            ),
+            Decimal("0"),
         )
 
         if city.lower() == store.location.strip().lower():
-            delivery_fee = float(store.inside_city_delivery_fee)
+            delivery_fee = store.inside_city_delivery_fee
         else:
-            delivery_fee = float(store.outside_city_delivery_fee)
+            delivery_fee = store.outside_city_delivery_fee
+        delivery_fee = Decimal(delivery_fee or 0)
 
         stores.append({
             "store": store,
             "store_id": store.id,
             "store_name": store.name,
             "items": grouped_items,
-            "subtotal": float(subtotal),
+            "subtotal": subtotal,
             "delivery_fee": delivery_fee,
-            "total": float(subtotal) + delivery_fee,
+            "total": subtotal + delivery_fee,
         })
 
-        subtotal_total += float(subtotal)
+        subtotal_total += subtotal
         delivery_total += delivery_fee
 
     return {
@@ -195,19 +202,22 @@ def price_cart(user_id, delivery_city):
 
 
 def serialize_quote(pricing):
-    """The ``/orders/preview`` body: pricing without the ORM objects."""
+    """The ``/orders/preview`` body: pricing without the ORM objects.
+
+    Decimal -> float happens here, at the JSON boundary, and nowhere earlier.
+    """
     return {
         "delivery_city": pricing["delivery_city"],
-        "subtotal": pricing["subtotal"],
-        "delivery_fee": pricing["delivery_fee"],
-        "total": pricing["total"],
+        "subtotal": float(pricing["subtotal"]),
+        "delivery_fee": float(pricing["delivery_fee"]),
+        "total": float(pricing["total"]),
         "stores": [
             {
                 "store_id": group["store_id"],
                 "store_name": group["store_name"],
-                "subtotal": group["subtotal"],
-                "delivery_fee": group["delivery_fee"],
-                "total": group["total"],
+                "subtotal": float(group["subtotal"]),
+                "delivery_fee": float(group["delivery_fee"]),
+                "total": float(group["total"]),
             }
             for group in pricing["stores"]
         ],
@@ -299,8 +309,11 @@ def checkout(user_id, delivery_address, delivery_city):
 
     return {
         "message": "Checkout successful",
-        "checkout_price": sum(
-            float(entry["order"].total_price) for entry in created
+        "checkout_price": float(
+            sum(
+                (entry["order"].total_price for entry in created),
+                Decimal("0"),
+            )
         ),
         "orders": [
             {

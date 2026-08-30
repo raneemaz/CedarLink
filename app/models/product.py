@@ -17,7 +17,8 @@ class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
     description = db.Column(db.Text, nullable=True)
-    price = db.Column(db.Float, nullable=False)
+    # Money is Numeric(10, 2) everywhere — never Float (CL-07).
+    price = db.Column(db.Numeric(10, 2), nullable=False)
     stock = db.Column(db.Integer, default=0)
 
     store_id = db.Column(db.Integer, db.ForeignKey("stores.id"),
