@@ -7,6 +7,8 @@ import {
   useState,
 } from "react";
 
+import { useTranslation } from "react-i18next";
+
 import api from "../services/api";
 import { useAuth } from "./AuthContext";
 import { convert, formatCurrency } from "../utils/helpers";
@@ -76,6 +78,8 @@ function readRatesCache() {
 
 export function CurrencyProvider({ children }) {
   const { user } = useAuth();
+  const { i18n } = useTranslation();
+  const language = i18n.language;
   const userId = user?.id ?? null;
 
   const [currency, setCurrencyState] = useState(
@@ -174,11 +178,13 @@ export function CurrencyProvider({ children }) {
       convert(Number(amount), from, currency, rates);
 
     const formatBase = (amount, from = BASE_CURRENCY) =>
-      formatCurrency(Number(amount), from);
+      formatCurrency(Number(amount), from, language);
 
     const formatConverted = (amount, from = BASE_CURRENCY) => {
       const converted = convertPrice(amount, from);
-      return converted == null ? null : formatCurrency(converted, currency);
+      return converted == null
+        ? null
+        : formatCurrency(converted, currency, language);
     };
 
     return {
@@ -192,7 +198,7 @@ export function CurrencyProvider({ children }) {
       formatBase,
       formatConverted,
     };
-  }, [currency, rates, ratesStale, setCurrency]);
+  }, [currency, rates, ratesStale, setCurrency, language]);
 
   return (
     <CurrencyContext.Provider value={value}>

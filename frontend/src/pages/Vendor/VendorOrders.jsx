@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 import api from "../../services/api";
 import Button from "../../components/common/Button/Button";
 import ConfirmDialog from "../../components/common/ConfirmDialog/ConfirmDialog";
+import { formatDateTime } from "../../utils/helpers";
 
 const FILTERS = [
   { key: "all", label: "All" },
@@ -72,6 +74,7 @@ function StatusBadge({ map, status }) {
 }
 
 function OrderCard({ order, onChanged }) {
+  const { i18n } = useTranslation();
   const assignment = order.delivery_assignment;
 
   const [driverName, setDriverName] = useState("");
@@ -157,7 +160,7 @@ function OrderCard({ order, onChanged }) {
           <StatusBadge map={ORDER_BADGE} status={order.status} />
         </div>
         <span className="text-sm text-gray-500">
-          {new Date(order.created_at).toLocaleString()}
+          {formatDateTime(order.created_at, i18n.language)}
         </span>
       </div>
 

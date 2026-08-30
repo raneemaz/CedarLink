@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import api from "../../services/api";
+import { formatDate } from "../../utils/helpers";
 
 function Orders() {
+  const { i18n } = useTranslation();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -93,7 +96,7 @@ function Orders() {
                 </h2>
 
                 <p className="mt-1 text-sm text-slate-500">
-                  {new Date(order.created_at).toLocaleDateString()}
+                  {formatDate(order.created_at, i18n.language)}
                 </p>
               </div>
 

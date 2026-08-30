@@ -3,6 +3,59 @@
 export type RateMap = Record<string, number>;
 
 /**
+ * Map a UI language to the locale used for Intl formatting.
+ *
+ * Arabic keeps its own month/day names and RTL number grouping but uses
+ * Western digits (0-9), forced with the `-u-nu-latn` extension. Prices,
+ * quantities and order numbers in Lebanese commerce are written in Western
+ * digits, and mixing digit systems across the app would be worse than
+ * either alone. See docs/decisions/0010-rtl-and-localized-formatting.md.
+ */
+export function formattingLocale(language?: string): string {
+  switch (language) {
+    case "ar":
+      return "ar-u-nu-latn";
+    case "fr":
+      return "fr";
+    default:
+      return "en";
+  }
+}
+
+/**
+ * Format an API timestamp as a localized date (no time). `language` is the
+ * UI language code (`en` | `ar` | `fr`), not a full locale.
+ */
+export function formatDate(
+  iso: string,
+  language?: string,
+  options: Intl.DateTimeFormatOptions = { dateStyle: "medium" },
+): string {
+  const date = parseApiTimestamp(iso);
+  if (!Number.isFinite(date.getTime())) {
+    return "";
+  }
+  try {
+    return new Intl.DateTimeFormat(
+      formattingLocale(language),
+      options,
+    ).format(date);
+  } catch {
+    return date.toLocaleDateString();
+  }
+}
+
+/**
+ * Format an API timestamp as a localized date and time.
+ */
+export function formatDateTime(iso: string, language?: string): string {
+  return formatDate(iso, language, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+}
+
+/**
  * Convert an amount between two currencies using rates expressed relative to a
  * common base (as returned by GET /api/exchange-rates).
  *
@@ -28,13 +81,17 @@ export function convert(
  * Format a numeric amount as currency. Falls back to a plain `CODE 1,234.56`
  * string if the runtime doesn't recognise the currency code.
  */
-export function formatCurrency(amount: number, currency: string): string {
+export function formatCurrency(
+  amount: number,
+  currency: string,
+  language?: string,
+): string {
   if (!Number.isFinite(amount)) {
     return "";
   }
 
   try {
-    return new Intl.NumberFormat(undefined, {
+    return new Intl.NumberFormat(formattingLocale(language), {
       style: "currency",
       currency,
       // LBP has no minor unit; USD keeps cents.
@@ -79,9 +136,10 @@ function parseApiTimestamp(iso: string): Date {
 /**
  * "3 hours ago" / "in 2 days" style relative time for an API timestamp.
  * Locale-aware via Intl.RelativeTimeFormat (no dependency); falls back to a
- * locale date string for anything older than ~1 week.
+ * localized date for anything older than ~1 week. `language` is the UI
+ * language code (`en` | `ar` | `fr`).
  */
-export function formatRelativeTime(iso: string, locale?: string): string {
+export function formatRelativeTime(iso: string, language?: string): string {
   const date = parseApiTimestamp(iso);
   const then = date.getTime();
 
@@ -89,6 +147,7 @@ export function formatRelativeTime(iso: string, locale?: string): string {
     return "";
   }
 
+  const locale = formattingLocale(language);
   const diffSeconds = (then - Date.now()) / 1000;
   const absSeconds = Math.abs(diffSeconds);
 
@@ -106,7 +165,7 @@ export function formatRelativeTime(iso: string, locale?: string): string {
 
   // Older than ~1 week -> show an absolute date.
   if (absSeconds > RELATIVE_UNITS[2][1] || !rtf) {
-    return date.toLocaleDateString(locale);
+    return formatDate(iso, language);
   }
 
   for (const [unit, secondsInUnit] of RELATIVE_UNITS) {

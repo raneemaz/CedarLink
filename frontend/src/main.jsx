@@ -6,7 +6,7 @@ import App from "./App";
 import { AuthProvider } from "./context/AuthContext";
 import { CurrencyProvider } from "./context/CurrencyContext";
 import { NotificationsProvider } from "./context/NotificationsContext";
-import { ToastContainer } from "react-toastify";
+import AppToaster from "./components/common/AppToaster";
 import "react-toastify/dist/ReactToastify.css";
 import "./i18n/i18n";
 
@@ -17,7 +17,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <NotificationsProvider>
           <BrowserRouter>
             <App />
-            <ToastContainer position="top-right" autoClose={3000} />
+            <AppToaster />
           </BrowserRouter>
         </NotificationsProvider>
       </CurrencyProvider>
