@@ -17,24 +17,35 @@ const NAV_ITEMS = [
 ];
 
 function VendorLayout() {
-  const [storeRemoved, setStoreRemoved] = useState(false);
+  const [store, setStore] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
-    api
-      .get("/vendor/store")
-      .then((response) => {
-        if (!cancelled && response.data.store?.deleted_at) {
-          setStoreRemoved(true);
-        }
-      })
-      .catch(() => {
-        /* no store / not reachable — the pages handle their own states */
-      });
+
+    const refresh = () => {
+      api
+        .get("/vendor/store")
+        .then((response) => {
+          if (!cancelled) setStore(response.data.store);
+        })
+        .catch(() => {
+          /* no store yet — the pages handle their own states */
+        });
+    };
+
+    refresh();
+    window.addEventListener("vendorStoreChanged", refresh);
     return () => {
       cancelled = true;
+      window.removeEventListener("vendorStoreChanged", refresh);
     };
   }, []);
+
+  const storeRemoved = Boolean(store?.deleted_at);
+  const pendingApproval =
+    store && !store.deleted_at && store.approval_status === "pending";
+  const rejected =
+    store && !store.deleted_at && store.approval_status === "rejected";
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -89,7 +100,42 @@ function VendorLayout() {
               </p>
             </div>
           ) : (
-            <Outlet />
+            <>
+              {pendingApproval && (
+                <div className="mb-6 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4">
+                  <AlertTriangle
+                    size={20}
+                    className="mt-0.5 shrink-0 text-amber-500"
+                  />
+                  <p className="text-sm text-amber-800">
+                    <span className="font-semibold">
+                      Your store is awaiting administrator approval.
+                    </span>{" "}
+                    Set it up and add products now — customers can&apos;t
+                    see it until it&apos;s approved.
+                  </p>
+                </div>
+              )}
+
+              {rejected && (
+                <div className="mb-6 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4">
+                  <AlertTriangle
+                    size={20}
+                    className="mt-0.5 shrink-0 text-red-500"
+                  />
+                  <p className="text-sm text-red-800">
+                    <span className="font-semibold">
+                      Your store was not approved.
+                    </span>
+                    {store?.approval_note
+                      ? ` ${store.approval_note}`
+                      : " Contact support for details."}
+                  </p>
+                </div>
+              )}
+
+              <Outlet />
+            </>
           )}
         </main>
       </div>
