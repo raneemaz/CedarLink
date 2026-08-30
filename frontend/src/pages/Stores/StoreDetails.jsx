@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import BackLink from "../../components/common/BackLink";
 
 import api from "../../services/api";
@@ -7,6 +8,7 @@ import ProductCard from "../../components/product/ProductCard";
 
 function StoreDetails() {
   const { id } = useParams();
+  const { t } = useTranslation();
 
   const [store, setStore] = useState(null);
   const [products, setProducts] = useState([]);
@@ -34,8 +36,8 @@ function StoreDetails() {
         console.error("Failed to load store:", err);
         setError(
           err.response?.status === 404
-            ? "This store is not available."
-            : "Unable to load this store.",
+            ? t("storeDetails.notAvailable")
+            : t("storeDetails.loadError"),
         );
       } finally {
         if (!cancelled) setLoading(false);
@@ -46,12 +48,12 @@ function StoreDetails() {
     return () => {
       cancelled = true;
     };
-  }, [id]);
+  }, [id, t]);
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 px-6 py-12 text-center text-gray-500">
-        Loading store...
+        {t("storeDetails.loading")}
       </div>
     );
   }
@@ -60,7 +62,7 @@ function StoreDetails() {
     return (
       <div className="min-h-screen bg-gray-50 px-6 py-12">
         <div className="mx-auto max-w-5xl">
-          <BackLink to="/stores">Back to Stores</BackLink>
+          <BackLink to="/stores">{t("backLink.stores")}</BackLink>
           <div className="mt-8 rounded-xl bg-white p-12 text-center shadow-sm">
             <h1 className="text-xl font-semibold text-gray-900">{error}</h1>
           </div>
@@ -72,12 +74,12 @@ function StoreDetails() {
   return (
     <div className="min-h-screen bg-gray-50 px-6 py-10 lg:px-10">
       <div className="mx-auto max-w-6xl">
-        <BackLink to="/stores">Back to Stores</BackLink>
+        <BackLink to="/stores">{t("backLink.stores")}</BackLink>
 
         <div className="mt-6 rounded-xl border border-gray-200 bg-white p-6">
           <h1 className="text-3xl font-bold text-gray-900">{store.name}</h1>
           <p className="mt-1 text-gray-500">
-            {store.location || "Location not set"}
+            {store.location || t("storeDetails.locationNotSet")}
           </p>
 
           {store.description && (
@@ -88,7 +90,7 @@ function StoreDetails() {
 
           <div className="mt-5 grid gap-4 border-t border-gray-100 pt-4 text-sm sm:grid-cols-3">
             <div>
-              <p className="text-gray-400">Delivery</p>
+              <p className="text-gray-400">{t("storeDetails.delivery")}</p>
               <p
                 className={
                   store.delivery_available
@@ -96,17 +98,17 @@ function StoreDetails() {
                     : "font-medium text-gray-500"
                 }
               >
-                {store.delivery_available ? "Available" : "Unavailable"}
+                {store.delivery_available ? t("storeDetails.available") : t("storeDetails.unavailable")}
               </p>
             </div>
             <div>
-              <p className="text-gray-400">Inside-city fee</p>
+              <p className="text-gray-400">{t("storeDetails.insideCityFee")}</p>
               <p className="font-medium text-gray-800">
                 ${Number(store.inside_city_delivery_fee).toFixed(2)}
               </p>
             </div>
             <div>
-              <p className="text-gray-400">Outside-city fee</p>
+              <p className="text-gray-400">{t("storeDetails.outsideCityFee")}</p>
               <p className="font-medium text-gray-800">
                 ${Number(store.outside_city_delivery_fee).toFixed(2)}
               </p>
@@ -115,18 +117,18 @@ function StoreDetails() {
 
           {store.contact_info && (
             <p className="mt-4 text-sm text-gray-500">
-              Contact: {store.contact_info}
+              {t("storeDetails.contact")}: {store.contact_info}
             </p>
           )}
         </div>
 
         <h2 className="mt-10 text-xl font-bold text-gray-900">
-          Products ({products.length})
+          {t("storeDetails.productsHeading", { count: products.length })}
         </h2>
 
         {products.length === 0 ? (
           <p className="mt-4 text-gray-500">
-            This store has no products yet.
+            {t("storeDetails.noProducts")}
           </p>
         ) : (
           <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
