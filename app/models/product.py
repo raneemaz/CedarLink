@@ -2,8 +2,8 @@ from app.extensions import db
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from app.models.store import Store
-    from app.models.category import Category
+    from app.models.store import Store  # noqa: F401
+    from app.models.category import Category  # noqa: F401
 
 
 class Product(db.Model):

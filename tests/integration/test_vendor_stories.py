@@ -9,7 +9,6 @@
 
 from app.extensions import db
 from app.models.store import Store
-from app.models.user import User
 
 FIXED_CODE = "424242"
 

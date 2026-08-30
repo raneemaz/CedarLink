@@ -3,7 +3,7 @@ from flask import Flask, jsonify
 from werkzeug.exceptions import RequestEntityTooLarge
 from werkzeug.middleware.proxy_fix import ProxyFix
 from app.config import get_config
-from .extensions import db, migrate, jwt
+from .extensions import db, migrate, jwt, limiter
 from flask_cors import CORS
 from app.routes.user_routes import user_bp
 from app.routes.address_routes import address_bp
@@ -48,6 +48,7 @@ def create_app(config_object=None):
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
+    limiter.init_app(app)
 
     # import + register blueprints HERE (important fix)
 

@@ -22,19 +22,20 @@ import pytest
 from flask_jwt_extended import create_access_token
 from werkzeug.security import generate_password_hash as _hash
 
-# Cheap, deterministic hashing for factory users — keeps the suite fast.
-# check_password_hash() verifies any scheme, so login still works end to end.
-fast_hash = functools.partial(_hash, method="pbkdf2:sha256:1")
-
 from app import create_app
 from app.config import TestConfig
 from app.extensions import db as _db
+from app.extensions import limiter as _limiter
 from app.models.category import Category
 from app.models.order import Order
 from app.models.order_item import OrderItem
 from app.models.product import Product
 from app.models.store import Store
 from app.models.user import User
+
+# Cheap, deterministic hashing for factory users — keeps the suite fast.
+# check_password_hash() verifies any scheme, so login still works end to end.
+fast_hash = functools.partial(_hash, method="pbkdf2:sha256:1")
 
 
 @pytest.fixture(scope="session")
@@ -72,6 +73,16 @@ def _reset_db(_schema):
     for table in reversed(_db.metadata.sorted_tables):
         _db.session.execute(table.delete())
     _db.session.commit()
+
+
+@pytest.fixture(autouse=True)
+def _reset_rate_limiter():
+    """Clear the shared in-memory limiter counters between tests."""
+    yield
+    try:
+        _limiter.reset()
+    except Exception:
+        pass
 
 
 @pytest.fixture()
