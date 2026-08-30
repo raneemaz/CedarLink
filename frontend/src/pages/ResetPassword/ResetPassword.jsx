@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 import Card from "../../components/common/Card/Card";
@@ -9,6 +10,7 @@ import api from "../../services/api";
 
 function ResetPassword() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const resetData = JSON.parse(
     sessionStorage.getItem("password_reset") || "null"
@@ -21,23 +23,23 @@ function ResetPassword() {
 
   const handleReset = async () => {
     if (!resetData?.challenge_token) {
-      toast.error("Password reset session not found.");
+      toast.error(t("resetPassword.errSessionNotFound"));
       navigate("/forgot-password");
       return;
     }
 
     if (!code.trim()) {
-      toast.error("Please enter the reset code.");
+      toast.error(t("resetPassword.errEnterCode"));
       return;
     }
 
     if (newPassword.length < 8) {
-      toast.error("Password must be at least 8 characters.");
+      toast.error(t("resetPassword.errMin8"));
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      toast.error("Passwords do not match.");
+      toast.error(t("resetPassword.errPasswordsMatch"));
       return;
     }
 
@@ -52,7 +54,7 @@ function ResetPassword() {
 
       sessionStorage.removeItem("password_reset");
 
-      toast.success("Your password has been reset. You can sign in now.");
+      toast.success(t("resetPassword.toastSuccess"));
 
       navigate("/login");
     } catch (error) {
@@ -60,7 +62,7 @@ function ResetPassword() {
 
       const message =
         error.response?.data?.message ||
-        "Password reset failed.";
+        t("resetPassword.errSessionNotFound");
 
       toast.error(message);
     } finally {
@@ -72,41 +74,42 @@ function ResetPassword() {
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-10">
       <Card className="w-full max-w-lg">
         <h1 className="text-3xl font-bold text-center text-green-700">
-          Reset Your Password
+          {t("resetPassword.title")}
         </h1>
 
         <p className="text-center text-gray-500 mt-3 mb-8">
-          Enter the code sent to{" "}
-          {resetData?.email || "your email"} and choose a new password.
+          {t("resetPassword.subtitle", {
+            email: resetData?.email || t("auth.genericEmail"),
+          })}
         </p>
 
         <Input
-          label="Reset Code"
+          label={t("resetPassword.resetCode")}
           name="reset_code"
           type="text"
           inputMode="numeric"
           autoComplete="one-time-code"
-          placeholder="Enter reset code"
+          placeholder={t("resetPassword.enterResetCode")}
           value={code}
           onChange={(e) => setCode(e.target.value)}
         />
 
         <Input
-          label="New Password"
+          label={t("resetPassword.newPassword")}
           name="new_password"
           type="password"
           autoComplete="new-password"
-          placeholder="At least 8 characters"
+          placeholder={t("resetPassword.atLeast8")}
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
         />
 
         <Input
-          label="Confirm New Password"
+          label={t("resetPassword.confirmNewPassword")}
           name="confirm_password"
           type="password"
           autoComplete="new-password"
-          placeholder="Re-enter your new password"
+          placeholder={t("resetPassword.reenterPassword")}
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
         />
@@ -116,16 +119,16 @@ function ResetPassword() {
           onClick={handleReset}
           disabled={loading}
         >
-          {loading ? "Resetting..." : "Reset password"}
+          {loading ? t("resetPassword.resetting") : t("resetPassword.submit")}
         </Button>
 
         <p className="text-center text-gray-600 mt-6">
-          Didn't get a code?{" "}
+          {t("resetPassword.didntGetCode")}{" "}
           <Link
             to="/forgot-password"
             className="text-green-700 cursor-pointer font-semibold hover:underline"
           >
-            Request a new one
+            {t("resetPassword.requestNew")}
           </Link>
         </p>
       </Card>

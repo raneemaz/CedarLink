@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 import Card from "../../components/common/Card/Card";
@@ -9,6 +10,7 @@ import api from "../../services/api";
 
 function Register() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [role, setRole] = useState("customer");
   const [firstName, setFirstName] = useState("");
@@ -32,12 +34,12 @@ function Register() {
       !confirmPassword ||
       !verificationMethod
     ) {
-      toast.error("Please fill in all fields.");
+      toast.error(t("register.errFillAll"));
       return;
     }
 
     if (password !== confirmPassword) {
-      toast.error("Passwords do not match.");
+      toast.error(t("register.errPasswordsMatch"));
       return;
     }
 
@@ -56,9 +58,7 @@ function Register() {
       });
 
       if (!response.data?.challenge_token) {
-        toast.error(
-          "Unable to start account verification."
-        );
+        toast.error(t("register.errCantStart"));
         return;
       }
 
@@ -75,20 +75,18 @@ function Register() {
       );
 
       toast.success(
-        response.data?.message ||
-          "Verification code sent."
+        response.data?.message || t("register.fallbackCodeSent"),
       );
 
       navigate("/register/verify");
     } catch (error) {
       console.error("Registration failed:", error);
 
-      const message =
+      toast.error(
         error.response?.data?.message ||
-        error.response?.data?.error ||
-        "Registration failed.";
-
-      toast.error(message);
+          error.response?.data?.error ||
+          t("register.errCantStart"),
+      );
     } finally {
       setLoading(false);
     }
@@ -102,13 +100,13 @@ function Register() {
         </h1>
 
         <p className="text-center text-gray-500 mt-2 mb-8">
-          Create your account
+          {t("register.createAccount")}
         </p>
 
         {/* Account type — the first decision a new user makes */}
         <div className="mb-6">
           <p className="mb-3 block text-sm font-medium text-gray-700">
-            What brings you to CedarLink?
+            {t("register.whatBrings")}
           </p>
 
           <div className="grid grid-cols-2 gap-3">
@@ -122,10 +120,10 @@ function Register() {
               }`}
             >
               <span className="block font-semibold text-gray-900">
-                I want to shop
+                {t("register.iWantToShop")}
               </span>
               <span className="mt-1 block text-xs text-gray-500">
-                Browse and buy from local stores
+                {t("register.iWantToShopDesc")}
               </span>
             </button>
 
@@ -139,28 +137,27 @@ function Register() {
               }`}
             >
               <span className="block font-semibold text-gray-900">
-                I want to sell
+                {t("register.iWantToSell")}
               </span>
               <span className="mt-1 block text-xs text-gray-500">
-                Open a store and list products
+                {t("register.iWantToSellDesc")}
               </span>
             </button>
           </div>
 
           {role === "vendor" && (
             <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
-              Your store will need administrator approval before customers
-              can see it. You can set it up right after signing up.
+              {t("register.vendorApprovalNote")}
             </p>
           )}
         </div>
 
         <Input
-          label="First Name"
+          label={t("register.firstName")}
           name="first_name"
           autoComplete="given-name"
           type="text"
-          placeholder="Enter your first name"
+          placeholder={t("register.enterFirstName")}
           value={firstName}
           onChange={(e) =>
             setFirstName(e.target.value)
@@ -168,11 +165,11 @@ function Register() {
         />
 
         <Input
-          label="Last Name"
+          label={t("register.lastName")}
           name="last_name"
           autoComplete="family-name"
           type="text"
-          placeholder="Enter your last name"
+          placeholder={t("register.enterLastName")}
           value={lastName}
           onChange={(e) =>
             setLastName(e.target.value)
@@ -180,11 +177,11 @@ function Register() {
         />
 
         <Input
-          label="Email"
+          label={t("auth.email")}
           name="email"
           autoComplete="email"
           type="email"
-          placeholder="Enter your email"
+          placeholder={t("auth.enterEmail")}
           value={email}
           onChange={(e) =>
             setEmail(e.target.value)
@@ -192,11 +189,11 @@ function Register() {
         />
 
         <Input
-          label="Phone"
+          label={t("register.phone")}
           name="phone"
           autoComplete="tel"
           type="tel"
-          placeholder="Enter your phone number"
+          placeholder={t("register.enterPhone")}
           value={phone}
           onChange={(e) =>
             setPhone(e.target.value)
@@ -205,7 +202,7 @@ function Register() {
 
         <div className="mb-5">
           <label className="mb-2 block text-sm font-medium text-gray-700">
-            Verification Method
+            {t("register.verificationMethod")}
           </label>
 
           <select
@@ -215,26 +212,18 @@ function Register() {
             }
             className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-green-600 focus:ring-2 focus:ring-green-100"
           >
-            <option value="email">
-              Email
-            </option>
-
-            <option value="sms">
-              SMS
-            </option>
-
-            <option value="whatsapp">
-              WhatsApp
-            </option>
+            <option value="email">{t("auth.method_email")}</option>
+            <option value="sms">{t("auth.method_sms")}</option>
+            <option value="whatsapp">{t("auth.method_whatsapp")}</option>
           </select>
         </div>
 
         <Input
-          label="Password"
+          label={t("auth.password")}
           name="password"
           type="password"
           autoComplete="new-password"
-          placeholder="Create a password"
+          placeholder={t("register.createPassword")}
           value={password}
           onChange={(e) =>
             setPassword(e.target.value)
@@ -242,11 +231,11 @@ function Register() {
         />
 
         <Input
-          label="Confirm Password"
+          label={t("register.confirmPassword")}
           name="confirm_password"
           autoComplete="new-password"
           type="password"
-          placeholder="Confirm your password"
+          placeholder={t("register.confirmPasswordPlaceholder")}
           value={confirmPassword}
           onChange={(e) =>
             setConfirmPassword(e.target.value)
@@ -258,18 +247,16 @@ function Register() {
           onClick={handleRegister}
           disabled={loading}
         >
-          {loading
-            ? "Creating Account..."
-            : "Create Account"}
+          {loading ? t("register.creating") : t("register.submit")}
         </Button>
 
         <p className="text-center text-gray-600 mt-6">
-          Already have an account?{" "}
+          {t("register.alreadyHaveAccount")}{" "}
           <Link
             to="/login"
             className="text-green-700 cursor-pointer font-semibold hover:underline"
           >
-            Login
+            {t("register.login")}
           </Link>
         </p>
       </Card>

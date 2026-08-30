@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 import Button from "../../components/common/Button/Button";
@@ -8,8 +9,15 @@ import Card from "../../components/common/Card/Card";
 import api from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
 
+const METHOD_KEYS = {
+  email: "auth.method_email",
+  sms: "auth.method_sms",
+  whatsapp: "auth.method_whatsapp",
+};
+
 function RegisterVerify() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { login } = useAuth();
 
   const verificationData = JSON.parse(
@@ -22,13 +30,13 @@ function RegisterVerify() {
 
   const handleVerify = async () => {
     if (!verificationData?.challenge_token) {
-      toast.error("Registration verification session not found.");
+      toast.error(t("registerVerify.errSessionNotFound"));
       navigate("/register");
       return;
     }
 
     if (!code.trim()) {
-      toast.error("Please enter the verification code.");
+      toast.error(t("registerVerify.errEnterCode"));
       return;
     }
 
@@ -46,7 +54,7 @@ function RegisterVerify() {
 
       sessionStorage.removeItem("registration_verification");
 
-      toast.success("Account verified successfully!");
+      toast.success(t("registerVerify.toastVerified"));
 
       // A new vendor goes straight to the store-creation form.
       navigate(user?.role === "vendor" ? "/vendor/store" : "/");
@@ -55,7 +63,7 @@ function RegisterVerify() {
 
       const message =
         error.response?.data?.message ||
-        "Verification failed.";
+        t("login.fallbackVerifyFailed");
 
       toast.error(message);
     } finally {
@@ -65,7 +73,7 @@ function RegisterVerify() {
 
   const handleResend = async () => {
     if (!verificationData?.challenge_token) {
-      toast.error("Registration verification session not found.");
+      toast.error(t("registerVerify.errSessionNotFound"));
       navigate("/register");
       return;
     }
@@ -89,14 +97,14 @@ function RegisterVerify() {
 
       toast.success(
         response.data?.message ||
-          "A new verification code was sent."
+          t("registerVerify.fallbackResend")
       );
     } catch (error) {
       console.error("Resending verification code failed:", error);
 
       const message =
         error.response?.data?.message ||
-        "Unable to resend verification code.";
+        t("registerVerify.errResend");
 
       toast.error(message);
     } finally {
@@ -108,21 +116,24 @@ function RegisterVerify() {
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-10">
       <Card className="w-full max-w-lg">
         <h1 className="text-3xl font-bold text-center text-green-700">
-          Verify Your Account
+          {t("registerVerify.title")}
         </h1>
 
         <p className="text-center text-gray-500 mt-3 mb-8">
-          Enter the verification code sent to your{" "}
-          {verificationData?.method || "selected"} method.
+          {t("registerVerify.subtitle", {
+            method: t(
+              METHOD_KEYS[verificationData?.method] || "auth.method_selected",
+            ),
+          })}
         </p>
 
         <Input
-          label="Verification Code"
+          label={t("auth.verificationCode")}
           name="verification_code"
           type="text"
           inputMode="numeric"
           autoComplete="one-time-code"
-          placeholder="Enter verification code"
+          placeholder={t("auth.enterVerificationCode")}
           value={code}
           onChange={(e) => setCode(e.target.value)}
         />
@@ -132,7 +143,7 @@ function RegisterVerify() {
           onClick={handleVerify}
           disabled={loading}
         >
-          {loading ? "Verifying..." : "Verify & Continue"}
+          {loading ? t("auth.verifying") : t("registerVerify.submit")}
         </Button>
 
         <button
@@ -142,8 +153,8 @@ function RegisterVerify() {
           className="w-full mt-4 text-green-700 font-semibold hover:underline disabled:opacity-50"
         >
           {resending
-            ? "Sending..."
-            : "Resend verification code"}
+            ? t("auth.sending")
+            : t("auth.resendCode")}
         </button>
       </Card>
     </div>
