@@ -259,6 +259,34 @@ def test_checkout_more_than_stock_is_rejected(
     assert "stock" in resp.get_json()["error"].lower()
 
 
+def test_multi_store_checkout_failure_rolls_back_all_reservations(
+    client, auth, add_to_cart, make_product, customer
+):
+    # Store A has enough stock; store B does not. The whole checkout must
+    # fail without touching store A's stock.
+    from app.models.cart import Cart
+    from app.models.cart_item import CartItem
+
+    ok = make_product(name="In stock", stock=10)
+    short = make_product(name="Almost gone", stock=1)
+    assert ok.store_id != short.store_id
+
+    cart = Cart(user_id=customer.id)
+    db.session.add(cart)
+    db.session.flush()
+    db.session.add(CartItem(cart_id=cart.id, product_id=ok.id, quantity=3))
+    db.session.add(CartItem(cart_id=cart.id, product_id=short.id, quantity=5))
+    db.session.commit()
+
+    resp = _checkout(client, auth(customer))
+    assert resp.status_code == 400
+
+    db.session.expire_all()
+    assert db.session.get(Product, ok.id).stock == 10
+    assert db.session.get(Product, short.id).stock == 1
+    assert Order.query.count() == 0
+
+
 # --- order history --------------------------------------------------- #
 
 def test_order_history_shows_only_own_orders(
