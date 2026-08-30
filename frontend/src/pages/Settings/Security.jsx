@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Eye, EyeOff, LockKeyhole, ShieldCheck, ShieldOff } from "lucide-react";
 import { toast } from "react-toastify";
 import BackLink from "../../components/common/BackLink";
@@ -8,7 +9,17 @@ import api from "../../services/api";
 // Module scope: a component declared inside Security()'s body gets a new
 // identity every render, so React unmounts and remounts it on each
 // keystroke and the field loses focus. Confirmed before moving it.
-function PasswordInput({ label, value, onChange, show, setShow, placeholder }) {
+function PasswordInput({
+  label,
+  value,
+  onChange,
+  show,
+  setShow,
+  placeholder,
+  autoComplete = "new-password",
+}) {
+  const { t } = useTranslation();
+
   return (
     <div>
       <label className="mb-2 block text-sm font-medium text-gray-700">
@@ -21,11 +32,7 @@ function PasswordInput({ label, value, onChange, show, setShow, placeholder }) {
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          autoComplete={
-            label === "Current Password"
-              ? "current-password"
-              : "new-password"
-          }
+          autoComplete={autoComplete}
           className="w-full rounded-lg border border-gray-300 px-4 py-3 pe-12 text-sm outline-none transition focus:border-green-600 focus:ring-2 focus:ring-green-100"
         />
 
@@ -33,7 +40,9 @@ function PasswordInput({ label, value, onChange, show, setShow, placeholder }) {
           type="button"
           onClick={() => setShow(!show)}
           className="absolute end-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-700"
-          aria-label={show ? "Hide password" : "Show password"}
+          aria-label={
+            show ? t("common.hidePassword") : t("common.showPassword")
+          }
         >
           {show ? <EyeOff size={19} /> : <Eye size={19} />}
         </button>
@@ -43,6 +52,7 @@ function PasswordInput({ label, value, onChange, show, setShow, placeholder }) {
 }
 
 function Security() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [currentPassword, setCurrentPassword] = useState("");
@@ -115,7 +125,7 @@ function Security() {
       const user = getUser();
 
       if (!user?.id) {
-        toast.error("Unable to identify your account.");
+        toast.error(t("security.errNoAccount"));
         return;
       }
 
@@ -129,7 +139,7 @@ function Security() {
 
       const message =
         error.response?.data?.message ||
-        "Failed to load two-factor authentication status.";
+        t("security.errLoadStatus");
 
       toast.error(message);
     } finally {
@@ -139,18 +149,19 @@ function Security() {
 
   useEffect(() => {
     loadTwoFactorStatus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleChangePassword = async (e) => {
     e.preventDefault();
 
     if (!currentPassword || !newPassword || !confirmPassword) {
-      toast.error("Please fill in all password fields.");
+      toast.error(t("security.errFillPasswords"));
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      toast.error("New passwords do not match.");
+      toast.error(t("security.errPasswordsMatch"));
       return;
     }
 
@@ -160,7 +171,7 @@ function Security() {
       const user = getUser();
 
       if (!user?.id) {
-        toast.error("Unable to identify your account.");
+        toast.error(t("security.errNoAccount"));
         return;
       }
 
@@ -170,7 +181,7 @@ function Security() {
         confirm_password: confirmPassword,
       });
 
-      toast.success(response.data?.message || "Password changed successfully.");
+      toast.success(response.data?.message || t("security.toastPasswordChanged"));
 
       setCurrentPassword("");
       setNewPassword("");
@@ -179,7 +190,7 @@ function Security() {
       console.error("Error changing password:", error);
 
       const message =
-        error.response?.data?.message || "Failed to change your password.";
+        error.response?.data?.message || t("security.errChangePassword");
 
       toast.error(message);
     } finally {
@@ -194,7 +205,7 @@ function Security() {
       const user = getUser();
 
       if (!user?.id) {
-        toast.error("Unable to identify your account.");
+        toast.error(t("security.errNoAccount"));
         return;
       }
 
@@ -205,7 +216,7 @@ function Security() {
       console.log("2FA setup response:", response.data);
 
       if (!response.data?.challenge_token) {
-        toast.error("The verification challenge could not be created.");
+        toast.error(t("security.errChallengeNotCreated"));
         return;
       }
 
@@ -219,14 +230,14 @@ function Security() {
       setShowSetup(true);
 
       toast.success(
-        response.data?.message || "Two-factor authentication setup started.",
+        response.data?.message || t("security.toastSetupStarted"),
       );
     } catch (error) {
       console.error("Error starting 2FA setup:", error);
 
       const message =
         error.response?.data?.message ||
-        "Failed to start two-factor authentication setup.";
+        t("security.errStartSetup");
 
       toast.error(message);
     } finally {
@@ -236,13 +247,13 @@ function Security() {
 
   const handleConfirmTwoFactorSetup = async () => {
     if (!verificationCode.trim()) {
-      toast.error("Please enter the verification code.");
+      toast.error(t("security.errEnterCode"));
       return;
     }
 
     if (!setupChallengeToken) {
       toast.error(
-        "Verification challenge is missing. Please start the setup again.",
+        t("security.errChallengeMissing"),
       );
       return;
     }
@@ -253,7 +264,7 @@ function Security() {
       const user = getUser();
 
       if (!user?.id) {
-        toast.error("Unable to identify your account.");
+        toast.error(t("security.errNoAccount"));
         return;
       }
 
@@ -282,7 +293,7 @@ function Security() {
 
       toast.success(
         response.data?.message ||
-          "Two-factor authentication enabled successfully.",
+          t("security.toastEnabled"),
       );
 
       await loadTwoFactorStatus();
@@ -291,7 +302,7 @@ function Security() {
 
       const message =
         error.response?.data?.message ||
-        "Failed to confirm two-factor authentication.";
+        t("security.errConfirm");
 
       toast.error(message);
     } finally {
@@ -301,7 +312,7 @@ function Security() {
 
   const handleCreateSecurityChallenge = async () => {
     if (!securityPassword) {
-      toast.error("Please enter your current password first.");
+      toast.error(t("security.errEnterPasswordFirst"));
       return null;
     }
 
@@ -311,7 +322,7 @@ function Security() {
       const user = getUser();
 
       if (!user?.id) {
-        toast.error("Unable to identify your account.");
+        toast.error(t("security.errNoAccount"));
         return null;
       }
 
@@ -325,7 +336,7 @@ function Security() {
       const token = response.data?.challenge_token || "";
 
       if (!token) {
-        toast.error("Unable to create a security challenge.");
+        toast.error(t("security.errCreateChallenge"));
         return null;
       }
 
@@ -333,14 +344,14 @@ function Security() {
       setSecurityChallengeStarted(true);
       setDisableCode("");
 
-      toast.success(response.data?.message || "Security verification started.");
+      toast.success(response.data?.message || t("security.toastVerificationStarted"));
 
       return response.data;
     } catch (error) {
       console.error("Error creating security challenge:", error);
 
       const message =
-        error.response?.data?.message || "Failed to create security challenge.";
+        error.response?.data?.message || t("security.errCreateChallenge2");
 
       toast.error(message);
 
@@ -362,7 +373,7 @@ function Security() {
       const user = getUser();
 
       if (!user?.id) {
-        toast.error("Unable to identify your account.");
+        toast.error(t("security.errNoAccount"));
         return;
       }
 
@@ -384,13 +395,13 @@ function Security() {
       setRegenerateChallengeStarted(true);
       setRegenerateCode("");
 
-      toast.success(response.data?.message || "Verification code sent.");
+      toast.success(response.data?.message || t("security.toastCodeSent"));
     } catch (error) {
       console.error("Error starting recovery code regeneration:", error);
 
       const message =
         error.response?.data?.message ||
-        "Failed to start security verification.";
+        t("security.errStartVerification");
 
       toast.error(message);
     } finally {
@@ -400,12 +411,12 @@ function Security() {
 
   const handleRegenerateRecoveryCodes = async () => {
     if (!regenerateCode.trim()) {
-      toast.error("Please enter your verification code.");
+      toast.error(t("security.errEnterYourCode"));
       return;
     }
 
     if (!regenerateChallengeToken) {
-      toast.error("Security verification is missing. Please start again.");
+      toast.error(t("security.errVerificationMissing"));
       return;
     }
 
@@ -415,7 +426,7 @@ function Security() {
       const user = getUser();
 
       if (!user?.id) {
-        toast.error("Unable to identify your account.");
+        toast.error(t("security.errNoAccount"));
         return;
       }
 
@@ -431,7 +442,7 @@ function Security() {
       const codes = response.data?.recovery_codes || [];
 
       if (codes.length === 0) {
-        toast.error("Recovery codes were not returned.");
+        toast.error(t("security.errNoRecoveryCodes"));
         return;
       }
 
@@ -446,13 +457,13 @@ function Security() {
       setRegenerateCode("");
 
       toast.success(
-        response.data?.message || "Recovery codes regenerated successfully.",
+        response.data?.message || t("security.toastRegenerated"),
       );
     } catch (error) {
       console.error("Error regenerating recovery codes:", error);
 
       const message =
-        error.response?.data?.message || "Failed to regenerate recovery codes.";
+        error.response?.data?.message || t("security.errRegenerate");
 
       toast.error(message);
     } finally {
@@ -467,7 +478,7 @@ function Security() {
     }
 
     if (!securityChallengeToken) {
-      toast.error("Please start security verification first.");
+      toast.error(t("security.errStartVerificationFirst"));
       return;
     }
 
@@ -477,7 +488,7 @@ function Security() {
       const user = getUser();
 
       if (!user?.id) {
-        toast.error("Unable to identify your account.");
+        toast.error(t("security.errNoAccount"));
         return;
       }
 
@@ -501,7 +512,7 @@ function Security() {
 
       toast.success(
         response.data?.message ||
-          "Two-factor authentication has been disabled.",
+          t("security.toastDisabled"),
       );
 
       await loadTwoFactorStatus();
@@ -510,7 +521,7 @@ function Security() {
 
       const message =
         error.response?.data?.message ||
-        "Failed to disable two-factor authentication.";
+        t("security.errDisable");
 
       toast.error(message);
     } finally {
@@ -555,7 +566,7 @@ function Security() {
         {}
         <div className="mb-8">
           <BackLink onClick={() => navigate("/settings")} className="mb-4">
-            Back to Settings
+            {t("backLink.settings")}
           </BackLink>
 
           <div className="flex items-center gap-3">
@@ -565,11 +576,11 @@ function Security() {
 
             <div>
               <h1 className="text-3xl font-bold text-gray-900">
-                Login & Security
+                {t("security.title")}
               </h1>
 
               <p className="mt-1 text-sm text-gray-600">
-                Manage your password and account security.
+                {t("security.subtitle")}
               </p>
             </div>
           </div>
@@ -579,40 +590,41 @@ function Security() {
         <section className="rounded-2xl bg-white shadow-sm">
           <div className="border-b border-gray-100 px-6 py-5">
             <h2 className="text-xl font-semibold text-gray-900">
-              Change Password
+              {t("security.changePasswordSection")}
             </h2>
 
             <p className="mt-1 text-sm text-gray-500">
-              Update your CedarLink account password.
+              {t("security.changePasswordDesc")}
             </p>
           </div>
 
           <form onSubmit={handleChangePassword} className="space-y-5 px-6 py-6">
             <PasswordInput
-              label="Current Password"
+              label={t("security.currentPassword")}
               value={currentPassword}
               onChange={setCurrentPassword}
               show={showCurrent}
               setShow={setShowCurrent}
-              placeholder="Enter your current password"
+              placeholder={t("security.currentPasswordPlaceholder")}
+              autoComplete="current-password"
             />
 
             <PasswordInput
-              label="New Password"
+              label={t("security.newPassword")}
               value={newPassword}
               onChange={setNewPassword}
               show={showNew}
               setShow={setShowNew}
-              placeholder="Enter your new password"
+              placeholder={t("security.newPasswordPlaceholder")}
             />
 
             <PasswordInput
-              label="Confirm New Password"
+              label={t("security.confirmPassword")}
               value={confirmPassword}
               onChange={setConfirmPassword}
               show={showConfirm}
               setShow={setShowConfirm}
-              placeholder="Confirm your new password"
+              placeholder={t("security.confirmPasswordPlaceholder")}
             />
 
             <div className="flex justify-end pt-2">
@@ -621,7 +633,7 @@ function Security() {
                 disabled={loading}
                 className="cursor-pointer rounded-lg bg-green-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {loading ? "Changing Password..." : "Change Password"}
+                {loading ? t("security.changingPassword") : t("security.changePassword")}
               </button>
             </div>
           </form>
@@ -637,11 +649,11 @@ function Security() {
 
               <div>
                 <h2 className="text-xl font-semibold text-gray-900">
-                  Two-Factor Authentication
+                  {t("security.twoFactorTitle")}
                 </h2>
 
                 <p className="mt-1 text-sm text-gray-500">
-                  Add an extra layer of security to your CedarLink account.
+                  {t("security.twoFactorDesc")}
                 </p>
               </div>
             </div>
@@ -651,7 +663,7 @@ function Security() {
             {}
             {twoFactorLoading ? (
               <div className="py-4 text-sm text-gray-500">
-                Loading security status...
+                {t("security.loading")}
               </div>
             ) : (
               <>
@@ -664,12 +676,11 @@ function Security() {
 
                         <div>
                           <p className="font-medium text-gray-900">
-                            Two-factor authentication is not enabled.
+                            {t("security.notEnabled")}
                           </p>
 
                           <p className="mt-1 text-sm text-gray-500">
-                            Protect your account by requiring an additional
-                            verification step when signing in.
+                            {t("security.notEnabledDesc")}
                           </p>
                         </div>
                       </div>
@@ -682,8 +693,8 @@ function Security() {
                       className="cursor-pointer rounded-lg bg-green-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       {setupLoading
-                        ? "Starting Setup..."
-                        : "Set Up Two-Factor Authentication"}
+                        ? t("security.startingSetup")
+                        : t("security.setUp")}
                     </button>
                   </div>
                 )}
@@ -693,12 +704,11 @@ function Security() {
                   <div className="space-y-6">
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900">
-                        Set Up Two-Factor Authentication
+                        {t("security.setUp")}
                       </h3>
 
                       <p className="mt-1 text-sm text-gray-500">
-                        Enter the verification code sent to your CedarLink email
-                        address.
+                        {t("security.setupEmailNote")}
                       </p>
                     </div>
 
@@ -710,7 +720,7 @@ function Security() {
                           <div className="mb-5 flex justify-center">
                             <img
                               src={setupData.qr_code_data_url}
-                              alt="Two-factor authentication QR code"
+                              alt={t("security.qrAlt")}
                               className="h-52 w-52 rounded-lg border bg-white p-2"
                             />
                           </div>
@@ -720,7 +730,7 @@ function Security() {
                         {setupData.manual_key && (
                           <div className="mb-5">
                             <p className="text-sm font-medium text-gray-700">
-                              Setup Key
+                              {t("security.setupKey")}
                             </p>
 
                             <p className="mt-1 break-all rounded-lg bg-white p-3 font-mono text-sm text-gray-800">
@@ -733,11 +743,11 @@ function Security() {
                         {setupData.method === "email" && (
                           <div>
                             <p className="font-medium text-gray-900">
-                              Verification code sent
+                              {t("security.codeSent")}
                             </p>
 
                             <p className="mt-1 text-sm text-gray-600">
-                              A verification code was sent to:
+                              {t("security.codeSentTo")}
                             </p>
 
                             {setupData.email && (
@@ -747,8 +757,7 @@ function Security() {
                             )}
 
                             <p className="mt-3 text-sm text-gray-500">
-                              In development mode, check your Flask terminal for
-                              the verification code.
+                              {t("security.devNote")}
                             </p>
                           </div>
                         )}
@@ -763,7 +772,7 @@ function Security() {
 
                     <div>
                       <label className="mb-2 block text-sm font-medium text-gray-700">
-                        Verification Code
+                        {t("security.verificationCode")}
                       </label>
 
                       <input
@@ -772,7 +781,7 @@ function Security() {
                         autoComplete="one-time-code"
                         value={verificationCode}
                         onChange={(e) => setVerificationCode(e.target.value)}
-                        placeholder="Enter verification code"
+                        placeholder={t("security.enterVerificationCode")}
                         className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none transition focus:border-green-600 focus:ring-2 focus:ring-green-100"
                       />
                     </div>
@@ -784,7 +793,7 @@ function Security() {
                         disabled={confirmLoading}
                         className="cursor-pointer rounded-lg bg-green-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60"
                       >
-                        {confirmLoading ? "Confirming..." : "Confirm & Enable"}
+                        {confirmLoading ? t("security.confirming") : t("security.confirmEnable")}
                       </button>
 
                       <button
@@ -793,7 +802,7 @@ function Security() {
                         disabled={confirmLoading}
                         className="cursor-pointer rounded-lg border border-gray-300 px-6 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
                       >
-                        Cancel
+                        {t("security.cancel")}
                       </button>
                     </div>
                   </div>
@@ -808,12 +817,11 @@ function Security() {
 
                         <div>
                           <p className="font-semibold text-green-900">
-                            Two-factor authentication is enabled.
+                            {t("security.enabled")}
                           </p>
 
                           <p className="mt-1 text-sm text-green-800">
-                            Your account has an additional layer of login
-                            protection.
+                            {t("security.enabledDesc")}
                           </p>
                         </div>
                       </div>
@@ -822,7 +830,7 @@ function Security() {
                     {twoFactorMethod && (
                       <div className="rounded-lg border border-gray-200 p-4">
                         <p className="text-sm text-gray-500">
-                          Authentication method
+                          {t("security.authMethod")}
                         </p>
 
                         <p className="mt-1 font-medium capitalize text-gray-900">
@@ -835,13 +843,11 @@ function Security() {
                     {showRecoveryCodes && recoveryCodes.length > 0 && (
                       <div className="rounded-xl border border-yellow-200 bg-yellow-50 p-5">
                         <h3 className="font-semibold text-gray-900">
-                          Save Your Recovery Codes
+                          {t("security.recoveryCodesTitle")}
                         </h3>
 
                         <p className="mt-1 text-sm text-gray-600">
-                          Store these codes somewhere safe. They can be used if
-                          you cannot access your normal two-factor
-                          authentication method.
+                          {t("security.recoveryCodesNote")}
                         </p>
 
                         <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -860,7 +866,7 @@ function Security() {
                           onClick={() => setShowRecoveryCodes(false)}
                           className="mt-4 text-sm font-medium text-gray-600 hover:underline"
                         >
-                          Hide recovery codes
+                          {t("security.hideRecoveryCodes")}
                         </button>
                       </div>
                     )}
@@ -869,17 +875,15 @@ function Security() {
                     {!showRegenerateCodes && (
                       <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
                         <h3 className="font-semibold text-gray-900">
-                          Recovery Codes
+                          {t("security.recoveryCodesHeading")}
                         </h3>
 
                         <p className="mt-1 text-sm text-gray-600">
-                          Generate a new set of recovery codes if you no longer
-                          have access to your previous codes.
+                          {t("security.regenerateDesc")}
                         </p>
 
                         <p className="mt-2 text-sm font-medium text-red-600">
-                          Generating new codes will invalidate all previous
-                          recovery codes.
+                          {t("security.regenerateWarn")}
                         </p>
 
                         <button
@@ -895,7 +899,7 @@ function Security() {
                           }}
                           className="mt-4 cursor-pointer rounded-lg border border-green-700 px-5 py-3 text-sm font-semibold text-green-700 transition hover:bg-green-50"
                         >
-                          Generate New Recovery Codes
+                          {t("security.regenerateTitle")}
                         </button>
                       </div>
                     )}
@@ -903,7 +907,7 @@ function Security() {
                     {showRegenerateCodes && (
                       <div className="rounded-xl border border-yellow-300 bg-yellow-50 p-5">
                         <h3 className="font-semibold text-gray-900">
-                          Generate New Recovery Codes
+                          {t("security.regenerateTitle")}
                         </h3>
 
                         {!regenerateChallengeStarted ? (
@@ -922,7 +926,7 @@ function Security() {
                                 onChange={(e) =>
                                   setRegeneratePassword(e.target.value)
                                 }
-                                placeholder="Enter your current password"
+                                placeholder={t("security.currentPasswordPlaceholder")}
                                 autoComplete="current-password"
                                 className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 pe-12 text-sm outline-none transition focus:border-green-600 focus:ring-2 focus:ring-green-100"
                               />
@@ -952,8 +956,8 @@ function Security() {
                                 className="cursor-pointer rounded-lg bg-green-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60"
                               >
                                 {regenerateLoading
-                                  ? "Sending..."
-                                  : "Send Verification Code"}
+                                  ? t("security.sending")
+                                  : t("security.sendVerificationCode")}
                               </button>
 
                               <button
@@ -962,7 +966,7 @@ function Security() {
                                 disabled={regenerateLoading}
                                 className="cursor-pointer rounded-lg border border-gray-300 bg-white px-5 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
                               >
-                                Cancel
+                                {t("security.cancel")}
                               </button>
                             </div>
                           </>
@@ -974,7 +978,7 @@ function Security() {
                             </p>
 
                             <p className="mt-2 text-sm font-medium text-red-600">
-                              Your previous recovery codes will stop working.
+                              {t("security.regeneratePrevWarn")}
                             </p>
 
                             <input
@@ -985,7 +989,7 @@ function Security() {
                               onChange={(e) =>
                                 setRegenerateCode(e.target.value)
                               }
-                              placeholder="Enter verification code"
+                              placeholder={t("security.enterVerificationCode")}
                               className="mt-4 w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-green-600 focus:ring-2 focus:ring-green-100"
                             />
 
@@ -997,8 +1001,8 @@ function Security() {
                                 className="cursor-pointer rounded-lg bg-green-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60"
                               >
                                 {regenerateVerifyLoading
-                                  ? "Generating..."
-                                  : "Generate New Codes"}
+                                  ? t("security.generating")
+                                  : t("security.generateNewCodes")}
                               </button>
 
                               <button
@@ -1007,7 +1011,7 @@ function Security() {
                                 disabled={regenerateVerifyLoading}
                                 className="cursor-pointer rounded-lg border border-gray-300 bg-white px-5 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
                               >
-                                Cancel
+                                {t("security.cancel")}
                               </button>
                             </div>
                           </>
@@ -1030,7 +1034,7 @@ function Security() {
                         }}
                         className="cursor-pointer rounded-lg border border-red-300 px-5 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-50"
                       >
-                        Disable Two-Factor Authentication
+                        {t("security.disableTitle")}
                       </button>
                     )}
 
@@ -1038,7 +1042,7 @@ function Security() {
                     {showDisable && (
                       <div className="rounded-xl border border-red-200 bg-red-50 p-5">
                         <h3 className="font-semibold text-gray-900">
-                          Disable Two-Factor Authentication
+                          {t("security.disableTitle")}
                         </h3>
 
                         {!securityChallengeStarted ? (
@@ -1057,7 +1061,7 @@ function Security() {
                                 onChange={(e) =>
                                   setSecurityPassword(e.target.value)
                                 }
-                                placeholder="Enter your current password"
+                                placeholder={t("security.currentPasswordPlaceholder")}
                                 autoComplete="current-password"
                                 className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 pe-12 text-sm outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-100"
                               />
@@ -1085,8 +1089,8 @@ function Security() {
                                 className="cursor-pointer rounded-lg bg-red-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
                               >
                                 {challengeLoading
-                                  ? "Starting Verification..."
-                                  : "Send Verification Code"}
+                                  ? t("security.startingVerification")
+                                  : t("security.sendVerificationCode")}
                               </button>
 
                               <button
@@ -1095,7 +1099,7 @@ function Security() {
                                 disabled={challengeLoading}
                                 className="cursor-pointer rounded-lg border border-gray-300 bg-white px-5 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
                               >
-                                Cancel
+                                {t("security.cancel")}
                               </button>
                             </div>
                           </>
@@ -1112,7 +1116,7 @@ function Security() {
                               autoComplete="one-time-code"
                               value={disableCode}
                               onChange={(e) => setDisableCode(e.target.value)}
-                              placeholder="Enter verification code"
+                              placeholder={t("security.enterVerificationCode")}
                               className="mt-4 w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-100"
                             />
 
@@ -1124,8 +1128,8 @@ function Security() {
                                 className="cursor-pointer rounded-lg bg-red-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
                               >
                                 {disableLoading
-                                  ? "Disabling..."
-                                  : "Confirm Disable"}
+                                  ? t("security.disabling")
+                                  : t("security.confirmDisable")}
                               </button>
 
                               <button
@@ -1134,7 +1138,7 @@ function Security() {
                                 disabled={disableLoading}
                                 className="cursor-pointer rounded-lg border border-gray-300 bg-white px-5 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
                               >
-                                Cancel
+                                {t("security.cancel")}
                               </button>
                             </div>
                           </>
