@@ -131,13 +131,39 @@ Admins are verified immediately. Logging in still sends a verification code
 
 ### Running tests
 
-An automated test suite is not in the repository yet — it is the next item
-on the delivery queue (`pytest` + `TestConfig`, one integration test per
-user story). When present it will run with:
+The suite runs on `TestConfig` (file-based SQLite, mail suppressed) with a
+fresh schema per run and every table cleared between tests. From the repo
+root, with the backend venv active:
 
 ```bash
+pip install -r requirements.txt   # first run only — brings in pytest
 pytest
 ```
+
+Coverage:
+
+```bash
+pytest --cov=app --cov-report=term-missing
+```
+
+Layout under `tests/`:
+
+| Folder | What lives there |
+|---|---|
+| `conftest.py` | app / client / `db` fixtures, an `auth` helper that mints a JWT so tests skip the 2FA challenge, and factories: `customer`, `vendor`, `admin`, `make_store`, `make_product`, `make_order`, `add_to_cart` |
+| `integration/` | one test per user story in `files related/CedarLink.md` — customer, vendor and admin flows through the real HTTP layer |
+| `regression/` | one test per fixed finding (CL-12, CL-23, CL-24), so it stays fixed |
+
+Exactly one test walks the real register → verify → login → verify flow
+(`test_register_verify_login_full_flow`); every other test uses the `auth`
+helper.
+
+`tests/integration/test_concurrent_checkout.py::test_concurrent_checkout_does_not_oversell`
+is marked `xfail(strict=True)`. It documents CL-06 — the checkout stock
+decrement is check-then-write, so two buyers can both claim the last unit.
+It is expected to fail until queue item 4c makes the decrement atomic, at
+which point strict xfail turns the now-passing test into a failure so the
+fix can't land undocumented. A clean run reports **1 xfailed**.
 
 ---
 
