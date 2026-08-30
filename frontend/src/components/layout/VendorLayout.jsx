@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { NavLink, Outlet, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   Store,
   Package,
@@ -11,12 +12,13 @@ import {
 import api from "../../services/api";
 
 const NAV_ITEMS = [
-  { to: "/vendor/store", label: "Store", icon: Store },
-  { to: "/vendor/products", label: "Products", icon: Package },
-  { to: "/vendor/orders", label: "Orders", icon: ClipboardList },
+  { to: "/vendor/store", key: "store", icon: Store },
+  { to: "/vendor/products", key: "products", icon: Package },
+  { to: "/vendor/orders", key: "orders", icon: ClipboardList },
 ];
 
 function VendorLayout() {
+  const { t } = useTranslation();
   const [store, setStore] = useState(null);
 
   useEffect(() => {
@@ -52,11 +54,11 @@ function VendorLayout() {
       <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-10 lg:flex-row">
         <aside className="w-full shrink-0 lg:w-56">
           <p className="mb-4 px-3 text-xs font-semibold uppercase tracking-wide text-gray-400">
-            Vendor Console
+            {t("vendorLayout.console")}
           </p>
 
           <nav className="space-y-1">
-            {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
+            {NAV_ITEMS.map(({ to, key, icon: Icon }) => (
               <NavLink
                 key={to}
                 to={to}
@@ -69,7 +71,7 @@ function VendorLayout() {
                 }
               >
                 <Icon size={18} />
-                {label}
+                {t(`vendorLayout.${key}`)}
               </NavLink>
             ))}
           </nav>
@@ -79,7 +81,7 @@ function VendorLayout() {
             className="mt-6 flex items-center gap-2 px-3 text-sm text-gray-500 hover:text-emerald-700"
           >
             <ArrowLeft size={16} className="rtl:rotate-180" />
-            Back to CedarLink
+            {t("common.backToCedarLink")}
           </Link>
         </aside>
 
@@ -91,12 +93,10 @@ function VendorLayout() {
                 className="mx-auto text-red-500"
               />
               <h1 className="mt-3 text-xl font-semibold text-gray-900">
-                This store was removed by an administrator
+                {t("vendorLayout.removedTitle")}
               </h1>
               <p className="mt-2 text-sm text-gray-600">
-                Your products are no longer listed and you cannot take new
-                orders. Orders already placed are unaffected. Contact
-                support if you think this is a mistake.
+                {t("vendorLayout.removedBody")}
               </p>
             </div>
           ) : (
@@ -109,10 +109,9 @@ function VendorLayout() {
                   />
                   <p className="text-sm text-amber-800">
                     <span className="font-semibold">
-                      Your store is awaiting administrator approval.
+                      {t("vendorLayout.pendingTitle")}
                     </span>{" "}
-                    Set it up and add products now — customers can&apos;t
-                    see it until it&apos;s approved.
+                    {t("vendorLayout.pendingBody")}
                   </p>
                 </div>
               )}
@@ -125,11 +124,10 @@ function VendorLayout() {
                   />
                   <p className="text-sm text-red-800">
                     <span className="font-semibold">
-                      Your store was not approved.
-                    </span>
-                    {store?.approval_note
-                      ? ` ${store.approval_note}`
-                      : " Contact support for details."}
+                      {t("vendorLayout.rejectedTitle")}
+                    </span>{" "}
+                    {store?.approval_note ||
+                      t("vendorLayout.rejectedBodyDefault")}
                   </p>
                 </div>
               )}

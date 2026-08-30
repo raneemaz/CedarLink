@@ -2,7 +2,20 @@
   "common": {
     "save": "Save",
     "cancel": "Cancel",
-    "backToSettings": "Back to Settings"
+    "backToSettings": "Back to Settings",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "working": "Working...",
+    "loading": "Loading...",
+    "next": "Next",
+    "previous": "Previous",
+    "tryAgain": "Try Again",
+    "actions": "Actions",
+    "status": "Status",
+    "default": "Default",
+    "setAsDefault": "Set as Default",
+    "backToCedarLink": "Back to CedarLink"
   },
   "navbar": {
     "logoAlt": "CedarLink Logo",
@@ -23,7 +36,6 @@
     "menu": "Menu",
     "notifications": "Notifications"
   },
-
   "notificationsFeed": {
     "title": "Notifications",
     "subtitle": "Updates about your orders and deliveries.",
@@ -40,7 +52,6 @@
     "deletedAll": "All notifications deleted.",
     "deleteError": "Failed to delete notifications. Please try again."
   },
-
   "language": {
     "title": "Language",
     "subtitle": "Choose your preferred CedarLink language.",
@@ -52,7 +63,6 @@
     "saveLanguage": "Save Language",
     "saved": "Language preference saved successfully."
   },
-
   "currency": {
     "title": "Currency",
     "subtitle": "Choose the currency prices are shown in while browsing.",
@@ -68,7 +78,6 @@
     "saveError": "Failed to save your currency preference. Please try again.",
     "approxNote": "Converted amounts are approximate. Carts, checkout and payments are always processed in USD."
   },
-
   "notifications": {
     "title": "Notifications",
     "subtitle": "Choose what CedarLink notifies you about and how.",
@@ -91,7 +100,6 @@
     "loadError": "Unable to load your notification preferences.",
     "saveError": "Failed to save your notification preferences. Please try again."
   },
-
   "shoppingPreferences": {
     "title": "Shopping Preferences",
     "subtitle": "Set the defaults CedarLink uses when you shop and check out.",
@@ -117,7 +125,6 @@
     "hideOosLabel": "Hide out-of-stock products",
     "hideOosDesc": "Leave products with no stock out of the product list."
   },
-
   "privacyData": {
     "title": "Privacy & Data",
     "subtitle": "Deactivate or permanently delete your CedarLink account.",
@@ -149,77 +156,62 @@
     "working": "Working...",
     "actionError": "Something went wrong. Please try again."
   },
-
   "settings": {
     "title": "Settings",
     "subtitle": "Manage your CedarLink account, shopping preferences, and privacy.",
-
     "accountProfile": {
       "title": "Account & Profile",
       "description": "Manage your personal information and account security."
     },
-
     "personalInformation": {
       "title": "Personal Information",
       "description": "Manage your name, email, and phone number."
     },
-
     "savedAddresses": {
       "title": "Saved Addresses",
       "description": "Manage your delivery and billing addresses."
     },
-
     "loginSecurity": {
       "title": "Login & Security",
       "description": "Change your password and manage account security."
     },
-
     "language": {
       "title": "Language",
       "description": "Choose your preferred CedarLink language."
     },
-
     "currency": {
       "title": "Currency",
       "description": "Choose the currency prices are displayed in."
     },
-
     "shoppingOrders": {
       "title": "Shopping & Orders",
       "description": "Manage your shopping preferences and payment options."
     },
-
     "paymentMethods": {
       "title": "Payment Methods",
       "description": "Manage your saved payment methods."
     },
-
     "shoppingPreferences": {
       "title": "Shopping Preferences",
       "description": "Manage your shopping and ordering preferences."
     },
-
     "notifications": {
       "title": "Notifications",
       "description": "Choose how CedarLink keeps you informed."
     },
-
     "notificationPreferences": {
       "title": "Notification Preferences",
       "description": "Manage order, shopping, and promotional alerts."
     },
-
     "privacyData": {
       "title": "Privacy & Data",
       "description": "Manage your privacy and CedarLink account data.",
       "itemDescription": "Manage privacy preferences and your account data."
     },
-
     "account": {
       "title": "Account",
       "description": "Manage your CedarLink account."
     },
-
     "deleteAccount": "Delete Account"
   },
   "home": {
@@ -230,7 +222,6 @@
       "browseProducts": "Browse Products",
       "browseStores": "Browse Stores"
     },
-
     "categories": {
       "title": "Featured categories",
       "grocery": "Grocery",
@@ -238,18 +229,50 @@
       "electronics": "Electronics",
       "home": "Home"
     },
-
     "featuredProducts": {
       "title": "Featured Products",
       "description": "Pulled from the backend public products endpoint.",
       "viewAll": "View all"
     },
-
     "loadingProducts": "Loading products...",
-
     "guestExperience": {
       "title": "Guest experience",
       "description": "Guests can browse stores and products, then log in when they are ready to add items to cart or place orders."
     }
+  },
+  "adminLayout": {
+    "console": "Admin Console",
+    "overview": "Overview",
+    "users": "Users",
+    "stores": "Stores",
+    "categories": "Categories"
+  },
+  "vendorLayout": {
+    "console": "Vendor Console",
+    "store": "Store",
+    "products": "Products",
+    "orders": "Orders",
+    "removedTitle": "This store was removed by an administrator",
+    "removedBody": "Your products are no longer listed and you cannot take new orders. Orders already placed are unaffected. Contact support if you think this is a mistake.",
+    "pendingTitle": "Your store is awaiting administrator approval.",
+    "pendingBody": "Set it up and add products now — customers can’t see it until it’s approved.",
+    "rejectedTitle": "Your store was not approved.",
+    "rejectedBodyDefault": "Contact support for details."
+  },
+  "productCard": {
+    "noImage": "No image",
+    "localStore": "Local Store",
+    "view": "View",
+    "inStock": "In stock: {{count}}"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "The page you are looking for doesn’t exist or has moved.",
+    "backHome": "Back to home"
+  },
+  "confirmDialog": {
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "working": "Working..."
   }
 }
