@@ -162,10 +162,10 @@ function Settings() {
                         </p>
                       </div>
 
-                      {/* Arrow */}
+                      {/* Arrow — points toward the row's trailing edge */}
                       <ChevronRight
                         size={20}
-                        className="shrink-0 text-gray-400 transition group-hover:translate-x-1 group-hover:text-emerald-700"
+                        className="shrink-0 text-gray-400 transition group-hover:translate-x-1 group-hover:text-emerald-700 rtl:rotate-180"
                       />
                     </Link>
                   );

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import BackLink from "../../components/common/BackLink";
 
 import api from "../../services/api";
 import ProductCard from "../../components/product/ProductCard";
@@ -59,12 +60,7 @@ function StoreDetails() {
     return (
       <div className="min-h-screen bg-gray-50 px-6 py-12">
         <div className="mx-auto max-w-5xl">
-          <Link
-            to="/stores"
-            className="text-sm font-medium text-emerald-700 hover:text-emerald-800"
-          >
-            &larr; Back to Stores
-          </Link>
+          <BackLink to="/stores">Back to Stores</BackLink>
           <div className="mt-8 rounded-xl bg-white p-12 text-center shadow-sm">
             <h1 className="text-xl font-semibold text-gray-900">{error}</h1>
           </div>
@@ -76,12 +72,7 @@ function StoreDetails() {
   return (
     <div className="min-h-screen bg-gray-50 px-6 py-10 lg:px-10">
       <div className="mx-auto max-w-6xl">
-        <Link
-          to="/stores"
-          className="text-sm font-medium text-emerald-700 hover:text-emerald-800"
-        >
-          &larr; Back to Stores
-        </Link>
+        <BackLink to="/stores">Back to Stores</BackLink>
 
         <div className="mt-6 rounded-xl border border-gray-200 bg-white p-6">
           <h1 className="text-3xl font-bold text-gray-900">{store.name}</h1>

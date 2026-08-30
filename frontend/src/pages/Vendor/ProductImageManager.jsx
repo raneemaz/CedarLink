@@ -155,7 +155,7 @@ function ProductImageManager({ productId, onImagesChange }) {
                       onClick={() => setDeleteTarget(image)}
                       disabled={uploading || deleting}
                       aria-label="Remove image"
-                      className="absolute right-2 top-2 rounded-md bg-white/90 p-1.5 text-red-600 shadow-sm transition hover:bg-white disabled:opacity-50"
+                      className="absolute end-2 top-2 rounded-md bg-white/90 p-1.5 text-red-600 shadow-sm transition hover:bg-white disabled:opacity-50"
                     >
                       <Trash2 size={16} />
                     </button>

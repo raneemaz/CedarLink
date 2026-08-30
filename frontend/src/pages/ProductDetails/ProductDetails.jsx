@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import api from "../../services/api";
 import Price from "../../components/common/Price";
+import BackLink from "../../components/common/BackLink";
 
 function ProductDetails() {
   const { id } = useParams();
@@ -91,12 +92,7 @@ function ProductDetails() {
     return (
       <div className="min-h-screen bg-gray-50 px-6 py-12">
         <div className="mx-auto max-w-6xl">
-          <Link
-            to="/products"
-            className="text-sm font-medium text-emerald-700 hover:text-emerald-800"
-          >
-            ← Back to Products
-          </Link>
+          <BackLink to="/products">Back to Products</BackLink>
 
           <div className="mt-8 rounded-xl bg-white p-12 text-center shadow-sm">
             <h1 className="text-xl font-semibold text-gray-900">{error}</h1>
@@ -117,12 +113,7 @@ function ProductDetails() {
     <div className="min-h-screen bg-gray-50 px-6 py-10 lg:px-10">
       <div className="mx-auto max-w-6xl">
         {/* Back */}
-        <Link
-          to="/products"
-          className="text-sm font-medium text-emerald-700 hover:text-emerald-800"
-        >
-          ← Back to Products
-        </Link>
+        <BackLink to="/products">Back to Products</BackLink>
 
         {/* Product */}
         <div className="mt-6 grid overflow-hidden rounded-xl border border-gray-200 bg-white md:grid-cols-2">

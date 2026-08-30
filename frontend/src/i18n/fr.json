@@ -2,7 +2,7 @@
   "common": {
     "save": "Enregistrer",
     "cancel": "Annuler",
-    "backToSettings": "← Retour aux paramètres"
+    "backToSettings": "Retour aux paramètres"
   },
 
   "navbar": {

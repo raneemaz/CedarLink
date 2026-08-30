@@ -115,7 +115,7 @@ function Register() {
             <button
               type="button"
               onClick={() => setRole("customer")}
-              className={`rounded-xl border-2 p-4 text-left transition ${
+              className={`rounded-xl border-2 p-4 text-start transition ${
                 role === "customer"
                   ? "border-green-600 bg-green-50"
                   : "border-gray-200 hover:border-gray-300"
@@ -132,7 +132,7 @@ function Register() {
             <button
               type="button"
               onClick={() => setRole("vendor")}
-              className={`rounded-xl border-2 p-4 text-left transition ${
+              className={`rounded-xl border-2 p-4 text-start transition ${
                 role === "vendor"
                   ? "border-green-600 bg-green-50"
                   : "border-gray-200 hover:border-gray-300"

@@ -121,11 +121,11 @@ function AdminUsers() {
       <div className="overflow-x-auto rounded-2xl bg-white shadow-sm">
         <table className="min-w-full text-sm">
           <thead>
-            <tr className="border-b border-gray-100 text-left text-xs uppercase tracking-wide text-gray-400">
+            <tr className="border-b border-gray-100 text-start text-xs uppercase tracking-wide text-gray-400">
               <th className="px-4 py-3 font-medium">User</th>
               <th className="px-4 py-3 font-medium">Role</th>
               <th className="px-4 py-3 font-medium">Status</th>
-              <th className="px-4 py-3 font-medium text-right">Actions</th>
+              <th className="px-4 py-3 font-medium text-end">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -159,7 +159,7 @@ function AdminUsers() {
                       {user.status}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-right">
+                  <td className="px-4 py-3 text-end">
                     {isAdmin || isSelf ? (
                       <span className="text-xs text-gray-400">—</span>
                     ) : user.status === "suspended" ? (

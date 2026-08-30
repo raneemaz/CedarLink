@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, LockKeyhole, ShieldCheck, ShieldOff } from "lucide-react";
 import { toast } from "react-toastify";
+import BackLink from "../../components/common/BackLink";
 import api from "../../services/api";
 
 // Module scope: a component declared inside Security()'s body gets a new
@@ -25,13 +26,13 @@ function PasswordInput({ label, value, onChange, show, setShow, placeholder }) {
               ? "current-password"
               : "new-password"
           }
-          className="w-full rounded-lg border border-gray-300 px-4 py-3 pr-12 text-sm outline-none transition focus:border-green-600 focus:ring-2 focus:ring-green-100"
+          className="w-full rounded-lg border border-gray-300 px-4 py-3 pe-12 text-sm outline-none transition focus:border-green-600 focus:ring-2 focus:ring-green-100"
         />
 
         <button
           type="button"
           onClick={() => setShow(!show)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-700"
+          className="absolute end-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-700"
           aria-label={show ? "Hide password" : "Show password"}
         >
           {show ? <EyeOff size={19} /> : <Eye size={19} />}
@@ -553,12 +554,9 @@ function Security() {
       <div className="mx-auto max-w-4xl">
         {}
         <div className="mb-8">
-          <button
-            onClick={() => navigate("/settings")}
-            className="mb-4 cursor-pointer text-sm text-green-700 hover:underline"
-          >
-            ← Back to Settings
-          </button>
+          <BackLink onClick={() => navigate("/settings")} className="mb-4">
+            Back to Settings
+          </BackLink>
 
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
@@ -926,7 +924,7 @@ function Security() {
                                 }
                                 placeholder="Enter your current password"
                                 autoComplete="current-password"
-                                className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 pr-12 text-sm outline-none transition focus:border-green-600 focus:ring-2 focus:ring-green-100"
+                                className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 pe-12 text-sm outline-none transition focus:border-green-600 focus:ring-2 focus:ring-green-100"
                               />
 
                               <button
@@ -936,7 +934,7 @@ function Security() {
                                     !showRegeneratePassword,
                                   )
                                 }
-                                className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-700"
+                                className="absolute end-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-700"
                               >
                                 {showRegeneratePassword ? (
                                   <EyeOff size={19} />
@@ -1061,7 +1059,7 @@ function Security() {
                                 }
                                 placeholder="Enter your current password"
                                 autoComplete="current-password"
-                                className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 pr-12 text-sm outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-100"
+                                className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 pe-12 text-sm outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-100"
                               />
 
                               <button
@@ -1069,7 +1067,7 @@ function Security() {
                                 onClick={() =>
                                   setShowSecurityPassword(!showSecurityPassword)
                                 }
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                                className="absolute end-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                               >
                                 {showSecurityPassword ? (
                                   <EyeOff size={19} />

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import BackLink from "../../components/common/BackLink";
 import api from "../../services/api";
 import { lebanonLocations } from "../../data/lebanonLocations";
 
@@ -199,12 +200,9 @@ function Checkout() {
         <div className="rounded-xl border border-red-200 bg-red-50 p-5">
           <p className="text-red-700">{error}</p>
 
-          <Link
-            to="/cart"
-            className="mt-4 inline-block font-medium text-emerald-700 hover:underline"
-          >
-            ← Back to Cart
-          </Link>
+          <BackLink to="/cart" className="mt-4">
+            Back to Cart
+          </BackLink>
         </div>
       </div>
     );
@@ -297,12 +295,7 @@ function Checkout() {
   return (
     <div className="mx-auto max-w-6xl px-6 py-10">
       <div className="mb-8">
-        <Link
-          to="/cart"
-          className="text-sm font-medium text-emerald-700 hover:underline"
-        >
-          ← Back to Cart
-        </Link>
+        <BackLink to="/cart">Back to Cart</BackLink>
 
         <h1 className="mt-4 text-3xl font-bold text-slate-900">
           Checkout
