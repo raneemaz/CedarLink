@@ -65,7 +65,7 @@ def test_registration_decoy_creates_nothing_and_leads_nowhere(
 
 # --- throttling ------------------------------------------------------- #
 
-def test_login_is_rate_limited_per_account(client, make_user):
+def test_login_is_rate_limited_per_account(client, make_user, rate_limiting):
     user = make_user("customer", email="target@cedarlink.test")
 
     statuses = [
@@ -80,7 +80,7 @@ def test_login_is_rate_limited_per_account(client, make_user):
     assert 429 in statuses
 
 
-def test_registration_is_rate_limited_per_ip(client):
+def test_registration_is_rate_limited_per_ip(client, rate_limiting):
     statuses = [
         client.post(
             "/api/auth/register",

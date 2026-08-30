@@ -76,13 +76,29 @@ def _reset_db(_schema):
 
 
 @pytest.fixture(autouse=True)
-def _reset_rate_limiter():
-    """Clear the shared in-memory limiter counters between tests."""
+def _rate_limits_off():
+    """Throttling is opt-in per test.
+
+    The limiter is installed (TestConfig sets RATELIMIT_ENABLED) so its code
+    path runs, but in-memory counters are shared across the whole session
+    and cannot be reliably reset, so every test starts with limiting off.
+    The `rate_limiting` fixture turns it on for the few tests that need it.
+    """
+    _limiter.enabled = False
     yield
+    _limiter.enabled = False
+
+
+@pytest.fixture()
+def rate_limiting():
+    """Enable auth-endpoint throttling for this test."""
     try:
-        _limiter.reset()
+        _limiter.storage.reset()
     except Exception:
         pass
+    _limiter.enabled = True
+    yield
+    _limiter.enabled = False
 
 
 @pytest.fixture()
