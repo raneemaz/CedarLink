@@ -178,6 +178,7 @@ After `flask seed`, these accounts exist. **Password for all of them:
 
 | Email | Role | Notes |
 |---|---|---|
+| `admin@cedarlink.demo` | admin | Admin console (`/admin`). Created by `flask seed` — safe because the seed refuses to run in production. |
 | `vendor.beirut@cedarlink.demo` | vendor | Hamra Grocery (Beirut) |
 | `vendor.tripoli@cedarlink.demo` | vendor | Tripoli Threads (Tripoli) |
 | `vendor.saida@cedarlink.demo` | vendor | Saida Electronics (Saida) |

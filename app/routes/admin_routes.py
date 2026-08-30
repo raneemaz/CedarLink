@@ -131,6 +131,10 @@ def get_all_stores():
     def store_status(store):
         if store.deleted_at is not None:
             return "removed"
+        if store.approval_status == "rejected":
+            return "rejected"
+        if store.approval_status == "pending":
+            return "pending"
         return "active" if store.is_active else "inactive"
 
     return jsonify([
@@ -147,6 +151,8 @@ def get_all_stores():
             "owner_email": store.owner.email if store.owner else None,
             "status": store_status(store),
             "is_active": store.is_active,
+            "approval_status": store.approval_status,
+            "approval_note": store.approval_note,
             "deleted_at": (
                 store.deleted_at.isoformat() if store.deleted_at else None
             ),
@@ -154,6 +160,42 @@ def get_all_stores():
         }
         for store in stores
     ]), 200
+
+
+def _set_approval(store_id, new_status):
+    guard = _admin_guard()
+    if guard:
+        return guard
+
+    store = db.session.get(Store, store_id)
+    if not store:
+        return jsonify({"error": "Store not found"}), 404
+
+    if store.deleted_at is not None:
+        return jsonify({"error": "Store has been removed"}), 400
+
+    data = request.get_json() or {}
+    store.approval_status = new_status
+    store.approval_note = (data.get("note") or "").strip() or None
+    db.session.commit()
+
+    return jsonify({
+        "message": f"Store {new_status}",
+        "approval_status": store.approval_status,
+        "approval_note": store.approval_note,
+    }), 200
+
+
+@admin_bp.route("/stores/<int:store_id>/approve", methods=["PATCH"])
+@jwt_required()
+def approve_store(store_id):
+    return _set_approval(store_id, "approved")
+
+
+@admin_bp.route("/stores/<int:store_id>/reject", methods=["PATCH"])
+@jwt_required()
+def reject_store(store_id):
+    return _set_approval(store_id, "rejected")
 
 
 @admin_bp.route("/stores/<int:store_id>", methods=["DELETE"])
@@ -192,14 +234,21 @@ def get_reports():
         .all()
     )
 
+    live_stores = Store.query.filter(Store.deleted_at.is_(None))
     stores_removed = Store.query.filter(
         Store.deleted_at.isnot(None)
     ).count()
-    stores_active = Store.query.filter(
-        Store.deleted_at.is_(None), Store.is_active.is_(True)
+    stores_pending = live_stores.filter(
+        Store.approval_status == "pending"
     ).count()
-    stores_inactive = Store.query.filter(
-        Store.deleted_at.is_(None), Store.is_active.is_(False)
+    stores_rejected = live_stores.filter(
+        Store.approval_status == "rejected"
+    ).count()
+    stores_active = live_stores.filter(
+        Store.approval_status == "approved", Store.is_active.is_(True)
+    ).count()
+    stores_inactive = live_stores.filter(
+        Store.approval_status == "approved", Store.is_active.is_(False)
     ).count()
 
     products_live = Product.query.filter(
@@ -234,8 +283,10 @@ def get_reports():
     return jsonify({
         "users_by_role": users_by_role,
         "stores": {
+            "pending": stores_pending,
             "active": stores_active,
             "inactive": stores_inactive,
+            "rejected": stores_rejected,
             "removed": stores_removed,
         },
         "products": {
