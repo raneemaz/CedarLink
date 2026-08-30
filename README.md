@@ -152,18 +152,17 @@ Layout under `tests/`:
 |---|---|
 | `conftest.py` | app / client / `db` fixtures, an `auth` helper that mints a JWT so tests skip the 2FA challenge, and factories: `customer`, `vendor`, `admin`, `make_store`, `make_product`, `make_order`, `add_to_cart` |
 | `integration/` | one test per user story in `files related/CedarLink.md` — customer, vendor and admin flows through the real HTTP layer |
-| `regression/` | one test per fixed finding (CL-12, CL-23, CL-24), so it stays fixed |
+| `regression/` | one test per fixed finding (CL-06, CL-12, CL-20, CL-23, CL-24), so it stays fixed |
 
 Exactly one test walks the real register → verify → login → verify flow
 (`test_register_verify_login_full_flow`); every other test uses the `auth`
 helper.
 
-`tests/integration/test_concurrent_checkout.py::test_concurrent_checkout_does_not_oversell`
-is marked `xfail(strict=True)`. It documents CL-06 — the checkout stock
-decrement is check-then-write, so two buyers can both claim the last unit.
-It is expected to fail until queue item 4c makes the decrement atomic, at
-which point strict xfail turns the now-passing test into a failure so the
-fix can't land undocumented. A clean run reports **1 xfailed**.
+`tests/integration/test_concurrent_checkout.py` fires simultaneous
+checkouts for the last unit(s) and asserts the conditional-UPDATE decrement
+lets through exactly the stock's worth (CL-06). Every checkout thread is
+held at a lock-free barrier the instant it finishes pricing, so the test
+is deterministic — no sleeps. A clean run is fully green, no xfail.
 
 ---
 
