@@ -66,11 +66,7 @@ def get_stores():
     Query params: keyword (name match), location (exact, case-insensitive),
     page, limit, sort=name|newest. Response shape mirrors GET /api/products.
     """
-    query = Store.query.filter(
-        Store.approval_status == "approved",
-        Store.is_active.is_(True),
-        Store.deleted_at.is_(None),
-    )
+    query = Store.query.filter(Store.is_visible)
 
     keyword = request.args.get("keyword", "").strip()
     if keyword:

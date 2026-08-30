@@ -1,3 +1,6 @@
+from sqlalchemy import and_
+from sqlalchemy.ext.hybrid import hybrid_property
+
 from app.extensions import db
 
 
@@ -77,13 +80,26 @@ class Store(db.Model):
         back_populates="store"
     )
 
-    @property
+    @hybrid_property
     def is_visible(self):
-        """Shown on the storefront: approved by an admin, active, not removed."""
+        """Shown on the storefront: approved by an admin, active, not removed.
+
+        One definition, usable both as ``store.is_visible`` in Python and as
+        ``Store.is_visible`` inside a ``filter()`` (see the ``.expression``
+        below). It is a security-relevant rule — keep it in exactly one place.
+        """
         return (
             self.approval_status == "approved"
             and self.is_active
             and self.deleted_at is None
+        )
+
+    @is_visible.expression
+    def is_visible(cls):
+        return and_(
+            cls.approval_status == "approved",
+            cls.is_active.is_(True),
+            cls.deleted_at.is_(None),
         )
 
     def to_dict(self):
