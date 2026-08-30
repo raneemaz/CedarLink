@@ -26,10 +26,19 @@ export function formattingLocale(language?: string): string {
  * Format an API timestamp as a localized date (no time). `language` is the
  * UI language code (`en` | `ar` | `fr`), not a full locale.
  */
+// A spelled-out month avoids the digit-order ambiguity a slash-separated
+// numeric date picks up when it is reordered inside an RTL paragraph
+// ("30/08/2026" flipping to "2026/08/30").
+const DATE_OPTS: Intl.DateTimeFormatOptions = {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+};
+
 export function formatDate(
   iso: string,
   language?: string,
-  options: Intl.DateTimeFormatOptions = { dateStyle: "medium" },
+  options: Intl.DateTimeFormatOptions = DATE_OPTS,
 ): string {
   const date = parseApiTimestamp(iso);
   if (!Number.isFinite(date.getTime())) {
@@ -50,8 +59,9 @@ export function formatDate(
  */
 export function formatDateTime(iso: string, language?: string): string {
   return formatDate(iso, language, {
-    dateStyle: "medium",
-    timeStyle: "short",
+    ...DATE_OPTS,
+    hour: "2-digit",
+    minute: "2-digit",
   });
 }
 
