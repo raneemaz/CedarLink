@@ -16,10 +16,13 @@ function Price({ amount, from = "USD", className = "", approxClassName = "" }) {
 
   return (
     <span className={`inline-flex flex-col leading-tight ${className}`}>
-      <span>{base}</span>
+      {/* Money reads left-to-right even in an RTL page — otherwise the
+          currency symbol and digits get reordered ("$US 3.50"). */}
+      <span dir="ltr">{base}</span>
 
       {converted && (
         <span
+          dir="ltr"
           className={`text-xs font-normal text-gray-400 ${approxClassName}`}
           title="Approximate — you are charged in USD"
         >

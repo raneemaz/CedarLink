@@ -170,7 +170,7 @@ const Navbar = () => {
           </Link>
 
           {!isAuthenticated ? (
-            <div className="flex items-center gap-3">
+            <div className="hidden items-center gap-3 lg:flex">
               <Link
                 to="/login"
                 className="rounded-lg border border-emerald-700 px-4 py-2 font-medium text-emerald-700 transition hover:bg-emerald-50"
@@ -189,7 +189,8 @@ const Navbar = () => {
             <div className="flex items-center gap-3">
               <NotificationBell />
 
-              <div className="group relative">
+              {/* Text actions live in the mobile drawer below lg. */}
+              <div className="group relative hidden lg:block">
                 <button
                   type="button"
                   className="flex items-center gap-2 rounded-lg px-3 py-2 transition hover:bg-slate-100"
@@ -234,7 +235,7 @@ const Navbar = () => {
               <button
                 type="button"
                 onClick={handleLogout}
-                className="cursor-pointer rounded-lg bg-red-500 px-4 py-2 text-white transition hover:bg-red-600"
+                className="hidden cursor-pointer rounded-lg bg-red-500 px-4 py-2 text-white transition hover:bg-red-600 lg:block"
               >
                 {t("navbar.logout")}
               </button>
