@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 import { useCurrency } from "../../context/CurrencyContext";
 
 /**
@@ -9,6 +11,7 @@ import { useCurrency } from "../../context/CurrencyContext";
  * that will actually be charged (cart / checkout / orders / payments stay USD).
  */
 function Price({ amount, from = "USD", className = "", approxClassName = "" }) {
+  const { t } = useTranslation();
   const { isConverted, formatBase, formatConverted } = useCurrency();
 
   const base = formatBase(amount, from);
@@ -24,7 +27,7 @@ function Price({ amount, from = "USD", className = "", approxClassName = "" }) {
         <span
           dir="ltr"
           className={`text-xs font-normal text-gray-400 ${approxClassName}`}
-          title="Approximate — you are charged in USD"
+          title={t("currency.approxTooltip")}
         >
           ≈ {converted}
         </span>

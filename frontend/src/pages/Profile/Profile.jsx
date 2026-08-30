@@ -90,7 +90,7 @@ function Profile() {
       const storedUser = getStoredUser();
 
       if (!storedUser?.id) {
-        setError("Unable to find your account information.");
+        setError(t("profile.errNoAccount"));
         return;
       }
 

@@ -82,7 +82,8 @@
     "loading": "Chargement de votre préférence de devise...",
     "loadError": "Impossible de charger votre préférence de devise.",
     "saveError": "Échec de l'enregistrement de votre préférence de devise. Réessayez.",
-    "approxNote": "Les montants convertis sont approximatifs. Le panier et les paiements sont toujours traités en USD."
+    "approxNote": "Les montants convertis sont approximatifs. Le panier et les paiements sont toujours traités en USD.",
+    "approxTooltip": "Approximatif — vous êtes facturé en USD"
   },
   "notifications": {
     "title": "Notifications",

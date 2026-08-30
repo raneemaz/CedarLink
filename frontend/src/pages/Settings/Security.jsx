@@ -363,7 +363,7 @@ function Security() {
 
   const handleStartRecoveryCodeRegeneration = async () => {
     if (!regeneratePassword) {
-      toast.error("Please enter your current password first.");
+      toast.error(t("security.errEnterPasswordFirst"));
       return;
     }
 
@@ -387,7 +387,7 @@ function Security() {
       const token = response.data?.challenge_token || "";
 
       if (!token) {
-        toast.error("Unable to create a security challenge.");
+        toast.error(t("security.errCreateChallenge"));
         return;
       }
 
@@ -473,7 +473,7 @@ function Security() {
 
   const handleDisableTwoFactor = async () => {
     if (!disableCode.trim()) {
-      toast.error("Please enter your verification code.");
+      toast.error(t("security.errEnterYourCode"));
       return;
     }
 
