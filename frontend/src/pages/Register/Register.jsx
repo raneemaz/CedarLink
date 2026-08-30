@@ -10,6 +10,7 @@ import api from "../../services/api";
 function Register() {
   const navigate = useNavigate();
 
+  const [role, setRole] = useState("customer");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -49,7 +50,8 @@ function Register() {
         email,
         phone,
         password,
-        role: "customer",
+        // The API's own allow-list is the real guard (customer | vendor only).
+        role: role === "vendor" ? "vendor" : "customer",
         verification_method: verificationMethod,
       });
 
@@ -102,6 +104,56 @@ function Register() {
         <p className="text-center text-gray-500 mt-2 mb-8">
           Create your account
         </p>
+
+        {/* Account type — the first decision a new user makes */}
+        <div className="mb-6">
+          <p className="mb-3 block text-sm font-medium text-gray-700">
+            What brings you to CedarLink?
+          </p>
+
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setRole("customer")}
+              className={`rounded-xl border-2 p-4 text-left transition ${
+                role === "customer"
+                  ? "border-green-600 bg-green-50"
+                  : "border-gray-200 hover:border-gray-300"
+              }`}
+            >
+              <span className="block font-semibold text-gray-900">
+                I want to shop
+              </span>
+              <span className="mt-1 block text-xs text-gray-500">
+                Browse and buy from local stores
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setRole("vendor")}
+              className={`rounded-xl border-2 p-4 text-left transition ${
+                role === "vendor"
+                  ? "border-green-600 bg-green-50"
+                  : "border-gray-200 hover:border-gray-300"
+              }`}
+            >
+              <span className="block font-semibold text-gray-900">
+                I want to sell
+              </span>
+              <span className="mt-1 block text-xs text-gray-500">
+                Open a store and list products
+              </span>
+            </button>
+          </div>
+
+          {role === "vendor" && (
+            <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
+              Your store will need administrator approval before customers
+              can see it. You can set it up right after signing up.
+            </p>
+          )}
+        </div>
 
         <Input
           label="First Name"
