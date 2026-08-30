@@ -5,8 +5,15 @@ import { useAuth } from "../../../context/AuthContext";
 import api from "../../../services/api";
 import logo from "../../../assets/Logoo.png";
 
-import { Search, ShoppingCart, User, Menu } from "lucide-react";
+import { Search, ShoppingCart, User, Menu, X } from "lucide-react";
 import NotificationBell from "../../notifications/NotificationBell";
+
+const NAV_LINKS = [
+  { to: "/", key: "home" },
+  { to: "/products", key: "products" },
+  { to: "/categories", key: "categories" },
+  { to: "/stores", key: "stores" },
+];
 
 const Navbar = () => {
   const { user, logout, isAuthenticated } = useAuth();
@@ -15,6 +22,16 @@ const Navbar = () => {
 
   const [cartCount, setCartCount] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Role-aware console links.
+  const roleLinks = [];
+  if (user?.role === "vendor") {
+    roleLinks.push({ to: "/vendor/store", label: t("navbar.myStore") });
+  }
+  if (user?.role === "admin") {
+    roleLinks.push({ to: "/admin", label: t("navbar.admin") });
+  }
 
   const handleSearchSubmit = (event) => {
     event.preventDefault();
@@ -61,6 +78,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     logout();
+    setMobileOpen(false);
     navigate("/");
   };
 
@@ -187,6 +205,16 @@ const Navbar = () => {
 
                 {/* Profile Dropdown */}
                 <div className="absolute right-0 top-full mt-1 hidden w-48 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg group-hover:block">
+                  {roleLinks.map((link) => (
+                    <Link
+                      key={link.to}
+                      to={link.to}
+                      className="block cursor-pointer px-4 py-3 text-sm font-medium text-emerald-700 transition hover:bg-slate-100"
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+
                   <Link
                     to="/profile"
                     className="block cursor-pointer px-4 py-3 text-sm text-slate-700 transition hover:bg-slate-100 hover:text-emerald-700"
@@ -216,12 +244,94 @@ const Navbar = () => {
           <button
             type="button"
             aria-label={t("navbar.menu")}
+            aria-expanded={mobileOpen}
+            onClick={() => setMobileOpen((open) => !open)}
             className="lg:hidden"
           >
-            <Menu size={28} />
+            {mobileOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
         </div>
       </div>
+
+      {/* Mobile drawer */}
+      {mobileOpen && (
+        <div className="border-t border-slate-200 bg-white px-4 py-3 lg:hidden">
+          <nav className="flex flex-col">
+            {NAV_LINKS.map((link) => (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                end={link.to === "/"}
+                onClick={() => setMobileOpen(false)}
+                className={({ isActive }) =>
+                  `rounded-lg px-3 py-2.5 text-sm font-medium ${
+                    isActive
+                      ? "bg-emerald-50 text-emerald-700"
+                      : "text-slate-700 hover:bg-slate-100"
+                  }`
+                }
+              >
+                {t(`navbar.${link.key}`)}
+              </NavLink>
+            ))}
+
+            <div className="my-2 border-t border-slate-100" />
+
+            {isAuthenticated ? (
+              <>
+                {roleLinks.map((link) => (
+                  <Link
+                    key={link.to}
+                    to={link.to}
+                    onClick={() => setMobileOpen(false)}
+                    className="rounded-lg px-3 py-2.5 text-sm font-medium text-emerald-700 hover:bg-slate-100"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+                <Link
+                  to="/profile"
+                  onClick={() => setMobileOpen(false)}
+                  className="rounded-lg px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-100"
+                >
+                  {t("navbar.myProfile")}
+                </Link>
+                <Link
+                  to="/settings"
+                  onClick={() => setMobileOpen(false)}
+                  className="rounded-lg px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-100"
+                >
+                  {t("navbar.settings")}
+                </Link>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="mt-1 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-red-600 hover:bg-red-50"
+                >
+                  {t("navbar.logout")}
+                </button>
+              </>
+            ) : (
+              <div className="flex gap-3 px-3 py-2">
+                <Link
+                  to="/login"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex-1 rounded-lg border border-emerald-700 px-4 py-2 text-center font-medium text-emerald-700"
+                >
+                  {t("navbar.login")}
+                </Link>
+                <Link
+                  to="/register"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex-1 rounded-lg bg-emerald-700 px-4 py-2 text-center font-medium text-white"
+                >
+                  {t("navbar.register")}
+                </Link>
+              </div>
+            )}
+          </nav>
+        </div>
+      )}
     </nav>
   );
 };
