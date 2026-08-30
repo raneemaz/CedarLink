@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import api from "../../services/api";
 
 function Profile() {
+  const { t } = useTranslation();
   const [profile, setProfile] = useState({
     first_name: "",
     last_name: "",
@@ -33,7 +35,7 @@ function Profile() {
     const storedUser = getStoredUser();
 
     if (!storedUser?.id) {
-      setError("Unable to find your account information.");
+      setError(t("profile.errNoAccount"));
       setLoading(false);
       return;
     }
@@ -55,7 +57,7 @@ function Profile() {
 
         setError(
           err.response?.data?.message ||
-            "Failed to load your profile. Please try again."
+            t("profile.errLoad")
         );
       } finally {
         setLoading(false);
@@ -63,7 +65,7 @@ function Profile() {
     };
 
     fetchProfile();
-  }, []);
+  }, [t]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -127,7 +129,7 @@ function Profile() {
 
       setSuccess(
         response.data?.message ||
-          "Profile updated successfully."
+          t("profile.toastUpdated")
       );
     } catch (err) {
       console.error("Failed to update profile:", err);
@@ -135,7 +137,7 @@ function Profile() {
       setError(
         err.response?.data?.message ||
           err.message ||
-          "Failed to update your profile. Please try again."
+          t("profile.errUpdate")
       );
     } finally {
       setSaving(false);
@@ -145,7 +147,7 @@ function Profile() {
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <p className="text-gray-600">Loading your profile...</p>
+        <p className="text-gray-600">{t("profile.loading")}</p>
       </div>
     );
   }
@@ -156,11 +158,11 @@ function Profile() {
         <div className="rounded-2xl bg-white p-8 shadow-md">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900">
-              My Profile
+              {t("profile.title")}
             </h1>
 
             <p className="mt-2 text-gray-600">
-              Manage your personal account information.
+              {t("profile.subtitle")}
             </p>
           </div>
 
@@ -183,7 +185,7 @@ function Profile() {
                   htmlFor="first_name"
                   className="mb-2 block text-sm font-medium text-gray-700"
                 >
-                  First Name
+                  {t("profile.firstName")}
                 </label>
 
                 <input
@@ -202,7 +204,7 @@ function Profile() {
                   htmlFor="last_name"
                   className="mb-2 block text-sm font-medium text-gray-700"
                 >
-                  Last Name
+                  {t("profile.lastName")}
                 </label>
 
                 <input
@@ -222,7 +224,7 @@ function Profile() {
                 htmlFor="email"
                 className="mb-2 block text-sm font-medium text-gray-700"
               >
-                Email
+                {t("profile.email")}
               </label>
 
               <input
@@ -241,7 +243,7 @@ function Profile() {
                 htmlFor="phone"
                 className="mb-2 block text-sm font-medium text-gray-700"
               >
-                Phone
+                {t("profile.phone")}
               </label>
 
               <input
@@ -260,7 +262,7 @@ function Profile() {
                 disabled={saving}
                 className="cursor-pointer rounded-lg bg-green-700 px-6 py-3 font-semibold text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {saving ? "Saving..." : "Save Changes"}
+                {saving ? t("profile.saving") : t("profile.save")}
               </button>
             </div>
           </form>

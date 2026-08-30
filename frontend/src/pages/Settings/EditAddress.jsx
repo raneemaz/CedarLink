@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import api from "../../services/api";
 import BackLink from "../../components/common/BackLink";
 
 function EditAddress() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { id } = useParams();
 
   const [formData, setFormData] = useState({
@@ -43,7 +45,7 @@ function EditAddress() {
 
         const message =
           error.response?.data?.message ||
-          "Failed to load address.";
+          t("addresses.errUpdate");
 
         toast.error(message);
 
@@ -54,7 +56,7 @@ function EditAddress() {
     };
 
     fetchAddress();
-  }, [id, navigate]);
+  }, [id, navigate, t]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -73,7 +75,7 @@ function EditAddress() {
     try {
       await api.put(`/addresses/${id}`, formData);
 
-      toast.success("Address updated successfully.");
+      toast.success(t("addresses.toastUpdated"));
 
       navigate("/settings/addresses");
     } catch (error) {
@@ -81,7 +83,7 @@ function EditAddress() {
 
       const message =
         error.response?.data?.message ||
-        "Failed to update address.";
+        t("addresses.errUpdateSave");
 
       toast.error(message);
     } finally {
@@ -94,7 +96,7 @@ function EditAddress() {
       <div className="min-h-screen bg-gray-50 px-6 py-10">
         <div className="mx-auto max-w-3xl">
           <p className="text-gray-500">
-            Loading address...
+            {t("addresses.formLoading")}
           </p>
         </div>
       </div>
@@ -111,15 +113,15 @@ function EditAddress() {
             onClick={() => navigate("/settings/addresses")}
             className="mb-4"
           >
-            Back to Saved Addresses
+            {t("backLink.savedAddresses")}
           </BackLink>
 
           <h1 className="text-3xl font-bold text-gray-900">
-            Edit Address
+            {t("addresses.formEditTitle")}
           </h1>
 
           <p className="mt-2 text-sm text-gray-600">
-            Update your saved delivery address.
+            {t("addresses.formEditSubtitle")}
           </p>
         </div>
 
@@ -136,7 +138,7 @@ function EditAddress() {
                 htmlFor="label"
                 className="mb-2 block text-sm font-medium text-gray-700"
               >
-                Address Label
+                {t("addresses.labelField")}
               </label>
 
               <select
@@ -147,10 +149,10 @@ function EditAddress() {
                 required
                 className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
               >
-                <option value="">Select a label</option>
-                <option value="Home">Home</option>
-                <option value="Work">Work</option>
-                <option value="Other">Other</option>
+                <option value="">{t("addresses.selectLabel")}</option>
+                <option value="Home">{t("addresses.labelHome")}</option>
+                <option value="Work">{t("addresses.labelWork")}</option>
+                <option value="Other">{t("addresses.labelOther")}</option>
               </select>
             </div>
 
@@ -160,7 +162,7 @@ function EditAddress() {
                 htmlFor="recipient_name"
                 className="mb-2 block text-sm font-medium text-gray-700"
               >
-                Recipient Name
+                {t("addresses.recipientName")}
               </label>
 
               <input
@@ -169,7 +171,7 @@ function EditAddress() {
                 type="text"
                 value={formData.recipient_name}
                 onChange={handleChange}
-                placeholder="Enter recipient name"
+                placeholder={t("addresses.recipientNamePlaceholder")}
                 required
                 className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
               />
@@ -181,7 +183,7 @@ function EditAddress() {
                 htmlFor="phone"
                 className="mb-2 block text-sm font-medium text-gray-700"
               >
-                Phone
+                {t("addresses.phone")}
               </label>
 
               <input
@@ -190,7 +192,7 @@ function EditAddress() {
                 type="tel"
                 value={formData.phone}
                 onChange={handleChange}
-                placeholder="Enter phone number"
+                placeholder={t("addresses.phonePlaceholder")}
                 required
                 className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
               />
@@ -202,7 +204,7 @@ function EditAddress() {
                 htmlFor="address_line"
                 className="mb-2 block text-sm font-medium text-gray-700"
               >
-                Address
+                {t("addresses.addressField")}
               </label>
 
               <input
@@ -211,7 +213,7 @@ function EditAddress() {
                 type="text"
                 value={formData.address_line}
                 onChange={handleChange}
-                placeholder="Street, building, apartment..."
+                placeholder={t("addresses.addressPlaceholder")}
                 required
                 className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
               />
@@ -223,7 +225,7 @@ function EditAddress() {
                 htmlFor="city"
                 className="mb-2 block text-sm font-medium text-gray-700"
               >
-                City
+                {t("addresses.city")}
               </label>
 
               <input
@@ -232,7 +234,7 @@ function EditAddress() {
                 type="text"
                 value={formData.city}
                 onChange={handleChange}
-                placeholder="Enter city"
+                placeholder={t("addresses.cityPlaceholder")}
                 required
                 className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
               />
@@ -244,7 +246,7 @@ function EditAddress() {
                 htmlFor="delivery_instructions"
                 className="mb-2 block text-sm font-medium text-gray-700"
               >
-                Delivery Instructions
+                {t("addresses.deliveryInstructions")}
               </label>
 
               <textarea
@@ -252,7 +254,7 @@ function EditAddress() {
                 name="delivery_instructions"
                 value={formData.delivery_instructions}
                 onChange={handleChange}
-                placeholder="Example: Leave at the door"
+                placeholder={t("addresses.deliveryInstructionsPlaceholder")}
                 rows="3"
                 className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
               />
@@ -274,12 +276,11 @@ function EditAddress() {
                   htmlFor="is_default"
                   className="cursor-pointer text-sm font-medium text-gray-800"
                 >
-                  Set as default address
+                  {t("addresses.setDefaultAddress")}
                 </label>
 
                 <p className="mt-1 text-xs text-gray-600">
-                  Your default address will be selected automatically during
-                  checkout.
+                  {t("addresses.setDefaultAddressDesc")}
                 </p>
               </div>
             </div>
@@ -295,7 +296,7 @@ function EditAddress() {
               disabled={saving}
               className="cursor-pointer rounded-lg border border-gray-300 px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Cancel
+              {t("addresses.cancel")}
             </button>
 
             <button
@@ -303,7 +304,7 @@ function EditAddress() {
               disabled={saving}
               className="cursor-pointer rounded-lg bg-green-700 px-5 py-3 text-sm font-semibold text-white hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {saving ? "Saving..." : "Save Changes"}
+              {saving ? t("common.working") : t("addresses.saveEdit")}
             </button>
 
           </div>

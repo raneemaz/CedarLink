@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import api from "../../services/api";
 import BackLink from "../../components/common/BackLink";
 
 function SavedAddresses() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [addresses, setAddresses] = useState([]);
@@ -20,7 +22,7 @@ function SavedAddresses() {
 
       const message =
         error.response?.data?.message ||
-        "Failed to load your saved addresses.";
+        t("addresses.errLoad");
 
       toast.error(message);
     } finally {
@@ -30,13 +32,13 @@ function SavedAddresses() {
 
   useEffect(() => {
     fetchAddresses();
-  }, []);
+  }, [t]);
 
   const handleSetDefault = async (addressId) => {
     try {
       await api.patch(`/addresses/${addressId}/default`);
 
-      toast.success("Default address updated.");
+      toast.success(t("addresses.toastDefault"));
 
       // Reload addresses so the new default is reflected immediately.
       fetchAddresses();
@@ -45,16 +47,14 @@ function SavedAddresses() {
 
       const message =
         error.response?.data?.message ||
-        "Failed to update default address.";
+        t("addresses.errDefault");
 
       toast.error(message);
     }
   };
 
   const handleDelete = async (addressId) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this address?"
-    );
+    const confirmed = window.confirm(t("addresses.deleteConfirm"));
 
     if (!confirmed) {
       return;
@@ -63,7 +63,7 @@ function SavedAddresses() {
     try {
       await api.delete(`/addresses/${addressId}`);
 
-      toast.success("Address deleted successfully.");
+      toast.success(t("addresses.toastDeleted"));
 
       fetchAddresses();
     } catch (error) {
@@ -71,7 +71,7 @@ function SavedAddresses() {
 
       const message =
         error.response?.data?.message ||
-        "Failed to delete address.";
+        t("addresses.errDelete");
 
       toast.error(message);
     }
@@ -81,7 +81,7 @@ function SavedAddresses() {
     return (
       <div className="min-h-screen bg-gray-50 px-6 py-10">
         <div className="mx-auto max-w-4xl">
-          <p className="text-gray-500">Loading your saved addresses...</p>
+          <p className="text-gray-500">{t("addresses.loading")}</p>
         </div>
       </div>
     );
@@ -93,15 +93,15 @@ function SavedAddresses() {
         {/* Header */}
         <div className="mb-8">
           <BackLink onClick={() => navigate("/settings")} className="mb-4">
-            Back to Settings
+            {t("backLink.settings")}
           </BackLink>
 
           <h1 className="text-3xl font-bold text-gray-900">
-            Saved Addresses
+            {t("addresses.title")}
           </h1>
 
           <p className="mt-2 text-sm text-gray-600">
-            Manage your delivery and billing addresses.
+            {t("addresses.subtitle")}
           </p>
         </div>
 
@@ -112,7 +112,7 @@ function SavedAddresses() {
             style={{ cursor: "pointer" }}
             className="rounded-lg bg-green-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-green-800"
           >
-            + Add New Address
+            + {t("addresses.addNew")}
           </button>
         </div>
 
@@ -122,18 +122,18 @@ function SavedAddresses() {
             <div className="mb-4 text-4xl">📍</div>
 
             <h2 className="text-lg font-semibold text-gray-900">
-              No saved addresses
+              {t("addresses.emptyTitle")}
             </h2>
 
             <p className="mt-2 text-sm text-gray-500">
-              Add an address to make checkout faster and easier.
+              {t("addresses.emptyBody")}
             </p>
 
             <button
               onClick={() => navigate("/settings/addresses/new")}
               className="mt-6 rounded-lg bg-green-700 px-5 py-3 text-sm font-semibold text-white hover:bg-green-800"
             >
-              Add Your First Address
+              {t("addresses.addFirst")}
             </button>
           </div>
         ) : (
@@ -154,7 +154,7 @@ function SavedAddresses() {
 
                       {address.is_default && (
                         <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
-                          Default
+                          {t("common.default")}
                         </span>
                       )}
                     </div>
@@ -182,7 +182,7 @@ function SavedAddresses() {
                   {address.delivery_instructions && (
                     <p className="mt-3 text-sm text-gray-500">
                       <span className="font-medium text-gray-700">
-                        Delivery instructions:
+                        {t("addresses.deliveryInstructionsLabel")}
                       </span>{" "}
                       {address.delivery_instructions}
                     </p>
@@ -196,7 +196,7 @@ function SavedAddresses() {
                       onClick={() => handleSetDefault(address.id)}
                       className="rounded-lg border border-green-700 px-4 py-2 text-sm font-medium text-green-700 hover:bg-green-50"
                     >
-                      Set as Default
+                      {t("addresses.setAsDefault")}
                     </button>
                   )}
 
@@ -206,14 +206,14 @@ function SavedAddresses() {
                     }
                     className="cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
                   >
-                    Edit
+                    {t("addresses.edit")}
                   </button>
 
                   <button
                     onClick={() => handleDelete(address.id)}
                     className="cursor-pointer rounded-lg border border-red-300 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
                   >
-                    Delete
+                    {t("addresses.delete")}
                   </button>
                 </div>
               </div>

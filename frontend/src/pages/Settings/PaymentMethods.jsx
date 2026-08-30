@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { CreditCard } from "lucide-react";
 import BackLink from "../../components/common/BackLink";
 import api from "../../services/api";
 
 function PaymentMethods() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [paymentMethods, setPaymentMethods] = useState([]);
@@ -21,7 +23,7 @@ function PaymentMethods() {
 
       const message =
         error.response?.data?.message ||
-        "Failed to load your payment methods.";
+        t("paymentMethods.errLoad");
 
       toast.error(message);
     } finally {
@@ -31,7 +33,7 @@ function PaymentMethods() {
 
   useEffect(() => {
     fetchPaymentMethods();
-  }, []);
+  }, [t]);
 
   const handleSetDefault = async (paymentMethodId) => {
     try {
@@ -39,7 +41,7 @@ function PaymentMethods() {
         `/payment-methods/${paymentMethodId}/default`
       );
 
-      toast.success("Default payment method updated.");
+      toast.success(t("paymentMethods.toastDefault"));
 
       fetchPaymentMethods();
     } catch (error) {
@@ -50,16 +52,14 @@ function PaymentMethods() {
 
       const message =
         error.response?.data?.message ||
-        "Failed to update default payment method.";
+        t("paymentMethods.errDefault");
 
       toast.error(message);
     }
   };
 
   const handleDelete = async (paymentMethodId) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this payment method?"
-    );
+    const confirmed = window.confirm(t("paymentMethods.deleteConfirm"));
 
     if (!confirmed) {
       return;
@@ -68,7 +68,7 @@ function PaymentMethods() {
     try {
       await api.delete(`/payment-methods/${paymentMethodId}`);
 
-      toast.success("Payment method deleted successfully.");
+      toast.success(t("paymentMethods.toastDeleted"));
 
       fetchPaymentMethods();
     } catch (error) {
@@ -79,7 +79,7 @@ function PaymentMethods() {
 
       const message =
         error.response?.data?.message ||
-        "Failed to delete payment method.";
+        t("paymentMethods.errDelete");
 
       toast.error(message);
     }
@@ -90,7 +90,7 @@ function PaymentMethods() {
       <div className="min-h-screen bg-gray-50 px-6 py-10">
         <div className="mx-auto max-w-4xl">
           <p className="text-gray-500">
-            Loading your payment methods...
+            {t("paymentMethods.loading")}
           </p>
         </div>
       </div>
@@ -103,15 +103,15 @@ function PaymentMethods() {
         {/* Header */}
         <div className="mb-8">
           <BackLink onClick={() => navigate("/settings")} className="mb-4">
-            Back to Settings
+            {t("backLink.settings")}
           </BackLink>
 
           <h1 className="text-3xl font-bold text-gray-900">
-            Payment Methods
+            {t("paymentMethods.title")}
           </h1>
 
           <p className="mt-2 text-sm text-gray-600">
-            Manage the cards saved to your account.
+            {t("paymentMethods.subtitle")}
           </p>
         </div>
 
@@ -124,7 +124,7 @@ function PaymentMethods() {
             }
             className="cursor-pointer rounded-lg bg-green-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-green-800"
           >
-            + Add Card
+            + {t("paymentMethods.addCard")}
           </button>
         </div>
 
@@ -137,12 +137,11 @@ function PaymentMethods() {
             />
 
             <h2 className="mt-4 text-lg font-semibold text-gray-900">
-              No Saved Cards
+              {t("paymentMethods.emptyTitle")}
             </h2>
 
             <p className="mt-2 text-sm text-gray-500">
-              You don't have any saved cards yet. Cash on Delivery is
-              available directly at checkout.
+              {t("paymentMethods.emptyBody")}
             </p>
 
             <button
@@ -152,7 +151,7 @@ function PaymentMethods() {
               }
               className="mt-6 cursor-pointer rounded-lg bg-green-700 px-5 py-3 text-sm font-semibold text-white hover:bg-green-800"
             >
-              Add Your First Card
+              {t("paymentMethods.addFirst")}
             </button>
           </div>
         ) : (
@@ -181,7 +180,7 @@ function PaymentMethods() {
 
                           {paymentMethod.is_default && (
                             <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
-                              Default
+                              {t("common.default")}
                             </span>
                           )}
                         </div>
@@ -206,7 +205,7 @@ function PaymentMethods() {
                         }
                         className="cursor-pointer rounded-lg border border-green-700 px-4 py-2 text-sm font-medium text-green-700 hover:bg-green-50"
                       >
-                        Set as Default
+                        {t("paymentMethods.setAsDefault")}
                       </button>
                     )}
 
@@ -219,7 +218,7 @@ function PaymentMethods() {
                       }
                       className="cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
                     >
-                      Edit
+                      {t("paymentMethods.edit")}
                     </button>
 
                     <button
@@ -229,7 +228,7 @@ function PaymentMethods() {
                       }
                       className="cursor-pointer rounded-lg border border-red-300 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
                     >
-                      Delete
+                      {t("paymentMethods.delete")}
                     </button>
                   </div>
                 </div>
