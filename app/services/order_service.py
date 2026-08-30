@@ -239,6 +239,7 @@ def _reserve_stock(product, quantity):
         update(Product)
         .where(Product.id == product.id, Product.stock >= quantity)
         .values(stock=Product.stock - quantity)
+        .execution_options(synchronize_session=False)
     )
 
     if reserved.rowcount == 0:
