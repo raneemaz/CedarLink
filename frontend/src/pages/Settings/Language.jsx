@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Check, Languages } from "lucide-react";
 import { toast } from "react-toastify";
@@ -30,23 +30,16 @@ function Language() {
     },
   ];
 
-  useEffect(() => {
-    const currentLanguage =
-      localStorage.getItem("cedarlink_language") || "en";
-
-    document.documentElement.lang = currentLanguage;
-    document.documentElement.dir =
-      currentLanguage === "ar" ? "rtl" : "ltr";
-  }, []);
-
   const handleSaveLanguage = () => {
-    localStorage.setItem("cedarlink_language", selectedLanguage);
+    try {
+      localStorage.setItem("cedarlink_language", selectedLanguage);
+    } catch {
+      /* storage unavailable — the switch below still applies for this session */
+    }
 
+    // i18n fires "languageChanged", which updates <html dir/lang> globally
+    // (see i18n.js). No need to touch the document here.
     i18n.changeLanguage(selectedLanguage);
-
-    document.documentElement.lang = selectedLanguage;
-    document.documentElement.dir =
-      selectedLanguage === "ar" ? "rtl" : "ltr";
 
     toast.success(t("language.saved"));
   };
