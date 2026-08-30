@@ -56,6 +56,10 @@ class Config:
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    # Auth-endpoint throttling (CL-10). In-memory is per-process — set a
+    # shared backend (e.g. redis://…) when running more than one worker.
+    RATELIMIT_STORAGE_URI = os.getenv("RATELIMIT_STORAGE_URI", "memory://")
+
     # Currency preference / display conversion.
     # Base currency is the currency every stored price, cart total, order
     # total and payment amount is expressed in. Conversion is display-only.

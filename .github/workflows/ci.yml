@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  backend:
+    name: Backend (lint · migrations · tests)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Lint
+        run: flake8 app tests run.py
+
+      - name: Migrations apply to an empty database
+        run: flask db upgrade
+        env:
+          FLASK_APP: run.py
+          FLASK_CONFIG: development
+          DATABASE_URL: sqlite:////tmp/ci_migrations.db
+
+      - name: Tests
+        run: pytest -q
+
+  frontend:
+    name: Frontend (lint · build on Linux)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - run: npm ci
+
+      - run: npm run lint
+
+      # Linux is case-sensitive — this is what catches an import that only
+      # resolves on Windows/macOS (e.g. pages/settings vs pages/Settings).
+      - run: npm run build
+        env:
+          VITE_API_URL: http://localhost:5000/api
