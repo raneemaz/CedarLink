@@ -693,6 +693,10 @@ def reset_password(challenge_token, code, new_password):
 
     user.password = generate_password_hash(new_password)
 
+    # Every token issued before now is dead — a stolen session cannot
+    # outlive the password it was riding on (CL-09).
+    user.tokens_revoked_at = utcnow()
+
     # Single use — the challenge cannot be replayed.
     challenge.consumed_at = utcnow()
 

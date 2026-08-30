@@ -101,6 +101,11 @@ def create_app(config_object=None):
 
     register_error_handlers(app)
 
+    # JWT revocation: logout + bulk revoke on suspend / reset (CL-09).
+    from app.services.token_service import register_jwt_callbacks
+
+    register_jwt_callbacks(jwt)
+
     @app.errorhandler(RequestEntityTooLarge)
     def handle_request_too_large(_error):
         # MAX_CONTENT_LENGTH aborts the request before the view runs, so this

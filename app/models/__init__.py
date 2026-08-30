@@ -16,3 +16,4 @@ from app.models.two_factor_recovery_code import TwoFactorRecoveryCode  # noqa: F
 from app.models.notification_preferences import NotificationPreferences  # noqa: F401
 from app.models.notification import Notification  # noqa: F401
 from app.models.shopping_preferences import ShoppingPreferences  # noqa: F401
+from app.models.token_denylist import TokenDenylist  # noqa: F401

@@ -58,6 +58,11 @@ class User(db.Model):
     suspended_at = db.Column(db.DateTime, nullable=True)
     suspension_reason = db.Column(db.String(255), nullable=True)
 
+    # Bulk JWT revocation (CL-09): any access/refresh token issued before
+    # this instant is rejected. Set on password reset, admin suspension and
+    # self-deactivation. Naive UTC, to match the token `iat` comparison.
+    tokens_revoked_at = db.Column(db.DateTime, nullable=True)
+
     created_at = db.Column(db.DateTime, server_default=db.func.now())
 
     updated_at = db.Column(
