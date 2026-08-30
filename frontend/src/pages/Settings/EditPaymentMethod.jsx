@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { CreditCard } from "lucide-react";
 import { toast } from "react-toastify";
 import BackLink from "../../components/common/BackLink";
@@ -9,6 +10,7 @@ import api from "../../services/api";
 
 function EditPaymentMethod() {
   const { id } = useParams();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [existingLast4, setExistingLast4] = useState("");
   const [existingBrand, setExistingBrand] = useState("");
@@ -37,7 +39,7 @@ function EditPaymentMethod() {
         const paymentMethod = response.data.payment_method;
 
         if (paymentMethod.type !== "card") {
-          throw new Error("Only saved cards can be edited");
+          throw new Error("card-type-required");
         }
 
         setExistingLast4(paymentMethod.last4 || "");
@@ -50,7 +52,7 @@ function EditPaymentMethod() {
       } catch (error) {
         console.error("Error loading card:", error);
         toast.error(
-          error.response?.data?.message || "Failed to load the saved card.",
+          error.response?.data?.message || t("paymentMethods.errLoadCard"),
         );
         navigate("/settings/payment-methods");
       } finally {
@@ -59,7 +61,7 @@ function EditPaymentMethod() {
     };
 
     fetchCard();
-  }, [id, navigate]);
+  }, [id, navigate, t]);
 
   const handleCardNumberChange = (event) => {
     let value = event.target.value.replace(/\D/g, "").slice(0, 19);
@@ -77,12 +79,12 @@ function EditPaymentMethod() {
     const cardNumber = formData.cardNumber.replace(/\D/g, "");
 
     if (!formData.label.trim()) {
-      toast.error("Please enter the cardholder name.");
+      toast.error(t("paymentMethods.errCardholderName"));
       return;
     }
 
     if (cardNumber && (cardNumber.length < 12 || cardNumber.length > 19)) {
-      toast.error("Please enter a valid card number.");
+      toast.error(t("paymentMethods.errValidNumber"));
       return;
     }
 
@@ -97,12 +99,12 @@ function EditPaymentMethod() {
         is_default: formData.is_default,
       });
 
-      toast.success("Card updated successfully.");
+      toast.success(t("paymentMethods.toastUpdated"));
       navigate("/settings/payment-methods");
     } catch (error) {
       console.error("Error updating card:", error);
       toast.error(
-        error.response?.data?.message || "Failed to update your card.",
+        error.response?.data?.message || t("paymentMethods.errUpdate"),
       );
     } finally {
       setSaving(false);
@@ -113,7 +115,7 @@ function EditPaymentMethod() {
     return (
       <div className="min-h-screen bg-gray-50 px-6 py-10">
         <div className="mx-auto max-w-3xl text-gray-500">
-          Loading saved card...
+          {t("paymentMethods.formLoading")}
         </div>
       </div>
     );
@@ -126,13 +128,13 @@ function EditPaymentMethod() {
           onClick={() => navigate("/settings/payment-methods")}
           className="mb-4"
         >
-          Back to Saved Cards
+          {t("backLink.savedCards")}
         </BackLink>
 
-        <h1 className="text-3xl font-bold text-gray-900">Edit Card</h1>
+        <h1 className="text-3xl font-bold text-gray-900">{t("paymentMethods.formEditTitle")}</h1>
 
         <p className="mt-2 text-sm text-gray-600">
-          Update the name, default selection, or number for this saved card.
+          {t("paymentMethods.formEditSubtitle")}
         </p>
 
         <form
@@ -160,7 +162,7 @@ function EditPaymentMethod() {
                 htmlFor="cardNumber"
                 className="mb-2 block text-sm font-medium text-gray-700"
               >
-                Replace Card Number
+                {t("paymentMethods.replaceCardNumber")}
               </label>
 
               <input
@@ -170,7 +172,7 @@ function EditPaymentMethod() {
                 autoComplete="cc-number"
                 value={formData.cardNumber}
                 onChange={handleCardNumberChange}
-                placeholder="Leave blank to keep the current card"
+                placeholder={t("paymentMethods.replaceCardPlaceholder")}
                 className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-green-600 focus:ring-2 focus:ring-green-100"
               />
             </div>
@@ -180,7 +182,7 @@ function EditPaymentMethod() {
                 htmlFor="cardLabel"
                 className="mb-2 block text-sm font-medium text-gray-700"
               >
-                Cardholder Name
+                {t("paymentMethods.cardholderName")}
               </label>
 
               <input
@@ -214,7 +216,7 @@ function EditPaymentMethod() {
 
               <span>
                 <span className="block text-sm font-medium text-gray-800">
-                  Set as default card
+                  {t("paymentMethods.setDefaultCard")}
                 </span>
                 <span className="mt-1 block text-xs text-gray-600">
                   Preselect this card at checkout when you do not choose Cash
@@ -230,7 +232,7 @@ function EditPaymentMethod() {
                 disabled={saving}
                 className="rounded-lg border border-gray-300 px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
               >
-                Cancel
+                {t("paymentMethods.cancel")}
               </button>
 
               <button
@@ -238,7 +240,7 @@ function EditPaymentMethod() {
                 disabled={saving}
                 className="cursor-pointer rounded-lg bg-green-700 px-5 py-3 text-sm font-semibold text-white hover:bg-green-800 disabled:opacity-50"
               >
-                {saving ? "Saving..." : "Save Changes"}
+                {saving ? t("common.working") : t("profile.save")}
               </button>
             </div>
           </div>

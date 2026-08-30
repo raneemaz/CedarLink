@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import BackLink from "../../components/common/BackLink";
 import api from "../../services/api";
 
 function AddAddress() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -36,7 +38,7 @@ function AddAddress() {
     try {
       await api.post("/addresses", formData);
 
-      toast.success("Address added successfully.");
+      toast.success(t("addresses.toastAdded"));
 
       navigate("/settings/addresses");
     } catch (error) {
@@ -44,7 +46,7 @@ function AddAddress() {
 
       const message =
         error.response?.data?.message ||
-        "Failed to add address.";
+        t("addresses.errAdd");
 
       toast.error(message);
     } finally {
@@ -61,15 +63,15 @@ function AddAddress() {
             onClick={() => navigate("/settings/addresses")}
             className="mb-4"
           >
-            Back to Saved Addresses
+            {t("backLink.savedAddresses")}
           </BackLink>
 
           <h1 className="text-3xl font-bold text-gray-900">
-            Add New Address
+            {t("addresses.formAddTitle")}
           </h1>
 
           <p className="mt-2 text-sm text-gray-600">
-            Add a delivery address to your CedarLink account.
+            {t("addresses.formAddSubtitle")}
           </p>
         </div>
 
@@ -85,7 +87,7 @@ function AddAddress() {
                 htmlFor="label"
                 className="mb-2 block text-sm font-medium text-gray-700"
               >
-                Address Label
+                {t("addresses.labelField")}
               </label>
 
               <select
@@ -96,10 +98,10 @@ function AddAddress() {
                 required
                 className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
               >
-                <option value="">Select a label</option>
-                <option value="Home">Home</option>
-                <option value="Work">Work</option>
-                <option value="Other">Other</option>
+                <option value="">{t("addresses.selectLabel")}</option>
+                <option value="Home">{t("addresses.labelHome")}</option>
+                <option value="Work">{t("addresses.labelWork")}</option>
+                <option value="Other">{t("addresses.labelOther")}</option>
               </select>
             </div>
 
@@ -109,7 +111,7 @@ function AddAddress() {
                 htmlFor="recipient_name"
                 className="mb-2 block text-sm font-medium text-gray-700"
               >
-                Recipient Name
+                {t("addresses.recipientName")}
               </label>
 
               <input
@@ -118,7 +120,7 @@ function AddAddress() {
                 type="text"
                 value={formData.recipient_name}
                 onChange={handleChange}
-                placeholder="Enter recipient name"
+                placeholder={t("addresses.recipientNamePlaceholder")}
                 required
                 className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
               />
@@ -130,7 +132,7 @@ function AddAddress() {
                 htmlFor="phone"
                 className="mb-2 block text-sm font-medium text-gray-700"
               >
-                Phone
+                {t("addresses.phone")}
               </label>
 
               <input
@@ -139,7 +141,7 @@ function AddAddress() {
                 type="tel"
                 value={formData.phone}
                 onChange={handleChange}
-                placeholder="Enter phone number"
+                placeholder={t("addresses.phonePlaceholder")}
                 required
                 className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
               />
@@ -151,7 +153,7 @@ function AddAddress() {
                 htmlFor="address_line"
                 className="mb-2 block text-sm font-medium text-gray-700"
               >
-                Address
+                {t("addresses.addressField")}
               </label>
 
               <input
@@ -160,7 +162,7 @@ function AddAddress() {
                 type="text"
                 value={formData.address_line}
                 onChange={handleChange}
-                placeholder="Street, building, apartment..."
+                placeholder={t("addresses.addressPlaceholder")}
                 required
                 className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
               />
@@ -172,7 +174,7 @@ function AddAddress() {
                 htmlFor="city"
                 className="mb-2 block text-sm font-medium text-gray-700"
               >
-                City
+                {t("addresses.city")}
               </label>
 
               <input
@@ -181,7 +183,7 @@ function AddAddress() {
                 type="text"
                 value={formData.city}
                 onChange={handleChange}
-                placeholder="Enter city"
+                placeholder={t("addresses.cityPlaceholder")}
                 required
                 className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
               />
@@ -193,7 +195,7 @@ function AddAddress() {
                 htmlFor="delivery_instructions"
                 className="mb-2 block text-sm font-medium text-gray-700"
               >
-                Delivery Instructions
+                {t("addresses.deliveryInstructions")}
               </label>
 
               <textarea
@@ -201,7 +203,7 @@ function AddAddress() {
                 name="delivery_instructions"
                 value={formData.delivery_instructions}
                 onChange={handleChange}
-                placeholder="Example: Leave at the door"
+                placeholder={t("addresses.deliveryInstructionsPlaceholder")}
                 rows="3"
                 className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
               />
@@ -223,12 +225,11 @@ function AddAddress() {
                   htmlFor="is_default"
                   className="cursor-pointer text-sm font-medium text-gray-800"
                 >
-                  Set as default address
+                  {t("addresses.setDefaultAddress")}
                 </label>
 
                 <p className="mt-1 text-xs text-gray-600">
-                  Your default address will be selected automatically during
-                  checkout.
+                  {t("addresses.setDefaultAddressDesc")}
                 </p>
               </div>
             </div>
@@ -242,7 +243,7 @@ function AddAddress() {
               disabled={saving}
               className="cursor-pointer rounded-lg border border-gray-300 px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Cancel
+              {t("addresses.cancel")}
             </button>
 
             <button
@@ -250,7 +251,7 @@ function AddAddress() {
               disabled={saving}
               className="cursor-pointer rounded-lg bg-green-700 px-5 py-3 text-sm font-semibold text-white hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {saving ? "Saving..." : "Save Address"}
+              {saving ? t("common.working") : t("addresses.saveAdd")}
             </button>
           </div>
         </form>
