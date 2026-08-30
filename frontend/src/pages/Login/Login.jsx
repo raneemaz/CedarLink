@@ -3,12 +3,14 @@ import Input from "../../components/common/Input/Input";
 import Button from "../../components/common/Button/Button";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 import api from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
 
 function Login() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -43,7 +45,7 @@ function Login() {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      toast.error("Please enter both email and password.");
+      toast.error(t("login.errEnterBoth"));
       return;
     }
 
@@ -56,59 +58,41 @@ function Login() {
         password,
       });
 
-      console.log("Login response:", response.data);
-
       if (response.data.verification_required) {
         setChallengeToken(response.data.challenge_token);
         setTwoFactorRequired(true);
 
-        toast.info("Verification is required.");
+        toast.info(t("login.infoVerificationRequired"));
         return;
       }
 
-      const userData =
-        response.data.user ||
-        response.data;
-
-      const accessToken =
-        response.data.access_token ||
-        response.data.token;
-
-      const refreshToken =
-        response.data.refresh_token ||
-        null;
+      const userData = response.data.user || response.data;
+      const accessToken = response.data.access_token || response.data.token;
+      const refreshToken = response.data.refresh_token || null;
 
       if (!userData) {
-        toast.error("Login succeeded, but user information is missing.");
+        toast.error(t("login.errUserInfoMissing"));
         return;
       }
 
-      login(
-        userData,
-        accessToken,
-        refreshToken
-      );
+      login(userData, accessToken, refreshToken);
 
-      toast.success("Login successful!");
+      toast.success(t("login.toastSuccess"));
       redirectUser(userData);
     } catch (error) {
-      console.log(error);
-
       if (error.response?.data?.account_deactivated) {
         setDeactivated(true);
         toast.info(
-          error.response.data.message ||
-            "Your account is deactivated.",
+          error.response.data.message || t("login.deactivatedTitle"),
         );
         return;
       }
 
-      const message =
+      toast.error(
         error.response?.data?.message ||
-        error.message ||
-        "Login failed.";
-
-      toast.error(message);
+          error.message ||
+          t("login.fallbackFailed"),
+      );
     } finally {
       setLoading(false);
     }
@@ -122,15 +106,13 @@ function Login() {
         password,
       });
       toast.success(
-        response.data?.message ||
-          "Your account has been reactivated.",
+        response.data?.message || t("login.reactivatedFallback"),
       );
       setDeactivated(false);
       await handleLogin();
     } catch (error) {
       toast.error(
-        error.response?.data?.message ||
-          "Could not reactivate your account.",
+        error.response?.data?.message || t("login.reactivateError"),
       );
     } finally {
       setReactivating(false);
@@ -141,8 +123,8 @@ function Login() {
     if (!verificationCode) {
       toast.error(
         useRecoveryCode
-          ? "Please enter a recovery code."
-          : "Please enter the verification code."
+          ? t("login.errEnterRecovery")
+          : t("login.errEnterCode"),
       );
       return;
     }
@@ -156,42 +138,25 @@ function Login() {
         use_recovery_code: useRecoveryCode,
       });
 
-      console.log("2FA verification response:", response.data);
-
-      const userData =
-        response.data.user ||
-        response.data;
-
-      const accessToken =
-        response.data.access_token ||
-        response.data.token;
-
-      const refreshToken =
-        response.data.refresh_token ||
-        null;
+      const userData = response.data.user || response.data;
+      const accessToken = response.data.access_token || response.data.token;
+      const refreshToken = response.data.refresh_token || null;
 
       if (!userData) {
-        toast.error("Verification succeeded, but user information is missing.");
+        toast.error(t("login.errVerifyUserInfoMissing"));
         return;
       }
 
-      login(
-        userData,
-        accessToken,
-        refreshToken
-      );
+      login(userData, accessToken, refreshToken);
 
-      toast.success("Verification successful!");
+      toast.success(t("login.toastVerifySuccess"));
       redirectUser(userData);
     } catch (error) {
-      console.log(error);
-
-      const message =
+      toast.error(
         error.response?.data?.message ||
-        error.message ||
-        "Verification failed.";
-
-      toast.error(message);
+          error.message ||
+          t("login.fallbackVerifyFailed"),
+      );
     } finally {
       setLoading(false);
     }
@@ -199,7 +164,7 @@ function Login() {
 
   const handleResendCode = async () => {
     if (!challengeToken) {
-      toast.error("Your verification session is missing. Please log in again.");
+      toast.error(t("login.errSessionMissing"));
       return;
     }
 
@@ -214,18 +179,13 @@ function Login() {
         setChallengeToken(response.data.challenge_token);
       }
 
-      toast.success(
-        response.data.message || "A new verification code was sent."
-      );
+      toast.success(response.data.message || t("login.fallbackResend"));
     } catch (error) {
-      console.log(error);
-
-      const message =
+      toast.error(
         error.response?.data?.message ||
-        error.message ||
-        "Failed to resend the verification code.";
-
-      toast.error(message);
+          error.message ||
+          t("login.fallbackResend"),
+      );
     } finally {
       setResending(false);
     }
@@ -243,28 +203,28 @@ function Login() {
       <main className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-8">
         <Card className="w-full max-w-md p-6 sm:p-8">
           <h1 className="text-2xl sm:text-3xl font-bold text-center text-green-700">
-            Two-Factor Authentication
+            {t("auth.twoFactorTitle")}
           </h1>
 
           <p className="text-center text-sm text-gray-500 mt-2 mb-6">
             {useRecoveryCode
-              ? "Enter one of your recovery codes to continue."
-              : "Enter the verification code to complete your login."}
+              ? t("login.promptRecovery")
+              : t("login.promptCode")}
           </p>
 
           <Input
             label={
               useRecoveryCode
-                ? "Recovery Code"
-                : "Verification Code"
+                ? t("auth.recoveryCode")
+                : t("auth.verificationCode")
             }
             type="text"
             name="verificationCode"
             autoComplete="one-time-code"
             placeholder={
               useRecoveryCode
-                ? "Enter your recovery code"
-                : "Enter verification code"
+                ? t("auth.enterRecoveryCode")
+                : t("auth.enterVerificationCode")
             }
             value={verificationCode}
             onChange={(e) => setVerificationCode(e.target.value)}
@@ -275,7 +235,7 @@ function Login() {
             onClick={handleVerifyTwoFactor}
             disabled={loading}
           >
-            {loading ? "Verifying..." : "Verify"}
+            {loading ? t("auth.verifying") : t("auth.verify")}
           </Button>
 
           {!useRecoveryCode && (
@@ -285,7 +245,7 @@ function Login() {
               disabled={resending}
               className="w-full mt-4 text-sm text-green-700 font-semibold hover:underline disabled:opacity-50"
             >
-              {resending ? "Sending..." : "Resend verification code"}
+              {resending ? t("auth.sending") : t("auth.resendCode")}
             </button>
           )}
 
@@ -298,8 +258,8 @@ function Login() {
             className="w-full mt-3 text-sm text-gray-600 hover:underline"
           >
             {useRecoveryCode
-              ? "Use a verification code instead"
-              : "Use a recovery code instead"}
+              ? t("login.useCodeInstead")
+              : t("login.useRecoveryInstead")}
           </button>
 
           <button
@@ -307,7 +267,7 @@ function Login() {
             onClick={handleBackToLogin}
             className="w-full mt-5 text-sm text-gray-500 hover:underline"
           >
-            Back to login
+            {t("auth.backToLogin")}
           </button>
         </Card>
       </main>
@@ -322,25 +282,25 @@ function Login() {
         </h1>
 
         <p className="text-center text-sm text-gray-500 mt-1 mb-6">
-          Connect Customers & Local Vendors
+          {t("auth.appTagline")}
         </p>
 
         <Input
-          label="Email"
+          label={t("auth.email")}
           type="email"
           name="email"
           autoComplete="username"
-          placeholder="Enter your email"
+          placeholder={t("auth.enterEmail")}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
 
         <Input
-          label="Password"
+          label={t("auth.password")}
           type="password"
           name="password"
           autoComplete="current-password"
-          placeholder="Enter your password"
+          placeholder={t("auth.enterPassword")}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
@@ -350,7 +310,7 @@ function Login() {
           onClick={handleLogin}
           disabled={loading || reactivating}
         >
-          {loading ? "Logging in..." : "Login"}
+          {loading ? t("login.loggingIn") : t("login.button")}
         </Button>
 
         <p className="text-center text-sm mt-3">
@@ -358,17 +318,17 @@ function Login() {
             to="/forgot-password"
             className="text-green-700 cursor-pointer font-semibold hover:underline"
           >
-            Forgot your password?
+            {t("login.forgotPassword")}
           </Link>
         </p>
 
         {deactivated && (
           <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm">
             <p className="font-medium text-amber-800">
-              Your account is deactivated.
+              {t("login.deactivatedTitle")}
             </p>
             <p className="mt-1 text-amber-700">
-              Reactivate it to sign back in with all your data.
+              {t("login.deactivatedBody")}
             </p>
             <button
               type="button"
@@ -376,18 +336,20 @@ function Login() {
               disabled={reactivating}
               className="mt-3 cursor-pointer rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-amber-700 disabled:opacity-60"
             >
-              {reactivating ? "Reactivating..." : "Reactivate my account"}
+              {reactivating
+                ? t("login.reactivating")
+                : t("login.reactivate")}
             </button>
           </div>
         )}
 
         <p className="text-center text-sm text-gray-600 mt-5">
-          Don't have an account?{" "}
+          {t("login.noAccount")}{" "}
           <Link
             to="/register"
             className="text-green-700 cursor-pointer font-semibold hover:underline"
           >
-            Register
+            {t("login.register")}
           </Link>
         </p>
       </Card>

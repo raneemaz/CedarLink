@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 import Card from "../../components/common/Card/Card";
@@ -7,20 +8,16 @@ import Input from "../../components/common/Input/Input";
 import Button from "../../components/common/Button/Button";
 import api from "../../services/api";
 
-// Shown after every submission, whether or not the email is registered —
-// the backend response is identical either way (no account enumeration).
-const CONFIRMATION =
-  "If an account exists for that email, we've sent a password reset code.";
-
 function ForgotPassword() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
     if (!email.trim()) {
-      toast.error("Please enter your email.");
+      toast.error(t("forgotPassword.errEnterEmail"));
       return;
     }
 
@@ -40,7 +37,7 @@ function ForgotPassword() {
         })
       );
 
-      toast.success(CONFIRMATION);
+      toast.success(t("forgotPassword.confirmation"));
 
       navigate("/reset-password");
     } catch (error) {
@@ -48,7 +45,7 @@ function ForgotPassword() {
 
       const message =
         error.response?.data?.message ||
-        "Unable to start a password reset.";
+        t("forgotPassword.errCantStart");
 
       toast.error(message);
     } finally {
@@ -60,19 +57,19 @@ function ForgotPassword() {
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-10">
       <Card className="w-full max-w-lg">
         <h1 className="text-3xl font-bold text-center text-green-700">
-          Forgot Your Password?
+          {t("forgotPassword.title")}
         </h1>
 
         <p className="text-center text-gray-500 mt-3 mb-8">
-          Enter your account email and we'll send you a reset code.
+          {t("forgotPassword.subtitle")}
         </p>
 
         <Input
-          label="Email"
+          label={t("auth.email")}
           name="email"
           type="email"
           autoComplete="email"
-          placeholder="Enter your email"
+          placeholder={t("auth.enterEmail")}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
@@ -82,16 +79,16 @@ function ForgotPassword() {
           onClick={handleSubmit}
           disabled={loading}
         >
-          {loading ? "Sending..." : "Send reset code"}
+          {loading ? t("forgotPassword.sending") : t("forgotPassword.sendButton")}
         </Button>
 
         <p className="text-center text-gray-600 mt-6">
-          Remembered it?{" "}
+          {t("forgotPassword.rememberedIt")}{" "}
           <Link
             to="/login"
             className="text-green-700 cursor-pointer font-semibold hover:underline"
           >
-            Back to login
+            {t("forgotPassword.backToLogin")}
           </Link>
         </p>
       </Card>
