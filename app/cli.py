@@ -30,7 +30,8 @@ MIN_ADMIN_PASSWORD_LENGTH = 8
 
 
 @click.command("create-admin")
-@click.option("--email", required=True, prompt=True, help="Admin email address.")
+@click.option("--email", required=True, prompt=True,
+              help="Admin email address.")
 @click.option(
     "--password",
     required=True,
@@ -41,7 +42,8 @@ MIN_ADMIN_PASSWORD_LENGTH = 8
 )
 @click.option("--first-name", required=True, prompt="First name")
 @click.option("--last-name", required=True, prompt="Last name")
-@click.option("--phone", required=True, prompt=True, help="Admin phone number.")
+@click.option("--phone", required=True,
+              prompt=True, help="Admin phone number.")
 @click.option(
     "--verification-method",
     default="email",
@@ -102,6 +104,7 @@ def create_admin(
 
 
 DEMO_PASSWORD = "Cedar!2026"
+ADMIN_EMAIL = "admin@cedarlink.demo"
 
 # Distinct fill colours for the generated placeholder images.
 _IMAGE_COLORS = (
@@ -411,6 +414,14 @@ def seed():
     """
     _refuse_in_production()
 
+    # A demo admin so the admin console is reachable straight from the seed.
+    # `_refuse_in_production` keeps this out of real deployments; admins there
+    # are still CLI-only via `flask create-admin`.
+    _get_or_create_user(
+        ADMIN_EMAIL, "Site", "Admin", "+961 1 000 000", "admin"
+    )
+    db.session.flush()
+
     categories = {}
     for name in ("Food", "Clothes", "Electronics", "Books", "Beauty"):
         category, _ = _get_or_create(
@@ -442,6 +453,8 @@ def seed():
                 "location": spec["city"],
                 "contact_info": spec["vendor_email"],
                 "is_active": spec["active"],
+                # Demo stores skip the approval queue.
+                "approval_status": "approved",
                 "inside_city_delivery_fee": spec["inside_fee"],
                 "outside_city_delivery_fee": spec["outside_fee"],
                 "delivery_available": True,
@@ -541,6 +554,9 @@ def seed():
     click.echo("")
     click.echo("=" * 64)
     click.echo("CedarLink demo data is ready.")
+    click.echo("")
+    click.echo(f"Admin      (password: {DEMO_PASSWORD})")
+    click.echo(f"  {ADMIN_EMAIL}")
     click.echo("")
     click.echo(f"Vendors    (password: {DEMO_PASSWORD})")
     for spec in _STORE_SPECS:
