@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 import api from "../../services/api";
@@ -10,6 +11,7 @@ const fieldClass =
   "focus:border-green-600 focus:ring-1 focus:ring-green-600";
 
 function AdminCategories() {
+  const { t } = useTranslation();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -38,7 +40,7 @@ function AdminCategories() {
       } catch (error) {
         if (!cancelled) {
           console.error("Failed to load categories:", error);
-          toast.error("Unable to load categories.");
+          toast.error(t("adminCategories.errLoad"));
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -47,12 +49,12 @@ function AdminCategories() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [t]);
 
   const handleCreate = async (event) => {
     event.preventDefault();
     if (!newName.trim()) {
-      toast.error("Category name is required.");
+      toast.error(t("adminCategories.errNameRequired"));
       return;
     }
     setCreating(true);
@@ -61,13 +63,13 @@ function AdminCategories() {
         name: newName.trim(),
         description: newDescription.trim() || null,
       });
-      toast.success("Category created.");
+      toast.success(t("adminCategories.toastCreated"));
       setNewName("");
       setNewDescription("");
       await load();
     } catch (error) {
       toast.error(
-        error.response?.data?.message || "Unable to create the category.",
+        error.response?.data?.message || t("adminCategories.errCreate"),
       );
     } finally {
       setCreating(false);
@@ -82,7 +84,7 @@ function AdminCategories() {
 
   const saveEdit = async () => {
     if (!editName.trim()) {
-      toast.error("Category name is required.");
+      toast.error(t("adminCategories.errNameRequired"));
       return;
     }
     setSavingEdit(true);
@@ -91,12 +93,12 @@ function AdminCategories() {
         name: editName.trim(),
         description: editDescription.trim() || null,
       });
-      toast.success("Category updated.");
+      toast.success(t("adminCategories.toastUpdated"));
       setEditId(null);
       await load();
     } catch (error) {
       toast.error(
-        error.response?.data?.message || "Unable to update the category.",
+        error.response?.data?.message || t("adminCategories.errUpdate"),
       );
     } finally {
       setSavingEdit(false);
@@ -108,12 +110,12 @@ function AdminCategories() {
     setDeleting(true);
     try {
       await api.delete(`/categories/${deleteTarget.id}`);
-      toast.success(`"${deleteTarget.name}" deleted.`);
+      toast.success(t("adminCategories.toastDeleted", { name: deleteTarget.name }));
       await load();
       setDeleteTarget(null);
     } catch (error) {
       toast.error(
-        error.response?.data?.message || "Unable to delete the category.",
+        error.response?.data?.message || t("adminCategories.errDelete"),
       );
     } finally {
       setDeleting(false);
@@ -121,37 +123,37 @@ function AdminCategories() {
   };
 
   if (loading) {
-    return <p className="text-sm text-gray-500">Loading categories...</p>;
+    return <p className="text-sm text-gray-500">{t("adminCategories.loading")}</p>;
   }
 
   return (
     <div>
-      <h1 className="mb-6 text-3xl font-bold text-gray-900">Categories</h1>
+      <h1 className="mb-6 text-3xl font-bold text-gray-900">{t("adminCategories.title")}</h1>
 
       <form
         onSubmit={handleCreate}
         className="mb-6 rounded-2xl bg-white p-5 shadow-sm"
       >
         <p className="mb-3 text-sm font-semibold text-gray-700">
-          Add a category
+          {t("adminCategories.addHeading")}
         </p>
         <div className="grid gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-start">
           <input
             type="text"
             value={newName}
             onChange={(event) => setNewName(event.target.value)}
-            placeholder="Name"
+            placeholder={t("adminCategories.namePlaceholder")}
             className={fieldClass}
           />
           <input
             type="text"
             value={newDescription}
             onChange={(event) => setNewDescription(event.target.value)}
-            placeholder="Description (optional)"
+            placeholder={t("adminCategories.descriptionPlaceholder")}
             className={fieldClass}
           />
           <Button type="submit" disabled={creating}>
-            {creating ? "Adding..." : "Add"}
+            {creating ? t("adminCategories.adding") : t("adminCategories.add")}
           </Button>
         </div>
       </form>
@@ -160,9 +162,9 @@ function AdminCategories() {
         <table className="min-w-full text-sm">
           <thead>
             <tr className="border-b border-gray-100 text-start text-xs uppercase tracking-wide text-gray-400">
-              <th className="px-4 py-3 font-medium">Name</th>
-              <th className="px-4 py-3 font-medium">Description</th>
-              <th className="px-4 py-3 font-medium text-end">Actions</th>
+              <th className="px-4 py-3 font-medium">{t("adminCategories.colName")}</th>
+              <th className="px-4 py-3 font-medium">{t("adminCategories.colDescription")}</th>
+              <th className="px-4 py-3 font-medium text-end">{t("adminCategories.colActions")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -195,14 +197,14 @@ function AdminCategories() {
                         disabled={savingEdit}
                         className="font-medium text-emerald-700 hover:underline disabled:opacity-50"
                       >
-                        {savingEdit ? "Saving..." : "Save"}
+                        {savingEdit ? t("adminCategories.saving") : t("common.save")}
                       </button>
                       <button
                         type="button"
                         onClick={() => setEditId(null)}
                         className="font-medium text-gray-500 hover:underline"
                       >
-                        Cancel
+                        {t("common.cancel")}
                       </button>
                     </div>
                   </td>
@@ -222,14 +224,14 @@ function AdminCategories() {
                         onClick={() => startEdit(category)}
                         className="font-medium text-emerald-700 hover:underline"
                       >
-                        Edit
+                        {t("common.edit")}
                       </button>
                       <button
                         type="button"
                         onClick={() => setDeleteTarget(category)}
                         className="font-medium text-red-600 hover:underline"
                       >
-                        Delete
+                        {t("common.delete")}
                       </button>
                     </div>
                   </td>
@@ -242,13 +244,13 @@ function AdminCategories() {
 
       <ConfirmDialog
         open={deleteTarget !== null}
-        title="Delete category"
+        title={t("adminCategories.deleteTitle")}
         message={
           deleteTarget
-            ? `Delete "${deleteTarget.name}"? Categories that still contain products cannot be deleted.`
+            ? t("adminCategories.deleteMessage", { name: deleteTarget.name })
             : ""
         }
-        confirmLabel="Delete"
+        confirmLabel={t("common.delete")}
         loading={deleting}
         onConfirm={handleDelete}
         onCancel={() => (deleting ? null : setDeleteTarget(null))}

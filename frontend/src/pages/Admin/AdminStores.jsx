@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 import api from "../../services/api";
@@ -14,29 +15,27 @@ const STATUS_BADGE = {
 
 const DIALOG = {
   approve: {
-    title: "Approve store",
-    confirmLabel: "Approve",
+    titleKey: "adminStores.approveTitle",
+    confirmKey: "adminStores.approveConfirm",
+    messageKey: "adminStores.approveMessage",
     variant: "primary",
-    message: (name) =>
-      `Approve "${name}"? It becomes visible on the storefront immediately.`,
   },
   reject: {
-    title: "Reject store",
-    confirmLabel: "Reject",
+    titleKey: "adminStores.rejectTitle",
+    confirmKey: "adminStores.rejectConfirm",
+    messageKey: "adminStores.rejectMessage",
     variant: "danger",
-    message: (name) =>
-      `Reject "${name}"? It stays hidden from the storefront. The vendor keeps their console.`,
   },
   remove: {
-    title: "Remove store",
-    confirmLabel: "Remove store",
+    titleKey: "adminStores.removeTitle",
+    confirmKey: "adminStores.removeConfirm",
+    messageKey: "adminStores.removeMessage",
     variant: "danger",
-    message: (name) =>
-      `Remove "${name}"? It disappears from the storefront and its vendor loses access. Orders already placed with this store are kept, and customers keep their order history.`,
   },
 };
 
 function AdminStores() {
+  const { t } = useTranslation();
   const [stores, setStores] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
@@ -58,7 +57,7 @@ function AdminStores() {
       } catch (error) {
         if (!cancelled) {
           console.error("Failed to load stores:", error);
-          toast.error("Unable to load stores.");
+          toast.error(t("adminStores.errLoad"));
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -67,7 +66,7 @@ function AdminStores() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [t]);
 
   const pendingCount = useMemo(
     () => stores.filter((store) => store.status === "pending").length,
@@ -94,13 +93,15 @@ function AdminStores() {
     try {
       if (type === "remove") {
         await api.delete(`/admin/stores/${store.id}`);
-        toast.success(`"${store.name}" removed.`);
+        toast.success(t("adminStores.toastRemoved", { name: store.name }));
       } else {
         await api.patch(`/admin/stores/${store.id}/${type}`, {
           note: note.trim(),
         });
         toast.success(
-          `"${store.name}" ${type === "approve" ? "approved" : "rejected"}.`,
+          type === "approve"
+            ? t("adminStores.toastApproved", { name: store.name })
+            : t("adminStores.toastRejected", { name: store.name }),
         );
       }
       await load();
@@ -108,7 +109,7 @@ function AdminStores() {
     } catch (error) {
       console.error("Store action failed:", error);
       toast.error(
-        error.response?.data?.error || "The action could not be completed.",
+        error.response?.data?.error || t("adminStores.errAction"),
       );
     } finally {
       setWorking(false);
@@ -116,19 +117,22 @@ function AdminStores() {
   };
 
   if (loading) {
-    return <p className="text-sm text-gray-500">Loading stores...</p>;
+    return <p className="text-sm text-gray-500">{t("adminStores.loading")}</p>;
   }
 
   const dialogConfig = action ? DIALOG[action.type] : null;
 
   return (
     <div>
-      <h1 className="mb-6 text-3xl font-bold text-gray-900">Stores</h1>
+      <h1 className="mb-6 text-3xl font-bold text-gray-900">{t("adminStores.title")}</h1>
 
       <div className="mb-4 flex gap-2">
         {[
-          { key: "all", label: "All" },
-          { key: "pending", label: `Pending (${pendingCount})` },
+          { key: "all", label: t("adminStores.filterAll") },
+          {
+            key: "pending",
+            label: t("adminStores.filterPending", { count: pendingCount }),
+          },
         ].map(({ key, label }) => (
           <button
             key={key}
@@ -149,11 +153,11 @@ function AdminStores() {
         <table className="min-w-full text-sm">
           <thead>
             <tr className="border-b border-gray-100 text-start text-xs uppercase tracking-wide text-gray-400">
-              <th className="px-4 py-3 font-medium">Store</th>
-              <th className="px-4 py-3 font-medium">Owner</th>
-              <th className="px-4 py-3 font-medium">Products</th>
-              <th className="px-4 py-3 font-medium">Status</th>
-              <th className="px-4 py-3 font-medium text-end">Actions</th>
+              <th className="px-4 py-3 font-medium">{t("adminStores.colStore")}</th>
+              <th className="px-4 py-3 font-medium">{t("adminStores.colOwner")}</th>
+              <th className="px-4 py-3 font-medium">{t("adminStores.colProducts")}</th>
+              <th className="px-4 py-3 font-medium">{t("adminStores.colStatus")}</th>
+              <th className="px-4 py-3 font-medium text-end">{t("adminStores.colActions")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -164,7 +168,7 @@ function AdminStores() {
                   <p className="text-gray-500">{store.location || "—"}</p>
                   {store.approval_note && (
                     <p className="mt-1 text-xs text-gray-400">
-                      Note: {store.approval_note}
+                      {t("adminStores.notePrefix", { note: store.approval_note })}
                     </p>
                   )}
                 </td>
@@ -181,7 +185,7 @@ function AdminStores() {
                       STATUS_BADGE[store.status] || STATUS_BADGE.active
                     }`}
                   >
-                    {store.status}
+                    {t(`storeStatus.${store.status}`)}
                   </span>
                 </td>
                 <td className="px-4 py-3">
@@ -197,7 +201,7 @@ function AdminStores() {
                             onClick={() => open(store, "approve")}
                             className="font-medium text-emerald-700 hover:underline"
                           >
-                            Approve
+                            {t("adminStores.approve")}
                           </button>
                         )}
                         {store.status === "pending" && (
@@ -206,7 +210,7 @@ function AdminStores() {
                             onClick={() => open(store, "reject")}
                             className="font-medium text-amber-700 hover:underline"
                           >
-                            Reject
+                            {t("adminStores.reject")}
                           </button>
                         )}
                         <button
@@ -214,7 +218,7 @@ function AdminStores() {
                           onClick={() => open(store, "remove")}
                           className="font-medium text-red-600 hover:underline"
                         >
-                          Remove
+                          {t("adminStores.remove")}
                         </button>
                       </>
                     )}
@@ -228,9 +232,13 @@ function AdminStores() {
 
       <ConfirmDialog
         open={action !== null}
-        title={dialogConfig?.title}
-        message={action ? dialogConfig.message(action.store.name) : ""}
-        confirmLabel={dialogConfig?.confirmLabel}
+        title={dialogConfig ? t(dialogConfig.titleKey) : ""}
+        message={
+          action
+            ? t(dialogConfig.messageKey, { name: action.store.name })
+            : ""
+        }
+        confirmLabel={dialogConfig ? t(dialogConfig.confirmKey) : ""}
         variant={dialogConfig?.variant}
         loading={working}
         onConfirm={runAction}
@@ -239,7 +247,7 @@ function AdminStores() {
         {action && action.type !== "remove" && (
           <div>
             <label className="mb-1 block text-xs font-medium text-gray-600">
-              Note (optional, shown to the vendor)
+              {t("adminStores.noteLabel")}
             </label>
             <textarea
               value={note}

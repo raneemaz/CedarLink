@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 import api from "../../services/api";
@@ -26,6 +27,7 @@ function Section({ title, children }) {
 }
 
 function AdminOverview() {
+  const { t } = useTranslation();
   const [reports, setReports] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -38,7 +40,7 @@ function AdminOverview() {
       } catch (error) {
         if (cancelled) return;
         console.error("Failed to load reports:", error);
-        toast.error("Unable to load the overview.");
+        toast.error(t("adminOverview.errLoad"));
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -46,14 +48,14 @@ function AdminOverview() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [t]);
 
   if (loading) {
-    return <p className="text-sm text-gray-500">Loading overview...</p>;
+    return <p className="text-sm text-gray-500">{t("adminOverview.loading")}</p>;
   }
 
   if (!reports) {
-    return <p className="text-sm text-gray-500">No data.</p>;
+    return <p className="text-sm text-gray-500">{t("adminOverview.noData")}</p>;
   }
 
   const usersByRole = reports.users_by_role || {};
@@ -61,52 +63,52 @@ function AdminOverview() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-gray-900">Overview</h1>
+      <h1 className="text-3xl font-bold text-gray-900">{t("adminOverview.title")}</h1>
 
-      <Section title="Users">
+      <Section title={t("adminOverview.sectionUsers")}>
         <div className="grid gap-4 sm:grid-cols-3">
-          <StatCard label="Customers" value={usersByRole.customer || 0} />
-          <StatCard label="Vendors" value={usersByRole.vendor || 0} />
-          <StatCard label="Admins" value={usersByRole.admin || 0} />
+          <StatCard label={t("adminOverview.statCustomers")} value={usersByRole.customer || 0} />
+          <StatCard label={t("adminOverview.statVendors")} value={usersByRole.vendor || 0} />
+          <StatCard label={t("adminOverview.statAdmins")} value={usersByRole.admin || 0} />
         </div>
       </Section>
 
-      <Section title="Stores">
+      <Section title={t("adminOverview.sectionStores")}>
         <div className="grid gap-4 sm:grid-cols-3">
-          <StatCard label="Active" value={reports.stores.active} />
-          <StatCard label="Inactive" value={reports.stores.inactive} />
-          <StatCard label="Removed" value={reports.stores.removed} />
+          <StatCard label={t("adminOverview.statActive")} value={reports.stores.active} />
+          <StatCard label={t("adminOverview.statInactive")} value={reports.stores.inactive} />
+          <StatCard label={t("adminOverview.statRemoved")} value={reports.stores.removed} />
         </div>
       </Section>
 
-      <Section title="Products">
+      <Section title={t("adminOverview.sectionProducts")}>
         <div className="grid gap-4 sm:grid-cols-2">
-          <StatCard label="Live" value={reports.products.live} />
-          <StatCard label="Deleted" value={reports.products.deleted} />
+          <StatCard label={t("adminOverview.statLive")} value={reports.products.live} />
+          <StatCard label={t("adminOverview.statDeleted")} value={reports.products.deleted} />
         </div>
       </Section>
 
-      <Section title="Orders">
+      <Section title={t("adminOverview.sectionOrders")}>
         <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
           {["pending", "processing", "delivered", "canceled"].map(
             (status) => (
               <StatCard
                 key={status}
-                label={status}
+                label={t(`orderStatus.${status}`)}
                 value={ordersByStatus[status] || 0}
               />
             ),
           )}
           <StatCard
-            label="Total value"
+            label={t("adminOverview.statTotalValue")}
             value={`$${reports.total_order_value.toFixed(2)}`}
           />
         </div>
       </Section>
 
-      <Section title="Top stores by orders">
+      <Section title={t("adminOverview.sectionTopStores")}>
         {reports.top_stores_by_orders.length === 0 ? (
-          <p className="text-sm text-gray-500">No orders yet.</p>
+          <p className="text-sm text-gray-500">{t("adminOverview.noOrders")}</p>
         ) : (
           <ol className="divide-y divide-gray-100 overflow-hidden rounded-xl border border-gray-200 bg-white">
             {reports.top_stores_by_orders.map((row, index) => (
@@ -118,8 +120,7 @@ function AdminOverview() {
                   {index + 1}. {row.store}
                 </span>
                 <span className="font-medium text-gray-900">
-                  {row.order_count}{" "}
-                  {row.order_count === 1 ? "order" : "orders"}
+                  {t("adminOverview.orderCount", { count: row.order_count })}
                 </span>
               </li>
             ))}
