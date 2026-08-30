@@ -9,24 +9,24 @@ import ConfirmDialog from "../../components/common/ConfirmDialog/ConfirmDialog";
 import { formatDateTime } from "../../utils/helpers";
 
 const FILTERS = [
-  { key: "all", label: "All" },
-  { key: "pending", label: "Pending" },
-  { key: "processing", label: "Processing" },
-  { key: "delivered", label: "Delivered" },
-  { key: "canceled", label: "Canceled" },
+  { key: "all", labelKey: "common.all" },
+  { key: "pending", labelKey: "orderStatus.pending" },
+  { key: "processing", labelKey: "orderStatus.processing" },
+  { key: "delivered", labelKey: "orderStatus.delivered" },
+  { key: "canceled", labelKey: "orderStatus.canceled" },
 ];
 
 // Mirrors the API's order state machine — never offer a rejected transition.
 const ORDER_NEXT = { pending: "processing", processing: "delivered" };
 const ORDER_NEXT_LABEL = {
-  pending: "Mark as processing",
-  processing: "Mark as delivered",
+  pending: "vendorOrders.markProcessing",
+  processing: "vendorOrders.markDelivered",
 };
 
 const DELIVERY_NEXT = { assigned: "picked_up", picked_up: "delivered" };
 const DELIVERY_NEXT_LABEL = {
-  assigned: "Mark as picked up",
-  picked_up: "Mark as delivered",
+  assigned: "vendorOrders.markPickedUp",
+  picked_up: "vendorOrders.markDelivered",
 };
 
 function badgeClass(map, status) {
@@ -46,12 +46,6 @@ const DELIVERY_BADGE = {
   delivered: "bg-emerald-100 text-emerald-700",
 };
 
-function label(value) {
-  return value
-    .replace(/_/g, " ")
-    .replace(/\b\w/g, (character) => character.toUpperCase());
-}
-
 function apiError(error, fallback) {
   return (
     error.response?.data?.error ||
@@ -60,7 +54,8 @@ function apiError(error, fallback) {
   );
 }
 
-function StatusBadge({ map, status }) {
+function StatusBadge({ map, status, ns }) {
+  const { t } = useTranslation();
   return (
     <span
       className={`rounded-full px-2.5 py-1 text-xs font-semibold ${badgeClass(
@@ -68,13 +63,13 @@ function StatusBadge({ map, status }) {
         status,
       )}`}
     >
-      {label(status)}
+      {t(`${ns}.${status}`)}
     </span>
   );
 }
 
 function OrderCard({ order, onChanged }) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const assignment = order.delivery_assignment;
 
   const [driverName, setDriverName] = useState("");
@@ -95,12 +90,17 @@ function OrderCard({ order, onChanged }) {
       await api.patch(`/orders/${order.id}/status`, {
         status: nextOrderStatus,
       });
-      toast.success(`Order #${order.id} is now ${nextOrderStatus}.`);
+      toast.success(
+        t("vendorOrders.toastOrderAdvanced", {
+          id: order.id,
+          status: t(`orderStatus.${nextOrderStatus}`),
+        }),
+      );
       setConfirm(null);
       await onChanged();
     } catch (error) {
       console.error("Failed to advance order:", error);
-      toast.error(apiError(error, "Unable to update this order."));
+      toast.error(apiError(error, t("vendorOrders.errAdvanceOrder")));
     } finally {
       setWorking(false);
     }
@@ -113,12 +113,16 @@ function OrderCard({ order, onChanged }) {
         `/delivery/assignments/${assignment.id}/status`,
         { status: nextDeliveryStatus },
       );
-      toast.success(`Delivery is now ${label(nextDeliveryStatus)}.`);
+      toast.success(
+        t("vendorOrders.toastDeliveryAdvanced", {
+          status: t(`deliveryStatus.${nextDeliveryStatus}`),
+        }),
+      );
       setConfirm(null);
       await onChanged();
     } catch (error) {
       console.error("Failed to advance delivery:", error);
-      toast.error(apiError(error, "Unable to update this delivery."));
+      toast.error(apiError(error, t("vendorOrders.errAdvanceDelivery")));
     } finally {
       setWorking(false);
     }
@@ -128,7 +132,7 @@ function OrderCard({ order, onChanged }) {
     event.preventDefault();
 
     if (!driverName.trim() || !driverPhone.trim()) {
-      toast.error("Enter the driver's name and phone.");
+      toast.error(t("vendorOrders.errEnterDriver"));
       return;
     }
 
@@ -139,11 +143,11 @@ function OrderCard({ order, onChanged }) {
         driver_name: driverName.trim(),
         driver_phone: driverPhone.trim(),
       });
-      toast.success("Driver assigned.");
+      toast.success(t("vendorOrders.toastDriverAssigned"));
       await onChanged();
     } catch (error) {
       console.error("Failed to assign driver:", error);
-      toast.error(apiError(error, "Unable to assign a driver."));
+      toast.error(apiError(error, t("vendorOrders.errAssignDriver")));
     } finally {
       setAssigning(false);
     }
@@ -155,9 +159,9 @@ function OrderCard({ order, onChanged }) {
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 px-6 py-4">
         <div className="flex items-center gap-3">
           <h3 className="text-lg font-bold text-gray-900">
-            Order #{order.id}
+            {t("orders.orderNumber", { id: order.id })}
           </h3>
-          <StatusBadge map={ORDER_BADGE} status={order.status} />
+          <StatusBadge map={ORDER_BADGE} status={order.status} ns="orderStatus" />
         </div>
         <span className="text-sm text-gray-500">
           {formatDateTime(order.created_at, i18n.language)}
@@ -168,7 +172,7 @@ function OrderCard({ order, onChanged }) {
       <div className="grid gap-6 border-b border-gray-100 px-6 py-5 sm:grid-cols-2">
         <div>
           <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">
-            Customer
+            {t("vendorOrders.customer")}
           </p>
           <p className="text-gray-800">
             {order.customer.first_name} {order.customer.last_name}
@@ -180,7 +184,7 @@ function OrderCard({ order, onChanged }) {
         </div>
         <div>
           <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">
-            Deliver to
+            {t("vendorOrders.deliverTo")}
           </p>
           <p className="text-gray-800">{order.delivery_address}</p>
           <p className="text-sm text-gray-500">{order.delivery_city}</p>
@@ -190,7 +194,7 @@ function OrderCard({ order, onChanged }) {
       {/* Items */}
       <div className="border-b border-gray-100 px-6 py-5">
         <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-400">
-          Items
+          {t("vendorOrders.items")}
         </p>
         <div className="space-y-2">
           {order.items.map((item) => (
@@ -209,7 +213,7 @@ function OrderCard({ order, onChanged }) {
           ))}
         </div>
         <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-3">
-          <span className="font-semibold text-gray-900">Total</span>
+          <span className="font-semibold text-gray-900">{t("orders.total")}</span>
           <span className="text-lg font-bold text-emerald-700">
             ${order.total_price.toFixed(2)}
           </span>
@@ -222,14 +226,17 @@ function OrderCard({ order, onChanged }) {
           <Button
             onClick={() =>
               setConfirm({
-                title: "Advance order",
-                message: `Mark order #${order.id} as "${nextOrderStatus}"? Order status changes cannot be undone.`,
-                confirmLabel: ORDER_NEXT_LABEL[order.status],
+                title: t("vendorOrders.advanceOrder"),
+                message: t("vendorOrders.advanceOrderConfirm", {
+                  id: order.id,
+                  status: t(`orderStatus.${nextOrderStatus}`),
+                }),
+                confirmLabel: t(ORDER_NEXT_LABEL[order.status]),
                 onConfirm: advanceOrder,
               })
             }
           >
-            {ORDER_NEXT_LABEL[order.status]}
+            {t(ORDER_NEXT_LABEL[order.status])}
           </Button>
         </div>
       )}
@@ -237,24 +244,25 @@ function OrderCard({ order, onChanged }) {
       {/* Delivery */}
       <div className="px-6 py-5">
         <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-400">
-          Delivery
+          {t("vendorOrders.deliverySection")}
         </p>
 
         {/* Both state machines, side by side — they are not coupled. */}
         <div className="mb-4 flex flex-wrap items-center gap-x-6 gap-y-2 rounded-lg bg-gray-50 px-4 py-3 text-sm">
           <span className="flex items-center gap-2 text-gray-600">
-            Order status
-            <StatusBadge map={ORDER_BADGE} status={order.status} />
+            {t("vendorOrders.orderStatusLabel")}
+            <StatusBadge map={ORDER_BADGE} status={order.status} ns="orderStatus" />
           </span>
           <span className="flex items-center gap-2 text-gray-600">
-            Delivery status
+            {t("vendorOrders.deliveryStatusLabel")}
             {assignment ? (
               <StatusBadge
                 map={DELIVERY_BADGE}
                 status={assignment.status}
+                ns="deliveryStatus"
               />
             ) : (
-              <span className="text-gray-400">No driver assigned</span>
+              <span className="text-gray-400">{t("vendorOrders.noDriverAssigned")}</span>
             )}
           </span>
         </div>
@@ -269,14 +277,16 @@ function OrderCard({ order, onChanged }) {
               <Button
                 onClick={() =>
                   setConfirm({
-                    title: "Advance delivery",
-                    message: `Mark this delivery as "${nextDeliveryStatus}"? Delivery status changes cannot be undone.`,
-                    confirmLabel: DELIVERY_NEXT_LABEL[assignment.status],
+                    title: t("vendorOrders.advanceDelivery"),
+                    message: t("vendorOrders.advanceDeliveryConfirm", {
+                      status: t(`deliveryStatus.${nextDeliveryStatus}`),
+                    }),
+                    confirmLabel: t(DELIVERY_NEXT_LABEL[assignment.status]),
                     onConfirm: advanceDelivery,
                   })
                 }
               >
-                {DELIVERY_NEXT_LABEL[assignment.status]}
+                {t(DELIVERY_NEXT_LABEL[assignment.status])}
               </Button>
             )}
           </div>
@@ -290,7 +300,7 @@ function OrderCard({ order, onChanged }) {
                 htmlFor={`driver-name-${order.id}`}
                 className="mb-1 block text-xs font-medium text-gray-600"
               >
-                Driver name
+                {t("vendorOrders.driverName")}
               </label>
               <input
                 id={`driver-name-${order.id}`}
@@ -305,7 +315,7 @@ function OrderCard({ order, onChanged }) {
                 htmlFor={`driver-phone-${order.id}`}
                 className="mb-1 block text-xs font-medium text-gray-600"
               >
-                Driver phone
+                {t("vendorOrders.driverPhone")}
               </label>
               <input
                 id={`driver-phone-${order.id}`}
@@ -316,7 +326,7 @@ function OrderCard({ order, onChanged }) {
               />
             </div>
             <Button type="submit" disabled={assigning}>
-              {assigning ? "Assigning..." : "Assign driver"}
+              {assigning ? t("vendorOrders.assigning") : t("vendorOrders.assignDriver")}
             </Button>
           </form>
         )}
@@ -326,7 +336,7 @@ function OrderCard({ order, onChanged }) {
         open={confirm !== null}
         title={confirm?.title}
         message={confirm?.message}
-        confirmLabel={confirm?.confirmLabel || "Confirm"}
+        confirmLabel={confirm?.confirmLabel || t("common.confirm")}
         variant="primary"
         loading={working}
         onConfirm={confirm?.onConfirm}
@@ -337,6 +347,7 @@ function OrderCard({ order, onChanged }) {
 }
 
 function VendorOrders() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [noStore, setNoStore] = useState(false);
   const [orders, setOrders] = useState([]);
@@ -363,7 +374,7 @@ function VendorOrders() {
           setNoStore(true);
         } else {
           console.error("Failed to load orders:", error);
-          toast.error(apiError(error, "Unable to load your orders."));
+          toast.error(apiError(error, t("vendorOrders.errLoad")));
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -373,7 +384,7 @@ function VendorOrders() {
     return () => {
       cancelled = true;
     };
-  }, [filter, fetchOrders]);
+  }, [filter, fetchOrders, t]);
 
   const refresh = async () => {
     setRefreshing(true);
@@ -381,29 +392,29 @@ function VendorOrders() {
       await fetchOrders(filter);
     } catch (error) {
       console.error("Failed to refresh orders:", error);
-      toast.error(apiError(error, "Unable to refresh orders."));
+      toast.error(apiError(error, t("vendorOrders.errRefresh")));
     } finally {
       setRefreshing(false);
     }
   };
 
   if (loading) {
-    return <p className="text-sm text-gray-500">Loading orders...</p>;
+    return <p className="text-sm text-gray-500">{t("vendorOrders.loading")}</p>;
   }
 
   if (noStore) {
     return (
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Orders</h1>
+        <h1 className="text-3xl font-bold text-gray-900">{t("vendorOrders.title")}</h1>
         <div className="mt-6 rounded-xl border border-dashed border-gray-300 bg-white p-12 text-center">
           <p className="text-gray-600">
-            You need a store before you can receive orders.
+            {t("vendorOrders.noStoreBody")}
           </p>
           <Link
             to="/vendor/store"
             className="mt-4 inline-block font-semibold text-emerald-700 hover:underline"
           >
-            Create your store
+            {t("vendorOrders.createStore")}
           </Link>
         </div>
       </div>
@@ -413,19 +424,19 @@ function VendorOrders() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">Orders</h1>
+        <h1 className="text-3xl font-bold text-gray-900">{t("vendorOrders.title")}</h1>
         <button
           type="button"
           onClick={refresh}
           disabled={refreshing}
           className="text-sm font-medium text-emerald-700 hover:underline disabled:opacity-50"
         >
-          {refreshing ? "Refreshing..." : "Refresh"}
+          {refreshing ? t("vendorOrders.refreshing") : t("vendorOrders.refresh")}
         </button>
       </div>
 
       <div className="mb-6 flex flex-wrap gap-2">
-        {FILTERS.map(({ key, label: filterLabel }) => (
+        {FILTERS.map(({ key, labelKey }) => (
           <button
             key={key}
             type="button"
@@ -436,7 +447,7 @@ function VendorOrders() {
                 : "bg-white text-gray-600 shadow-sm hover:bg-gray-50"
             }`}
           >
-            {filterLabel}
+            {t(labelKey)}
           </button>
         ))}
       </div>
@@ -445,8 +456,10 @@ function VendorOrders() {
         <div className="rounded-xl border border-dashed border-gray-300 bg-white p-12 text-center">
           <p className="text-gray-600">
             {filter === "all"
-              ? "No orders yet."
-              : `No ${filter} orders.`}
+              ? t("vendorOrders.emptyAll")
+              : t("vendorOrders.emptyFiltered", {
+                  status: t(`orderStatus.${filter}`),
+                })}
           </p>
         </div>
       ) : (
