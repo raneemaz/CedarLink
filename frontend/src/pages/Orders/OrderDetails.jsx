@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import api from "../../services/api";
 import BackLink from "../../components/common/BackLink";
 
 function OrderDetails() {
+  const { t } = useTranslation();
   const { id } = useParams();
 
   const [order, setOrder] = useState(null);
@@ -22,8 +24,7 @@ function OrderDetails() {
         console.error("Failed to load order:", error);
 
         setError(
-          error.response?.data?.error ||
-            "Failed to load order details."
+          error.response?.data?.error || t("orderDetails.loadError")
         );
       } finally {
         setLoading(false);
@@ -31,12 +32,12 @@ function OrderDetails() {
     };
 
     fetchOrder();
-  }, [id]);
+  }, [id, t]);
 
   if (loading) {
     return (
       <div className="mx-auto max-w-6xl px-6 py-10">
-        <p className="text-slate-600">Loading order...</p>
+        <p className="text-slate-600">{t("orderDetails.loading")}</p>
       </div>
     );
   }
@@ -71,16 +72,16 @@ const total = Number(order.total_price || 0);
     <div className="mx-auto max-w-6xl px-6 py-10">
       {/* Header */}
       <div className="mb-8">
-        <BackLink to="/orders">Back to Orders</BackLink>
+        <BackLink to="/orders">{t("backLink.orders")}</BackLink>
 
         <div className="mt-4 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
             <h1 className="text-3xl font-bold text-slate-900">
-              Order #{order.id}
+              {t("orderDetails.orderNumber", { id: order.id })}
             </h1>
 
             <p className="mt-2 text-slate-600">
-              Review your order details.
+              {t("orderDetails.subtitle")}
             </p>
           </div>
 
@@ -97,7 +98,7 @@ const total = Number(order.total_price || 0);
                 : "bg-slate-100 text-slate-700"
             }`}
           >
-            {order.status}
+            {t(`orderStatus.${order.status}`)}
           </span>
         </div>
       </div>
@@ -109,7 +110,7 @@ const total = Number(order.total_price || 0);
           <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
             <div className="border-b border-slate-200 p-6">
               <h2 className="text-xl font-semibold text-slate-900">
-                Order Items
+                {t("orderDetails.orderItems")}
               </h2>
             </div>
 
@@ -125,9 +126,10 @@ const total = Number(order.total_price || 0);
                     </h3>
 
                     <p className="mt-1 text-sm text-slate-500">
-                        $
-                        {(Number(item.subtotal) / Number(item.quantity)).toFixed(2)} ×{" "}
-                        {item.quantity}
+                      {t("orderDetails.priceLine", {
+                        price: `$${(Number(item.subtotal) / Number(item.quantity)).toFixed(2)}`,
+                        quantity: item.quantity,
+                      })}
                     </p>
                   </div>
 
@@ -142,27 +144,27 @@ const total = Number(order.total_price || 0);
           {/* Delivery information */}
           <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 className="text-xl font-semibold text-slate-900">
-              Delivery Information
+              {t("orderDetails.deliveryInfo")}
             </h2>
 
             <div className="mt-5 space-y-4">
               <div>
                 <p className="text-sm text-slate-500">
-                  Delivery Address
+                  {t("orderDetails.deliveryAddress")}
                 </p>
 
                 <p className="mt-1 font-medium text-slate-900">
-                  {order.delivery_address || "Not provided"}
+                  {order.delivery_address || t("orderDetails.notProvided")}
                 </p>
               </div>
 
               <div>
                 <p className="text-sm text-slate-500">
-                  City
+                  {t("orderDetails.city")}
                 </p>
 
                 <p className="mt-1 font-medium text-slate-900">
-                  {order.delivery_city || "Not provided"}
+                  {order.delivery_city || t("orderDetails.notProvided")}
                 </p>
               </div>
             </div>
@@ -173,13 +175,13 @@ const total = Number(order.total_price || 0);
 <aside>
   <div className="sticky top-24 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
     <h2 className="text-xl font-semibold text-slate-900">
-      Order Summary
+      {t("orderDetails.orderSummary")}
     </h2>
 
     <div className="mt-6 space-y-4">
       <div className="flex justify-between">
         <span className="text-slate-600">
-          Subtotal
+          {t("orderDetails.subtotal")}
         </span>
 
         <span className="font-medium">
@@ -189,7 +191,7 @@ const total = Number(order.total_price || 0);
 
       <div className="flex justify-between">
         <span className="text-slate-600">
-          Delivery Fee
+          {t("orderDetails.deliveryFee")}
         </span>
 
         <span className="font-medium">
@@ -199,7 +201,7 @@ const total = Number(order.total_price || 0);
 
       <div className="border-t border-slate-200 pt-4">
         <div className="flex justify-between text-lg font-bold">
-          <span>Total</span>
+          <span>{t("orderDetails.total")}</span>
 
           <span className="text-emerald-700">
             ${total.toFixed(2)}
