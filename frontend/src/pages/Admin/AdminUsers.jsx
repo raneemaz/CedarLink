@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 import api from "../../services/api";
@@ -20,6 +21,7 @@ function currentUserId() {
 }
 
 function AdminUsers() {
+  const { t } = useTranslation();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -43,7 +45,7 @@ function AdminUsers() {
       } catch (error) {
         if (!cancelled) {
           console.error("Failed to load users:", error);
-          toast.error("Unable to load users.");
+          toast.error(t("adminUsers.errLoad"));
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -52,7 +54,7 @@ function AdminUsers() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [t]);
 
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -84,17 +86,17 @@ function AdminUsers() {
         await api.patch(`/admin/users/${target.user.id}/suspend`, {
           reason: reason.trim(),
         });
-        toast.success(`${target.user.email} suspended.`);
+        toast.success(t("adminUsers.toastSuspended", { email: target.user.email }));
       } else {
         await api.patch(`/admin/users/${target.user.id}/unsuspend`);
-        toast.success(`${target.user.email} unsuspended.`);
+        toast.success(t("adminUsers.toastUnsuspended", { email: target.user.email }));
       }
       await load();
       setTarget(null);
     } catch (error) {
       console.error("User action failed:", error);
       toast.error(
-        error.response?.data?.error || "The action could not be completed.",
+        error.response?.data?.error || t("adminUsers.errAction"),
       );
     } finally {
       setWorking(false);
@@ -102,18 +104,18 @@ function AdminUsers() {
   };
 
   if (loading) {
-    return <p className="text-sm text-gray-500">Loading users...</p>;
+    return <p className="text-sm text-gray-500">{t("adminUsers.loading")}</p>;
   }
 
   return (
     <div>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-3xl font-bold text-gray-900">Users</h1>
+        <h1 className="text-3xl font-bold text-gray-900">{t("adminUsers.title")}</h1>
         <input
           type="text"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
-          placeholder="Search name or email..."
+          placeholder={t("adminUsers.searchPlaceholder")}
           className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-emerald-600"
         />
       </div>
@@ -122,10 +124,10 @@ function AdminUsers() {
         <table className="min-w-full text-sm">
           <thead>
             <tr className="border-b border-gray-100 text-start text-xs uppercase tracking-wide text-gray-400">
-              <th className="px-4 py-3 font-medium">User</th>
-              <th className="px-4 py-3 font-medium">Role</th>
-              <th className="px-4 py-3 font-medium">Status</th>
-              <th className="px-4 py-3 font-medium text-end">Actions</th>
+              <th className="px-4 py-3 font-medium">{t("adminUsers.colUser")}</th>
+              <th className="px-4 py-3 font-medium">{t("adminUsers.colRole")}</th>
+              <th className="px-4 py-3 font-medium">{t("adminUsers.colStatus")}</th>
+              <th className="px-4 py-3 font-medium text-end">{t("adminUsers.colActions")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -143,12 +145,12 @@ function AdminUsers() {
                     {user.status === "suspended" &&
                       user.suspension_reason && (
                         <p className="mt-1 text-xs text-red-600">
-                          Reason: {user.suspension_reason}
+                          {t("adminUsers.reasonPrefix", { reason: user.suspension_reason })}
                         </p>
                       )}
                   </td>
-                  <td className="px-4 py-3 capitalize text-gray-600">
-                    {user.role}
+                  <td className="px-4 py-3 text-gray-600">
+                    {t(`role.${user.role}`)}
                   </td>
                   <td className="px-4 py-3">
                     <span
@@ -156,7 +158,7 @@ function AdminUsers() {
                         STATUS_BADGE[user.status] || STATUS_BADGE.active
                       }`}
                     >
-                      {user.status}
+                      {t(`userStatus.${user.status}`)}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-end">
@@ -168,7 +170,7 @@ function AdminUsers() {
                         onClick={() => openUnsuspend(user)}
                         className="font-medium text-emerald-700 hover:underline"
                       >
-                        Unsuspend
+                        {t("adminUsers.unsuspend")}
                       </button>
                     ) : (
                       <button
@@ -176,7 +178,7 @@ function AdminUsers() {
                         onClick={() => openSuspend(user)}
                         className="font-medium text-red-600 hover:underline"
                       >
-                        Suspend
+                        {t("adminUsers.suspend")}
                       </button>
                     )}
                   </td>
@@ -190,16 +192,22 @@ function AdminUsers() {
       <ConfirmDialog
         open={target !== null}
         title={
-          target?.type === "suspend" ? "Suspend user" : "Unsuspend user"
+          target?.type === "suspend"
+            ? t("adminUsers.dialogSuspendTitle")
+            : t("adminUsers.dialogUnsuspendTitle")
         }
         message={
           target
             ? target.type === "suspend"
-              ? `Suspend ${target.user.email}? They will not be able to log in or reactivate their account.`
-              : `Unsuspend ${target.user.email}? They will be able to log in again.`
+              ? t("adminUsers.dialogSuspendMessage", { email: target.user.email })
+              : t("adminUsers.dialogUnsuspendMessage", { email: target.user.email })
             : ""
         }
-        confirmLabel={target?.type === "suspend" ? "Suspend" : "Unsuspend"}
+        confirmLabel={
+          target?.type === "suspend"
+            ? t("adminUsers.suspend")
+            : t("adminUsers.unsuspend")
+        }
         variant={target?.type === "suspend" ? "danger" : "primary"}
         loading={working}
         onConfirm={runAction}
@@ -208,7 +216,7 @@ function AdminUsers() {
         {target?.type === "suspend" && (
           <div>
             <label className="mb-1 block text-xs font-medium text-gray-600">
-              Reason (optional, shown to the user)
+              {t("adminUsers.reasonLabel")}
             </label>
             <textarea
               value={reason}
