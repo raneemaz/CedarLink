@@ -96,6 +96,11 @@ def create_app(config_object=None):
 
     register_cli(app)
 
+    # One JSON error shape across every blueprint (CL-20).
+    from app.utils.errors import register_error_handlers
+
+    register_error_handlers(app)
+
     @app.errorhandler(RequestEntityTooLarge)
     def handle_request_too_large(_error):
         # MAX_CONTENT_LENGTH aborts the request before the view runs, so this
