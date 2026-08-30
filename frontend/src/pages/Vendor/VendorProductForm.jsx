@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import BackLink from "../../components/common/BackLink";
 import { toast } from "react-toastify";
 
@@ -19,16 +20,16 @@ const EMPTY_FORM = {
   category_id: "",
 };
 
-function validate(form) {
+function validate(form, t) {
   const errors = {};
 
   if (!form.name.trim()) {
-    errors.name = "Name is required.";
+    errors.name = t("vendorProductForm.errName");
   }
 
   const price = Number(form.price);
   if (form.price === "" || Number.isNaN(price) || price < 0) {
-    errors.price = "Price must be a number of 0 or more.";
+    errors.price = t("vendorProductForm.errPrice");
   }
 
   const stock = Number(form.stock);
@@ -37,17 +38,18 @@ function validate(form) {
     !Number.isInteger(stock) ||
     stock < 0
   ) {
-    errors.stock = "Stock must be a whole number of 0 or more.";
+    errors.stock = t("vendorProductForm.errStock");
   }
 
   if (!form.category_id) {
-    errors.category_id = "Choose a category.";
+    errors.category_id = t("vendorProductForm.errCategory");
   }
 
   return errors;
 }
 
 function VendorProductForm() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams();
   const isEdit = Boolean(id);
@@ -83,7 +85,7 @@ function VendorProductForm() {
           const product = productResponse.data;
 
           if (product.store_id !== vendorStore.id) {
-            toast.error("That product belongs to another store.");
+            toast.error(t("vendorProductForm.errOtherStore"));
             navigate("/vendor/products");
             return;
           }
@@ -102,12 +104,12 @@ function VendorProductForm() {
         if (error.response?.status === 404 && !isEdit) {
           setNoStore(true);
         } else if (error.response?.status === 404) {
-          toast.error("Product not found.");
+          toast.error(t("vendorProductForm.errNotFound"));
           navigate("/vendor/products");
         } else {
           console.error("Failed to load form:", error);
           toast.error(
-            error.response?.data?.message || "Unable to load this page.",
+            error.response?.data?.message || t("vendorProductForm.errLoad"),
           );
         }
       } finally {
@@ -120,7 +122,7 @@ function VendorProductForm() {
     return () => {
       cancelled = true;
     };
-  }, [id, isEdit, navigate]);
+  }, [id, isEdit, navigate, t]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -130,7 +132,7 @@ function VendorProductForm() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const nextErrors = validate(form);
+    const nextErrors = validate(form, t);
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
 
@@ -147,10 +149,10 @@ function VendorProductForm() {
     try {
       if (isEdit) {
         await api.put(`/products/${id}`, payload);
-        toast.success("Product updated.");
+        toast.success(t("vendorProductForm.toastUpdated"));
       } else {
         await api.post("/products", { ...payload, store_id: store.id });
-        toast.success("Product added.");
+        toast.success(t("vendorProductForm.toastAdded"));
       }
 
       navigate("/vendor/products");
@@ -158,7 +160,7 @@ function VendorProductForm() {
       console.error("Failed to save product:", error);
 
       const data = error.response?.data;
-      let message = data?.message || "Unable to save this product.";
+      let message = data?.message || t("vendorProductForm.errSave");
       if (Array.isArray(data?.missing_fields)) {
         message += `: ${data.missing_fields.join(", ")}`;
       }
@@ -169,22 +171,22 @@ function VendorProductForm() {
   };
 
   if (loading) {
-    return <p className="text-sm text-gray-500">Loading...</p>;
+    return <p className="text-sm text-gray-500">{t("vendorProductForm.loading")}</p>;
   }
 
   if (noStore) {
     return (
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Add product</h1>
+        <h1 className="text-3xl font-bold text-gray-900">{t("vendorProductForm.noStoreTitle")}</h1>
         <div className="mt-6 rounded-xl border border-dashed border-gray-300 bg-white p-12 text-center">
           <p className="text-gray-600">
-            You need a store before you can add products.
+            {t("vendorProductForm.noStoreBody")}
           </p>
           <Link
             to="/vendor/store"
             className="mt-4 inline-block font-semibold text-emerald-700 hover:underline"
           >
-            Create your store
+            {t("vendorProductForm.createStore")}
           </Link>
         </div>
       </div>
@@ -194,9 +196,9 @@ function VendorProductForm() {
   return (
     <div>
       <div className="mb-8">
-        <BackLink to="/vendor/products">Back to products</BackLink>
+        <BackLink to="/vendor/products">{t("backLink.vendorProducts")}</BackLink>
         <h1 className="mt-2 text-3xl font-bold text-gray-900">
-          {isEdit ? "Edit product" : "Add product"}
+          {isEdit ? t("vendorProductForm.editTitle") : t("vendorProductForm.addTitle")}
         </h1>
       </div>
 
@@ -210,7 +212,7 @@ function VendorProductForm() {
               htmlFor="name"
               className="mb-2 block text-sm font-medium text-gray-700"
             >
-              Name
+              {t("vendorProductForm.name")}
             </label>
             <input
               id="name"
@@ -230,7 +232,7 @@ function VendorProductForm() {
               htmlFor="description"
               className="mb-2 block text-sm font-medium text-gray-700"
             >
-              Description
+              {t("vendorProductForm.description")}
             </label>
             <textarea
               id="description"
@@ -248,7 +250,7 @@ function VendorProductForm() {
                 htmlFor="price"
                 className="mb-2 block text-sm font-medium text-gray-700"
               >
-                Price (USD)
+                {t("vendorProductForm.price")}
               </label>
               <input
                 id="price"
@@ -270,7 +272,7 @@ function VendorProductForm() {
                 htmlFor="stock"
                 className="mb-2 block text-sm font-medium text-gray-700"
               >
-                Stock
+                {t("vendorProductForm.stock")}
               </label>
               <input
                 id="stock"
@@ -293,7 +295,7 @@ function VendorProductForm() {
               htmlFor="category_id"
               className="mb-2 block text-sm font-medium text-gray-700"
             >
-              Category
+              {t("vendorProductForm.category")}
             </label>
             <select
               id="category_id"
@@ -302,7 +304,7 @@ function VendorProductForm() {
               onChange={handleChange}
               className={fieldClass}
             >
-              <option value="">Select a category</option>
+              <option value="">{t("vendorProductForm.selectCategory")}</option>
               {categories.map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.name}
@@ -324,14 +326,14 @@ function VendorProductForm() {
             onClick={() => navigate("/vendor/products")}
             disabled={saving}
           >
-            Cancel
+            {t("vendorProductForm.cancel")}
           </Button>
           <Button type="submit" disabled={saving}>
             {saving
-              ? "Saving..."
+              ? t("vendorProductForm.saving")
               : isEdit
-              ? "Save changes"
-              : "Add product"}
+              ? t("vendorProductForm.saveChanges")
+              : t("vendorProductForm.addButton")}
           </Button>
         </div>
       </form>

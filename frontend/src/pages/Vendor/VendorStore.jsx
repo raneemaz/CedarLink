@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 import api from "../../services/api";
@@ -106,13 +107,15 @@ function TextField({ label, name, value, onChange, hint, ...rest }) {
 }
 
 function StoreDetailFields({ values, onChange }) {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-6">
       <TextField
-        label="Store name"
+        label={t("vendorStore.storeName")}
         name="name"
         type="text"
-        placeholder="e.g. Hamra Grocery"
+        placeholder={t("vendorStore.storeNamePlaceholder")}
         value={values.name}
         onChange={onChange}
         required
@@ -123,14 +126,14 @@ function StoreDetailFields({ values, onChange }) {
           htmlFor="description"
           className="mb-2 block text-sm font-medium text-gray-700"
         >
-          Description
+          {t("vendorStore.description")}
         </label>
 
         <textarea
           id="description"
           name="description"
           rows="3"
-          placeholder="What does your store sell?"
+          placeholder={t("vendorStore.descriptionPlaceholder")}
           value={values.description}
           onChange={onChange}
           required
@@ -143,7 +146,7 @@ function StoreDetailFields({ values, onChange }) {
           htmlFor="location"
           className="mb-2 block text-sm font-medium text-gray-700"
         >
-          Location (city)
+          {t("vendorStore.locationCity")}
         </label>
 
         <select
@@ -154,7 +157,7 @@ function StoreDetailFields({ values, onChange }) {
           required
           className={fieldClass}
         >
-          <option value="">Select a city</option>
+          <option value="">{t("vendorStore.selectCity")}</option>
           {CITY_OPTIONS.map((city) => (
             <option key={city} value={city}>
               {city}
@@ -163,16 +166,15 @@ function StoreDetailFields({ values, onChange }) {
         </select>
 
         <p className="mt-1 text-xs text-gray-500">
-          Delivery fees are applied by matching a customer&apos;s city to
-          this value.
+          {t("vendorStore.locationHint")}
         </p>
       </div>
 
       <TextField
-        label="Contact info"
+        label={t("vendorStore.contactInfo")}
         name="contact_info"
         type="text"
-        placeholder="Phone or email customers can reach you at"
+        placeholder={t("vendorStore.contactInfoPlaceholder")}
         value={values.contact_info}
         onChange={onChange}
         required
@@ -182,6 +184,7 @@ function StoreDetailFields({ values, onChange }) {
 }
 
 function VendorStore() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [store, setStore] = useState(null);
 
@@ -215,7 +218,7 @@ function VendorStore() {
           setStore(null);
         } else {
           console.error("Failed to load store:", error);
-          toast.error(apiMessage(error, "Unable to load your store."));
+          toast.error(apiMessage(error, t("vendorStore.errLoad")));
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -227,7 +230,7 @@ function VendorStore() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [t]);
 
   const handleDetailChange = (event) => {
     const { name, value } = event.target;
@@ -251,10 +254,10 @@ function VendorStore() {
       });
 
       applyStore(response.data.store);
-      toast.success("Store created.");
+      toast.success(t("vendorStore.toastCreated"));
     } catch (error) {
       console.error("Failed to create store:", error);
-      toast.error(apiMessage(error, "Unable to create your store."));
+      toast.error(apiMessage(error, t("vendorStore.errCreate")));
     } finally {
       setCreating(false);
     }
@@ -267,10 +270,10 @@ function VendorStore() {
     try {
       const response = await api.put(`/stores/${store.id}`, details);
       applyStore(response.data.store);
-      toast.success("Store details saved.");
+      toast.success(t("vendorStore.toastDetailsSaved"));
     } catch (error) {
       console.error("Failed to save store details:", error);
-      toast.error(apiMessage(error, "Unable to save store details."));
+      toast.error(apiMessage(error, t("vendorStore.errSaveDetails")));
     } finally {
       setSavingDetails(false);
     }
@@ -288,10 +291,10 @@ function VendorStore() {
       });
 
       applyStore(response.data.store);
-      toast.success("Delivery settings saved.");
+      toast.success(t("vendorStore.toastDeliverySaved"));
     } catch (error) {
       console.error("Failed to save delivery settings:", error);
-      toast.error(apiMessage(error, "Unable to save delivery settings."));
+      toast.error(apiMessage(error, t("vendorStore.errSaveDelivery")));
     } finally {
       setSavingDelivery(false);
     }
@@ -308,19 +311,19 @@ function VendorStore() {
       applyStore(response.data.store);
       toast.success(
         response.data.store.is_active
-          ? "Store activated."
-          : "Store deactivated.",
+          ? t("vendorStore.toastActivated")
+          : t("vendorStore.toastDeactivated"),
       );
     } catch (error) {
       console.error("Failed to update store status:", error);
-      toast.error(apiMessage(error, "Unable to update store status."));
+      toast.error(apiMessage(error, t("vendorStore.errSaveStatus")));
     } finally {
       setSavingStatus(false);
     }
   };
 
   if (loading) {
-    return <p className="text-sm text-gray-500">Loading your store...</p>;
+    return <p className="text-sm text-gray-500">{t("vendorStore.loading")}</p>;
   }
 
   // ---- No store yet: creation form ----------------------------------------
@@ -328,19 +331,19 @@ function VendorStore() {
     return (
       <div>
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Store</h1>
+          <h1 className="text-3xl font-bold text-gray-900">{t("vendorStore.headingNoStore")}</h1>
           <p className="mt-2 text-gray-600">
-            Set up your store to start selling on CedarLink.
+            {t("vendorStore.subtitleNoStore")}
           </p>
         </div>
 
         <Section
-          title="Create your store"
-          description="All fields are required."
+          title={t("vendorStore.createTitle")}
+          description={t("vendorStore.createDesc")}
           onSubmit={handleCreate}
           footer={
             <Button type="submit" disabled={creating}>
-              {creating ? "Creating..." : "Create store"}
+              {creating ? t("vendorStore.creating") : t("vendorStore.createButton")}
             </Button>
           }
         >
@@ -352,7 +355,7 @@ function VendorStore() {
 
             <div className="grid gap-6 sm:grid-cols-2">
               <TextField
-                label="Inside-city delivery fee (USD)"
+                label={t("vendorStore.insideFee")}
                 name="inside_city_delivery_fee"
                 type="number"
                 min="0"
@@ -364,7 +367,7 @@ function VendorStore() {
               />
 
               <TextField
-                label="Outside-city delivery fee (USD)"
+                label={t("vendorStore.outsideFee")}
                 name="outside_city_delivery_fee"
                 type="number"
                 min="0"
@@ -385,12 +388,12 @@ function VendorStore() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Store</h1>
+        <h1 className="text-3xl font-bold text-gray-900">{t("vendorStore.headingStore")}</h1>
         <p className="mt-2 text-gray-600">
           {store.name}
           {!store.is_active && (
             <span className="ms-2 rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-700">
-              Deactivated
+              {t("vendorStore.deactivatedBadge")}
             </span>
           )}
         </p>
@@ -398,11 +401,11 @@ function VendorStore() {
 
       <div className="space-y-6">
         <Section
-          title="Store details"
+          title={t("vendorStore.detailsTitle")}
           onSubmit={handleSaveDetails}
           footer={
             <Button type="submit" disabled={savingDetails}>
-              {savingDetails ? "Saving..." : "Save changes"}
+              {savingDetails ? t("vendorStore.saving") : t("vendorStore.saveChanges")}
             </Button>
           }
         >
@@ -410,19 +413,19 @@ function VendorStore() {
         </Section>
 
         <Section
-          title="Delivery"
-          description="Fees are charged per order, based on the customer's city."
+          title={t("vendorStore.deliveryTitle")}
+          description={t("vendorStore.deliveryDesc")}
           onSubmit={handleSaveDelivery}
           footer={
             <Button type="submit" disabled={savingDelivery}>
-              {savingDelivery ? "Saving..." : "Save delivery settings"}
+              {savingDelivery ? t("vendorStore.saving") : t("vendorStore.saveDelivery")}
             </Button>
           }
         >
           <div className="space-y-6">
             <div className="grid gap-6 sm:grid-cols-2">
               <TextField
-                label="Inside-city delivery fee (USD)"
+                label={t("vendorStore.insideFee")}
                 name="inside_city_delivery_fee"
                 type="number"
                 min="0"
@@ -433,7 +436,7 @@ function VendorStore() {
               />
 
               <TextField
-                label="Outside-city delivery fee (USD)"
+                label={t("vendorStore.outsideFee")}
                 name="outside_city_delivery_fee"
                 type="number"
                 min="0"
@@ -453,26 +456,26 @@ function VendorStore() {
                     delivery_available: next,
                   }))
                 }
-                label="Accepting delivery orders"
-                description="Turn off to stop taking new orders without deactivating the store."
+                label={t("vendorStore.acceptingOrders")}
+                description={t("vendorStore.acceptingOrdersDesc")}
               />
             </div>
           </div>
         </Section>
 
         <Section
-          title="Store status"
-          description="A deactivated store is hidden from customers and cannot take orders."
+          title={t("vendorStore.statusTitle")}
+          description={t("vendorStore.statusDesc")}
         >
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="font-medium text-gray-900">
-                {store.is_active ? "Active" : "Deactivated"}
+                {store.is_active ? t("vendorStore.active") : t("vendorStore.deactivated")}
               </p>
               <p className="mt-1 text-sm text-gray-500">
                 {store.is_active
-                  ? "Your store is visible to customers."
-                  : "Your store is currently hidden from customers."}
+                  ? t("vendorStore.activeDesc")
+                  : t("vendorStore.deactivatedDesc")}
               </p>
             </div>
 
@@ -482,10 +485,10 @@ function VendorStore() {
               disabled={savingStatus}
             >
               {savingStatus
-                ? "Saving..."
+                ? t("vendorStore.saving")
                 : store.is_active
-                ? "Deactivate store"
-                : "Activate store"}
+                ? t("vendorStore.deactivateStore")
+                : t("vendorStore.activateStore")}
             </Button>
           </div>
         </Section>

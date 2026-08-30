@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { Trash2, Upload } from "lucide-react";
 
@@ -10,6 +11,7 @@ const MAX_BYTES = 5 * 1024 * 1024;
 const ALLOWED_EXT = /\.(jpe?g|png|webp)$/i;
 
 function ProductImageManager({ productId, onImagesChange }) {
+  const { t } = useTranslation();
   const fileInputRef = useRef(null);
 
   const [images, setImages] = useState([]);
@@ -38,7 +40,7 @@ function ProductImageManager({ productId, onImagesChange }) {
       } catch (error) {
         if (!cancelled) {
           console.error("Failed to load images:", error);
-          toast.error("Unable to load product images.");
+          toast.error(t("productImages.errLoad"));
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -48,7 +50,7 @@ function ProductImageManager({ productId, onImagesChange }) {
     return () => {
       cancelled = true;
     };
-  }, [productId]);
+  }, [productId, t]);
 
   const atMax = images.length >= MAX_IMAGES;
 
@@ -58,15 +60,15 @@ function ProductImageManager({ productId, onImagesChange }) {
     if (!file) return;
 
     if (!ALLOWED_EXT.test(file.name)) {
-      toast.error("Use a JPG, PNG, or WEBP image.");
+      toast.error(t("productImages.errUseFormat"));
       return;
     }
     if (file.size > MAX_BYTES) {
-      toast.error("Image is too large. Maximum size is 5 MB.");
+      toast.error(t("productImages.errTooLarge"));
       return;
     }
     if (atMax) {
-      toast.error(`A product can have at most ${MAX_IMAGES} images.`);
+      toast.error(t("productImages.errAtMax", { max: MAX_IMAGES }));
       return;
     }
 
@@ -87,11 +89,11 @@ function ProductImageManager({ productId, onImagesChange }) {
       });
 
       await refresh();
-      toast.success("Image uploaded.");
+      toast.success(t("productImages.toastUploaded"));
     } catch (error) {
       console.error("Failed to upload image:", error);
       toast.error(
-        error.response?.data?.message || "Unable to upload that image.",
+        error.response?.data?.message || t("productImages.errUpload"),
       );
     } finally {
       setUploading(false);
@@ -109,12 +111,12 @@ function ProductImageManager({ productId, onImagesChange }) {
         `/products/${productId}/images/${deleteTarget.id}`,
       );
       await refresh();
-      toast.success("Image removed.");
+      toast.success(t("productImages.toastRemoved"));
       setDeleteTarget(null);
     } catch (error) {
       console.error("Failed to delete image:", error);
       toast.error(
-        error.response?.data?.message || "Unable to remove that image.",
+        error.response?.data?.message || t("productImages.errRemove"),
       );
     } finally {
       setDeleting(false);
@@ -125,17 +127,16 @@ function ProductImageManager({ productId, onImagesChange }) {
     <section className="overflow-hidden rounded-2xl bg-white shadow-sm">
       <div className="border-b border-gray-100 px-6 py-5">
         <h2 className="text-xl font-semibold text-gray-900">
-          Product images
+          {t("productImages.sectionTitle")}
         </h2>
         <p className="mt-1 text-sm text-gray-500">
-          {images.length} of {MAX_IMAGES} used. The first image is the one
-          shoppers see in listings.
+          {t("productImages.usage", { count: images.length, max: MAX_IMAGES })}
         </p>
       </div>
 
       <div className="px-6 py-6">
         {loading ? (
-          <p className="text-sm text-gray-500">Loading images...</p>
+          <p className="text-sm text-gray-500">{t("productImages.loading")}</p>
         ) : (
           <>
             {images.length > 0 && (
@@ -147,14 +148,14 @@ function ProductImageManager({ productId, onImagesChange }) {
                   >
                     <img
                       src={image.url}
-                      alt="Product"
+                      alt={t("productImages.imageAlt")}
                       className="h-full w-full object-cover"
                     />
                     <button
                       type="button"
                       onClick={() => setDeleteTarget(image)}
                       disabled={uploading || deleting}
-                      aria-label="Remove image"
+                      aria-label={t("productImages.removeImage")}
                       className="absolute end-2 top-2 rounded-md bg-white/90 p-1.5 text-red-600 shadow-sm transition hover:bg-white disabled:opacity-50"
                     >
                       <Trash2 size={16} />
@@ -174,13 +175,12 @@ function ProductImageManager({ productId, onImagesChange }) {
 
             {atMax ? (
               <p className="rounded-lg bg-gray-50 px-4 py-3 text-sm text-gray-500">
-                You have reached the maximum of {MAX_IMAGES} images. Remove
-                one to upload another.
+                {t("productImages.atMax", { max: MAX_IMAGES })}
               </p>
             ) : uploading ? (
               <div className="rounded-lg border border-gray-200 px-4 py-3">
                 <p className="text-sm text-gray-600">
-                  Uploading... {progress}%
+                  {t("productImages.uploading", { progress })}
                 </p>
                 <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
                   <div
@@ -197,12 +197,12 @@ function ProductImageManager({ productId, onImagesChange }) {
                 className="flex items-center gap-2 rounded-lg border border-dashed border-gray-300 px-4 py-3 text-sm font-medium text-gray-700 transition hover:border-emerald-600 hover:text-emerald-700 disabled:opacity-50"
               >
                 <Upload size={16} />
-                Upload image
+                {t("productImages.uploadImage")}
               </button>
             )}
 
             <p className="mt-2 text-xs text-gray-400">
-              JPG, PNG or WEBP, up to 5 MB. One file at a time.
+              {t("productImages.formats")}
             </p>
           </>
         )}
@@ -210,9 +210,9 @@ function ProductImageManager({ productId, onImagesChange }) {
 
       <ConfirmDialog
         open={deleteTarget !== null}
-        title="Remove image"
-        message="Remove this image? This cannot be undone."
-        confirmLabel="Remove"
+        title={t("productImages.removeTitle")}
+        message={t("productImages.removeMessage")}
+        confirmLabel={t("productImages.remove")}
         loading={deleting}
         onConfirm={handleConfirmDelete}
         onCancel={() => (deleting ? null : setDeleteTarget(null))}

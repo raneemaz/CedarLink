@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 import api from "../../services/api";
@@ -9,6 +10,7 @@ import ConfirmDialog from "../../components/common/ConfirmDialog/ConfirmDialog";
 const PAGE_SIZE = 10;
 
 function VendorProducts() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [noStore, setNoStore] = useState(false);
   const [store, setStore] = useState(null);
@@ -63,7 +65,7 @@ function VendorProducts() {
         } else {
           console.error("Failed to load products:", error);
           toast.error(
-            error.response?.data?.message || "Unable to load your products.",
+            error.response?.data?.message || t("vendorProducts.errLoad"),
           );
         }
       } finally {
@@ -76,7 +78,7 @@ function VendorProducts() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [t]);
 
   const goToPage = async (targetPage) => {
     if (!store || targetPage < 1 || targetPage > pages) return;
@@ -85,7 +87,7 @@ function VendorProducts() {
       await fetchProducts(store.id, targetPage);
     } catch (error) {
       console.error("Failed to load page:", error);
-      toast.error("Unable to load that page.");
+      toast.error(t("vendorProducts.errLoadPage"));
     }
   };
 
@@ -96,7 +98,7 @@ function VendorProducts() {
 
     try {
       await api.delete(`/products/${deleteTarget.id}`);
-      toast.success(`"${deleteTarget.name}" deleted.`);
+      toast.success(t("vendorProducts.toastDeleted", { name: deleteTarget.name }));
 
       // Step back a page if we just removed the last row on this one.
       const nextPage =
@@ -107,7 +109,7 @@ function VendorProducts() {
     } catch (error) {
       console.error("Failed to delete product:", error);
       toast.error(
-        error.response?.data?.message || "Unable to delete this product.",
+        error.response?.data?.message || t("vendorProducts.errDelete"),
       );
     } finally {
       setDeleting(false);
@@ -115,23 +117,23 @@ function VendorProducts() {
   };
 
   if (loading) {
-    return <p className="text-sm text-gray-500">Loading your products...</p>;
+    return <p className="text-sm text-gray-500">{t("vendorProducts.loading")}</p>;
   }
 
   if (noStore) {
     return (
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Products</h1>
+        <h1 className="text-3xl font-bold text-gray-900">{t("vendorProducts.title")}</h1>
 
         <div className="mt-6 rounded-xl border border-dashed border-gray-300 bg-white p-12 text-center">
           <p className="text-gray-600">
-            You need a store before you can add products.
+            {t("vendorProducts.noStoreBody")}
           </p>
           <Link
             to="/vendor/store"
             className="mt-4 inline-block font-semibold text-emerald-700 hover:underline"
           >
-            Create your store
+            {t("vendorProducts.createStore")}
           </Link>
         </div>
       </div>
@@ -142,25 +144,28 @@ function VendorProducts() {
     <div>
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Products</h1>
+          <h1 className="text-3xl font-bold text-gray-900">{t("vendorProducts.title")}</h1>
           <p className="mt-2 text-gray-600">
-            {total} {total === 1 ? "product" : "products"} in {store.name}
+            {t("vendorProducts.countInStore", {
+              count: total,
+              store: store.name,
+            })}
           </p>
         </div>
 
         <Link to="/vendor/products/new">
-          <Button>Add product</Button>
+          <Button>{t("vendorProducts.addProduct")}</Button>
         </Link>
       </div>
 
       {total === 0 ? (
         <div className="rounded-xl border border-dashed border-gray-300 bg-white p-12 text-center">
-          <p className="text-gray-600">You have no products yet.</p>
+          <p className="text-gray-600">{t("vendorProducts.emptyBody")}</p>
           <Link
             to="/vendor/products/new"
             className="mt-4 inline-block font-semibold text-emerald-700 hover:underline"
           >
-            Add your first product
+            {t("vendorProducts.addFirst")}
           </Link>
         </div>
       ) : (
@@ -169,12 +174,12 @@ function VendorProducts() {
             <table className="min-w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100 text-start text-xs uppercase tracking-wide text-gray-400">
-                  <th className="px-4 py-3 font-medium">Product</th>
-                  <th className="px-4 py-3 font-medium">Category</th>
-                  <th className="px-4 py-3 font-medium">Price</th>
-                  <th className="px-4 py-3 font-medium">Stock</th>
-                  <th className="px-4 py-3 font-medium">Status</th>
-                  <th className="px-4 py-3 font-medium text-end">Actions</th>
+                  <th className="px-4 py-3 font-medium">{t("vendorProducts.colProduct")}</th>
+                  <th className="px-4 py-3 font-medium">{t("vendorProducts.colCategory")}</th>
+                  <th className="px-4 py-3 font-medium">{t("vendorProducts.colPrice")}</th>
+                  <th className="px-4 py-3 font-medium">{t("vendorProducts.colStock")}</th>
+                  <th className="px-4 py-3 font-medium">{t("vendorProducts.colStatus")}</th>
+                  <th className="px-4 py-3 font-medium text-end">{t("vendorProducts.colActions")}</th>
                 </tr>
               </thead>
 
@@ -228,7 +233,7 @@ function VendorProducts() {
                               : "bg-emerald-100 text-emerald-700"
                           }`}
                         >
-                          {outOfStock ? "Out of stock" : "In stock"}
+                          {outOfStock ? t("vendorProducts.outOfStock") : t("vendorProducts.inStock")}
                         </span>
                       </td>
 
@@ -238,14 +243,14 @@ function VendorProducts() {
                             to={`/vendor/products/${product.id}/edit`}
                             className="font-medium text-emerald-700 hover:underline"
                           >
-                            Edit
+                            {t("vendorProducts.edit")}
                           </Link>
                           <button
                             type="button"
                             onClick={() => setDeleteTarget(product)}
                             className="font-medium text-red-600 hover:underline"
                           >
-                            Delete
+                            {t("vendorProducts.delete")}
                           </button>
                         </div>
                       </td>
@@ -264,11 +269,11 @@ function VendorProducts() {
                 disabled={page <= 1}
                 className="rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                Previous
+                {t("common.previous")}
               </button>
 
               <span className="text-gray-500">
-                Page {page} of {pages}
+                {t("common.pageOf", { page, pages })}
               </span>
 
               <button
@@ -277,7 +282,7 @@ function VendorProducts() {
                 disabled={page >= pages}
                 className="rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                Next
+                {t("common.next")}
               </button>
             </div>
           )}
@@ -286,14 +291,13 @@ function VendorProducts() {
 
       <ConfirmDialog
         open={deleteTarget !== null}
-        title="Delete product"
+        title={t("vendorProducts.deleteTitle")}
         message={
           deleteTarget
-            ? `Delete "${deleteTarget.name}"? It will be removed from the ` +
-              `storefront. Past orders that included it are not affected.`
+            ? t("vendorProducts.deleteMessage", { name: deleteTarget.name })
             : ""
         }
-        confirmLabel="Delete"
+        confirmLabel={t("vendorProducts.delete")}
         loading={deleting}
         onConfirm={handleConfirmDelete}
         onCancel={() => (deleting ? null : setDeleteTarget(null))}
