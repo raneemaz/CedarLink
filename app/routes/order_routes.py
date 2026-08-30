@@ -5,6 +5,7 @@ from app.extensions import db
 from app.models.payment_method import PaymentMethod
 from app.services import order_service
 from app.services.order_service import OrderError
+from app.utils.errors import internal_error
 
 
 order_bp = Blueprint("order_bp", __name__)
@@ -89,10 +90,7 @@ def checkout():
         return jsonify(exc.payload), exc.status_code
     except Exception as exc:
         db.session.rollback()
-        return jsonify({
-            "error": "Checkout failed",
-            "details": str(exc)
-        }), 500
+        return internal_error(exc, "checkout failed")
 
     return jsonify(result), 201
 
@@ -146,9 +144,9 @@ def update_order_status(id):
         )
     except OrderError as exc:
         return jsonify(exc.payload), exc.status_code
-    except Exception:
+    except Exception as exc:
         db.session.rollback()
-        return jsonify({"error": "Failed to update order status"}), 500
+        return internal_error(exc, "order status update failed")
 
     return jsonify(result), 200
 
@@ -162,8 +160,8 @@ def cancel_order(id):
         result = order_service.cancel_order(user_id, id)
     except OrderError as exc:
         return jsonify(exc.payload), exc.status_code
-    except Exception:
+    except Exception as exc:
         db.session.rollback()
-        return jsonify({"error": "Failed to cancel order"}), 500
+        return internal_error(exc, "order cancel failed")
 
     return jsonify(result), 200
