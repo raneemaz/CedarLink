@@ -82,7 +82,8 @@
     "loading": "Loading your currency preference...",
     "loadError": "Unable to load your currency preference.",
     "saveError": "Failed to save your currency preference. Please try again.",
-    "approxNote": "Converted amounts are approximate. Carts, checkout and payments are always processed in USD."
+    "approxNote": "Converted amounts are approximate. Carts, checkout and payments are always processed in USD.",
+    "approxTooltip": "Approximate — you are charged in USD"
   },
   "notifications": {
     "title": "Notifications",
