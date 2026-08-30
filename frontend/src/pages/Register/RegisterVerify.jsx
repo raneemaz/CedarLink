@@ -48,7 +48,8 @@ function RegisterVerify() {
 
       toast.success("Account verified successfully!");
 
-      navigate("/");
+      // A new vendor goes straight to the store-creation form.
+      navigate(user?.role === "vendor" ? "/vendor/store" : "/");
     } catch (error) {
       console.error("Registration verification failed:", error);
 
