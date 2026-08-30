@@ -197,6 +197,8 @@ function VendorStore() {
     setStore(nextStore);
     setDetails(detailsFromStore(nextStore));
     setDelivery(deliveryFromStore(nextStore));
+    // Let the console shell refresh its approval / removed banner.
+    window.dispatchEvent(new Event("vendorStoreChanged"));
   };
 
   useEffect(() => {
