@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import BackLink from "../../components/common/BackLink";
 import api from "../../services/api";
 import { lebanonLocations } from "../../data/lebanonLocations";
 
 function Checkout() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [cart, setCart] = useState(null);
@@ -39,7 +41,7 @@ function Checkout() {
         setError(
           error.response?.data?.error ||
             error.response?.data?.message ||
-            "Failed to load your cart.",
+            t("checkout.errLoadCart"),
         );
       } finally {
         setLoading(false);
@@ -47,7 +49,7 @@ function Checkout() {
     };
 
     fetchCart();
-  }, []);
+  }, [t]);
 
   // Load saved cards, plus the user's shopping preferences and default
   // address so checkout can pre-fill. Cash on Delivery is always available.
@@ -60,21 +62,23 @@ function Checkout() {
       }
     };
 
-    // Return an exact value from the existing checkout city <select> that
-    // corresponds to `raw` (a governorate name or a stored city string).
+    // Return an exact district name from the checkout city <select> that
+    // corresponds to `raw` (a stored city or district string).
     const matchCity = (raw) => {
       if (!raw) return "";
       const lower = String(raw).trim().toLowerCase();
-      const hit = lebanonLocations.find((l) => {
-        const gov = String(l.governorate || "").toLowerCase();
-        return (
-          gov === lower ||
-          `${gov}, ${String(l.district || "").toLowerCase()}` === lower ||
-          (lower && gov.includes(lower)) ||
-          (gov && lower.includes(gov))
-        );
-      });
-      return hit ? `${hit.governorate}, ${hit.district}` : "";
+      for (const location of lebanonLocations) {
+        for (const district of location.districts) {
+          const name = district.name.toLowerCase();
+          if (
+            name === lower ||
+            district.cities.some((c) => c.toLowerCase() === lower)
+          ) {
+            return district.name;
+          }
+        }
+      }
+      return "";
     };
 
     const load = async () => {
@@ -140,7 +144,7 @@ function Checkout() {
         setPaymentMethodsError(
           error.response?.data?.error ||
             error.response?.data?.message ||
-            "Failed to load your payment methods.",
+            t("checkout.errMethods"),
         );
       } finally {
         setPaymentMethodsLoading(false);
@@ -148,7 +152,7 @@ function Checkout() {
     };
 
     load();
-  }, []);
+  }, [t]);
 
   // Calculate delivery preview
   useEffect(() => {
@@ -176,7 +180,7 @@ function Checkout() {
         setPreviewError(
           error.response?.data?.error ||
             error.response?.data?.message ||
-            "Failed to calculate delivery.",
+            t("checkout.errCalcDelivery"),
         );
       } finally {
         setPreviewLoading(false);
@@ -184,12 +188,12 @@ function Checkout() {
     };
 
     fetchPreview();
-  }, [deliveryCity]);
+  }, [deliveryCity, t]);
 
   if (loading) {
     return (
       <div className="mx-auto max-w-6xl px-6 py-10">
-        <p className="text-slate-600">Loading checkout...</p>
+        <p className="text-slate-600">{t("checkout.loading")}</p>
       </div>
     );
   }
@@ -201,7 +205,7 @@ function Checkout() {
           <p className="text-red-700">{error}</p>
 
           <BackLink to="/cart" className="mt-4">
-            Back to Cart
+            {t("backLink.cart")}
           </BackLink>
         </div>
       </div>
@@ -214,18 +218,18 @@ function Checkout() {
     return (
       <div className="mx-auto max-w-6xl px-6 py-16 text-center">
         <h1 className="text-3xl font-bold text-slate-900">
-          Your cart is empty
+          {t("checkout.emptyTitle")}
         </h1>
 
         <p className="mt-3 text-slate-600">
-          Add some products before proceeding to checkout.
+          {t("checkout.emptyBody")}
         </p>
 
         <Link
           to="/products"
           className="mt-6 inline-block rounded-lg bg-emerald-700 px-6 py-3 font-medium text-white transition hover:bg-emerald-800"
         >
-          Browse Products
+          {t("checkout.browseProducts")}
         </Link>
       </div>
     );
@@ -233,28 +237,28 @@ function Checkout() {
 
   const getCardLabel = (method) => {
     return method.last4
-      ? `${method.label || "Card"} •••• ${method.last4}`
-      : method.label || "Card";
+      ? `${method.label || t("checkout.cardLabelFallback")} •••• ${method.last4}`
+      : method.label || t("checkout.cardLabelFallback");
   };
 
   const handlePlaceOrder = async () => {
     if (!deliveryAddress.trim()) {
-      setOrderError("Please enter your delivery address.");
+      setOrderError(t("checkout.errEnterAddress"));
       return;
     }
 
     if (!deliveryCity) {
-      setOrderError("Please select your city.");
+      setOrderError(t("checkout.errSelectCity"));
       return;
     }
 
     if (!selectedPaymentMethod) {
-      setOrderError("Please select a payment method.");
+      setOrderError(t("checkout.errSelectPayment"));
       return;
     }
 
     if (!preview) {
-      setOrderError("Please wait for the delivery total to be calculated.");
+      setOrderError(t("checkout.errWaitTotal"));
       return;
     }
 
@@ -285,7 +289,7 @@ function Checkout() {
       setOrderError(
         error.response?.data?.error ||
           error.response?.data?.message ||
-          "Failed to place your order. Please try again.",
+          t("checkout.errPlaceOrder"),
       );
     } finally {
       setPlacingOrder(false);
@@ -295,14 +299,14 @@ function Checkout() {
   return (
     <div className="mx-auto max-w-6xl px-6 py-10">
       <div className="mb-8">
-        <BackLink to="/cart">Back to Cart</BackLink>
+        <BackLink to="/cart">{t("backLink.cart")}</BackLink>
 
         <h1 className="mt-4 text-3xl font-bold text-slate-900">
-          Checkout
+          {t("checkout.title")}
         </h1>
 
         <p className="mt-2 text-slate-600">
-          Enter your delivery information and review your order.
+          {t("checkout.subtitle")}
         </p>
       </div>
 
@@ -311,27 +315,27 @@ function Checkout() {
           {/* Delivery Information */}
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 className="text-xl font-semibold text-slate-900">
-              Delivery Information
+              {t("checkout.deliveryInfo")}
             </h2>
 
             <div className="mt-6 space-y-5">
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-700">
-                  Delivery Address
+                  {t("checkout.deliveryAddress")}
                 </label>
 
                 <input
                   type="text"
                   value={deliveryAddress}
                   onChange={(e) => setDeliveryAddress(e.target.value)}
-                  placeholder="Enter your full delivery address"
+                  placeholder={t("checkout.addressPlaceholder")}
                   className="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100"
                 />
               </div>
 
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-700">
-                  City
+                  {t("checkout.city")}
                 </label>
 
                 <select
@@ -339,20 +343,21 @@ function Checkout() {
                   onChange={(e) => setDeliveryCity(e.target.value)}
                   className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100"
                 >
-                  <option value="">Select your city</option>
+                  <option value="">{t("checkout.selectCity")}</option>
 
-                  {lebanonLocations.map((location) => {
-                    const locationValue = `${location.governorate}, ${location.district}`;
-
-                    return (
+                  {lebanonLocations.flatMap((location) =>
+                    location.districts.map((district) => (
                       <option
-                        key={locationValue}
-                        value={locationValue}
+                        key={`${location.governorate}-${district.name}`}
+                        value={district.name}
                       >
-                        {location.governorate} - {location.district}
+                        {t("checkout.cityOption", {
+                          governorate: location.governorate,
+                          district: district.name,
+                        })}
                       </option>
-                    );
-                  })}
+                    )),
+                  )}
                 </select>
               </div>
             </div>
@@ -362,21 +367,21 @@ function Checkout() {
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold text-slate-900">
-                Payment Method
+                {t("checkout.paymentMethod")}
               </h2>
 
               <Link
                 to="/settings/payment-methods"
                 className="text-sm font-medium text-emerald-700 hover:underline"
               >
-                Manage cards
+                {t("checkout.manageCards")}
               </Link>
             </div>
 
             <div className="mt-5">
               {paymentMethodsLoading && (
                 <p className="text-sm text-slate-500">
-                  Loading payment methods...
+                  {t("checkout.loadingMethods")}
                 </p>
               )}
 
@@ -393,21 +398,20 @@ function Checkout() {
                   {paymentMethods.length === 0 ? (
                     <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
                       <p className="text-sm text-amber-800">
-                        You do not have any saved cards yet. You can still pay
-                        with Cash on Delivery.
+                        {t("checkout.noCardsNote")}
                       </p>
 
                       <Link
                         to="/settings/payment-methods/new"
                         className="mt-2 inline-block text-sm font-medium text-emerald-700 hover:underline"
                       >
-                        Add a card
+                        {t("checkout.addCard")}
                       </Link>
                     </div>
                   ) : (
                     <div className="space-y-3">
                       <p className="text-sm font-medium text-slate-700">
-                        Saved cards
+                        {t("checkout.savedCards")}
                       </p>
 
                       {paymentMethods.map((method) => (
@@ -440,13 +444,13 @@ function Checkout() {
 
                               {method.is_default && (
                                 <p className="mt-1 text-xs text-emerald-700">
-                                  Default card
+                                  {t("checkout.defaultCard")}
                                 </p>
                               )}
                             </div>
                           </div>
 
-                          <span className="text-sm text-slate-500">Card</span>
+                          <span className="text-sm text-slate-500">{t("checkout.card")}</span>
                         </label>
                       ))}
                     </div>
@@ -473,15 +477,15 @@ function Checkout() {
 
                       <div>
                         <p className="font-medium text-slate-900">
-                          Cash on Delivery
+                          {t("checkout.cashOnDelivery")}
                         </p>
                         <p className="mt-1 text-xs text-slate-500">
-                          Pay when your order arrives.
+                          {t("checkout.cashOnDeliveryDesc")}
                         </p>
                       </div>
                     </div>
 
-                    <span className="text-sm text-slate-500">Cash</span>
+                    <span className="text-sm text-slate-500">{t("checkout.cash")}</span>
                   </label>
                 </div>
               )}
@@ -492,7 +496,7 @@ function Checkout() {
           <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
             <div className="border-b border-slate-200 p-6">
               <h2 className="text-xl font-semibold text-slate-900">
-                Your Order
+                {t("checkout.yourOrder")}
               </h2>
             </div>
 
@@ -520,7 +524,7 @@ function Checkout() {
                           </p>
 
                           <p className="mt-1 text-sm text-slate-500">
-                            Quantity: {item.quantity}
+                            {t("checkout.quantityLine", { count: item.quantity })}
                           </p>
                         </div>
 
@@ -536,7 +540,7 @@ function Checkout() {
 
                   <div className="flex justify-between px-6 py-4">
                     <span className="font-medium text-slate-600">
-                      Store subtotal
+                      {t("checkout.storeSubtotal")}
                     </span>
 
                     <span className="font-semibold text-slate-900">
@@ -553,12 +557,12 @@ function Checkout() {
         <aside>
           <div className="sticky top-24 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 className="text-xl font-semibold text-slate-900">
-              Order Summary
+              {t("checkout.orderSummary")}
             </h2>
 
             <div className="mt-6 space-y-4">
               <div className="flex justify-between">
-                <span className="text-slate-600">Cart subtotal</span>
+                <span className="text-slate-600">{t("checkout.cartSubtotal")}</span>
 
                 <span className="font-medium">
                   ${Number(preview?.subtotal ?? cart?.total ?? 0).toFixed(2)}
@@ -566,11 +570,11 @@ function Checkout() {
               </div>
 
               <div className="flex justify-between">
-                <span className="text-slate-600">Delivery</span>
+                <span className="text-slate-600">{t("checkout.delivery")}</span>
 
                 <span className="font-medium">
                   {previewLoading
-                    ? "Calculating..."
+                    ? t("checkout.calculating")
                     : preview
                       ? `$${Number(preview.delivery_fee).toFixed(2)}`
                       : "—"}
@@ -583,7 +587,7 @@ function Checkout() {
 
               <div className="border-t border-slate-200 pt-4">
                 <div className="flex justify-between text-lg font-bold">
-                  <span>Total</span>
+                  <span>{t("checkout.total")}</span>
 
                   <span className="text-emerald-700">
                     ${Number(preview?.total ?? cart?.total ?? 0).toFixed(2)}
@@ -610,7 +614,7 @@ function Checkout() {
                 }
                 className="w-full cursor-pointer rounded-lg bg-emerald-700 px-5 py-3 font-semibold text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {placingOrder ? "Placing Order..." : "Place Order"}
+                {placingOrder ? t("checkout.placingOrder") : t("checkout.placeOrder")}
               </button>
             </div>
           </div>

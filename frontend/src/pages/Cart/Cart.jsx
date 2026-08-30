@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Minus, Plus, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import api from "../../services/api";
 
 function Cart() {
+  const { t } = useTranslation();
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -18,7 +20,7 @@ function Cart() {
       setCart(response.data);
     } catch (err) {
       console.error("Failed to fetch cart:", err);
-      setError("Unable to load your cart.");
+      setError(t("cart.errLoad"));
     } finally {
       setLoading(false);
     }
@@ -26,7 +28,7 @@ function Cart() {
 
   useEffect(() => {
     fetchCart();
-  }, []);
+  }, [t]);
 
   const updateQuantity = async (itemId, newQuantity) => {
     if (newQuantity < 1) {
@@ -42,7 +44,7 @@ function Cart() {
       window.dispatchEvent(new Event("cartUpdated"));
     } catch (err) {
       console.error("Failed to update quantity:", err);
-      setError("Unable to update the item quantity.");
+      setError(t("cart.errUpdateQty"));
     }
   };
 
@@ -54,7 +56,7 @@ function Cart() {
       window.dispatchEvent(new Event("cartUpdated"));
     } catch (err) {
       console.error("Failed to remove item:", err);
-      setError("Unable to remove the item.");
+      setError(t("cart.errRemove"));
     }
   };
 
@@ -63,11 +65,11 @@ function Cart() {
       <div className="min-h-screen bg-gray-50 px-6 py-10">
         <div className="mx-auto max-w-7xl">
           <h1 className="text-3xl font-bold text-gray-900">
-            Shopping Cart
+            {t("cart.title")}
           </h1>
 
           <p className="mt-4 text-slate-600">
-            Loading your cart...
+            {t("cart.loading")}
           </p>
         </div>
       </div>
@@ -79,7 +81,7 @@ function Cart() {
       <div className="min-h-screen bg-gray-50 px-6 py-10">
         <div className="mx-auto max-w-7xl">
           <h1 className="text-3xl font-bold text-gray-900">
-            Shopping Cart
+            {t("cart.title")}
           </h1>
 
           <p className="mt-4 text-red-600">
@@ -90,7 +92,7 @@ function Cart() {
             onClick={fetchCart}
             className="mt-4 rounded-lg bg-emerald-700 px-5 py-2 text-white hover:bg-emerald-800"
           >
-            Try Again
+            {t("cart.tryAgain")}
           </button>
         </div>
       </div>
@@ -108,23 +110,23 @@ function Cart() {
       <div className="min-h-screen bg-gray-50 px-6 py-10">
         <div className="mx-auto max-w-7xl">
           <h1 className="text-3xl font-bold text-gray-900">
-            Shopping Cart
+            {t("cart.title")}
           </h1>
 
           <div className="mt-10 rounded-xl bg-white p-10 text-center shadow-sm">
             <h2 className="text-xl font-semibold text-gray-900">
-              Your cart is empty
+              {t("cart.emptyTitle")}
             </h2>
 
             <p className="mt-2 text-slate-600">
-              Browse our products and add something to your cart.
+              {t("cart.emptyBody")}
             </p>
 
             <Link
               to="/products"
               className="mt-6 inline-block rounded-lg bg-emerald-700 px-6 py-3 font-medium text-white transition hover:bg-emerald-800"
             >
-              Browse Products
+              {t("cart.browseProducts")}
             </Link>
           </div>
         </div>
@@ -139,11 +141,11 @@ function Cart() {
         {/* Header */}
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
-            Shopping Cart
+            {t("cart.title")}
           </h1>
 
           <p className="mt-2 text-slate-600">
-            Review your selected products before checkout.
+            {t("cart.subtitle")}
           </p>
         </div>
 
@@ -166,7 +168,7 @@ function Cart() {
                 {/* Store Header */}
                 <div className="border-b border-slate-200 px-6 py-4">
                   <h2 className="text-lg font-semibold text-gray-900">
-                    Store #{store.store_id}
+                    {t("cart.storeHeading", { id: store.store_id })}
                   </h2>
                 </div>
 
@@ -184,7 +186,9 @@ function Cart() {
                         </h3>
 
                         <p className="mt-1 text-sm text-slate-500">
-                          ${Number(item.price).toFixed(2)} each
+                          {t("cart.priceEach", {
+                            price: `$${Number(item.price).toFixed(2)}`,
+                          })}
                         </p>
                       </div>
 
@@ -229,7 +233,7 @@ function Cart() {
                       <button
                         onClick={() => removeItem(item.id)}
                         className="flex h-9 w-9 items-center justify-center rounded-lg text-red-500 transition hover:bg-red-50"
-                        title="Remove item"
+                        title={t("cart.removeItem")}
                       >
                         <Trash2 size={18} />
                       </button>
@@ -240,7 +244,7 @@ function Cart() {
                 {/* Store Subtotal */}
                 <div className="flex justify-between border-t border-slate-200 bg-slate-50 px-6 py-4">
                   <span className="font-medium text-slate-700">
-                    Store subtotal
+                    {t("cart.storeSubtotal")}
                   </span>
 
                   <span className="font-bold text-gray-900">
@@ -254,12 +258,12 @@ function Cart() {
           {/* Order Summary */}
           <div className="h-fit rounded-xl bg-white p-6 shadow-sm">
             <h2 className="text-xl font-semibold text-gray-900">
-              Order Summary
+              {t("cart.orderSummary")}
             </h2>
 
             <div className="mt-6 space-y-4">
               <div className="flex justify-between text-slate-600">
-                <span>Subtotal</span>
+                <span>{t("cart.subtotal")}</span>
 
                 <span>
                   ${Number(cart.total).toFixed(2)}
@@ -269,7 +273,7 @@ function Cart() {
               <div className="border-t border-slate-200 pt-4">
                 <div className="flex justify-between">
                   <span className="text-lg font-semibold text-gray-900">
-                    Total
+                    {t("cart.total")}
                   </span>
 
                   <span className="text-lg font-bold text-emerald-700">
@@ -282,14 +286,14 @@ function Cart() {
                 to="/checkout"
                 className="mt-4 block w-full rounded-lg bg-emerald-700 px-5 py-3 text-center font-medium text-white transition hover:bg-emerald-800"
               >
-                Proceed to Checkout
+                {t("cart.proceedToCheckout")}
               </Link>
 
               <Link
                 to="/products"
                 className="block text-center text-sm font-medium text-emerald-700 hover:underline"
               >
-                Continue Shopping
+                {t("cart.continueShopping")}
               </Link>
             </div>
           </div>

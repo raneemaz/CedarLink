@@ -5,7 +5,7 @@ import api from "../../services/api";
 import { formatDate } from "../../utils/helpers";
 
 function Orders() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -20,8 +20,7 @@ function Orders() {
         console.error("Failed to load orders:", error);
 
         setError(
-          error.response?.data?.error ||
-            "Failed to load your orders."
+          error.response?.data?.error || t("orders.errLoad")
         );
       } finally {
         setLoading(false);
@@ -29,12 +28,12 @@ function Orders() {
     };
 
     fetchOrders();
-  }, []);
+  }, [t]);
 
   if (loading) {
     return (
       <div className="mx-auto max-w-6xl px-6 py-10">
-        <p className="text-slate-600">Loading your orders...</p>
+        <p className="text-slate-600">{t("orders.loading")}</p>
       </div>
     );
   }
@@ -53,18 +52,18 @@ function Orders() {
     return (
       <div className="mx-auto max-w-6xl px-6 py-16 text-center">
         <h1 className="text-3xl font-bold text-slate-900">
-          My Orders
+          {t("orders.title")}
         </h1>
 
         <p className="mt-3 text-slate-600">
-          You haven't placed any orders yet.
+          {t("orders.emptyBody")}
         </p>
 
         <Link
           to="/products"
           className="mt-6 inline-block rounded-lg bg-emerald-700 px-6 py-3 font-medium text-white transition hover:bg-emerald-800"
         >
-          Browse Products
+          {t("orders.browseProducts")}
         </Link>
       </div>
     );
@@ -74,11 +73,11 @@ function Orders() {
     <div className="mx-auto max-w-6xl px-6 py-10">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-slate-900">
-          My Orders
+          {t("orders.title")}
         </h1>
 
         <p className="mt-2 text-slate-600">
-          View and track your orders.
+          {t("orders.subtitle")}
         </p>
       </div>
 
@@ -92,7 +91,7 @@ function Orders() {
             <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
               <div>
                 <h2 className="text-lg font-semibold text-slate-900">
-                  Order #{order.id}
+                  {t("orders.orderNumber", { id: order.id })}
                 </h2>
 
                 <p className="mt-1 text-sm text-slate-500">
@@ -111,8 +110,7 @@ function Orders() {
                     : "bg-red-100 text-red-700"
                 }`}
               >
-                {order.status.charAt(0).toUpperCase() +
-                  order.status.slice(1)}
+                {t(`orderStatus.${order.status}`)}
               </span>
             </div>
 
@@ -129,8 +127,10 @@ function Orders() {
                     </p>
 
                     <p className="text-sm text-slate-500">
-                      ${Number(item.unit_price).toFixed(2)} ×{" "}
-                      {item.quantity}
+                      {t("orders.priceLine", {
+                        price: `$${Number(item.unit_price).toFixed(2)}`,
+                        quantity: item.quantity,
+                      })}
                     </p>
                   </div>
 
@@ -145,7 +145,7 @@ function Orders() {
             <div className="mt-5 flex flex-col gap-4 border-t border-slate-200 pt-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-slate-500">
-                  Delivery address
+                  {t("orders.deliveryAddress")}
                 </p>
 
                 <p className="mt-1 text-sm text-slate-800">
@@ -156,7 +156,7 @@ function Orders() {
               <div className="flex items-center justify-between gap-6 sm:justify-end">
                 <div>
                   <p className="text-sm text-slate-500">
-                    Total
+                    {t("orders.total")}
                   </p>
 
                   <p className="text-xl font-bold text-emerald-700">
@@ -168,7 +168,7 @@ function Orders() {
                   to={`/orders/${order.id}`}
                   className="rounded-lg border border-emerald-700 px-4 py-2 font-medium text-emerald-700 transition hover:bg-emerald-50"
                 >
-                  View Details
+                  {t("orders.viewDetails")}
                 </Link>
               </div>
             </div>
