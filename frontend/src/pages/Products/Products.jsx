@@ -6,16 +6,17 @@ import {
   useState,
 } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 import ProductCard from "../../components/product/ProductCard";
 import api from "../../services/api";
 
 const SORT_OPTIONS = [
-  { value: "", label: "Default" },
-  { value: "newest", label: "Newest" },
-  { value: "price_asc", label: "Price: low to high" },
-  { value: "price_desc", label: "Price: high to low" },
+  { value: "", labelKey: "products.sortDefault" },
+  { value: "newest", labelKey: "products.sortNewest" },
+  { value: "price_asc", labelKey: "products.sortPriceAsc" },
+  { value: "price_desc", labelKey: "products.sortPriceDesc" },
 ];
 
 const LIMIT_OPTIONS = [12, 24, 48];
@@ -26,6 +27,7 @@ const inputClass =
   "focus:border-emerald-600";
 
 function Products() {
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [categories, setCategories] = useState([]);
@@ -162,7 +164,7 @@ function Products() {
         if (cancelled) return;
         console.error("Failed to fetch products:", error);
         toast.error(
-          error.response?.data?.message || "Unable to load products.",
+          error.response?.data?.message || t("products.errLoad"),
         );
         setProducts([]);
       } finally {
@@ -172,7 +174,7 @@ function Products() {
     return () => {
       cancelled = true;
     };
-  }, [searchParams]);
+  }, [searchParams, t]);
 
   const categoryName = useMemo(() => {
     const map = {};
@@ -188,16 +190,29 @@ function Products() {
 
   const activeFilters = useMemo(() => {
     const parts = [];
-    if (urlKeyword) parts.push(`keyword "${urlKeyword}"`);
-    if (categoryId) {
-      parts.push(`category ${categoryName[categoryId] || categoryId}`);
+    if (urlKeyword) {
+      parts.push(t("products.filterKeyword", { value: urlKeyword }));
     }
-    if (storeId) parts.push(`store ${storeName[storeId] || storeId}`);
-    if (minPrice) parts.push(`min $${minPrice}`);
-    if (maxPrice) parts.push(`max $${maxPrice}`);
-    if (inStock) parts.push("in stock only");
+    if (categoryId) {
+      parts.push(
+        t("products.filterCategory", {
+          value: categoryName[categoryId] || categoryId,
+        }),
+      );
+    }
+    if (storeId) {
+      parts.push(
+        t("products.filterStore", {
+          value: storeName[storeId] || storeId,
+        }),
+      );
+    }
+    if (minPrice) parts.push(t("products.filterMinPrice", { value: minPrice }));
+    if (maxPrice) parts.push(t("products.filterMaxPrice", { value: maxPrice }));
+    if (inStock) parts.push(t("products.filterInStock"));
     return parts;
   }, [
+    t,
     urlKeyword,
     categoryId,
     storeId,
@@ -215,10 +230,10 @@ function Products() {
       <div className="mx-auto max-w-screen-2xl">
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-900">
-            Discover Products
+            {t("products.title")}
           </h1>
           <p className="mt-2 text-gray-500">
-            Explore products from local stores on CedarLink.
+            {t("products.subtitle")}
           </p>
         </div>
 
@@ -229,7 +244,7 @@ function Products() {
               type="text"
               value={keywordDraft}
               onChange={(event) => setKeywordDraft(event.target.value)}
-              placeholder="Search products..."
+              placeholder={t("products.searchPlaceholder")}
               className={`${inputClass} md:col-span-2`}
             />
 
@@ -240,7 +255,7 @@ function Products() {
               }
               className={inputClass}
             >
-              <option value="">All categories</option>
+              <option value="">{t("products.allCategories")}</option>
               {categories.map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.name}
@@ -253,7 +268,7 @@ function Products() {
               onChange={(event) => setFilter("store_id", event.target.value)}
               className={inputClass}
             >
-              <option value="">All stores</option>
+              <option value="">{t("products.allStores")}</option>
               {stores.map((store) => (
                 <option key={store.id} value={store.id}>
                   {store.name}
@@ -268,7 +283,7 @@ function Products() {
               onChange={(event) =>
                 setFilter("min_price", event.target.value)
               }
-              placeholder="Min price"
+              placeholder={t("products.minPrice")}
               className={inputClass}
             />
 
@@ -279,7 +294,7 @@ function Products() {
               onChange={(event) =>
                 setFilter("max_price", event.target.value)
               }
-              placeholder="Max price"
+              placeholder={t("products.maxPrice")}
               className={inputClass}
             />
 
@@ -290,7 +305,7 @@ function Products() {
             >
               {SORT_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>
-                  {option.label}
+                  {t(option.labelKey)}
                 </option>
               ))}
             </select>
@@ -307,14 +322,14 @@ function Products() {
                 }
                 className="h-4 w-4 rounded border-gray-300 text-emerald-700 focus:ring-emerald-600"
               />
-              In stock only
+              {t("products.inStockOnly")}
             </label>
           </div>
 
           <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-3 text-sm">
             <div className="flex items-center gap-3">
               <label className="text-gray-500">
-                Per page{" "}
+                {t("products.perPage")}{" "}
                 <select
                   value={limit}
                   onChange={(event) =>
@@ -337,7 +352,7 @@ function Products() {
               disabled={!hasActiveFilters}
               className="rounded-md border border-gray-300 px-3 py-1.5 font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
             >
-              Clear filters
+              {t("products.clearFilters")}
             </button>
           </div>
         </div>
@@ -345,20 +360,21 @@ function Products() {
         {/* Results */}
         {loading ? (
           <div className="py-20 text-center text-gray-500">
-            Loading products...
+            {t("products.loading")}
           </div>
         ) : products.length === 0 ? (
           <div className="rounded-2xl bg-white py-16 text-center shadow-sm">
             <h2 className="text-xl font-semibold text-gray-800">
-              No products found
+              {t("products.noneFound")}
             </h2>
             {activeFilters.length > 0 ? (
               <p className="mt-2 text-gray-500">
-                Active filters: {activeFilters.join(", ")}.
+                {t("products.activeFiltersLabel")}{" "}
+                {activeFilters.join("، ")}
               </p>
             ) : (
               <p className="mt-2 text-gray-500">
-                Nothing to show right now.
+                {t("products.nothingToShow")}
               </p>
             )}
             {hasActiveFilters && (
@@ -367,16 +383,16 @@ function Products() {
                 onClick={clearFilters}
                 className="mt-4 rounded-md bg-emerald-700 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-800"
               >
-                Clear filters
+                {t("products.clearFilters")}
               </button>
             )}
           </div>
         ) : (
           <>
             <p className="mb-3 text-sm text-gray-500">
-              {total} {total === 1 ? "product" : "products"}
+              {t("products.count", { count: total })}
               {activeFilters.length > 0 && (
-                <> · {activeFilters.join(", ")}</>
+                <> · {activeFilters.join("، ")}</>
               )}
             </p>
 
@@ -394,10 +410,10 @@ function Products() {
                   disabled={page <= 1}
                   className="rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  Previous
+                  {t("common.previous")}
                 </button>
                 <span className="text-gray-500">
-                  Page {page} of {pages}
+                  {t("common.pageOf", { page, pages })}
                 </span>
                 <button
                   type="button"
@@ -405,7 +421,7 @@ function Products() {
                   disabled={page >= pages}
                   className="rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  Next
+                  {t("common.next")}
                 </button>
               </div>
             )}

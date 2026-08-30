@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 import api from "../../services/api";
@@ -16,6 +17,7 @@ const CITY_OPTIONS = Array.from(
 ).sort((a, b) => a.localeCompare(b));
 
 function Stores() {
+  const { t } = useTranslation();
   const [stores, setStores] = useState([]);
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
@@ -51,7 +53,7 @@ function Stores() {
         if (cancelled) return;
         console.error("Failed to load stores:", error);
         toast.error(
-          error.response?.data?.message || "Unable to load stores.",
+          error.response?.data?.message || t("storesPage.errLoad"),
         );
       } finally {
         if (!cancelled) setLoading(false);
@@ -62,7 +64,7 @@ function Stores() {
     return () => {
       cancelled = true;
     };
-  }, [applied, page]);
+  }, [applied, page, t]);
 
   const handleSearch = (event) => {
     event.preventDefault();
@@ -77,9 +79,9 @@ function Stores() {
     <div className="min-h-screen bg-gray-50 px-2 py-2 lg:px-10">
       <div className="mx-auto max-w-screen-2xl">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Stores</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{t("storesPage.title")}</h1>
           <p className="mt-2 text-gray-500">
-            Browse local stores on CedarLink.
+            {t("storesPage.subtitle")}
           </p>
         </div>
 
@@ -92,7 +94,7 @@ function Stores() {
               type="text"
               value={keywordInput}
               onChange={(event) => setKeywordInput(event.target.value)}
-              placeholder="Search stores..."
+              placeholder={t("storesPage.searchPlaceholder")}
               className="rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-emerald-600 md:col-span-2"
             />
 
@@ -101,7 +103,7 @@ function Stores() {
               onChange={(event) => setLocationInput(event.target.value)}
               className="rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-emerald-600"
             >
-              <option value="">All locations</option>
+              <option value="">{t("storesPage.allLocations")}</option>
               {CITY_OPTIONS.map((city) => (
                 <option key={city} value={city}>
                   {city}
@@ -113,28 +115,28 @@ function Stores() {
               type="submit"
               className="rounded-md bg-emerald-700 px-4 py-2 font-medium text-white transition hover:bg-emerald-800"
             >
-              Search
+              {t("storesPage.search")}
             </button>
           </div>
         </form>
 
         {loading ? (
           <div className="py-20 text-center text-gray-500">
-            Loading stores...
+            {t("storesPage.loading")}
           </div>
         ) : stores.length === 0 ? (
           <div className="rounded-2xl bg-white py-20 text-center shadow-sm">
             <h2 className="text-xl font-semibold text-gray-800">
-              No stores found
+              {t("storesPage.noneFound")}
             </h2>
             <p className="mt-2 text-gray-500">
-              Try a different search or location.
+              {t("storesPage.tryDifferent")}
             </p>
           </div>
         ) : (
           <>
             <p className="mb-3 text-sm text-gray-500">
-              {total} {total === 1 ? "store" : "stores"}
+              {t("storesPage.count", { count: total })}
             </p>
 
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -148,7 +150,7 @@ function Stores() {
                     {store.name}
                   </h3>
                   <p className="mt-1 text-sm text-gray-500">
-                    {store.location || "Location not set"}
+                    {store.location || t("storesPage.locationNotSet")}
                   </p>
 
                   {store.description && (
@@ -166,15 +168,15 @@ function Stores() {
                       }
                     >
                       {store.delivery_available
-                        ? "Delivery available"
-                        : "Delivery unavailable"}
+                        ? t("storesPage.deliveryAvailable")
+                        : t("storesPage.deliveryUnavailable")}
                     </p>
                     <p className="text-gray-500">
-                      Inside city: $
+                      {t("storesPage.insideCity")}: $
                       {Number(store.inside_city_delivery_fee).toFixed(2)}
                     </p>
                     <p className="text-gray-500">
-                      Outside city: $
+                      {t("storesPage.outsideCity")}: $
                       {Number(store.outside_city_delivery_fee).toFixed(2)}
                     </p>
                   </div>
@@ -190,10 +192,10 @@ function Stores() {
                   disabled={page <= 1}
                   className="rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  Previous
+                  {t("common.previous")}
                 </button>
                 <span className="text-gray-500">
-                  Page {page} of {pages}
+                  {t("common.pageOf", { page, pages })}
                 </span>
                 <button
                   type="button"
@@ -201,7 +203,7 @@ function Stores() {
                   disabled={page >= pages}
                   className="rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  Next
+                  {t("common.next")}
                 </button>
               </div>
             )}

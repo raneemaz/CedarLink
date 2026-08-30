@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import api from "../../services/api";
 import Price from "../../components/common/Price";
 import BackLink from "../../components/common/BackLink";
 
 function ProductDetails() {
   const { id } = useParams();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -30,9 +32,9 @@ function ProductDetails() {
         console.error("Failed to fetch product:", err);
 
         if (err.response?.status === 404) {
-          setError("Product not found.");
+          setError(t("productDetails.notFound"));
         } else {
-          setError("Unable to load this product.");
+          setError(t("productDetails.loadError"));
         }
       } finally {
         setLoading(false);
@@ -40,7 +42,7 @@ function ProductDetails() {
     };
 
     fetchProduct();
-  }, [id]);
+  }, [id, t]);
 
   const handleAddToCart = async () => {
     const token = localStorage.getItem("token");
@@ -59,7 +61,7 @@ function ProductDetails() {
         quantity: quantity,
       });
       window.dispatchEvent(new Event("cartUpdated"));
-      setCartMessage("Product added to cart.");
+      setCartMessage(t("productDetails.addedToCart"));
     } catch (err) {
       console.error("Failed to add product to cart:", err);
 
@@ -70,7 +72,7 @@ function ProductDetails() {
       const message =
         err.response?.data?.error ||
         err.response?.data?.message ||
-        "Unable to add this product to your cart.";
+        t("productDetails.cartError");
 
       setCartMessage(message);
     } finally {
@@ -82,7 +84,7 @@ function ProductDetails() {
     return (
       <div className="min-h-screen bg-gray-50 px-6 py-12">
         <div className="mx-auto max-w-6xl text-center text-gray-500">
-          Loading product...
+          {t("productDetails.loading")}
         </div>
       </div>
     );
@@ -92,7 +94,7 @@ function ProductDetails() {
     return (
       <div className="min-h-screen bg-gray-50 px-6 py-12">
         <div className="mx-auto max-w-6xl">
-          <BackLink to="/products">Back to Products</BackLink>
+          <BackLink to="/products">{t("backLink.products")}</BackLink>
 
           <div className="mt-8 rounded-xl bg-white p-12 text-center shadow-sm">
             <h1 className="text-xl font-semibold text-gray-900">{error}</h1>
@@ -113,7 +115,7 @@ function ProductDetails() {
     <div className="min-h-screen bg-gray-50 px-6 py-10 lg:px-10">
       <div className="mx-auto max-w-6xl">
         {/* Back */}
-        <BackLink to="/products">Back to Products</BackLink>
+        <BackLink to="/products">{t("backLink.products")}</BackLink>
 
         {/* Product */}
         <div className="mt-6 grid overflow-hidden rounded-xl border border-gray-200 bg-white md:grid-cols-2">
@@ -154,14 +156,14 @@ function ProductDetails() {
           ) : (
             <div className="flex min-h-[400px] items-center justify-center bg-gray-100">
               <div className="text-center text-gray-400">
-                <p className="mt-3 text-sm">No image available</p>
+                <p className="mt-3 text-sm">{t("productDetails.noImage")}</p>
               </div>
             </div>
           )}
 
           {/* Information */}
           <div className="p-8 lg:p-10">
-            <p className="text-sm font-medium text-emerald-700">Product</p>
+            <p className="text-sm font-medium text-emerald-700">{t("productDetails.eyebrow")}</p>
 
             <h1 className="mt-2 text-3xl font-bold text-gray-900">
               {product.name}
@@ -175,18 +177,18 @@ function ProductDetails() {
 
             <div className="mt-6 border-t border-gray-100 pt-6">
               <h2 className="text-sm font-semibold text-gray-900">
-                Description
+                {t("productDetails.description")}
               </h2>
 
               <p className="mt-2 leading-7 text-gray-600">
-                {product.description || "No description available."}
+                {product.description || t("productDetails.noDescription")}
               </p>
             </div>
 
             <div className="mt-6 grid grid-cols-2 gap-4">
               {/* Availability */}
               <div className="flex items-center justify-between rounded-lg bg-gray-50 px-4 py-3">
-                <span className="text-sm text-gray-600">Availability</span>
+                <span className="text-sm text-gray-600">{t("productDetails.availability")}</span>
 
                 <span
                   className={`text-sm font-semibold ${
@@ -194,14 +196,14 @@ function ProductDetails() {
                   }`}
                 >
                   {product.stock > 0
-                    ? `${product.stock} available`
-                    : "Out of stock"}
+                    ? t("productDetails.availableCount", { count: product.stock })
+                    : t("productDetails.outOfStock")}
                 </span>
               </div>
 
               {/* Quantity */}
               <div className="flex items-center justify-between rounded-lg bg-gray-50 px-4 py-3">
-                <span className="text-sm text-gray-600">Quantity</span>
+                <span className="text-sm text-gray-600">{t("productDetails.quantity")}</span>
 
                 <div className="flex h-8 items-center overflow-hidden rounded-md border border-gray-300 bg-white">
                   <button
@@ -252,7 +254,7 @@ function ProductDetails() {
                 disabled={product.stock <= 0 || addingToCart}
                 className="flex-1 cursor-pointer rounded-md bg-emerald-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:bg-gray-300"
               >
-                {addingToCart ? "Adding..." : "Add to Cart"}
+                {addingToCart ? t("productDetails.adding") : t("productDetails.addToCart")}
               </button>
 
               <button className="rounded-md cursor-pointer border border-gray-300 px-5 py-3 text-sm font-medium text-gray-700 transition hover:border-emerald-700 hover:text-emerald-700">
