@@ -4,9 +4,10 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 import api from "../../services/api";
+import { localizedName } from "../../utils/localize";
 
 function Categories() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -59,7 +60,7 @@ function Categories() {
                 className="rounded-xl border border-gray-200 bg-white p-5 transition duration-200 hover:-translate-y-1 hover:shadow-md"
               >
                 <h3 className="text-lg font-semibold text-gray-900">
-                  {category.name}
+                  {localizedName(category, i18n.language)}
                 </h3>
                 {category.description && (
                   <p className="mt-1 line-clamp-2 text-sm text-gray-500">

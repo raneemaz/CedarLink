@@ -6,11 +6,12 @@ import { toast } from "react-toastify";
 import api from "../../services/api";
 import Button from "../../components/common/Button/Button";
 import ConfirmDialog from "../../components/common/ConfirmDialog/ConfirmDialog";
+import { localizedName } from "../../utils/localize";
 
 const PAGE_SIZE = 10;
 
 function VendorProducts() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [noStore, setNoStore] = useState(false);
   const [store, setStore] = useState(null);
@@ -54,7 +55,7 @@ function VendorProducts() {
 
         const map = {};
         for (const category of categoriesResponse.data || []) {
-          map[category.id] = category.name;
+          map[category.id] = category;
         }
         setCategories(map);
       } catch (error) {
@@ -98,7 +99,11 @@ function VendorProducts() {
 
     try {
       await api.delete(`/products/${deleteTarget.id}`);
-      toast.success(t("vendorProducts.toastDeleted", { name: deleteTarget.name }));
+      toast.success(
+        t("vendorProducts.toastDeleted", {
+          name: localizedName(deleteTarget, i18n.language),
+        }),
+      );
 
       // Step back a page if we just removed the last row on this one.
       const nextPage =
@@ -198,19 +203,22 @@ function VendorProducts() {
                             {product.image && (
                               <img
                                 src={product.image}
-                                alt={product.name}
+                                alt={localizedName(product, i18n.language)}
                                 className="h-full w-full object-cover"
                               />
                             )}
                           </div>
                           <span className="font-medium text-gray-900">
-                            {product.name}
+                            {localizedName(product, i18n.language)}
                           </span>
                         </div>
                       </td>
 
                       <td className="px-4 py-3 text-gray-600">
-                        {categories[product.category_id] || "—"}
+                        {localizedName(
+                          categories[product.category_id],
+                          i18n.language,
+                        ) || "—"}
                       </td>
 
                       <td className="px-4 py-3 text-gray-900">
@@ -294,7 +302,9 @@ function VendorProducts() {
         title={t("vendorProducts.deleteTitle")}
         message={
           deleteTarget
-            ? t("vendorProducts.deleteMessage", { name: deleteTarget.name })
+            ? t("vendorProducts.deleteMessage", {
+                name: localizedName(deleteTarget, i18n.language),
+              })
             : ""
         }
         confirmLabel={t("vendorProducts.delete")}

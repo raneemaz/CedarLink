@@ -890,7 +890,10 @@
     "errLoad": "Impossible de charger cette page.",
     "errSave": "Impossible d'enregistrer ce produit.",
     "toastAdded": "Produit ajouté.",
-    "toastUpdated": "Produit mis à jour."
+    "toastUpdated": "Produit mis à jour.",
+    "errNameEn": "Un nom en anglais est obligatoire.",
+    "nameLangLabel": "Nom ({{lang}})",
+    "descriptionLangLabel": "Description ({{lang}})"
   },
   "productImages": {
     "sectionTitle": "Images du produit",
@@ -1065,6 +1068,15 @@
     "toastDeleted": "« {{name}} » supprimée.",
     "errDelete": "Impossible de supprimer la catégorie.",
     "deleteTitle": "Supprimer la catégorie",
-    "deleteMessage": "Supprimer « {{name}} » ? Les catégories qui contiennent encore des produits ne peuvent pas être supprimées."
+    "deleteMessage": "Supprimer « {{name}} » ? Les catégories qui contiennent encore des produits ne peuvent pas être supprimées.",
+    "errNameEnRequired": "Un nom en anglais est obligatoire.",
+    "nameLangLabel": "Nom ({{lang}})",
+    "editNameLangLabel": "{{lang}}"
+  },
+  "translationTabs": {
+    "englishRequired": "L'anglais est obligatoire",
+    "filled": "Traduction ajoutée",
+    "notFilled": "Pas encore de traduction",
+    "fallbackHint": "L'arabe et le français sont facultatifs — ils reviennent à l'anglais s'ils sont laissés vides."
   }
 }

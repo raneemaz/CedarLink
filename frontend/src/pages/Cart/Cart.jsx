@@ -3,9 +3,10 @@ import { Link } from "react-router-dom";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import api from "../../services/api";
+import { localizedField } from "../../utils/localize";
 
 function Cart() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -182,7 +183,7 @@ function Cart() {
                       {/* Product Info */}
                       <div className="flex-1">
                         <h3 className="font-semibold text-gray-900">
-                          {item.product_name}
+                          {localizedField(item, "product_name", i18n.language)}
                         </h3>
 
                         <p className="mt-1 text-sm text-slate-500">

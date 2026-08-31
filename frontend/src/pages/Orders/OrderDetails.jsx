@@ -3,9 +3,10 @@ import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import api from "../../services/api";
 import BackLink from "../../components/common/BackLink";
+import { localizedField } from "../../utils/localize";
 
 function OrderDetails() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { id } = useParams();
 
   const [order, setOrder] = useState(null);
@@ -122,7 +123,7 @@ const total = Number(order.total_price || 0);
                 >
                   <div>
                     <h3 className="font-medium text-slate-900">
-                      {item.product_name}
+                      {localizedField(item, "product_name", i18n.language)}
                     </h3>
 
                     <p className="mt-1 text-sm text-slate-500">

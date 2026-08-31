@@ -4,9 +4,10 @@ import { useTranslation } from "react-i18next";
 import BackLink from "../../components/common/BackLink";
 import api from "../../services/api";
 import { lebanonLocations } from "../../data/lebanonLocations";
+import { localizedField } from "../../utils/localize";
 
 function Checkout() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
   const [cart, setCart] = useState(null);
@@ -520,7 +521,7 @@ function Checkout() {
                       >
                         <div>
                           <p className="font-medium text-slate-900">
-                            {item.product_name}
+                            {localizedField(item, "product_name", i18n.language)}
                           </p>
 
                           <p className="mt-1 text-sm text-slate-500">
