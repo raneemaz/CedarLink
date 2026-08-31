@@ -22,6 +22,7 @@ from app.models import (
     Product,
     ProductImage,
     Store,
+    StoreHours,
     User,
 )
 
@@ -595,6 +596,21 @@ def seed():
             name=spec["store"],
         )
         db.session.flush()
+
+        # A plain weekday schedule so the demo storefront shows real
+        # open/closed state (Mon-Sat 09:00-21:00, closed Sunday). Monday = 0.
+        if not store.hours:
+            from datetime import time as _time
+
+            for weekday in range(6):
+                db.session.add(
+                    StoreHours(
+                        store_id=store.id,
+                        day_of_week=weekday,
+                        opens_at=_time(9, 0),
+                        closes_at=_time(21, 0),
+                    )
+                )
 
         for item in spec["products"]:
             name = item["name"]

@@ -41,7 +41,8 @@ npm run lint
 - **No Flask imports or view functions in `app/models/`.** Models are data only — columns, relationships, `to_dict`.
 - Money is `Decimal` with `Numeric(10, 2)`. Never `float`. Convert to float only at the JSON boundary.
 - `db.session.get(Model, id)` — never `Model.query.get()` or `get_or_404()` (legacy SQLAlchemy 1.x).
-- `datetime.now(timezone.utc)` — never `datetime.utcnow()`.
+- `datetime.now(timezone.utc)` — never `datetime.utcnow()`. Local time for Lebanon is `datetime.now(ZoneInfo("Asia/Beirut"))` (DST-aware) — never a fixed offset. `tzdata` is a dependency so this works on Windows too.
+- "Is this store open now?" is answered only by `store_service.is_open_now`. Store hours are naive local wall-clock; `override_until` is naive UTC. See docs/decisions/0013-store-hours-timezone.md.
 - One error shape across every blueprint. **Never return `str(exception)` to a client** — log it with a correlation id and return the id.
 - Never store card numbers or anything derived from them, hashes included. Provider token + last four only.
 - Pricing logic exists in exactly one place. `/orders/preview` and `/orders` must call the same function — if they diverge, a customer gets quoted one price and charged another.
