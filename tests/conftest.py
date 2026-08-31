@@ -173,10 +173,12 @@ def admin(make_user):
 def make_category(_reset_db):
     counter = {"n": 0}
 
-    def _make(name=None, description="A test category"):
+    def _make(name=None, description="A test category", **kw):
         counter["n"] += 1
         category = Category(
-            name=name or f"Category {counter['n']}",
+            name_en=name or f"Category {counter['n']}",
+            name_ar=kw.get("name_ar"),
+            name_fr=kw.get("name_fr"),
             description=description,
         )
         _db.session.add(category)
@@ -228,8 +230,12 @@ def make_product(make_store, make_category):
         store = store or make_store()
         category = category or make_category()
         product = Product(
-            name=kw.get("name", f"Product {counter['n']}"),
-            description=kw.get("description", "A test product"),
+            name_en=kw.get("name", f"Product {counter['n']}"),
+            name_ar=kw.get("name_ar"),
+            name_fr=kw.get("name_fr"),
+            description_en=kw.get("description", "A test product"),
+            description_ar=kw.get("description_ar"),
+            description_fr=kw.get("description_fr"),
             price=price,
             stock=stock,
             store_id=store.id,
