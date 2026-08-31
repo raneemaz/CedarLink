@@ -1,9 +1,12 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Price from "../common/Price";
+import { localizedName, localizedDescription } from "../../utils/localize";
 
 function ProductCard({ product }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const name = localizedName(product, i18n.language);
+  const description = localizedDescription(product, i18n.language);
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white transition duration-200 hover:-translate-y-1 hover:shadow-md">
@@ -13,7 +16,7 @@ function ProductCard({ product }) {
         {product.image ? (
           <img
             src={product.image}
-            alt={product.name}
+            alt={name}
             className="h-full w-full object-cover"
           />
         ) : (
@@ -27,16 +30,16 @@ function ProductCard({ product }) {
       <div className="p-4">
 
         <h3 className="truncate text-base font-semibold text-gray-900">
-          {product.name}
+          {name}
         </h3>
 
         <p className="mt-1 text-sm text-gray-500">
           {product.store_name || t("productCard.localStore")}
         </p>
 
-        {product.description && (
+        {description && (
           <p className="mt-1 line-clamp-2 text-sm text-gray-500">
-            {product.description}
+            {description}
           </p>
         )}
 

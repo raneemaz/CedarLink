@@ -890,7 +890,10 @@
     "errLoad": "Unable to load this page.",
     "errSave": "Unable to save this product.",
     "toastAdded": "Product added.",
-    "toastUpdated": "Product updated."
+    "toastUpdated": "Product updated.",
+    "errNameEn": "An English name is required.",
+    "nameLangLabel": "Name ({{lang}})",
+    "descriptionLangLabel": "Description ({{lang}})"
   },
   "productImages": {
     "sectionTitle": "Product images",
@@ -1065,6 +1068,15 @@
     "toastDeleted": "\"{{name}}\" deleted.",
     "errDelete": "Unable to delete the category.",
     "deleteTitle": "Delete category",
-    "deleteMessage": "Delete \"{{name}}\"? Categories that still contain products cannot be deleted."
+    "deleteMessage": "Delete \"{{name}}\"? Categories that still contain products cannot be deleted.",
+    "errNameEnRequired": "An English name is required.",
+    "nameLangLabel": "Name ({{lang}})",
+    "editNameLangLabel": "{{lang}}"
+  },
+  "translationTabs": {
+    "englishRequired": "English is required",
+    "filled": "Translation added",
+    "notFilled": "No translation yet",
+    "fallbackHint": "Arabic and French are optional — they fall back to English when left blank."
   }
 }

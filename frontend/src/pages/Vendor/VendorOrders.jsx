@@ -7,6 +7,7 @@ import api from "../../services/api";
 import Button from "../../components/common/Button/Button";
 import ConfirmDialog from "../../components/common/ConfirmDialog/ConfirmDialog";
 import { formatDateTime } from "../../utils/helpers";
+import { localizedField } from "../../utils/localize";
 
 const FILTERS = [
   { key: "all", labelKey: "common.all" },
@@ -203,7 +204,7 @@ function OrderCard({ order, onChanged }) {
               className="flex items-center justify-between text-sm"
             >
               <span className="text-gray-800">
-                {item.product_name}{" "}
+                {localizedField(item, "product_name", i18n.language)}{" "}
                 <span className="text-gray-400">x{item.quantity}</span>
               </span>
               <span className="text-gray-800">

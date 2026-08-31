@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import api from "../../services/api";
 import { formatDate } from "../../utils/helpers";
+import { localizedField } from "../../utils/localize";
 
 function Orders() {
   const { t, i18n } = useTranslation();
@@ -123,7 +124,7 @@ function Orders() {
                 >
                   <div>
                     <p className="font-medium text-slate-900">
-                      {item.product_name}
+                      {localizedField(item, "product_name", i18n.language)}
                     </p>
 
                     <p className="text-sm text-slate-500">

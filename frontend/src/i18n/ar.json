@@ -906,7 +906,10 @@
     "errLoad": "تعذّر تحميل هذه الصفحة.",
     "errSave": "تعذّر حفظ هذا المنتج.",
     "toastAdded": "تمت إضافة المنتج.",
-    "toastUpdated": "تم تحديث المنتج."
+    "toastUpdated": "تم تحديث المنتج.",
+    "errNameEn": "الاسم بالإنجليزية مطلوب.",
+    "nameLangLabel": "الاسم ({{lang}})",
+    "descriptionLangLabel": "الوصف ({{lang}})"
   },
   "productImages": {
     "sectionTitle": "صور المنتج",
@@ -1085,6 +1088,15 @@
     "toastDeleted": "تم حذف \"{{name}}\".",
     "errDelete": "تعذّر حذف الفئة.",
     "deleteTitle": "حذف الفئة",
-    "deleteMessage": "حذف \"{{name}}\"؟ لا يمكن حذف الفئات التي لا تزال تحتوي على منتجات."
+    "deleteMessage": "حذف \"{{name}}\"؟ لا يمكن حذف الفئات التي لا تزال تحتوي على منتجات.",
+    "errNameEnRequired": "الاسم بالإنجليزية مطلوب.",
+    "nameLangLabel": "الاسم ({{lang}})",
+    "editNameLangLabel": "{{lang}}"
+  },
+  "translationTabs": {
+    "englishRequired": "الإنجليزية مطلوبة",
+    "filled": "تمت إضافة الترجمة",
+    "notFilled": "لا توجد ترجمة بعد",
+    "fallbackHint": "العربية والفرنسية اختياريتان — تعودان إلى الإنجليزية عند تركهما فارغتين."
   }
 }

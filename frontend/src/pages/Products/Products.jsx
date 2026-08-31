@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 
 import ProductCard from "../../components/product/ProductCard";
 import api from "../../services/api";
+import { localizedName } from "../../utils/localize";
 
 const SORT_OPTIONS = [
   { value: "", labelKey: "products.sortDefault" },
@@ -27,7 +28,7 @@ const inputClass =
   "focus:border-emerald-600";
 
 function Products() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [categories, setCategories] = useState([]);
@@ -178,9 +179,11 @@ function Products() {
 
   const categoryName = useMemo(() => {
     const map = {};
-    for (const category of categories) map[String(category.id)] = category.name;
+    for (const category of categories) {
+      map[String(category.id)] = localizedName(category, i18n.language);
+    }
     return map;
-  }, [categories]);
+  }, [categories, i18n.language]);
 
   const storeName = useMemo(() => {
     const map = {};
@@ -258,7 +261,7 @@ function Products() {
               <option value="">{t("products.allCategories")}</option>
               {categories.map((category) => (
                 <option key={category.id} value={category.id}>
-                  {category.name}
+                  {localizedName(category, i18n.language)}
                 </option>
               ))}
             </select>

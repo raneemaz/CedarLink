@@ -6,15 +6,27 @@ import { toast } from "react-toastify";
 
 import api from "../../services/api";
 import Button from "../../components/common/Button/Button";
+import LanguageTabs from "../../components/common/LanguageTabs/LanguageTabs";
 import ProductImageManager from "./ProductImageManager";
+import { localizedName } from "../../utils/localize";
 
 const fieldClass =
   "w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none " +
   "focus:border-green-600 focus:ring-1 focus:ring-green-600";
 
+const LANG_LABEL = {
+  en: "language.english",
+  ar: "language.arabic",
+  fr: "language.french",
+};
+
 const EMPTY_FORM = {
-  name: "",
-  description: "",
+  name_en: "",
+  name_ar: "",
+  name_fr: "",
+  description_en: "",
+  description_ar: "",
+  description_fr: "",
   price: "",
   stock: "",
   category_id: "",
@@ -23,8 +35,8 @@ const EMPTY_FORM = {
 function validate(form, t) {
   const errors = {};
 
-  if (!form.name.trim()) {
-    errors.name = t("vendorProductForm.errName");
+  if (!form.name_en.trim()) {
+    errors.name_en = t("vendorProductForm.errNameEn");
   }
 
   const price = Number(form.price);
@@ -49,7 +61,7 @@ function validate(form, t) {
 }
 
 function VendorProductForm() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams();
   const isEdit = Boolean(id);
@@ -62,6 +74,7 @@ function VendorProductForm() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [errors, setErrors] = useState({});
   const [saving, setSaving] = useState(false);
+  const [activeLang, setActiveLang] = useState("en");
 
   useEffect(() => {
     let cancelled = false;
@@ -91,8 +104,12 @@ function VendorProductForm() {
           }
 
           setForm({
-            name: product.name ?? "",
-            description: product.description ?? "",
+            name_en: product.name_en ?? "",
+            name_ar: product.name_ar ?? "",
+            name_fr: product.name_fr ?? "",
+            description_en: product.description_en ?? "",
+            description_ar: product.description_ar ?? "",
+            description_fr: product.description_fr ?? "",
             price: String(product.price ?? ""),
             stock: String(product.stock ?? ""),
             category_id: String(product.category_id ?? ""),
@@ -134,11 +151,19 @@ function VendorProductForm() {
 
     const nextErrors = validate(form, t);
     setErrors(nextErrors);
-    if (Object.keys(nextErrors).length > 0) return;
+    if (Object.keys(nextErrors).length > 0) {
+      // Surface a name error that lives on a tab the vendor cannot see.
+      if (nextErrors.name_en) setActiveLang("en");
+      return;
+    }
 
     const payload = {
-      name: form.name.trim(),
-      description: form.description.trim(),
+      name_en: form.name_en.trim(),
+      name_ar: form.name_ar.trim(),
+      name_fr: form.name_fr.trim(),
+      description_en: form.description_en.trim(),
+      description_ar: form.description_ar.trim(),
+      description_fr: form.description_fr.trim(),
       price: Number(form.price),
       stock: parseInt(form.stock, 10),
       category_id: Number(form.category_id),
@@ -193,6 +218,13 @@ function VendorProductForm() {
     );
   }
 
+  const langName = t(LANG_LABEL[activeLang]);
+  const filled = {
+    en: Boolean(form.name_en.trim()),
+    ar: Boolean(form.name_ar.trim()),
+    fr: Boolean(form.name_fr.trim()),
+  };
+
   return (
     <div>
       <div className="mb-8">
@@ -207,41 +239,58 @@ function VendorProductForm() {
         className="overflow-hidden rounded-2xl bg-white shadow-sm"
       >
         <div className="space-y-6 px-6 py-6">
+          {/* Name + description, one language at a time */}
           <div>
-            <label
-              htmlFor="name"
-              className="mb-2 block text-sm font-medium text-gray-700"
-            >
-              {t("vendorProductForm.name")}
-            </label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              value={form.name}
-              onChange={handleChange}
-              className={fieldClass}
+            <LanguageTabs
+              active={activeLang}
+              onSelect={setActiveLang}
+              filled={filled}
             />
-            {errors.name && (
-              <p className="mt-1 text-xs text-red-600">{errors.name}</p>
-            )}
-          </div>
 
-          <div>
-            <label
-              htmlFor="description"
-              className="mb-2 block text-sm font-medium text-gray-700"
-            >
-              {t("vendorProductForm.description")}
-            </label>
-            <textarea
-              id="description"
-              name="description"
-              rows="3"
-              value={form.description}
-              onChange={handleChange}
-              className={`resize-none ${fieldClass}`}
-            />
+            <div className="mt-4 space-y-4">
+              <div>
+                <label
+                  htmlFor={`name_${activeLang}`}
+                  className="mb-2 block text-sm font-medium text-gray-700"
+                >
+                  {t("vendorProductForm.nameLangLabel", { lang: langName })}
+                </label>
+                <input
+                  id={`name_${activeLang}`}
+                  name={`name_${activeLang}`}
+                  type="text"
+                  value={form[`name_${activeLang}`]}
+                  onChange={handleChange}
+                  className={fieldClass}
+                />
+                {activeLang === "en" && errors.name_en && (
+                  <p className="mt-1 text-xs text-red-600">{errors.name_en}</p>
+                )}
+              </div>
+
+              <div>
+                <label
+                  htmlFor={`description_${activeLang}`}
+                  className="mb-2 block text-sm font-medium text-gray-700"
+                >
+                  {t("vendorProductForm.descriptionLangLabel", {
+                    lang: langName,
+                  })}
+                </label>
+                <textarea
+                  id={`description_${activeLang}`}
+                  name={`description_${activeLang}`}
+                  rows="3"
+                  value={form[`description_${activeLang}`]}
+                  onChange={handleChange}
+                  className={`resize-none ${fieldClass}`}
+                />
+              </div>
+            </div>
+
+            <p className="mt-2 text-xs text-gray-500">
+              {t("translationTabs.fallbackHint")}
+            </p>
           </div>
 
           <div className="grid gap-6 sm:grid-cols-2">
@@ -307,7 +356,7 @@ function VendorProductForm() {
               <option value="">{t("vendorProductForm.selectCategory")}</option>
               {categories.map((category) => (
                 <option key={category.id} value={category.id}>
-                  {category.name}
+                  {localizedName(category, i18n.language)}
                 </option>
               ))}
             </select>

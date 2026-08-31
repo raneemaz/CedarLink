@@ -5,23 +5,51 @@ import { toast } from "react-toastify";
 import api from "../../services/api";
 import Button from "../../components/common/Button/Button";
 import ConfirmDialog from "../../components/common/ConfirmDialog/ConfirmDialog";
+import LanguageTabs from "../../components/common/LanguageTabs/LanguageTabs";
+import { localizedName } from "../../utils/localize";
 
 const fieldClass =
   "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none " +
   "focus:border-green-600 focus:ring-1 focus:ring-green-600";
 
+const LANG_LABEL = {
+  en: "language.english",
+  ar: "language.arabic",
+  fr: "language.french",
+};
+
+const EMPTY_NAMES = { en: "", ar: "", fr: "" };
+
+function namesPayload(names) {
+  return {
+    name_en: names.en.trim(),
+    name_ar: names.ar.trim(),
+    name_fr: names.fr.trim(),
+  };
+}
+
+function filledFlags(names) {
+  return {
+    en: Boolean(names.en.trim()),
+    ar: Boolean(names.ar.trim()),
+    fr: Boolean(names.fr.trim()),
+  };
+}
+
 function AdminCategories() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const [newName, setNewName] = useState("");
+  const [newNames, setNewNames] = useState(EMPTY_NAMES);
   const [newDescription, setNewDescription] = useState("");
+  const [newLang, setNewLang] = useState("en");
   const [creating, setCreating] = useState(false);
 
   const [editId, setEditId] = useState(null);
-  const [editName, setEditName] = useState("");
+  const [editNames, setEditNames] = useState(EMPTY_NAMES);
   const [editDescription, setEditDescription] = useState("");
+  const [editLang, setEditLang] = useState("en");
   const [savingEdit, setSavingEdit] = useState(false);
 
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -53,19 +81,21 @@ function AdminCategories() {
 
   const handleCreate = async (event) => {
     event.preventDefault();
-    if (!newName.trim()) {
-      toast.error(t("adminCategories.errNameRequired"));
+    if (!newNames.en.trim()) {
+      setNewLang("en");
+      toast.error(t("adminCategories.errNameEnRequired"));
       return;
     }
     setCreating(true);
     try {
       await api.post("/categories", {
-        name: newName.trim(),
+        ...namesPayload(newNames),
         description: newDescription.trim() || null,
       });
       toast.success(t("adminCategories.toastCreated"));
-      setNewName("");
+      setNewNames(EMPTY_NAMES);
       setNewDescription("");
+      setNewLang("en");
       await load();
     } catch (error) {
       toast.error(
@@ -78,19 +108,25 @@ function AdminCategories() {
 
   const startEdit = (category) => {
     setEditId(category.id);
-    setEditName(category.name);
+    setEditNames({
+      en: category.name_en || "",
+      ar: category.name_ar || "",
+      fr: category.name_fr || "",
+    });
     setEditDescription(category.description || "");
+    setEditLang("en");
   };
 
   const saveEdit = async () => {
-    if (!editName.trim()) {
-      toast.error(t("adminCategories.errNameRequired"));
+    if (!editNames.en.trim()) {
+      setEditLang("en");
+      toast.error(t("adminCategories.errNameEnRequired"));
       return;
     }
     setSavingEdit(true);
     try {
       await api.put(`/categories/${editId}`, {
-        name: editName.trim(),
+        ...namesPayload(editNames),
         description: editDescription.trim() || null,
       });
       toast.success(t("adminCategories.toastUpdated"));
@@ -110,7 +146,11 @@ function AdminCategories() {
     setDeleting(true);
     try {
       await api.delete(`/categories/${deleteTarget.id}`);
-      toast.success(t("adminCategories.toastDeleted", { name: deleteTarget.name }));
+      toast.success(
+        t("adminCategories.toastDeleted", {
+          name: localizedName(deleteTarget, i18n.language),
+        }),
+      );
       await load();
       setDeleteTarget(null);
     } catch (error) {
@@ -137,12 +177,23 @@ function AdminCategories() {
         <p className="mb-3 text-sm font-semibold text-gray-700">
           {t("adminCategories.addHeading")}
         </p>
-        <div className="grid gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-start">
+
+        <LanguageTabs
+          active={newLang}
+          onSelect={setNewLang}
+          filled={filledFlags(newNames)}
+        />
+
+        <div className="mt-3 grid gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-start">
           <input
             type="text"
-            value={newName}
-            onChange={(event) => setNewName(event.target.value)}
-            placeholder={t("adminCategories.namePlaceholder")}
+            value={newNames[newLang]}
+            onChange={(event) =>
+              setNewNames((prev) => ({ ...prev, [newLang]: event.target.value }))
+            }
+            placeholder={t("adminCategories.nameLangLabel", {
+              lang: t(LANG_LABEL[newLang]),
+            })}
             className={fieldClass}
           />
           <input
@@ -156,6 +207,10 @@ function AdminCategories() {
             {creating ? t("adminCategories.adding") : t("adminCategories.add")}
           </Button>
         </div>
+
+        <p className="mt-2 text-xs text-gray-500">
+          {t("translationTabs.fallbackHint")}
+        </p>
       </form>
 
       <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
@@ -172,11 +227,24 @@ function AdminCategories() {
               editId === category.id ? (
                 <tr key={category.id} className="bg-emerald-50/40">
                   <td className="px-4 py-3">
+                    <LanguageTabs
+                      active={editLang}
+                      onSelect={setEditLang}
+                      filled={filledFlags(editNames)}
+                    />
                     <input
                       type="text"
-                      value={editName}
-                      onChange={(event) => setEditName(event.target.value)}
-                      className={fieldClass}
+                      value={editNames[editLang]}
+                      onChange={(event) =>
+                        setEditNames((prev) => ({
+                          ...prev,
+                          [editLang]: event.target.value,
+                        }))
+                      }
+                      placeholder={t("adminCategories.nameLangLabel", {
+                        lang: t(LANG_LABEL[editLang]),
+                      })}
+                      className={`mt-2 ${fieldClass}`}
                     />
                   </td>
                   <td className="px-4 py-3">
@@ -212,7 +280,7 @@ function AdminCategories() {
               ) : (
                 <tr key={category.id}>
                   <td className="px-4 py-3 font-medium text-gray-900">
-                    {category.name}
+                    {localizedName(category, i18n.language)}
                   </td>
                   <td className="px-4 py-3 text-gray-600">
                     {category.description || "—"}
@@ -247,7 +315,9 @@ function AdminCategories() {
         title={t("adminCategories.deleteTitle")}
         message={
           deleteTarget
-            ? t("adminCategories.deleteMessage", { name: deleteTarget.name })
+            ? t("adminCategories.deleteMessage", {
+                name: localizedName(deleteTarget, i18n.language),
+              })
             : ""
         }
         confirmLabel={t("common.delete")}

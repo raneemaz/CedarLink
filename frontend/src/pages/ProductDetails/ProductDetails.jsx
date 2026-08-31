@@ -4,10 +4,11 @@ import { useTranslation } from "react-i18next";
 import api from "../../services/api";
 import Price from "../../components/common/Price";
 import BackLink from "../../components/common/BackLink";
+import { localizedName, localizedDescription } from "../../utils/localize";
 
 function ProductDetails() {
   const { id } = useParams();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -104,6 +105,9 @@ function ProductDetails() {
     );
   }
 
+  const name = localizedName(product, i18n.language);
+  const description = localizedDescription(product, i18n.language);
+
   const images =
     product.images && product.images.length > 0
       ? product.images.map((img) => img.url)
@@ -125,7 +129,7 @@ function ProductDetails() {
               <div className="flex min-h-[360px] flex-1 items-center justify-center overflow-hidden rounded-lg bg-white">
                 <img
                   src={images[activeImage]}
-                  alt={product.name}
+                  alt={name}
                   className="max-h-[440px] w-full object-contain"
                 />
               </div>
@@ -145,7 +149,7 @@ function ProductDetails() {
                     >
                       <img
                         src={src}
-                        alt={`${product.name} ${index + 1}`}
+                        alt={`${name} ${index + 1}`}
                         className="h-full w-full object-cover"
                       />
                     </button>
@@ -166,7 +170,7 @@ function ProductDetails() {
             <p className="text-sm font-medium text-emerald-700">{t("productDetails.eyebrow")}</p>
 
             <h1 className="mt-2 text-3xl font-bold text-gray-900">
-              {product.name}
+              {name}
             </h1>
 
             <Price
@@ -181,7 +185,7 @@ function ProductDetails() {
               </h2>
 
               <p className="mt-2 leading-7 text-gray-600">
-                {product.description || t("productDetails.noDescription")}
+                {description || t("productDetails.noDescription")}
               </p>
             </div>
 
