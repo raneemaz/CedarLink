@@ -2,9 +2,30 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import get_jwt_identity
 from app.extensions import db
 from app.models.store import Store
+from app.services import store_service
+from app.services.store_service import StoreHoursError
 from app.utils.decorators import role_required
 
 store_bp = Blueprint("store", __name__, url_prefix="/api/stores")
+
+
+def _store_with_status(store):
+    """Store payload for the storefront — adds the live open/closed flag."""
+    open_now, _ = store_service.is_open_now(store)
+    return {**store.to_dict(), "is_open_now": open_now}
+
+
+def _load_owned_store(store_id):
+    """(store, None) when the caller owns it, else (None, (body, code))."""
+    store = db.session.get(Store, store_id)
+    if not store:
+        return None, (jsonify({"message": "Store not found"}), 404)
+    if int(store.owner_id) != int(get_jwt_identity()):
+        return None, (
+            jsonify({"message": "You can only manage your own store"}),
+            403,
+        )
+    return store, None
 
 
 @store_bp.route("", methods=["POST"])
@@ -103,7 +124,7 @@ def get_stores():
     )
 
     return jsonify({
-        "stores": [store.to_dict() for store in pagination.items],
+        "stores": [_store_with_status(store) for store in pagination.items],
         "page": pagination.page,
         "pages": max(pagination.pages, 1),
         "total": pagination.total
@@ -120,7 +141,7 @@ def get_store(store_id):
         return jsonify({"message": "Store not found"}), 404
 
     return jsonify({
-        "store": store.to_dict()
+        "store": _store_with_status(store)
     }), 200
 
 
@@ -253,4 +274,90 @@ def toggle_store_status(store_id):
     return jsonify({
         "message": "Store status updated successfully",
         "store": store.to_dict()
+    }), 200
+
+
+# --------------------------------------------------------------------------- #
+# Working hours
+# --------------------------------------------------------------------------- #
+
+@store_bp.route("/<int:store_id>/hours", methods=["GET"])
+def get_store_hours(store_id):
+    """Public — the store's weekly schedule (empty list for a closed day)."""
+    store = db.session.get(Store, store_id)
+    if not store or not store.is_visible:
+        return jsonify({"message": "Store not found"}), 404
+
+    return jsonify({
+        "hours": [row.to_dict() for row in store.hours]
+    }), 200
+
+
+@store_bp.route("/<int:store_id>/hours", methods=["PUT"])
+@role_required("vendor")
+def set_store_hours(store_id):
+    store, error = _load_owned_store(store_id)
+    if error:
+        return error
+
+    data = request.get_json() or {}
+
+    try:
+        store_service.replace_hours(store, data.get("hours"))
+    except StoreHoursError as exc:
+        db.session.rollback()
+        return jsonify({"message": str(exc)}), 400
+
+    db.session.commit()
+
+    return jsonify({
+        "message": "Working hours updated",
+        "hours": [row.to_dict() for row in store.hours],
+    }), 200
+
+
+# --------------------------------------------------------------------------- #
+# Manual open/closed override
+# --------------------------------------------------------------------------- #
+
+@store_bp.route("/<int:store_id>/override", methods=["PATCH"])
+@role_required("vendor")
+def set_store_override(store_id):
+    store, error = _load_owned_store(store_id)
+    if error:
+        return error
+
+    data = request.get_json() or {}
+
+    try:
+        store_service.set_override(
+            store,
+            data.get("status"),
+            data.get("reason"),
+            data.get("until"),
+        )
+    except StoreHoursError as exc:
+        return jsonify({"message": str(exc)}), 400
+
+    db.session.commit()
+
+    return jsonify({
+        "message": "Override set",
+        "store": store.to_dict(),
+    }), 200
+
+
+@store_bp.route("/<int:store_id>/override", methods=["DELETE"])
+@role_required("vendor")
+def clear_store_override(store_id):
+    store, error = _load_owned_store(store_id)
+    if error:
+        return error
+
+    store_service.clear_override(store)
+    db.session.commit()
+
+    return jsonify({
+        "message": "Override cleared",
+        "store": store.to_dict(),
     }), 200
