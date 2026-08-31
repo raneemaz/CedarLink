@@ -17,6 +17,7 @@ Layout:
 """
 
 import functools
+from datetime import time
 
 import pytest
 from flask_jwt_extended import create_access_token
@@ -31,6 +32,7 @@ from app.models.order import Order
 from app.models.order_item import OrderItem
 from app.models.product import Product
 from app.models.store import Store
+from app.models.store_hours import StoreHours
 from app.models.user import User
 
 # Cheap, deterministic hashing for factory users — keeps the suite fast.
@@ -195,7 +197,13 @@ def category(make_category):
 
 @pytest.fixture()
 def make_store(make_user):
-    def _make(owner=None, approval_status="approved", is_active=True, **kw):
+    def _make(
+        owner=None,
+        approval_status="approved",
+        is_active=True,
+        open_always=True,
+        **kw,
+    ):
         owner = owner or make_user("vendor")
         store = Store(
             owner_id=owner.id,
@@ -210,6 +218,22 @@ def make_store(make_user):
             is_active=is_active,
         )
         _db.session.add(store)
+        _db.session.flush()
+
+        # A store with no StoreHours rows is closed. Most tests don't care
+        # about hours, so give it a 24/7 schedule by default; the store-hours
+        # tests pass open_always=False and set their own.
+        if open_always:
+            for day in range(7):
+                _db.session.add(
+                    StoreHours(
+                        store_id=store.id,
+                        day_of_week=day,
+                        opens_at=time(0, 0),
+                        closes_at=time(0, 0),
+                    )
+                )
+
         _db.session.commit()
         return store
 

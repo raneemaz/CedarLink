@@ -1,7 +1,18 @@
+from datetime import timezone
+
 from sqlalchemy import and_
 from sqlalchemy.ext.hybrid import hybrid_property
 
 from app.extensions import db
+
+
+def _utc_isoformat(value):
+    """A stored naive-UTC datetime as an explicit-UTC ISO 8601 string."""
+    if value is None:
+        return None
+    if value.tzinfo is None:
+        value = value.replace(tzinfo=timezone.utc)
+    return value.isoformat()
 
 
 class Store(db.Model):
@@ -62,6 +73,15 @@ class Store(db.Model):
     )
     approval_note = db.Column(db.String(255), nullable=True)
 
+    # Manual open/closed override. Wins over the weekly schedule while
+    # override_until is in the future; ignored (not mutated) once it passes.
+    # override_status is "open" or "closed". override_until is naive UTC, like
+    # every other timestamp in this schema. See
+    # docs/decisions/0013-store-hours-timezone.md.
+    override_status = db.Column(db.String(10), nullable=True)
+    override_reason = db.Column(db.String(255), nullable=True)
+    override_until = db.Column(db.DateTime, nullable=True)
+
     owner = db.relationship(
         "User",
         back_populates="stores"
@@ -78,6 +98,16 @@ class Store(db.Model):
     orders = db.relationship(
         "Order",
         back_populates="store"
+    )
+
+    # No cascade: the store is soft-deleted (deleted_at), never row-deleted,
+    # so these rows persist with it. A soft-deleted store is not is_visible
+    # and is therefore never "open" regardless of its hours. PUT /hours
+    # replaces the week with an explicit delete + insert in one transaction.
+    hours = db.relationship(
+        "StoreHours",
+        back_populates="store",
+        order_by="StoreHours.day_of_week, StoreHours.opens_at",
     )
 
     @hybrid_property
@@ -121,4 +151,7 @@ class Store(db.Model):
             "outside_city_delivery_fee": float(self.outside_city_delivery_fee
                                                or 0),
             "delivery_available": self.delivery_available,
+            "override_status": self.override_status,
+            "override_reason": self.override_reason,
+            "override_until": _utc_isoformat(self.override_until),
         }
