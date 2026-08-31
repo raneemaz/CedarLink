@@ -39,7 +39,12 @@ def get_cart():
         stores[store_id]["items"].append({
             "id": item.id,
             "product_id": item.product.id,
-            "product_name": item.product.name,
+            # English canonical + every translation; the client picks the
+            # display language (C.5).
+            "product_name": item.product.name_en,
+            "product_name_en": item.product.name_en,
+            "product_name_ar": item.product.name_ar,
+            "product_name_fr": item.product.name_fr,
             "price": float(item.product.price),
             "quantity": item.quantity,
             "subtotal": subtotal

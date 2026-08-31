@@ -12,6 +12,64 @@ from app.utils.file_utils import product_image_url
 
 product_bp = Blueprint("product_bp", __name__)
 
+# The three interface languages. The API returns every translation and the
+# client picks — locale is never negotiated server-side (C.5). See
+# docs/decisions/0012-product-category-translation.md.
+_LANGUAGES = ("en", "ar", "fr")
+
+
+def _translation_fields(product):
+    """name_en/ar/fr + description_en/ar/fr, plus `name` / `description`
+    as English-canonical aliases for any consumer that is not yet
+    language-aware."""
+    fields = {
+        f"{base}_{lang}": getattr(product, f"{base}_{lang}")
+        for base in ("name", "description")
+        for lang in _LANGUAGES
+    }
+    fields["name"] = product.name_en
+    fields["description"] = product.description_en
+    return fields
+
+
+def _read_translations(data, *, require_name):
+    """Pull translation columns out of a request body.
+
+    English is required on create; on update only the keys present are
+    touched. `name` / `description` are accepted as aliases for the `_en`
+    key so existing callers keep working.
+    """
+    values = {}
+    errors = []
+
+    def take(base, lang, aliases=()):
+        for key in (f"{base}_{lang}", *aliases):
+            if key in data:
+                return True, data[key]
+        return False, None
+
+    for base in ("name", "description"):
+        for lang in _LANGUAGES:
+            aliases = (base,) if lang == "en" else ()
+            present, raw = take(base, lang, aliases)
+            if not present:
+                continue
+            if raw is None or (isinstance(raw, str) and not raw.strip()):
+                # Blank clears an optional translation; English cannot be blank.
+                if base == "name" and lang == "en":
+                    errors.append("Product name (English) cannot be empty")
+                    continue
+                values[f"{base}_{lang}"] = None
+            elif isinstance(raw, str):
+                values[f"{base}_{lang}"] = raw.strip()
+            else:
+                errors.append(f"{base}_{lang} must be a string")
+
+    if require_name and "name_en" not in values:
+        errors.append("Product name (English) is required")
+
+    return values, errors
+
 
 def _owns_store(store_id):
     """True when the current request is the store's own vendor (or an admin).
@@ -105,10 +163,20 @@ def get_products():
         }), 400
 
     if keyword:
+        # Match any language column: a customer searching in Arabic must find
+        # a product whose Arabic name matches, whatever the interface
+        # language. This is substring ILIKE — no diacritic folding or
+        # stemming; the Postgres full-text path is documented as future work
+        # in docs/decisions/0012-product-category-translation.md.
+        like = f"%{keyword}%"
         query = query.filter(
             or_(
-                Product.name.ilike(f"%{keyword}%"),
-                Product.description.ilike(f"%{keyword}%")
+                Product.name_en.ilike(like),
+                Product.name_ar.ilike(like),
+                Product.name_fr.ilike(like),
+                Product.description_en.ilike(like),
+                Product.description_ar.ilike(like),
+                Product.description_fr.ilike(like),
             )
         )
 
@@ -165,14 +233,13 @@ def get_products():
 
         result.append({
             "id": product.id,
-            "name": product.name,
             "price": float(product.price),
             "stock": product.stock,
-            "description": product.description,
             "store_id": product.store_id,
             "store_name": product.store.name,
             "category_id": product.category_id,
-            "image": product_image_url(first_image)
+            "image": product_image_url(first_image),
+            **_translation_fields(product),
         })
 
     return jsonify({
@@ -210,15 +277,14 @@ def get_product(id):
 
     return jsonify({
         "id": product.id,
-        "name": product.name,
-        "description": product.description,
         "price": float(product.price),
         "stock": product.stock,
         "store_id": product.store_id,
         "store_name": product.store.name,
         "category_id": product.category_id,
         "images": images,
-        "image": images[0]["url"] if images else None
+        "image": images[0]["url"] if images else None,
+        **_translation_fields(product),
     }), 200
 
 
@@ -244,7 +310,6 @@ def create_product():
 
     # Required fields
     required_fields = [
-        "name",
         "price",
         "stock",
         "store_id",
@@ -262,20 +327,20 @@ def create_product():
             "missing_fields": missing_fields
         }), 400
 
+    # name_en/ar/fr + description_en/ar/fr (English required, rest optional).
+    translations, translation_errors = _read_translations(
+        data, require_name=True
+    )
+    if translation_errors:
+        return jsonify({"message": translation_errors[0]}), 400
+
     # Extract values
-    name = data.get("name")
-    description = data.get("description")
     price = data.get("price")
     stock = data.get("stock")
     store_id = data.get("store_id")
     category_id = data.get("category_id")
 
     # Validate data types
-    if not isinstance(name, str) or not name.strip():
-        return jsonify({
-            "message": "Product name must be a non-empty string"
-        }), 400
-
     if not isinstance(price, (int, float)):
         return jsonify({
             "message": "Price must be a number"
@@ -328,12 +393,11 @@ def create_product():
 
     # Create product
     product = Product(
-        name=name.strip(),
-        description=description,
         price=price,
         stock=stock,
         store_id=store.id,
-        category_id=category.id
+        category_id=category.id,
+        **translations,
     )
 
     db.session.add(product)
@@ -360,13 +424,15 @@ def update_product(id):
 
     data = request.get_json()
 
-    if "name" in data:
-        if not isinstance(data["name"], str) or not data["name"].strip():
-            return jsonify({"message": "Name cannot be empty"}), 400
-        product.name = data["name"].strip()
-
-    if "description" in data:
-        product.description = data["description"]
+    # name_en/ar/fr + description_en/ar/fr — only the keys present are
+    # touched; a blank value clears an optional translation.
+    translations, translation_errors = _read_translations(
+        data, require_name=False
+    )
+    if translation_errors:
+        return jsonify({"message": translation_errors[0]}), 400
+    for column, value in translations.items():
+        setattr(product, column, value)
 
     if "price" in data:
         try:

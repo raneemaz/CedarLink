@@ -52,10 +52,16 @@ class OrderError(Exception):
 # --------------------------------------------------------------------------- #
 
 def _serialize_item(item):
+    product = item.product
     return {
         "id": item.id,
         "product_id": item.product_id,
-        "product_name": item.product.name,
+        # English canonical + every translation; the client picks the
+        # display language (C.5).
+        "product_name": product.name_en,
+        "product_name_en": product.name_en,
+        "product_name_ar": product.name_ar,
+        "product_name_fr": product.name_fr,
         "quantity": item.quantity,
         "unit_price": float(item.unit_price),
         "subtotal": float(item.unit_price * item.quantity),
