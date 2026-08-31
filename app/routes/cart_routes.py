@@ -5,6 +5,8 @@ from app.extensions import db
 from app.models.cart import Cart
 from app.models.cart_item import CartItem
 from app.models.product import Product
+from app.services import order_service
+from app.services.order_service import OrderError
 
 
 cart_bp = Blueprint("cart", __name__)
@@ -96,6 +98,13 @@ def add_to_cart():
         return jsonify({
             "error": "Product not found"
         }), 404
+
+    # A closed store cannot take new cart items (enforced in the service so
+    # cart-add and checkout share one rule).
+    try:
+        order_service.assert_store_open(product.store)
+    except OrderError as exc:
+        return jsonify(exc.payload), exc.status_code
 
     cart = Cart.query.filter_by(user_id=user_id).first()
 

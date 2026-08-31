@@ -20,6 +20,7 @@ from app.models.order import Order
 from app.models.order_item import OrderItem
 from app.models.product import Product
 from app.models.store import Store
+from app.services import store_service
 from app.services.notification_service import (
     notify_order_canceled,
     notify_order_placed,
@@ -45,6 +46,30 @@ class OrderError(Exception):
         super().__init__(message)
         self.status_code = status_code
         self.payload = {"error": message, **extra}
+
+
+# --------------------------------------------------------------------------- #
+# Store availability gate — one rule, enforced here (never in a route)
+# --------------------------------------------------------------------------- #
+
+def assert_store_open(store):
+    """Raise ``OrderError(code="store_closed")`` when the store is not open now.
+
+    Called both when a product is added to the cart and again inside
+    ``price_cart`` at checkout — the same single check on both paths, the way
+    pricing itself is single-sourced (CL-15). ``store_service.is_open_now``
+    is the only place that decides open/closed.
+    """
+    open_now, reason = store_service.is_open_now(store)
+    if not open_now:
+        raise OrderError(
+            f"\"{store.name}\" is closed right now.",
+            400,
+            code="store_closed",
+            reason=reason,
+            store_id=store.id,
+            store_name=store.name,
+        )
 
 
 # --------------------------------------------------------------------------- #
@@ -160,6 +185,8 @@ def price_cart(user_id, delivery_city):
 
         if not store:
             raise OrderError(f"Store {store_id} not found", 404)
+
+        assert_store_open(store)
 
         if not store.delivery_available:
             raise OrderError(
