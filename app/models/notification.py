@@ -22,9 +22,24 @@ def _utc_isoformat(value):
 
 class Notification(db.Model):
     __tablename__ = "notifications"
+    __table_args__ = (
+        # The list endpoint runs WHERE user_id = X ORDER BY created_at DESC;
+        # the unread count runs WHERE user_id = X AND is_read = false. Both
+        # need a user_id-leading composite — a standalone index on either
+        # trailing column cannot serve that access path. Migration
+        # c4a9e7f2105d created these; the model just never declared them.
+        # See docs/decisions/0016-model-migration-drift-guard.md.
+        db.Index(
+            "ix_notifications_user_created_at", "user_id", "created_at"
+        ),
+        db.Index("ix_notifications_user_is_read", "user_id", "is_read"),
+    )
 
     id = db.Column(db.Integer, primary_key=True)
 
+    # ix_notifications_user_id: kept although it is now a redundant leading
+    # prefix of both composites above. Dropping it would turn this
+    # model-only fix into a database migration for no measurable gain.
     user_id = db.Column(
         db.Integer,
         db.ForeignKey("users.id"),
@@ -61,7 +76,6 @@ class Notification(db.Model):
         db.DateTime,
         nullable=False,
         default=datetime.utcnow,
-        index=True,
     )
 
     user = db.relationship(
