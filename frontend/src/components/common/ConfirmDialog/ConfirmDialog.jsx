@@ -14,6 +14,7 @@ function ConfirmDialog({
   cancelLabel,
   variant = "danger",
   loading = false,
+  confirmDisabled = false,
   onConfirm,
   onCancel,
   children,
@@ -45,7 +46,7 @@ function ConfirmDialog({
           <Button
             variant={variant}
             onClick={onConfirm}
-            disabled={loading}
+            disabled={loading || confirmDisabled}
           >
             {loading
               ? t("confirmDialog.working")

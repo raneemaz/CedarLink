@@ -252,7 +252,8 @@
     "overview": "Overview",
     "users": "Users",
     "stores": "Stores",
-    "categories": "Categories"
+    "categories": "Categories",
+    "reviews": "Reviews"
   },
   "vendorLayout": {
     "console": "Vendor Console",
@@ -516,6 +517,62 @@
     "deleted": "Review deleted.",
     "submitError": "Couldn't save your review.",
     "deleteError": "Couldn't delete the review."
+  },
+  "reviewStatus": {
+    "published": "Published",
+    "flagged": "Flagged",
+    "removed": "Removed"
+  },
+  "reviewReport": {
+    "action": "Report",
+    "reported": "Reported",
+    "title": "Report this review",
+    "prompt": "An admin will look at it. What's wrong with it?",
+    "reasonLabel": "Reason",
+    "confirm": "Send report",
+    "sent": "Thanks — an admin will review this.",
+    "already": "You've already reported this review.",
+    "error": "Couldn't send the report."
+  },
+  "adminReviews": {
+    "title": "Reviews",
+    "loading": "Loading reviews...",
+    "empty": "Nothing to moderate here.",
+    "errLoad": "Unable to load the review queue.",
+    "errAction": "The action failed.",
+    "onProduct": "on product",
+    "onStore": "on store",
+    "byAuthor": "By {{name}} · {{email}}",
+    "reportsHeading_one": "{{count}} report",
+    "reportsHeading_other": "{{count}} reports",
+    "lastNote": "Last moderation note: {{note}}",
+    "noteLabel": "Reason (recorded)",
+    "filter": {
+      "queue": "Queue",
+      "flagged": "Flagged",
+      "removed": "Removed",
+      "all": "All"
+    },
+    "action": {
+      "flag": "Flag",
+      "remove": "Remove",
+      "restore": "Restore"
+    },
+    "confirmTitle": {
+      "flag": "Flag this review?",
+      "remove": "Remove this review?",
+      "restore": "Restore this review?"
+    },
+    "confirmBody": {
+      "flag": "It stays visible and keeps counting, but moves to the queue.",
+      "remove": "It will be hidden from everyone and stop counting toward the rating. It is not deleted.",
+      "restore": "It becomes visible again and counts toward the rating."
+    },
+    "done": {
+      "flag": "Review flagged.",
+      "remove": "Review removed.",
+      "restore": "Review restored."
+    }
   },
   "storeDetails": {
     "loading": "Loading store...",

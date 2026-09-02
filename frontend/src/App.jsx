@@ -29,6 +29,7 @@ import AdminOverview from "./pages/Admin/AdminOverview";
 import AdminUsers from "./pages/Admin/AdminUsers";
 import AdminStores from "./pages/Admin/AdminStores";
 import AdminCategories from "./pages/Admin/AdminCategories";
+import AdminReviews from "./pages/Admin/AdminReviews";
 import Settings from "./pages/Settings/Settings";
 import SavedAddresses from "./pages/Settings/SavedAddresses";
 import AddAddress from "./pages/Settings/AddAddress";
@@ -153,6 +154,7 @@ function App() {
         <Route path="users" element={<AdminUsers />} />
         <Route path="stores" element={<AdminStores />} />
         <Route path="categories" element={<AdminCategories />} />
+        <Route path="reviews" element={<AdminReviews />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
