@@ -60,6 +60,40 @@ def test_rejecting_store_hides_it(client, auth, admin, make_store):
     assert client.get(f"/api/stores/{store.id}").status_code == 404
 
 
+def test_approval_note_never_reaches_the_public_storefront(
+    client, auth, admin, make_store
+):
+    """approval_note is admin-authored — the storefront must not carry it,
+    but the owner and admin must (CLAUDE.md: allowlist, not dump)."""
+    store = make_store(approval_status="approved")
+    client.patch(
+        f"/api/admin/stores/{store.id}/approve",
+        json={"note": "verified the business licence"},
+        headers=auth(admin),
+    )
+
+    # Public detail and directory — no approval_note.
+    detail = client.get(f"/api/stores/{store.id}").get_json()["store"]
+    assert "approval_note" not in detail
+    listed = client.get("/api/stores").get_json()["stores"][0]
+    assert "approval_note" not in listed
+
+    # Owner's own view — approval_note present.
+    mine = client.get(
+        "/api/vendor/store", headers=auth(store.owner)
+    ).get_json()["store"]
+    assert mine["approval_note"] == "verified the business licence"
+
+    # Admin list — present.
+    admin_row = next(
+        s for s in client.get(
+            "/api/admin/stores", headers=auth(admin)
+        ).get_json()
+        if s["id"] == store.id
+    )
+    assert admin_row["approval_note"] == "verified the business licence"
+
+
 def test_suspending_user_blocks_their_login(
     client, auth, admin, make_user
 ):

@@ -173,6 +173,11 @@ class Store(db.Model):
         )
 
     def to_dict(self):
+        # A public serializer is an allowlist, not a dump. approval_note is
+        # an admin-authored note and is added back only on the owner /
+        # admin routes (store_service.owner_store_dict, admin_routes). See
+        # CLAUDE.md. Other fields here (owner_id, approval_status,
+        # deleted_at) are flagged for a later, wider allowlist pass.
         return {
             "id": self.id,
             "owner_id": self.owner_id,
@@ -183,7 +188,6 @@ class Store(db.Model):
             "is_active": self.is_active,
             "deleted_at": _utc_isoformat(self.deleted_at),
             "approval_status": self.approval_status,
-            "approval_note": self.approval_note,
             "inside_city_delivery_fee": float(self.inside_city_delivery_fee
                                               or 0),
             "outside_city_delivery_fee": float(self.outside_city_delivery_fee

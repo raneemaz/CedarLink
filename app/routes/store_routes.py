@@ -80,7 +80,7 @@ def create_store():
 
     return jsonify({
         "message": "Store created successfully",
-        "store": store.to_dict()
+        "store": store_service.owner_store_dict(store)
     }), 201
 
 
@@ -301,7 +301,7 @@ def update_store(store_id):
 
     return jsonify({
         "message": "Store updated successfully",
-        "store": store.to_dict()
+        "store": store_service.owner_store_dict(store)
     }), 200
 
 
@@ -345,7 +345,7 @@ def toggle_store_status(store_id):
 
     return jsonify({
         "message": "Store status updated successfully",
-        "store": store.to_dict()
+        "store": store_service.owner_store_dict(store)
     }), 200
 
 
@@ -373,7 +373,7 @@ def set_store_location(store_id):
 
     return jsonify({
         "message": "Location updated",
-        "store": store.to_dict(),
+        "store": store_service.owner_store_dict(store),
     }), 200
 
 
@@ -444,7 +444,7 @@ def set_store_override(store_id):
 
     return jsonify({
         "message": "Override set",
-        "store": store.to_dict(),
+        "store": store_service.owner_store_dict(store),
     }), 200
 
 
@@ -460,7 +460,7 @@ def clear_store_override(store_id):
 
     return jsonify({
         "message": "Override cleared",
-        "store": store.to_dict(),
+        "store": store_service.owner_store_dict(store),
     }), 200
 
 
