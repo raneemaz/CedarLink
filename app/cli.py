@@ -22,6 +22,7 @@ from app.models import (
     Product,
     ProductImage,
     Store,
+    StoreAnnouncement,
     StoreHours,
     User,
 )
@@ -155,6 +156,11 @@ _STORE_SPECS = (
         "inside_fee": 2.00,
         "outside_fee": 5.00,
         "active": True,
+        "announcement": {
+            "title": "New olive-oil pressing just arrived",
+            "body": "This season's cold-pressed oil from the Koura hills "
+            "is in stock. Limited quantity.",
+        },
         "products": (
             _p("Zaatar Blend 200g",
                "خلطة زعتر ٢٠٠ غرام",
@@ -213,6 +219,11 @@ _STORE_SPECS = (
         "inside_fee": 1.50,
         "outside_fee": 4.00,
         "active": True,
+        "announcement": {
+            "title": "Eid tailoring — order by Thursday",
+            "body": "Custom alterations for Eid close this Thursday. "
+            "Walk in or message us to book a fitting.",
+        },
         "products": (
             _p("Hand-Embroidered Abaya",
                "عباءة مطرزة يدوياً",
@@ -262,6 +273,11 @@ _STORE_SPECS = (
         "inside_fee": 3.00,
         "outside_fee": 6.00,
         "active": True,
+        "announcement": {
+            "title": "Same-day delivery inside Saida",
+            "body": "Orders placed before 3 PM now arrive the same "
+            "evening within Saida.",
+        },
         "products": (
             _p("USB-C Fast Charger 30W",
                "شاحن سريع USB-C بقوة ٣٠ واط",
@@ -318,6 +334,11 @@ _STORE_SPECS = (
         "inside_fee": 2.50,
         "outside_fee": 5.50,
         "active": False,
+        "announcement": {
+            "title": "Back soon",
+            "body": "We're restocking and will reopen shortly. Thank you "
+            "for your patience.",
+        },
         "products": (
             _p("Damascus Rose Water Toner 200ml",
                "تونر ماء ورد دمشقي ٢٠٠ مل",
@@ -611,6 +632,14 @@ def seed():
                         closes_at=_time(21, 0),
                     )
                 )
+
+        # One live announcement so the storefront shows the feature.
+        _get_or_create(
+            StoreAnnouncement,
+            {"body": spec["announcement"]["body"]},
+            store_id=store.id,
+            title=spec["announcement"]["title"],
+        )
 
         for item in spec["products"]:
             name = item["name"]

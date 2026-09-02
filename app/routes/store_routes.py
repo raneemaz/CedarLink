@@ -1,9 +1,11 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import get_jwt_identity, jwt_required
 from sqlalchemy.orm import selectinload
 from app.extensions import db
 from app.models.store import Store
-from app.services import store_service
+from app.models.store_announcement import StoreAnnouncement
+from app.services import announcement_service, notification_service, store_service
+from app.services.announcement_service import AnnouncementError
 from app.services.store_service import StoreHoursError
 from app.utils.decorators import role_required
 
@@ -368,3 +370,112 @@ def clear_store_override(store_id):
         "message": "Override cleared",
         "store": store.to_dict(),
     }), 200
+
+
+# --------------------------------------------------------------------------- #
+# Announcements
+# --------------------------------------------------------------------------- #
+
+def _load_announcement(store, aid):
+    announcement = db.session.get(StoreAnnouncement, aid)
+    if not announcement or announcement.store_id != store.id:
+        return None, (jsonify({"message": "Announcement not found"}), 404)
+    return announcement, None
+
+
+@store_bp.route("/<int:store_id>/announcements", methods=["GET"])
+@jwt_required(optional=True)
+def get_store_announcements(store_id):
+    """Live announcements for the public; every announcement for the owner."""
+    store = db.session.get(Store, store_id)
+    identity = get_jwt_identity()
+    is_owner = bool(
+        store and identity and int(store.owner_id) == int(identity)
+    )
+
+    if not store or (not store.is_visible and not is_owner):
+        return jsonify({"message": "Store not found"}), 404
+
+    if is_owner:
+        rows = [
+            announcement_service.serialize(a) for a in store.announcements
+        ]
+    else:
+        rows = [
+            a.to_dict()
+            for a in announcement_service.live_for_store(store)
+        ]
+
+    return jsonify({"announcements": rows}), 200
+
+
+@store_bp.route("/<int:store_id>/announcements", methods=["POST"])
+@role_required("vendor")
+def create_store_announcement(store_id):
+    store, error = _load_owned_store(store_id)
+    if error:
+        return error
+
+    try:
+        announcement = announcement_service.create(
+            store, request.get_json() or {}
+        )
+    except AnnouncementError as exc:
+        db.session.rollback()
+        return jsonify({"message": str(exc)}), 400
+
+    db.session.commit()
+    notification_service.notify_store_announcement(announcement)
+
+    return jsonify({
+        "message": "Announcement created",
+        "announcement": announcement_service.serialize(announcement),
+    }), 201
+
+
+@store_bp.route(
+    "/<int:store_id>/announcements/<int:aid>", methods=["PUT"]
+)
+@role_required("vendor")
+def update_store_announcement(store_id, aid):
+    store, error = _load_owned_store(store_id)
+    if error:
+        return error
+
+    announcement, missing = _load_announcement(store, aid)
+    if missing:
+        return missing
+
+    try:
+        announcement_service.update(
+            store, announcement, request.get_json() or {}
+        )
+    except AnnouncementError as exc:
+        db.session.rollback()
+        return jsonify({"message": str(exc)}), 400
+
+    db.session.commit()
+
+    return jsonify({
+        "message": "Announcement updated",
+        "announcement": announcement_service.serialize(announcement),
+    }), 200
+
+
+@store_bp.route(
+    "/<int:store_id>/announcements/<int:aid>", methods=["DELETE"]
+)
+@role_required("vendor")
+def delete_store_announcement(store_id, aid):
+    store, error = _load_owned_store(store_id)
+    if error:
+        return error
+
+    announcement, missing = _load_announcement(store, aid)
+    if missing:
+        return missing
+
+    announcement_service.delete(announcement)
+    db.session.commit()
+
+    return jsonify({"message": "Announcement deleted"}), 200

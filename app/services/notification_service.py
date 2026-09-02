@@ -220,6 +220,58 @@ def notify_payment_refunded(order):
     )
 
 
+def notify_store_announcement(announcement):
+    """Best-effort ``promotions`` notification to a store's past customers.
+
+    Call AFTER the announcement is committed. Never raises: a failure is
+    logged and rolled back without touching the committed announcement. The
+    per-user ``promotions`` preference gate still applies (via
+    ``create_notification``).
+    """
+    from app.models.order import Order
+
+    if not announcement.is_active:
+        return
+
+    try:
+        user_ids = [
+            row[0]
+            for row in db.session.query(Order.user_id)
+            .filter(Order.store_id == announcement.store_id)
+            .distinct()
+        ]
+
+        emitted = 0
+        for user_id in user_ids:
+            notification = create_notification(
+                user_id,
+                category="promotions",
+                notification_type="store_announcement",
+                title=announcement.title,
+                message=_clip(announcement.body, 500),
+                link=f"/stores/{announcement.store_id}",
+            )
+            if notification is not None:
+                emitted += 1
+
+        if emitted:
+            db.session.commit()
+
+        return emitted
+    except Exception:
+        db.session.rollback()
+        current_app.logger.exception(
+            "Failed to emit announcement notifications for store %s",
+            announcement.store_id,
+        )
+        return 0
+
+
+def _clip(text, limit):
+    text = text or ""
+    return text if len(text) <= limit else text[: limit - 1].rstrip() + "…"
+
+
 def notify_delivery_update(order, delivery_status):
     messages = {
         "assigned": "A driver has been assigned to your order.",
