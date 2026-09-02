@@ -836,6 +836,74 @@
     "errSaveDelivery": "Impossible d'enregistrer les paramètres de livraison.",
     "errSaveStatus": "Impossible de mettre à jour le statut du magasin."
   },
+  "storeHours": {
+    "title": "Horaires hebdomadaires",
+    "description": "Définissez les heures d'ouverture visibles par les clients. Un jour sans plage horaire est affiché comme fermé.",
+    "loading": "Chargement des horaires...",
+    "save": "Enregistrer les horaires",
+    "closed": "Fermé",
+    "addRange": "Ajouter une plage",
+    "removeRange": "Supprimer cette plage",
+    "opensAt": "Ouvre à",
+    "closesAt": "Ferme à",
+    "rangeSeparator": "à",
+    "copyToAll": "Copier sur tous les jours",
+    "copyToWeekdays": "Copier sur les jours de semaine",
+    "days": {
+      "monday": "Lundi",
+      "tuesday": "Mardi",
+      "wednesday": "Mercredi",
+      "thursday": "Jeudi",
+      "friday": "Vendredi",
+      "saturday": "Samedi",
+      "sunday": "Dimanche"
+    },
+    "errIncomplete": "Renseignez une heure d'ouverture et une heure de fermeture.",
+    "errSameTime": "Les heures d'ouverture et de fermeture doivent être différentes.",
+    "errOverlap": "Deux plages horaires de ce jour se chevauchent.",
+    "errLoad": "Impossible de charger les horaires.",
+    "errSave": "Impossible d'enregistrer les horaires.",
+    "toastSaved": "Horaires enregistrés."
+  },
+  "storeOverride": {
+    "title": "Forçage ouvert / fermé",
+    "description": "Forcez temporairement l'état du magasin — jour férié, coupure de courant ou fermeture anticipée. Le forçage prend fin automatiquement à l'heure que vous définissez.",
+    "currentLabel": "En ce moment",
+    "stateSchedule": "Suit les horaires hebdomadaires.",
+    "stateOpen": "Ouvert manuellement jusqu'à {{until}}.",
+    "stateClosed": "Fermé manuellement jusqu'à {{until}}.",
+    "resume": "Reprendre les horaires normaux",
+    "setHeading": "Définir un forçage",
+    "replaceHeading": "Remplacer le forçage actuel",
+    "statusLabel": "État",
+    "status": {
+      "open": "Ouvert",
+      "closed": "Fermé"
+    },
+    "reasonLabel": "Motif",
+    "reasonPlaceholder": "Visible par les clients, ex. Coupure de courant",
+    "reasons": {
+      "holiday": "Jour férié",
+      "maintenance": "Maintenance",
+      "powerOutage": "Coupure de courant",
+      "emergency": "Urgence"
+    },
+    "durationLabel": "Fin",
+    "durations": {
+      "oneHour": "Dans 1 heure",
+      "threeHours": "Dans 3 heures",
+      "endOfDay": "Fin de journée",
+      "tomorrowMorning": "Demain matin",
+      "custom": "Heure personnalisée"
+    },
+    "apply": "Appliquer le forçage",
+    "errUntilRequired": "Choisissez l'heure de fin du forçage.",
+    "errUntilFuture": "L'heure de fin doit être dans le futur.",
+    "errApply": "Impossible d'appliquer le forçage.",
+    "errResume": "Impossible de reprendre les horaires normaux.",
+    "toastApplied": "Forçage appliqué.",
+    "toastResumed": "Retour aux horaires hebdomadaires."
+  },
   "vendorProducts": {
     "loading": "Chargement de vos produits…",
     "title": "Produits",

@@ -6,6 +6,8 @@ import api from "../../services/api";
 import Button from "../../components/common/Button/Button";
 import Toggle from "../../components/common/Toggle/Toggle";
 import { lebanonLocations } from "../../data/lebanonLocations";
+import StoreHoursEditor from "./StoreHoursEditor";
+import StoreOverridePanel from "./StoreOverridePanel";
 
 // Flattened, de-duplicated list of Lebanese cities. The store location must
 // come from the same vocabulary as customer addresses — delivery-fee logic
@@ -18,7 +20,7 @@ const CITY_OPTIONS = Array.from(
   ),
 ).sort((a, b) => a.localeCompare(b));
 
-const fieldClass =
+export const fieldClass =
   "w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none " +
   "focus:border-green-600 focus:ring-1 focus:ring-green-600";
 
@@ -56,7 +58,7 @@ function apiMessage(error, fallback) {
   return error.response?.data?.message || fallback;
 }
 
-function Section({ title, description, children, onSubmit, footer }) {
+export function Section({ title, description, children, onSubmit, footer }) {
   const Wrapper = onSubmit ? "form" : "section";
 
   return (
@@ -462,6 +464,10 @@ function VendorStore() {
             </div>
           </div>
         </Section>
+
+        <StoreHoursEditor storeId={store.id} />
+
+        <StoreOverridePanel store={store} onStoreChange={applyStore} />
 
         <Section
           title={t("vendorStore.statusTitle")}

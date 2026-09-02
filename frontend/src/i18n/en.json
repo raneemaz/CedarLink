@@ -836,6 +836,74 @@
     "errSaveDelivery": "Unable to save delivery settings.",
     "errSaveStatus": "Unable to update store status."
   },
+  "storeHours": {
+    "title": "Weekly schedule",
+    "description": "Set the opening hours customers see. A day with no time ranges is shown as closed.",
+    "loading": "Loading schedule...",
+    "save": "Save schedule",
+    "closed": "Closed",
+    "addRange": "Add hours",
+    "removeRange": "Remove this range",
+    "opensAt": "Opens at",
+    "closesAt": "Closes at",
+    "rangeSeparator": "to",
+    "copyToAll": "Copy to all days",
+    "copyToWeekdays": "Copy to weekdays",
+    "days": {
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday"
+    },
+    "errIncomplete": "Fill in both an opening and a closing time.",
+    "errSameTime": "Opening and closing times must differ.",
+    "errOverlap": "Two time ranges on this day overlap.",
+    "errLoad": "Unable to load the schedule.",
+    "errSave": "Unable to save the schedule.",
+    "toastSaved": "Schedule saved."
+  },
+  "storeOverride": {
+    "title": "Open now / closed now override",
+    "description": "Temporarily override the schedule — for a holiday, a power outage, or an early close. The override ends by itself at the time you set.",
+    "currentLabel": "Right now",
+    "stateSchedule": "Following the weekly schedule.",
+    "stateOpen": "Manually open until {{until}}.",
+    "stateClosed": "Manually closed until {{until}}.",
+    "resume": "Resume normal hours",
+    "setHeading": "Set an override",
+    "replaceHeading": "Replace the current override",
+    "statusLabel": "Status",
+    "status": {
+      "open": "Open",
+      "closed": "Closed"
+    },
+    "reasonLabel": "Reason",
+    "reasonPlaceholder": "Shown to customers, e.g. Power outage",
+    "reasons": {
+      "holiday": "Holiday",
+      "maintenance": "Maintenance",
+      "powerOutage": "Power outage",
+      "emergency": "Emergency"
+    },
+    "durationLabel": "Ends",
+    "durations": {
+      "oneHour": "In 1 hour",
+      "threeHours": "In 3 hours",
+      "endOfDay": "End of day",
+      "tomorrowMorning": "Tomorrow morning",
+      "custom": "Custom time"
+    },
+    "apply": "Apply override",
+    "errUntilRequired": "Choose when the override ends.",
+    "errUntilFuture": "The end time must be in the future.",
+    "errApply": "Unable to apply the override.",
+    "errResume": "Unable to resume normal hours.",
+    "toastApplied": "Override applied.",
+    "toastResumed": "Back on the weekly schedule."
+  },
   "vendorProducts": {
     "loading": "Loading your products...",
     "title": "Products",
