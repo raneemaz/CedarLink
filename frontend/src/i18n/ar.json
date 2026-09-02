@@ -848,6 +848,74 @@
     "errSaveDelivery": "تعذّر حفظ إعدادات التوصيل.",
     "errSaveStatus": "تعذّر تحديث حالة المتجر."
   },
+  "storeHours": {
+    "title": "الجدول الأسبوعي",
+    "description": "حدّد ساعات العمل التي يراها العملاء. اليوم الذي لا يحتوي على أي فترات زمنية يظهر كمغلق.",
+    "loading": "جارٍ تحميل الجدول…",
+    "save": "حفظ الجدول",
+    "closed": "مغلق",
+    "addRange": "إضافة ساعات",
+    "removeRange": "إزالة هذه الفترة",
+    "opensAt": "يفتح الساعة",
+    "closesAt": "يغلق الساعة",
+    "rangeSeparator": "إلى",
+    "copyToAll": "نسخ إلى كل الأيام",
+    "copyToWeekdays": "نسخ إلى أيام الأسبوع",
+    "days": {
+      "monday": "الاثنين",
+      "tuesday": "الثلاثاء",
+      "wednesday": "الأربعاء",
+      "thursday": "الخميس",
+      "friday": "الجمعة",
+      "saturday": "السبت",
+      "sunday": "الأحد"
+    },
+    "errIncomplete": "أدخل وقت الفتح ووقت الإغلاق معًا.",
+    "errSameTime": "يجب أن يختلف وقت الفتح عن وقت الإغلاق.",
+    "errOverlap": "تتداخل فترتان زمنيتان في هذا اليوم.",
+    "errLoad": "تعذّر تحميل الجدول.",
+    "errSave": "تعذّر حفظ الجدول.",
+    "toastSaved": "تم حفظ الجدول."
+  },
+  "storeOverride": {
+    "title": "تجاوز حالة الفتح/الإغلاق",
+    "description": "تجاوز الجدول مؤقتًا — لعطلة أو انقطاع كهرباء أو إغلاق مبكر. ينتهي التجاوز تلقائيًا في الوقت الذي تحدده.",
+    "currentLabel": "الآن",
+    "stateSchedule": "يتبع الجدول الأسبوعي.",
+    "stateOpen": "مفتوح يدويًا حتى {{until}}.",
+    "stateClosed": "مغلق يدويًا حتى {{until}}.",
+    "resume": "استئناف ساعات العمل المعتادة",
+    "setHeading": "تعيين تجاوز",
+    "replaceHeading": "استبدال التجاوز الحالي",
+    "statusLabel": "الحالة",
+    "status": {
+      "open": "مفتوح",
+      "closed": "مغلق"
+    },
+    "reasonLabel": "السبب",
+    "reasonPlaceholder": "يظهر للعملاء، مثل: انقطاع الكهرباء",
+    "reasons": {
+      "holiday": "عطلة",
+      "maintenance": "صيانة",
+      "powerOutage": "انقطاع الكهرباء",
+      "emergency": "طارئ"
+    },
+    "durationLabel": "ينتهي",
+    "durations": {
+      "oneHour": "بعد ساعة",
+      "threeHours": "بعد 3 ساعات",
+      "endOfDay": "نهاية اليوم",
+      "tomorrowMorning": "صباح الغد",
+      "custom": "وقت مخصص"
+    },
+    "apply": "تطبيق التجاوز",
+    "errUntilRequired": "اختر وقت انتهاء التجاوز.",
+    "errUntilFuture": "يجب أن يكون وقت الانتهاء في المستقبل.",
+    "errApply": "تعذّر تطبيق التجاوز.",
+    "errResume": "تعذّر استئناف ساعات العمل المعتادة.",
+    "toastApplied": "تم تطبيق التجاوز.",
+    "toastResumed": "العودة إلى الجدول الأسبوعي."
+  },
   "vendorProducts": {
     "loading": "جارٍ تحميل منتجاتك…",
     "title": "المنتجات",
