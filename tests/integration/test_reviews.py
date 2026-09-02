@@ -2,9 +2,11 @@
 constraints, the CHECK, and the recompute-not-increment rating aggregate.
 """
 
+import contextlib
 from decimal import Decimal
 
 import pytest
+from sqlalchemy import event
 from sqlalchemy.exc import IntegrityError
 
 from app.extensions import db
@@ -12,6 +14,21 @@ from app.models.product import Product
 from app.models.review import Review
 from app.models.store import Store
 from app.services import review_service
+
+
+@contextlib.contextmanager
+def count_queries():
+    """Count SQL statements on db.engine for the duration of the block."""
+    counter = {"n": 0}
+
+    def _on_execute(conn, cursor, statement, params, context, executemany):
+        counter["n"] += 1
+
+    event.listen(db.engine, "before_cursor_execute", _on_execute)
+    try:
+        yield counter
+    finally:
+        event.remove(db.engine, "before_cursor_execute", _on_execute)
 
 
 def _post_review(client, auth, user, order, *, rating=5, **body):
@@ -380,3 +397,108 @@ def test_product_payload_carries_rating_fields(
     detail = client.get(f"/api/products/{product.id}").get_json()
     assert detail["rating_avg"] == 4.0
     assert detail["rating_count"] == 1
+
+
+def test_reviewable_carries_the_existing_review_and_translations(
+    client, auth, make_order, make_product
+):
+    product = make_product(name_ar="منتج", name_fr="produit")
+    order = _delivered_order(make_order, product=product)
+
+    _post_review(
+        client, auth, order.user, order, rating=3,
+        product_id=product.id, title="Fine", body="It was okay.",
+    )
+    _post_review(
+        client, auth, order.user, order, rating=5, store_id=order.store_id,
+    )
+
+    body = client.get(
+        f"/api/orders/{order.id}/reviewable", headers=auth(order.user)
+    ).get_json()
+
+    entry = body["products"][0]
+    assert entry["name_ar"] == "منتج" and entry["name_fr"] == "produit"
+    assert entry["review"]["rating"] == 3
+    assert entry["review"]["title"] == "Fine"
+    assert entry["review"]["body"] == "It was okay."
+
+    assert body["store"]["review"]["rating"] == 5
+
+    # An un-reviewed target still carries review: null
+    other = make_product(store=product.store)
+    order2 = _delivered_order(
+        make_order, product=other, customer=order.user
+    )
+    body2 = client.get(
+        f"/api/orders/{order2.id}/reviewable", headers=auth(order.user)
+    ).get_json()
+    assert body2["products"][0]["review"] is None
+
+
+def test_highest_rated_sort_orders_by_rating_then_count(
+    client, auth, make_order, make_user, make_store, make_product
+):
+    store = make_store()
+    # p_hi: 5.0 (1 review), p_mid: 3.0, p_none: no reviews
+    p_hi = make_product(store=store, name="P hi")
+    p_mid = make_product(store=store, name="P mid")
+    make_product(store=store, name="P none")
+
+    for product, rating in ((p_hi, 5), (p_mid, 3)):
+        buyer = make_user("customer", email=f"sort-{product.id}@test.local")
+        order = _delivered_order(make_order, product=product, customer=buyer)
+        _post_review(
+            client, auth, buyer, order, rating=rating, product_id=product.id
+        )
+
+    names = [
+        p["name"]
+        for p in client.get(
+            f"/api/products?store_id={store.id}&sort=rating"
+        ).get_json()["products"]
+    ]
+    assert names[0] == "P hi"
+    assert names[1] == "P mid"
+    assert names[2] == "P none"  # unrated sorts last
+
+
+def test_rating_columns_add_no_query_per_row_on_list_endpoints(
+    client, auth, make_order, make_user, make_store, make_product
+):
+    """rating_avg / rating_count are columns on the product and store rows,
+    so serialising them must not fire a query per row. Compare an all-rated
+    page against an all-unrated one — an N+1 would show as a higher count.
+    """
+    rated_store = make_store()
+    plain_store = make_store()
+
+    for i in range(5):
+        make_product(store=plain_store)
+        p = make_product(store=rated_store)
+        buyer = make_user("customer", email=f"nplus1-{i}@test.local")
+        order = _delivered_order(make_order, product=p, customer=buyer)
+        _post_review(
+            client, auth, buyer, order, rating=4, product_id=p.id
+        )
+
+    with count_queries() as rated:
+        assert client.get(
+            f"/api/products?store_id={rated_store.id}&limit=50"
+        ).status_code == 200
+    with count_queries() as plain:
+        assert client.get(
+            f"/api/products?store_id={plain_store.id}&limit=50"
+        ).status_code == 200
+    assert rated["n"] == plain["n"]
+
+    # Same for the store directory (rating_avg / rating_count in to_dict()).
+    directory = [make_store() for _ in range(5)]
+    with count_queries() as stores_before:
+        assert client.get("/api/stores?limit=50").status_code == 200
+    directory[0].rating_avg = Decimal("4.50")
+    directory[0].rating_count = 12
+    db.session.commit()
+    with count_queries() as stores_after:
+        assert client.get("/api/stores?limit=50").status_code == 200
+    assert stores_after["n"] == stores_before["n"]
