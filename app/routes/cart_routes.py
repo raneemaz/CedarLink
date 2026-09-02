@@ -5,7 +5,7 @@ from app.extensions import db
 from app.models.cart import Cart
 from app.models.cart_item import CartItem
 from app.models.product import Product
-from app.services import order_service
+from app.services import order_service, store_service
 from app.services.order_service import OrderError
 
 
@@ -32,8 +32,12 @@ def get_cart():
         store_id = item.product.store_id
 
         if store_id not in stores:
+            store_obj = item.product.store
+            open_now, _ = store_service.is_open_now(store_obj)
             stores[store_id] = {
                 "store_id": store_id,
+                "store_name": store_obj.name,
+                "is_open_now": open_now,
                 "items": [],
                 "store_subtotal": 0
             }

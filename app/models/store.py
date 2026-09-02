@@ -110,6 +110,14 @@ class Store(db.Model):
         order_by="StoreHours.day_of_week, StoreHours.opens_at",
     )
 
+    # No cascade, for the same reason as hours above: the store is
+    # soft-deleted, never row-deleted, so these rows persist with it.
+    announcements = db.relationship(
+        "StoreAnnouncement",
+        back_populates="store",
+        order_by="StoreAnnouncement.created_at.desc()",
+    )
+
     @hybrid_property
     def is_visible(self):
         """Shown on the storefront: approved by an admin, active, not removed.
