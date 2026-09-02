@@ -340,6 +340,7 @@ def set_store_override(store_id):
             store,
             data.get("status"),
             data.get("reason"),
+            data.get("duration"),
             data.get("until"),
         )
     except StoreHoursError as exc:

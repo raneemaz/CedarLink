@@ -30,6 +30,14 @@ CLOSED_OUTSIDE_HOURS = "outside_hours"
 
 OVERRIDE_STATUSES = ("open", "closed")
 
+# Accepted values for the override `duration` field. Everything but "custom"
+# is a named preset resolved server-side against Beirut local time — the
+# browser's zone is not necessarily Lebanon's (ADR 0013).
+OVERRIDE_DURATIONS = ("1h", "3h", "end_of_day", "tomorrow_morning", "custom")
+
+# Local wall-clock time the "tomorrow_morning" preset resolves to.
+TOMORROW_MORNING_HOUR = 8
+
 
 class StoreHoursError(ValueError):
     """Invalid working-hours / override input — the route returns it as 400."""
@@ -228,16 +236,54 @@ def _coerce_until(value):
     return parsed.astimezone(timezone.utc)
 
 
-def set_override(store, status, reason, until):
+def _resolve_override_until(duration, until):
+    """The override end instant as aware UTC.
+
+    Named durations are resolved here, not in the browser, so "end of day"
+    and "tomorrow morning" always mean Beirut wall-clock regardless of the
+    caller's timezone (ADR 0013). ``custom`` — and an omitted duration, for
+    backward compatibility — carries an explicit ISO instant in ``until``.
+    """
+    if duration in (None, "custom"):
+        return _coerce_until(until)
+
+    if duration == "1h":
+        return _now_utc() + timedelta(hours=1)
+    if duration == "3h":
+        return _now_utc() + timedelta(hours=3)
+
+    now_local = _now_local()
+    if duration == "end_of_day":
+        end = now_local.replace(
+            hour=23, minute=59, second=0, microsecond=0
+        )
+        return end.astimezone(timezone.utc)
+    if duration == "tomorrow_morning":
+        morning = (now_local + timedelta(days=1)).replace(
+            hour=TOMORROW_MORNING_HOUR,
+            minute=0,
+            second=0,
+            microsecond=0,
+        )
+        return morning.astimezone(timezone.utc)
+
+    raise StoreHoursError(
+        "duration must be one of " + ", ".join(OVERRIDE_DURATIONS)
+    )
+
+
+def set_override(store, status, reason, duration=None, until=None):
     """Apply a manual override. Caller commits.
 
-    Rejects a status other than open/closed, a missing/past ``until``, and an
-    ``until`` more than :data:`OVERRIDE_MAX_DAYS` days ahead.
+    ``duration`` is one of :data:`OVERRIDE_DURATIONS`; ``until`` carries the
+    explicit ISO instant when ``duration`` is ``"custom"`` (or omitted).
+    Rejects a status other than open/closed, a resolved end that is in the
+    past, and one more than :data:`OVERRIDE_MAX_DAYS` days ahead.
     """
     if status not in OVERRIDE_STATUSES:
         raise StoreHoursError("status must be 'open' or 'closed'")
 
-    until_utc = _coerce_until(until)
+    until_utc = _resolve_override_until(duration, until)
     now = _now_utc()
 
     if until_utc <= now:

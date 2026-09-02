@@ -9,32 +9,10 @@ import { Section, fieldClass } from "./VendorStore";
 
 const REASON_KEYS = ["holiday", "maintenance", "powerOutage", "emergency"];
 
-const DURATION_PRESETS = ["oneHour", "threeHours", "endOfDay", "tomorrowMorning"];
-
-// Each preset resolved to an absolute instant, as an explicit-UTC ISO string
-// (toISOString) so the server never has to guess a zone.
-function presetUntil(preset) {
-  const now = new Date();
-  switch (preset) {
-    case "oneHour":
-      return new Date(now.getTime() + 60 * 60 * 1000).toISOString();
-    case "threeHours":
-      return new Date(now.getTime() + 3 * 60 * 60 * 1000).toISOString();
-    case "endOfDay": {
-      const end = new Date(now);
-      end.setHours(23, 59, 0, 0);
-      return end.toISOString();
-    }
-    case "tomorrowMorning": {
-      const morning = new Date(now);
-      morning.setDate(morning.getDate() + 1);
-      morning.setHours(8, 0, 0, 0);
-      return morning.toISOString();
-    }
-    default:
-      return null;
-  }
-}
+// Wire values for PATCH /stores/{id}/override. Named durations are resolved
+// server-side against Beirut time (ADR 0013) — the browser only sends the
+// name. "custom" is the one case that carries an explicit instant.
+const DURATIONS = ["1h", "3h", "end_of_day", "tomorrow_morning", "custom"];
 
 function StoreOverridePanel({ store, onStoreChange }) {
   const { t, i18n } = useTranslation();
@@ -52,7 +30,7 @@ function StoreOverridePanel({ store, onStoreChange }) {
 
   const [status, setStatus] = useState("closed");
   const [reason, setReason] = useState("");
-  const [duration, setDuration] = useState("threeHours");
+  const [duration, setDuration] = useState("3h");
   const [customUntil, setCustomUntil] = useState("");
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -70,7 +48,8 @@ function StoreOverridePanel({ store, onStoreChange }) {
     event.preventDefault();
     setError(null);
 
-    let until;
+    const payload = { status, reason: reason.trim(), duration };
+
     if (duration === "custom") {
       if (!customUntil) {
         setError(t("storeOverride.errUntilRequired"));
@@ -81,18 +60,15 @@ function StoreOverridePanel({ store, onStoreChange }) {
         setError(t("storeOverride.errUntilFuture"));
         return;
       }
-      until = parsed.toISOString();
-    } else {
-      until = presetUntil(duration);
+      payload.until = parsed.toISOString();
     }
 
     setSubmitting(true);
     try {
-      const response = await api.patch(`/stores/${store.id}/override`, {
-        status,
-        reason: reason.trim(),
-        until,
-      });
+      const response = await api.patch(
+        `/stores/${store.id}/override`,
+        payload,
+      );
       onStoreChange(response.data.store);
       toast.success(t("storeOverride.toastApplied"));
       setReason("");
@@ -226,7 +202,7 @@ function StoreOverridePanel({ store, onStoreChange }) {
               {t("storeOverride.durationLabel")}
             </legend>
             <div className="flex flex-wrap gap-2">
-              {[...DURATION_PRESETS, "custom"].map((option) => (
+              {DURATIONS.map((option) => (
                 <label
                   key={option}
                   className={`cursor-pointer rounded-lg border px-3 py-2 text-sm font-medium ${

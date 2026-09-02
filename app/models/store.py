@@ -141,9 +141,7 @@ class Store(db.Model):
             "location": self.location,
             "contact_info": self.contact_info,
             "is_active": self.is_active,
-            "deleted_at": (
-                self.deleted_at.isoformat() if self.deleted_at else None
-            ),
+            "deleted_at": _utc_isoformat(self.deleted_at),
             "approval_status": self.approval_status,
             "approval_note": self.approval_note,
             "inside_city_delivery_fee": float(self.inside_city_delivery_fee

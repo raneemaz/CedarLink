@@ -902,10 +902,10 @@
     },
     "durationLabel": "ينتهي",
     "durations": {
-      "oneHour": "بعد ساعة",
-      "threeHours": "بعد 3 ساعات",
-      "endOfDay": "نهاية اليوم",
-      "tomorrowMorning": "صباح الغد",
+      "1h": "بعد ساعة",
+      "3h": "بعد 3 ساعات",
+      "end_of_day": "نهاية اليوم",
+      "tomorrow_morning": "صباح الغد",
       "custom": "وقت مخصص"
     },
     "apply": "تطبيق التجاوز",
