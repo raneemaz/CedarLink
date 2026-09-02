@@ -32,6 +32,18 @@ def _translation_fields(product):
     return fields
 
 
+def _rating_fields(entity):
+    """``rating_avg`` (float or None) + ``rating_count`` for a product/store."""
+    return {
+        "rating_avg": (
+            float(entity.rating_avg)
+            if entity.rating_avg is not None
+            else None
+        ),
+        "rating_count": entity.rating_count or 0,
+    }
+
+
 def _read_translations(data, *, require_name):
     """Pull translation columns out of a request body.
 
@@ -240,6 +252,7 @@ def get_products():
             "category_id": product.category_id,
             "image": product_image_url(first_image),
             **_translation_fields(product),
+            **_rating_fields(product),
         })
 
     return jsonify({
@@ -285,6 +298,7 @@ def get_product(id):
         "images": images,
         "image": images[0]["url"] if images else None,
         **_translation_fields(product),
+        **_rating_fields(product),
     }), 200
 
 

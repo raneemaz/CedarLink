@@ -105,6 +105,10 @@ class User(db.Model):
         "Order", back_populates="user", cascade="all, delete-orphan"
     )
 
+    reviews = db.relationship(
+        "Review", back_populates="user", cascade="all, delete-orphan"
+    )
+
     addresses = db.relationship(
         "Address", back_populates="user", cascade="all, delete-orphan"
     )

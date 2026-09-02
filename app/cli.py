@@ -394,6 +394,26 @@ _CUSTOMER_SPECS = (
 )
 
 # customer index, store name, status, ((product name, qty), ...), days ago
+# (customer_index, ("product"|"store", name), rating, title, body). Every
+# spec here must correspond to one of the delivered orders below.
+_REVIEW_SPECS = (
+    (0, ("product", "Lebanese Extra Virgin Olive Oil 1L"), 5,
+     "The real thing",
+     "Peppery and green — exactly how good Koura oil should taste."),
+    (0, ("product", "Zaatar Blend 200g"), 4,
+     "Good blend",
+     "Generous on the sumac. A touch more sesame would be perfect."),
+    (0, ("store", "Hamra Grocery"), 5,
+     "My default grocery run",
+     "Order in the morning, delivered by lunch, never a wrong item."),
+    (2, ("product", "Cotton Keffiyeh Scarf"), 5,
+     "Soft and well woven",
+     "Bought three, gave two away — everyone asked where they were from."),
+    (2, ("store", "Tripoli Threads"), 4,
+     "Careful packing",
+     "Each piece wrapped separately. A day slower, worth the wait."),
+)
+
 _ORDER_SPECS = (
     (0, "Hamra Grocery", "delivered",
      (("Lebanese Extra Virgin Olive Oil 1L", 1), ("Zaatar Blend 200g", 2)),
@@ -548,6 +568,42 @@ def _seed_order(customer, store, status, line_items, days_ago):
                 quantity=quantity,
                 unit_price=product.price,
             )
+        )
+
+
+def _seed_reviews(customers, products, stores_by_name):
+    """One review per _REVIEW_SPECS, through review_service so the product
+    and store rating_avg / rating_count get recomputed like real writes."""
+    from app.services import review_service
+
+    for customer_index, (kind, name), rating, title, body in _REVIEW_SPECS:
+        customer = customers[customer_index]
+
+        if kind == "product":
+            target_entity = products[name]
+            store = target_entity.store
+            target = {"product_id": target_entity.id}
+        else:
+            store = stores_by_name[name]
+            target = {"store_id": store.id}
+
+        order = Order.query.filter_by(
+            user_id=customer.id, store_id=store.id, status="delivered"
+        ).first()
+        if order is None:
+            continue
+
+        already = review_service.Review.query.filter_by(
+            user_id=customer.id,
+            order_id=order.id,
+            product_id=target.get("product_id"),
+            store_id=target.get("store_id"),
+        ).first()
+        if already is not None:
+            continue
+
+        review_service.create_review(
+            customer, order.id, target, rating, title, body
         )
 
 
@@ -735,6 +791,9 @@ def seed():
             days_ago,
         )
 
+    db.session.commit()
+
+    _seed_reviews(customers, products, stores_by_name)
     db.session.commit()
 
     click.echo("")
