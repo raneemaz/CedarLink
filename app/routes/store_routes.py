@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import get_jwt_identity
+from sqlalchemy.orm import selectinload
 from app.extensions import db
 from app.models.store import Store
 from app.services import store_service
@@ -87,7 +88,12 @@ def get_stores():
     Query params: keyword (name match), location (exact, case-insensitive),
     page, limit, sort=name|newest. Response shape mirrors GET /api/products.
     """
-    query = Store.query.filter(Store.is_visible)
+    # selectinload the week's schedule: _store_with_status() calls
+    # is_open_now() for every row, which walks store.hours. Without this the
+    # directory fires one extra SELECT per store (CL-18).
+    query = Store.query.options(selectinload(Store.hours)).filter(
+        Store.is_visible
+    )
 
     keyword = request.args.get("keyword", "").strip()
     if keyword:
