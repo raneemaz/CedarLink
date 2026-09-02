@@ -39,6 +39,13 @@ class Product(db.Model):
     price = db.Column(db.Numeric(10, 2), nullable=False)
     stock = db.Column(db.Integer, default=0)
 
+    # Denormalized rating aggregates. Recomputed from the published reviews
+    # in one aggregate query by review_service — never incremented. See
+    # docs/decisions/0015-review-rating-aggregates.md.
+    rating_avg = db.Column(db.Numeric(3, 2), nullable=True)
+    rating_count = db.Column(db.Integer, nullable=False, default=0,
+                             server_default="0")
+
     store_id = db.Column(db.Integer, db.ForeignKey("stores.id"),
                          nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey("categories.id"),
@@ -63,6 +70,13 @@ class Product(db.Model):
     order_items = db.relationship(
         "OrderItem",
         back_populates="product"
+    )
+
+    # No cascade, for the same reason as order_items: a review outlives a
+    # soft-deleted product. See docs/decisions/0015-review-rating-aggregates.md.
+    reviews = db.relationship(
+        "Review",
+        back_populates="product",
     )
 
     images = db.relationship(

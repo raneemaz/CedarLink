@@ -82,6 +82,13 @@ class Store(db.Model):
     override_reason = db.Column(db.String(255), nullable=True)
     override_until = db.Column(db.DateTime, nullable=True)
 
+    # Denormalized rating aggregates, recomputed from the published reviews
+    # by review_service — never incremented. See
+    # docs/decisions/0015-review-rating-aggregates.md.
+    rating_avg = db.Column(db.Numeric(3, 2), nullable=True)
+    rating_count = db.Column(db.Integer, nullable=False, default=0,
+                             server_default="0")
+
     owner = db.relationship(
         "User",
         back_populates="stores"
@@ -116,6 +123,13 @@ class Store(db.Model):
         "StoreAnnouncement",
         back_populates="store",
         order_by="StoreAnnouncement.created_at.desc()",
+    )
+
+    # No cascade: a store review outlives the store's soft-delete, like
+    # order history. See docs/decisions/0015-review-rating-aggregates.md.
+    reviews = db.relationship(
+        "Review",
+        back_populates="store",
     )
 
     @hybrid_property
@@ -160,4 +174,8 @@ class Store(db.Model):
             "override_status": self.override_status,
             "override_reason": self.override_reason,
             "override_until": _utc_isoformat(self.override_until),
+            "rating_avg": (
+                float(self.rating_avg) if self.rating_avg is not None else None
+            ),
+            "rating_count": self.rating_count or 0,
         }

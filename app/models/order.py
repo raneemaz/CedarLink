@@ -1,5 +1,11 @@
-from datetime import datetime
+from datetime import datetime, timezone
+
 from app.extensions import db
+
+
+def _utc_now():
+    """Timezone-aware UTC now — never ``datetime.utcnow`` (CLAUDE.md)."""
+    return datetime.now(timezone.utc)
 
 
 class Order(db.Model):
@@ -41,14 +47,14 @@ class Order(db.Model):
 
     created_at = db.Column(
         db.DateTime,
-        default=datetime.utcnow,
+        default=_utc_now,
         nullable=False
     )
 
     updated_at = db.Column(
         db.DateTime,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow,
+        default=_utc_now,
+        onupdate=_utc_now,
         nullable=False
     )
 
@@ -72,4 +78,12 @@ class Order(db.Model):
         "Payment",
         back_populates="order",
         cascade="all, delete-orphan"
+    )
+
+    # No cascade: a review is verified-purchase evidence and must survive
+    # anything short of the order itself being row-deleted (which does not
+    # happen — orders are terminal, never deleted).
+    reviews = db.relationship(
+        "Review",
+        back_populates="order",
     )
