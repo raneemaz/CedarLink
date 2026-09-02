@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import api from "../../services/api";
 import { lebanonLocations } from "../../data/lebanonLocations";
 import StoreStatusBadge from "../../components/store/StoreStatusBadge";
+import RatingSummary from "../../components/reviews/RatingSummary";
 
 const PAGE_SIZE = 12;
 
@@ -156,6 +157,13 @@ function Stores() {
                   <p className="mt-1 text-sm text-gray-500">
                     {store.location || t("storesPage.locationNotSet")}
                   </p>
+
+                  <RatingSummary
+                    average={store.rating_avg}
+                    count={store.rating_count}
+                    compact
+                    className="mt-1"
+                  />
 
                   {store.description && (
                     <p className="mt-2 line-clamp-2 text-sm text-gray-500">
