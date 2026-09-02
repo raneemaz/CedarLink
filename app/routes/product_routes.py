@@ -225,6 +225,15 @@ def get_products():
         query = query.order_by(Product.price.desc())
     elif sort == "newest":
         query = query.order_by(Product.created_at.desc())
+    elif sort == "rating":
+        # Highest rated first; unrated products (rating_avg NULL) sort last
+        # via coalesce. rating_count breaks ties so a 5.0-with-many beats a
+        # 5.0-with-one. rating_avg / rating_count are columns — no join.
+        query = query.order_by(
+            db.func.coalesce(Product.rating_avg, 0).desc(),
+            Product.rating_count.desc(),
+            Product.id.desc(),
+        )
     else:
         query = query.order_by(Product.id.desc())
 

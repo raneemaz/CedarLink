@@ -318,16 +318,22 @@ def reviewable_for_order(user, order_id):
             "You can only review your own orders", 403, code="not_your_order"
         )
 
-    reviewed_products = {
-        r.product_id
-        for r in order.reviews
-        if r.user_id == user.id and r.product_id is not None
+    mine = [r for r in order.reviews if r.user_id == user.id]
+    product_review = {
+        r.product_id: r for r in mine if r.product_id is not None
     }
-    store_reviewed = any(
-        r.user_id == user.id and r.store_id is not None for r in order.reviews
-    )
+    store_review = next((r for r in mine if r.store_id is not None), None)
 
     can_review = order.status == "delivered"
+
+    def _names(product):
+        # Every translation, so the client picks the display language (C.5).
+        return {
+            "name": product.name_en if product else None,
+            "name_en": product.name_en if product else None,
+            "name_ar": product.name_ar if product else None,
+            "name_fr": product.name_fr if product else None,
+        }
 
     seen = set()
     products = []
@@ -335,11 +341,12 @@ def reviewable_for_order(user, order_id):
         if item.product_id in seen:
             continue
         seen.add(item.product_id)
-        product = item.product
+        existing = product_review.get(item.product_id)
         products.append({
             "id": item.product_id,
-            "name": product.name_en if product else None,
-            "already_reviewed": item.product_id in reviewed_products,
+            **_names(item.product),
+            "already_reviewed": existing is not None,
+            "review": existing.to_dict() if existing else None,
         })
 
     return {
@@ -349,7 +356,8 @@ def reviewable_for_order(user, order_id):
         "store": {
             "id": order.store_id,
             "name": order.store.name if order.store else None,
-            "already_reviewed": store_reviewed,
+            "already_reviewed": store_review is not None,
+            "review": store_review.to_dict() if store_review else None,
         },
         "products": products,
     }
