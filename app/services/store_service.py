@@ -318,6 +318,13 @@ def clear_override(store):
     store.override_until = None
 
 
+def owner_store_dict(store):
+    """Store payload for the owner (and admin): the public allowlist plus
+    ``approval_note``, the admin's rejection/approval note, which the
+    vendor is meant to read but the storefront must not. See CLAUDE.md."""
+    return {**store.to_dict(), "approval_note": store.approval_note}
+
+
 # --------------------------------------------------------------------------- #
 # Location & distance search — see docs/decisions/0018.
 # --------------------------------------------------------------------------- #

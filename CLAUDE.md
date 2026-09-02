@@ -44,6 +44,7 @@ npm run lint
 - `datetime.now(timezone.utc)` — never `datetime.utcnow()`. Local time for Lebanon is `datetime.now(ZoneInfo("Asia/Beirut"))` (DST-aware) — never a fixed offset. `tzdata` is a dependency so this works on Windows too.
 - "Is this store open now?" is answered only by `store_service.is_open_now`. Store hours are naive local wall-clock; `override_until` is naive UTC. See docs/decisions/0013-store-hours-timezone.md.
 - One error shape across every blueprint. **Never return `str(exception)` to a client** — log it with a correlation id and return the id.
+- A public serializer is an allowlist, not a dump. A model's `to_dict()` must contain only fields safe for the least-privileged caller that sees it; admin-only or owner-only fields (moderation notes, approval notes, internal flags) are added back by the admin/owner route, never by the base `to_dict()`. `{**thing.to_dict(), ...}` on a public endpoint is the smell.
 - Never store card numbers or anything derived from them, hashes included. Provider token + last four only.
 - Pricing logic exists in exactly one place. `/orders/preview` and `/orders` must call the same function — if they diverge, a customer gets quoted one price and charged another.
 

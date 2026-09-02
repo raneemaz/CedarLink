@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify
 from flask_jwt_extended import get_jwt_identity
 
 from app.models.store import Store
+from app.services import store_service
 from app.utils.decorators import role_required
 
 vendor_bp = Blueprint("vendor", __name__, url_prefix="/api/vendor")
@@ -18,4 +19,5 @@ def get_my_store():
     if store is None:
         return jsonify({"message": "You do not have a store yet"}), 404
 
-    return jsonify({"store": store.to_dict()}), 200
+    # Owner view: includes approval_note (the storefront one does not).
+    return jsonify({"store": store_service.owner_store_dict(store)}), 200
