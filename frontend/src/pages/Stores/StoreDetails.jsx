@@ -9,6 +9,7 @@ import ProductCard from "../../components/product/ProductCard";
 import StoreStatusBadge from "../../components/store/StoreStatusBadge";
 import RatingSummary from "../../components/reviews/RatingSummary";
 import ReviewList from "../../components/reviews/ReviewList";
+import MapView from "../../components/map/MapView";
 import { formatDateTime } from "../../utils/helpers";
 import { overrideIsActive, beirutWeekday } from "../../utils/storeStatus";
 
@@ -199,6 +200,19 @@ function StoreDetails() {
               {t("storeDetails.contact")}: {store.contact_info}
             </p>
           )}
+
+          {store.is_online_only ? (
+            <p className="mt-4 text-sm text-gray-600">
+              {t("storeDetails.onlineOnly")}
+            </p>
+          ) : store.latitude != null && store.longitude != null ? (
+            <div className="mt-4">
+              <MapView
+                latitude={store.latitude}
+                longitude={store.longitude}
+              />
+            </div>
+          ) : null}
         </div>
 
         {announcements.length > 0 && (

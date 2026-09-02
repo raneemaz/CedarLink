@@ -592,7 +592,33 @@
     "closedToday": "Closed today",
     "overrideClosed": "Temporarily closed until {{until}}.",
     "overrideClosedReason": "Closed — {{reason}}, until {{until}}.",
-    "overrideOpen": "Open now (manually), until {{until}}."
+    "overrideOpen": "Open now (manually), until {{until}}.",
+    "onlineOnly": "This is an online-only store — no shopfront to visit. It delivers across Lebanon."
+  },
+  "locationPicker": {
+    "useMyLocation": "Use my current location",
+    "locating": "Locating...",
+    "clear": "Clear",
+    "coords": "Pin: {{lat}}, {{lng}}",
+    "noPin": "No pin yet — drag the marker or use your location.",
+    "dragInstead": "Drag the pin to set the location.",
+    "geoDenied": "Location permission was denied.",
+    "geoUnavailable": "Your location could not be determined.",
+    "geoTimeout": "The location request timed out.",
+    "geoUnsupported": "This browser does not support geolocation."
+  },
+  "storeLocation": {
+    "title": "Location",
+    "description": "Where your shop is. Customers use it for “stores near me”.",
+    "save": "Save location",
+    "saved": "Location saved.",
+    "errSave": "Couldn't save the location.",
+    "onlineToggle": "Online only — no shopfront",
+    "onlineToggleDesc": "Turn on if there is no physical shop customers can visit.",
+    "onlineExplainer": "Your store will not appear in nearby searches. It stays listed everywhere else and delivers across Lebanon.",
+    "toastOnline": "Marked online only. The map location was cleared.",
+    "toastPhysical": "Shopfront restored — add a map location below.",
+    "errFlag": "Couldn't update that setting."
   },
   "backLink": {
     "cart": "Back to Cart",
