@@ -890,10 +890,10 @@
     },
     "durationLabel": "Fin",
     "durations": {
-      "oneHour": "Dans 1 heure",
-      "threeHours": "Dans 3 heures",
-      "endOfDay": "Fin de journée",
-      "tomorrowMorning": "Demain matin",
+      "1h": "Dans 1 heure",
+      "3h": "Dans 3 heures",
+      "end_of_day": "Fin de journée",
+      "tomorrow_morning": "Demain matin",
       "custom": "Heure personnalisée"
     },
     "apply": "Appliquer le forçage",

@@ -890,10 +890,10 @@
     },
     "durationLabel": "Ends",
     "durations": {
-      "oneHour": "In 1 hour",
-      "threeHours": "In 3 hours",
-      "endOfDay": "End of day",
-      "tomorrowMorning": "Tomorrow morning",
+      "1h": "In 1 hour",
+      "3h": "In 3 hours",
+      "end_of_day": "End of day",
+      "tomorrow_morning": "Tomorrow morning",
       "custom": "Custom time"
     },
     "apply": "Apply override",

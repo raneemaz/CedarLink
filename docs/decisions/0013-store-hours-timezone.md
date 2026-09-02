@@ -105,8 +105,32 @@ An override wins while `override_until` is in the future. Once it passes it
 is **ignored on read and never written** — `is_open_now` just falls through
 to the schedule. A background sweep to null out stale overrides can come
 later; it is not needed for correctness. `PATCH /override` rejects a missing
-or past `until` and an `until` more than 7 days out, so an override cannot
-silently strand a store closed for a month.
+or past end and one more than 7 days out, so an override cannot silently
+strand a store closed for a month.
+
+### Duration presets are resolved server-side
+
+`PATCH /override` takes a `duration` — `1h`, `3h`, `end_of_day`,
+`tomorrow_morning`, or `custom`. The first four are **resolved in
+`store_service`, against `datetime.now(ZoneInfo("Asia/Beirut"))`**, not in
+the browser. `custom` is the only value that carries an explicit instant
+(an ISO 8601 `until`, which the client is free to compute).
+
+The first cut computed all of them in the frontend with `Date.setHours()`,
+which uses the browser's timezone. A vendor travelling, or one whose device
+clock is set to another zone, would get an "end of day" that is not
+Lebanon's end of day — the exact class of bug this ADR exists to prevent.
+"End of day" and "tomorrow morning" are wall-clock concepts on the shop's
+wall, so they belong wherever the rest of the wall-clock logic lives: the
+server, reading the IANA zone. `1h` / `3h` are true offsets and
+zone-independent, but they travel by name too, so the client never sends a
+computed instant except for `custom`.
+
+`end_of_day` is 23:59 on the current Beirut date; `tomorrow_morning` is
+08:00 on the next Beirut date. Both are converted to UTC for storage like
+any other `override_until`. The DST transition-hour caveat above applies
+here as well and is equally harmless — neither 08:00 nor 23:59 is near a
+Lebanese changeover.
 
 ## Migration
 

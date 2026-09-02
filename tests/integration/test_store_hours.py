@@ -438,6 +438,119 @@ def test_non_owner_cannot_set_override(client, auth, make_store, make_user):
 
 
 # --------------------------------------------------------------------------- #
+# API — override duration presets (resolved server-side, ADR 0013)
+# --------------------------------------------------------------------------- #
+
+def _freeze_now(monkeypatch, at):
+    """Pin both time seams to one instant (given as any aware datetime)."""
+    monkeypatch.setattr(
+        store_service, "_now_local", lambda: at.astimezone(BEIRUT)
+    )
+    monkeypatch.setattr(
+        store_service, "_now_utc", lambda: at.astimezone(timezone.utc)
+    )
+
+
+def _set_override(client, auth, store, body):
+    return client.patch(
+        f"/api/stores/{store.id}/override",
+        json={"status": "closed", **body},
+        headers=auth(store.owner),
+    )
+
+
+def test_named_duration_end_of_day_is_2359_on_the_beirut_date(
+    client, auth, make_store, monkeypatch
+):
+    """The client sends only the name; the server resolves it in Beirut.
+
+    Here "now" is 04:00 on 2026-01-06 Beirut — for a caller whose own clock
+    still reads the 5th in a western zone, "end of day" must be the 6th's
+    23:59 in Beirut, not the caller's date and not the caller's midnight.
+    """
+    store = make_store(open_always=False)
+    _freeze_now(monkeypatch, datetime(2026, 1, 6, 4, 0, tzinfo=BEIRUT))
+
+    resp = _set_override(client, auth, store, {"duration": "end_of_day"})
+
+    assert resp.status_code == 200
+    # 23:59 Beirut on 2026-01-06 (EET, +2) == 21:59 UTC.
+    assert resp.get_json()["store"]["override_until"] == (
+        "2026-01-06T21:59:00+00:00"
+    )
+
+
+def test_named_duration_end_of_day_honours_summer_dst(
+    client, auth, make_store, monkeypatch
+):
+    store = make_store(open_always=False)
+    _freeze_now(monkeypatch, datetime(2026, 7, 1, 12, 0, tzinfo=BEIRUT))
+
+    resp = _set_override(client, auth, store, {"duration": "end_of_day"})
+
+    assert resp.status_code == 200
+    # 23:59 Beirut on 2026-07-01 (EEST, +3) == 20:59 UTC — an hour earlier
+    # than the winter case, which a fixed offset would get wrong.
+    assert resp.get_json()["store"]["override_until"] == (
+        "2026-07-01T20:59:00+00:00"
+    )
+
+
+def test_named_duration_tomorrow_morning_is_0800_beirut_next_day(
+    client, auth, make_store, monkeypatch
+):
+    store = make_store(open_always=False)
+    _freeze_now(monkeypatch, datetime(2026, 1, 5, 22, 30, tzinfo=BEIRUT))
+
+    resp = _set_override(client, auth, store, {"duration": "tomorrow_morning"})
+
+    assert resp.status_code == 200
+    # 08:00 Beirut on 2026-01-06 (EET, +2) == 06:00 UTC.
+    assert resp.get_json()["store"]["override_until"] == (
+        "2026-01-06T06:00:00+00:00"
+    )
+
+
+def test_named_duration_relative_offsets(
+    client, auth, make_store, monkeypatch
+):
+    store = make_store(open_always=False)
+    _freeze_now(monkeypatch, datetime(2026, 1, 5, 10, 0, tzinfo=timezone.utc))
+
+    one = _set_override(client, auth, store, {"duration": "1h"})
+    assert one.status_code == 200
+    assert one.get_json()["store"]["override_until"] == (
+        "2026-01-05T11:00:00+00:00"
+    )
+
+    three = _set_override(client, auth, store, {"duration": "3h"})
+    assert three.status_code == 200
+    assert three.get_json()["store"]["override_until"] == (
+        "2026-01-05T13:00:00+00:00"
+    )
+
+
+def test_custom_duration_still_takes_an_explicit_instant(
+    client, auth, make_store
+):
+    store = make_store(open_always=False)
+
+    ok = _set_override(
+        client, auth, store, {"duration": "custom", "until": _future(5)}
+    )
+    assert ok.status_code == 200
+
+    missing = _set_override(client, auth, store, {"duration": "custom"})
+    assert missing.status_code == 400
+
+
+def test_unknown_duration_is_rejected(client, auth, make_store):
+    store = make_store(open_always=False)
+    resp = _set_override(client, auth, store, {"duration": "next_week"})
+    assert resp.status_code == 400
+
+
+# --------------------------------------------------------------------------- #
 # API — payload flags
 # --------------------------------------------------------------------------- #
 
