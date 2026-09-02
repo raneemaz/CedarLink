@@ -125,7 +125,9 @@ class Review(db.Model):
             "title": self.title,
             "body": self.body,
             "status": self.status,
-            "moderation_note": self.moderation_note,
+            # moderation_note is an admin-internal reason — it is NOT in this
+            # base payload (which feeds the public list and the customer's
+            # own reviewable payload). admin_list_reviews adds it explicitly.
             "author_name": (
                 self.user.first_name if self.user else None
             ),

@@ -316,6 +316,48 @@ def test_store_rating_avg_updates_on_review(
 # Author-only edit / delete
 # --------------------------------------------------------------------------- #
 
+def test_review_survives_the_soft_delete_of_its_product(
+    client, auth, make_order, make_product
+):
+    """Review has no cascade from Product — asserted, not assumed
+    (docs/decisions/0015). A soft-deleted product must keep its reviews."""
+    product = make_product()
+    order = _delivered_order(make_order, product=product)
+    rid = _post_review(
+        client, auth, order.user, order, rating=4, product_id=product.id
+    ).get_json()["review"]["id"]
+
+    resp = client.delete(
+        f"/api/products/{product.id}", headers=auth(product.store.owner)
+    )
+    assert resp.status_code == 200
+
+    db.session.expire_all()
+    review = db.session.get(Review, rid)
+    assert review is not None and review.product_id == product.id
+    assert db.session.get(Product, product.id).deleted_at is not None
+
+
+def test_review_survives_the_soft_delete_of_its_store(
+    client, auth, make_order, make_product, make_user
+):
+    store_admin = make_user("admin", email="softdel-admin@test.local")
+    order = _delivered_order(make_order)
+    rid = _post_review(
+        client, auth, order.user, order, rating=5, store_id=order.store_id
+    ).get_json()["review"]["id"]
+
+    resp = client.delete(
+        f"/api/admin/stores/{order.store_id}", headers=auth(store_admin)
+    )
+    assert resp.status_code == 200
+
+    db.session.expire_all()
+    review = db.session.get(Review, rid)
+    assert review is not None and review.store_id == order.store_id
+    assert db.session.get(Store, order.store_id).deleted_at is not None
+
+
 def test_non_author_cannot_edit_or_delete(
     client, auth, make_order, make_product, make_user
 ):

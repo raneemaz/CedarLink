@@ -67,6 +67,27 @@ author, and each report's reason and reporter. It `selectinload`s reports,
 author, product and store so the page is a fixed number of queries
 regardless of size.
 
+## What the review author sees after a removal
+
+`GET /api/orders/{id}/reviewable` reports, per target, the customer's own
+review. When a moderator removes that review, the endpoint keeps
+`already_reviewed: true` and includes `status: "removed"` — it does **not**
+drop the review and re-offer a blank form.
+
+Excluding removed reviews so the customer could "write a new one" does not
+actually work: the `(user_id, order_id, target)` unique constraint still
+holds the slot, so `POST /reviews` would `409`. Making it work would mean
+letting a fresh review overwrite a removed one — a moderation-evasion path
+(post abuse → get removed → repost). Surfacing `status` lets the UI tell
+the author their review is no longer public without lying about whether it
+exists. (`moderation_note`, the admin's internal reason, is **not** in this
+payload — it is admin-only, added by `admin_list_reviews` alone, and was
+removed from the base `Review.to_dict()` so it can never leak onto the
+public list either.)
+
+The front-end change to render "removed by a moderator" instead of the
+normal review card is a small follow-up on top of this payload.
+
 ## Deferred — vendor reply
 
 A vendor reply (one per review, shown beneath it, editable by the store

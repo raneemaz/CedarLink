@@ -327,6 +327,60 @@ def test_admin_queue_shows_target_author_and_reporter_reason(
     assert entry["reports"][0]["reporter"]["name"] == "Nadia Q"
 
 
+def test_reviewable_surfaces_removed_status_and_keeps_the_slot(
+    client, auth, make_order, make_product, make_user
+):
+    product = make_product()
+    order = _delivered_order(make_order, product=product)
+    rid = _review(client, auth, order, product, rating=2)["id"]
+
+    admin_u = make_user("admin", email="rev-rm-admin@test.local")
+    client.patch(
+        f"/api/admin/reviews/{rid}",
+        json={"action": "remove", "reason": "off-topic rant"},
+        headers=auth(admin_u),
+    )
+
+    body = client.get(
+        f"/api/orders/{order.id}/reviewable", headers=auth(order.user)
+    ).get_json()
+    entry = body["products"][0]
+    assert entry["already_reviewed"] is True
+    assert entry["review"]["status"] == "removed"
+    # the admin's internal note is never in a customer-facing payload
+    assert "moderation_note" not in entry["review"]
+
+    # and the customer cannot slip a fresh review past the removal
+    dup = client.post(
+        "/api/reviews",
+        json={"order_id": order.id, "product_id": product.id, "rating": 5},
+        headers=auth(order.user),
+    )
+    assert dup.status_code == 409
+    assert dup.get_json()["code"] == "already_reviewed"
+
+
+def test_moderation_note_is_not_on_the_public_list(
+    client, auth, make_order, make_product, make_user
+):
+    product = make_product()
+    order = _delivered_order(make_order, product=product)
+    rid = _review(client, auth, order, product)["id"]
+
+    admin_u = make_user("admin", email="note-leak-admin@test.local")
+    # flag with a note, then the review is still publicly visible
+    client.patch(
+        f"/api/admin/reviews/{rid}",
+        json={"action": "flag", "reason": "internal: watching this reviewer"},
+        headers=auth(admin_u),
+    )
+    listed = client.get(
+        f"/api/products/{product.id}/reviews"
+    ).get_json()["reviews"]
+    assert len(listed) == 1
+    assert "moderation_note" not in listed[0]
+
+
 def test_admin_queue_status_filter(
     client, auth, make_order, make_product, make_user
 ):
