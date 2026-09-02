@@ -509,6 +509,7 @@
     "product": "Produit",
     "storeRow": "{{store}} — le magasin",
     "write": "Rédiger un avis",
+    "removed": "Cet avis a été retiré par un modérateur et n'est plus affiché.",
     "edit": "Modifier",
     "delete": "Supprimer",
     "confirmDelete": "Supprimer cet avis ?",
