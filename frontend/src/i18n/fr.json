@@ -252,7 +252,8 @@
     "overview": "Vue d’ensemble",
     "users": "Utilisateurs",
     "stores": "Magasins",
-    "categories": "Catégories"
+    "categories": "Catégories",
+    "reviews": "Avis"
   },
   "vendorLayout": {
     "console": "Console vendeur",
@@ -516,6 +517,62 @@
     "deleted": "Avis supprimé.",
     "submitError": "Impossible d'enregistrer votre avis.",
     "deleteError": "Impossible de supprimer l'avis."
+  },
+  "reviewStatus": {
+    "published": "Publié",
+    "flagged": "Signalé",
+    "removed": "Retiré"
+  },
+  "reviewReport": {
+    "action": "Signaler",
+    "reported": "Signalé",
+    "title": "Signaler cet avis",
+    "prompt": "Un administrateur l'examinera. Quel est le problème ?",
+    "reasonLabel": "Motif",
+    "confirm": "Envoyer le signalement",
+    "sent": "Merci — un administrateur va l'examiner.",
+    "already": "Vous avez déjà signalé cet avis.",
+    "error": "Impossible d'envoyer le signalement."
+  },
+  "adminReviews": {
+    "title": "Avis",
+    "loading": "Chargement des avis...",
+    "empty": "Rien à modérer ici.",
+    "errLoad": "Impossible de charger la file de modération.",
+    "errAction": "L'action a échoué.",
+    "onProduct": "sur le produit",
+    "onStore": "sur le magasin",
+    "byAuthor": "Par {{name}} · {{email}}",
+    "reportsHeading_one": "{{count}} signalement",
+    "reportsHeading_other": "{{count}} signalements",
+    "lastNote": "Dernière note de modération : {{note}}",
+    "noteLabel": "Motif (enregistré)",
+    "filter": {
+      "queue": "File",
+      "flagged": "Signalés",
+      "removed": "Retirés",
+      "all": "Tous"
+    },
+    "action": {
+      "flag": "Signaler",
+      "remove": "Retirer",
+      "restore": "Restaurer"
+    },
+    "confirmTitle": {
+      "flag": "Signaler cet avis ?",
+      "remove": "Retirer cet avis ?",
+      "restore": "Restaurer cet avis ?"
+    },
+    "confirmBody": {
+      "flag": "Il reste visible et continue de compter, mais passe dans la file.",
+      "remove": "Il sera masqué pour tous et ne comptera plus dans la note. Il n'est pas supprimé.",
+      "restore": "Il redevient visible et compte dans la note."
+    },
+    "done": {
+      "flag": "Avis signalé.",
+      "remove": "Avis retiré.",
+      "restore": "Avis restauré."
+    }
   },
   "storeDetails": {
     "loading": "Chargement du magasin…",

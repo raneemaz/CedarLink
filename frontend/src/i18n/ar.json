@@ -252,7 +252,8 @@
     "overview": "نظرة عامة",
     "users": "المستخدمون",
     "stores": "المتاجر",
-    "categories": "الفئات"
+    "categories": "الفئات",
+    "reviews": "التقييمات"
   },
   "vendorLayout": {
     "console": "لوحة البائع",
@@ -536,6 +537,66 @@
     "deleted": "تم حذف التقييم.",
     "submitError": "تعذّر حفظ تقييمك.",
     "deleteError": "تعذّر حذف التقييم."
+  },
+  "reviewStatus": {
+    "published": "منشور",
+    "flagged": "مُبلَّغ عنه",
+    "removed": "مُزال"
+  },
+  "reviewReport": {
+    "action": "إبلاغ",
+    "reported": "تم الإبلاغ",
+    "title": "الإبلاغ عن هذا التقييم",
+    "prompt": "سيطّلع عليه أحد المشرفين. ما المشكلة فيه؟",
+    "reasonLabel": "السبب",
+    "confirm": "إرسال البلاغ",
+    "sent": "شكرًا — سيراجعه أحد المشرفين.",
+    "already": "لقد أبلغت عن هذا التقييم من قبل.",
+    "error": "تعذّر إرسال البلاغ."
+  },
+  "adminReviews": {
+    "title": "التقييمات",
+    "loading": "جارٍ تحميل التقييمات…",
+    "empty": "لا شيء للمراجعة هنا.",
+    "errLoad": "تعذّر تحميل قائمة المراجعة.",
+    "errAction": "فشل الإجراء.",
+    "onProduct": "على المنتج",
+    "onStore": "على المتجر",
+    "byAuthor": "بواسطة {{name}} · {{email}}",
+    "reportsHeading_zero": "لا بلاغات",
+    "reportsHeading_one": "بلاغ واحد",
+    "reportsHeading_two": "بلاغان",
+    "reportsHeading_few": "{{count}} بلاغات",
+    "reportsHeading_many": "{{count}} بلاغًا",
+    "reportsHeading_other": "{{count}} بلاغ",
+    "lastNote": "آخر ملاحظة إشراف: {{note}}",
+    "noteLabel": "السبب (يُسجَّل)",
+    "filter": {
+      "queue": "قائمة المراجعة",
+      "flagged": "المُبلَّغ عنها",
+      "removed": "المُزالة",
+      "all": "الكل"
+    },
+    "action": {
+      "flag": "الإبلاغ",
+      "remove": "إزالة",
+      "restore": "استعادة"
+    },
+    "confirmTitle": {
+      "flag": "الإبلاغ عن هذا التقييم؟",
+      "remove": "إزالة هذا التقييم؟",
+      "restore": "استعادة هذا التقييم؟"
+    },
+    "confirmBody": {
+      "flag": "يبقى ظاهرًا ويظل محتسبًا، لكنه ينتقل إلى قائمة المراجعة.",
+      "remove": "سيُخفى عن الجميع ويتوقف عن الاحتساب في التقييم. لا يُحذف.",
+      "restore": "يعود ظاهرًا ويُحتسب في التقييم."
+    },
+    "done": {
+      "flag": "تم الإبلاغ عن التقييم.",
+      "remove": "تمت إزالة التقييم.",
+      "restore": "تمت استعادة التقييم."
+    }
   },
   "storeDetails": {
     "loading": "جارٍ تحميل المتجر…",
