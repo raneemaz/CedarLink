@@ -511,6 +511,7 @@
     "write": "Write a review",
     "edit": "Edit",
     "delete": "Delete",
+    "removed": "This review was removed by a moderator and is no longer shown.",
     "confirmDelete": "Delete this review?",
     "submitted": "Review submitted.",
     "updated": "Review updated.",

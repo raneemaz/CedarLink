@@ -176,6 +176,10 @@ function RateYourOrder({ orderId }) {
                     }
                   />
                 </div>
+              ) : row.review?.status === "removed" ? (
+                <p className="mt-2 text-sm text-slate-500">
+                  {t("rateOrder.removed")}
+                </p>
               ) : row.review ? (
                 <div className="mt-2">
                   <div className="flex flex-wrap items-center gap-2">
