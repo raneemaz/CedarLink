@@ -17,6 +17,12 @@ def _utc_isoformat(value):
 
 class Store(db.Model):
     __tablename__ = "stores"
+    __table_args__ = (
+        # Distance search does a BETWEEN on both columns as its first pass;
+        # the composite index makes that a range scan. See
+        # docs/decisions/0018-location-and-distance-search.md.
+        db.Index("ix_stores_lat_lng", "latitude", "longitude"),
+    )
 
     id = db.Column(db.Integer, primary_key=True)
 
@@ -88,6 +94,18 @@ class Store(db.Model):
     rating_avg = db.Column(db.Numeric(3, 2), nullable=True)
     rating_count = db.Column(db.Integer, nullable=False, default=0,
                              server_default="0")
+
+    # Map pin. Nullable — existing stores have none and a store without a
+    # pin must keep working everywhere; it is simply absent from distance
+    # results. Set together or not at all (store_service.set_location).
+    latitude = db.Column(db.Numeric(9, 6), nullable=True)
+    longitude = db.Column(db.Numeric(9, 6), nullable=True)
+
+    # An online-only store has no shopfront: it never carries coordinates
+    # and never appears in a distance search (store_service.set_online_only).
+    is_online_only = db.Column(
+        db.Boolean, nullable=False, default=False, server_default=db.false()
+    )
 
     owner = db.relationship(
         "User",
@@ -178,4 +196,11 @@ class Store(db.Model):
                 float(self.rating_avg) if self.rating_avg is not None else None
             ),
             "rating_count": self.rating_count or 0,
+            "latitude": (
+                float(self.latitude) if self.latitude is not None else None
+            ),
+            "longitude": (
+                float(self.longitude) if self.longitude is not None else None
+            ),
+            "is_online_only": bool(self.is_online_only),
         }

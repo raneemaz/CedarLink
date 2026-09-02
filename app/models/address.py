@@ -53,6 +53,12 @@ class Address(db.Model):
         default=False
     )
 
+    # Optional map pin for the delivery address — same types and validation
+    # as Store. Nullable: addresses saved before this feature have none and
+    # must keep working. See docs/decisions/0018-location-and-distance-search.md.
+    latitude = db.Column(db.Numeric(9, 6), nullable=True)
+    longitude = db.Column(db.Numeric(9, 6), nullable=True)
+
     created_at = db.Column(
         db.DateTime,
         default=datetime.utcnow,

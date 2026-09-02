@@ -216,6 +216,9 @@ def make_store(make_user):
             delivery_available=kw.get("delivery_available", True),
             approval_status=approval_status,
             is_active=is_active,
+            latitude=kw.get("latitude"),
+            longitude=kw.get("longitude"),
+            is_online_only=kw.get("is_online_only", False),
         )
         _db.session.add(store)
         _db.session.flush()

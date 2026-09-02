@@ -151,6 +151,10 @@ _STORE_SPECS = (
         "phone": "+961 3 100 001",
         "store": "Hamra Grocery",
         "city": "Beirut",
+        # Real Beirut neighbourhoods so the demo distance search returns a
+        # meaningful spread rather than four identical results.
+        "lat": 33.896800,   # Hamra
+        "lng": 35.479700,
         "description": "Pantry staples and Lebanese specialties in the "
         "heart of Hamra.",
         "inside_fee": 2.00,
@@ -214,6 +218,8 @@ _STORE_SPECS = (
         "phone": "+961 3 100 002",
         "store": "Tripoli Threads",
         "city": "Tripoli",
+        "lat": 33.888700,   # Achrafieh
+        "lng": 35.519700,
         "description": "Hand-finished clothing and textiles from the old "
         "souks of Tripoli.",
         "inside_fee": 1.50,
@@ -268,6 +274,8 @@ _STORE_SPECS = (
         "phone": "+961 3 100 003",
         "store": "Saida Electronics",
         "city": "Saida",
+        "lat": 33.879000,   # Verdun
+        "lng": 35.483800,
         "description": "Everyday electronics and accessories, tested "
         "before they ship.",
         "inside_fee": 3.00,
@@ -329,6 +337,8 @@ _STORE_SPECS = (
         "phone": "+961 3 100 004",
         "store": "Jounieh Beauty Bar",
         "city": "Jounieh",
+        "lat": 33.896100,   # Gemmayzeh
+        "lng": 35.514200,
         "description": "Small-batch skincare and bath goods. (Store "
         "currently deactivated.)",
         "inside_fee": 2.50,
@@ -363,6 +373,42 @@ _STORE_SPECS = (
                4.00, 45, "Beauty"),
         ),
     },
+    {
+        # Online-only: no shopfront, no coordinates, never in a distance
+        # search. See docs/decisions/0018-location-and-distance-search.md.
+        "vendor_email": "vendor.online@cedarlink.demo",
+        "vendor_name": ("Karim", "Aoun"),
+        "phone": "+961 3 100 005",
+        "store": "Cedar Loom",
+        "city": "Beirut",
+        "online_only": True,
+        "description": "Handwoven throws and cushion covers, made to "
+        "order and shipped nationwide. No physical shop.",
+        "inside_fee": 0.00,
+        "outside_fee": 3.50,
+        "active": True,
+        "announcement": {
+            "title": "Made to order — allow 10 days",
+            "body": "Every piece is woven after you order. We ship "
+            "anywhere in Lebanon.",
+        },
+        "products": (
+            _p("Handwoven Wool Throw",
+               "بطانية صوف منسوجة يدوياً",
+               "Plaid en laine tissé à la main",
+               "Undyed highland wool, fringed edges.",
+               "صوف جبلي غير مصبوغ، أطراف مهدّبة.",
+               "Laine de montagne non teinte, bords à franges.",
+               38.00, 8, "Clothes"),
+            _p("Linen Cushion Cover 45cm",
+               "غطاء وسادة كتان ٤٥ سم",
+               "Housse de coussin en lin 45 cm",
+               "Stonewashed linen, hidden zip.",
+               "كتان مغسول بالحجر، سحّاب مخفي.",
+               "Lin délavé, fermeture éclair cachée.",
+               12.00, 20, "Clothes"),
+        ),
+    },
 )
 
 _CUSTOMER_SPECS = (
@@ -371,7 +417,8 @@ _CUSTOMER_SPECS = (
         "name": ("Rania", "Haddad"),
         "phone": "+961 3 200 001",
         "addresses": (
-            ("Home", "Rue Gouraud, Gemmayzeh, Building 12", "Beirut", True),
+            ("Home", "Rue Gouraud, Gemmayzeh, Building 12", "Beirut", True,
+             33.896300, 35.513800),
             ("Work", "Charles Helou Ave, Office 4B", "Beirut", False),
         ),
     },
@@ -680,10 +727,22 @@ def seed():
                 "inside_city_delivery_fee": spec["inside_fee"],
                 "outside_city_delivery_fee": spec["outside_fee"],
                 "delivery_available": True,
+                "is_online_only": spec.get("online_only", False),
+                "latitude": spec.get("lat"),
+                "longitude": spec.get("lng"),
             },
             owner_id=vendor.id,
             name=spec["store"],
         )
+
+        # Backfill coordinates / online-only onto a store that predates C.2.
+        store.is_online_only = spec.get("online_only", False)
+        if store.is_online_only:
+            store.latitude = store.longitude = None
+        elif store.latitude is None and spec.get("lat") is not None:
+            store.latitude = spec["lat"]
+            store.longitude = spec["lng"]
+
         db.session.flush()
 
         # A plain weekday schedule so the demo storefront shows real
@@ -758,7 +817,9 @@ def seed():
         customers.append(customer)
 
         if not customer.addresses:
-            for label, line, city, is_default in spec["addresses"]:
+            for entry in spec["addresses"]:
+                label, line, city, is_default = entry[:4]
+                lat, lng = (entry[4], entry[5]) if len(entry) > 4 else (None, None)
                 db.session.add(
                     Address(
                         user_id=customer.id,
@@ -770,6 +831,8 @@ def seed():
                         address_line=line,
                         city=city,
                         is_default=is_default,
+                        latitude=lat,
+                        longitude=lng,
                     )
                 )
 

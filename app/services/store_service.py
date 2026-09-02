@@ -11,11 +11,20 @@ naive local wall-clock; ``Store.override_until`` is naive UTC like every
 other timestamp. See docs/decisions/0013-store-hours-timezone.md.
 """
 
+import math
 from datetime import datetime, timedelta, timezone
+from decimal import Decimal
 from zoneinfo import ZoneInfo
 
 from app.extensions import db
+from app.models.store import Store
 from app.models.store_hours import StoreHours
+from app.utils.geo import (
+    CoordinateError,
+    KM_PER_DEG_LAT,
+    haversine_km,
+    validate_coords,
+)
 
 BEIRUT = ZoneInfo("Asia/Beirut")
 
@@ -307,3 +316,94 @@ def clear_override(store):
     store.override_status = None
     store.override_reason = None
     store.override_until = None
+
+
+# --------------------------------------------------------------------------- #
+# Location & distance search — see docs/decisions/0018.
+# --------------------------------------------------------------------------- #
+
+# The box is only a coarse pre-filter (Haversine does the real cut), so pad
+# it a little to guarantee it never clips a store that is genuinely inside
+# the radius because of float error at the edge.
+_BOX_PAD_KM = 0.2
+
+# A radius larger than this is almost certainly a mistake, not a query.
+MAX_RADIUS_KM = 100.0
+
+
+def _coord_decimal(value):
+    return Decimal(str(value)).quantize(Decimal("0.000001"))
+
+
+def set_location(store, latitude, longitude):
+    """Set (or clear) a store's map pin. Caller commits.
+
+    Both coordinates together or neither. ``None`` / ``None`` clears the
+    pin. An online-only store cannot have one — see :func:`set_online_only`.
+    """
+    lat, lng = validate_coords(latitude, longitude)
+
+    if lat is None:
+        store.latitude = None
+        store.longitude = None
+        return
+
+    if store.is_online_only:
+        raise CoordinateError("an online-only store has no map location")
+
+    store.latitude = _coord_decimal(lat)
+    store.longitude = _coord_decimal(lng)
+
+
+def set_online_only(store, flag):
+    """Toggle the online-only flag. Turning it on clears the map pin —
+    an online seller has no shopfront to stand a customer in front of."""
+    store.is_online_only = bool(flag)
+    if store.is_online_only:
+        store.latitude = None
+        store.longitude = None
+
+
+def nearby(lat, lng, radius_km, query=None):
+    """Stores within ``radius_km`` of ``(lat, lng)``, nearest first.
+
+    Two stages:
+
+    1. A SQL bounding box — ``latitude BETWEEN … AND longitude BETWEEN …``
+       — so the ``(latitude, longitude)`` index does the heavy filtering.
+       The east–west half-width is scaled by ``cos(latitude)``: one degree
+       of longitude is ``111.045 km × cos(lat)``, not 111.045. Using the
+       flat value makes the box too narrow east–west and silently drops
+       results.
+    2. Haversine in Python on the survivors, dropping anything past the
+       true (circular) radius, sorted ascending by real distance.
+
+    Stores with a NULL pin — including every online-only store — are
+    excluded, never treated as if they sat at ``(0, 0)``. Returns
+    ``[(store, distance_km_rounded_to_1dp), …]``.
+    """
+    if query is None:
+        query = Store.query
+
+    lat_delta = (radius_km + _BOX_PAD_KM) / KM_PER_DEG_LAT
+    cos_lat = max(math.cos(math.radians(lat)), 1e-6)
+    lng_delta = (radius_km + _BOX_PAD_KM) / (KM_PER_DEG_LAT * cos_lat)
+
+    in_box = query.filter(
+        Store.is_online_only.is_(False),
+        Store.latitude.isnot(None),
+        Store.longitude.isnot(None),
+        Store.latitude.between(lat - lat_delta, lat + lat_delta),
+        Store.longitude.between(lng - lng_delta, lng + lng_delta),
+    ).all()
+
+    within = []
+    for store in in_box:
+        distance = haversine_km(
+            lat, lng, float(store.latitude), float(store.longitude)
+        )
+        if distance <= radius_km:
+            within.append((store, distance))
+
+    within.sort(key=lambda pair: pair[1])
+    return [(store, round(distance, 1)) for store, distance in within]

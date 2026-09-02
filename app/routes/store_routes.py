@@ -8,6 +8,7 @@ from app.services import announcement_service, notification_service, store_servi
 from app.services.announcement_service import AnnouncementError
 from app.services.store_service import StoreHoursError
 from app.utils.decorators import role_required
+from app.utils.geo import CoordinateError, validate_coords
 
 store_bp = Blueprint("store", __name__, url_prefix="/api/stores")
 
@@ -88,7 +89,12 @@ def get_stores():
     """Public store directory — approved, active, non-removed stores only.
 
     Query params: keyword (name match), location (exact, case-insensitive),
-    page, limit, sort=name|newest. Response shape mirrors GET /api/products.
+    page, limit, sort=name|newest. Add ``near=lat,lng`` (with optional
+    ``radius`` in km, default 5) for a distance search: results are then
+    ordered nearest-first and each carries ``distance_km``. Without
+    ``near`` the behaviour is exactly as before. The customer's
+    coordinates are used for this one request and never logged.
+    Response shape mirrors GET /api/products.
     """
     # selectinload the week's schedule: _store_with_status() calls
     # is_open_now() for every row, which walks store.hours. Without this the
@@ -107,11 +113,6 @@ def get_stores():
             db.func.lower(Store.location) == location.lower()
         )
 
-    if request.args.get("sort") == "newest":
-        query = query.order_by(Store.id.desc())
-    else:
-        query = query.order_by(Store.name.asc())
-
     try:
         page = int(request.args.get("page", 1))
         per_page = int(request.args.get("limit", 10))
@@ -125,6 +126,15 @@ def get_stores():
             "message": "page and limit must be greater than 0"
         }), 400
 
+    near = request.args.get("near", "").strip()
+    if near:
+        return _get_stores_near(query, near, page, per_page)
+
+    if request.args.get("sort") == "newest":
+        query = query.order_by(Store.id.desc())
+    else:
+        query = query.order_by(Store.name.asc())
+
     pagination = query.paginate(
         page=page,
         per_page=per_page,
@@ -136,6 +146,51 @@ def get_stores():
         "page": pagination.page,
         "pages": max(pagination.pages, 1),
         "total": pagination.total
+    }), 200
+
+
+def _get_stores_near(query, near, page, per_page):
+    """Distance-search branch of the directory. ``query`` already carries
+    the visibility / keyword / location filters."""
+    parts = near.split(",")
+    if len(parts) != 2:
+        return jsonify({"message": "near must be 'latitude,longitude'"}), 400
+
+    try:
+        center = validate_coords(parts[0].strip(), parts[1].strip())
+    except CoordinateError as exc:
+        return jsonify({"message": str(exc)}), 400
+
+    if center[0] is None:
+        return jsonify({"message": "near must be 'latitude,longitude'"}), 400
+
+    try:
+        radius_km = float(request.args.get("radius", 5))
+    except (TypeError, ValueError):
+        return jsonify({"message": "radius must be a number"}), 400
+
+    if not 0 < radius_km <= store_service.MAX_RADIUS_KM:
+        return jsonify({
+            "message": (
+                "radius must be between 0 and "
+                f"{store_service.MAX_RADIUS_KM:g} km"
+            )
+        }), 400
+
+    ranked = store_service.nearby(*center, radius_km, query=query)
+
+    total = len(ranked)
+    start = (page - 1) * per_page
+    window = ranked[start:start + per_page]
+
+    return jsonify({
+        "stores": [
+            {**_store_with_status(store), "distance_km": distance}
+            for store, distance in window
+        ],
+        "page": page,
+        "pages": max((total + per_page - 1) // per_page, 1),
+        "total": total,
     }), 200
 
 
@@ -233,6 +288,15 @@ def update_store(store_id):
 
         store.delivery_available = data["delivery_available"]
 
+    if "is_online_only" in data:
+        if not isinstance(data["is_online_only"], bool):
+            return jsonify({
+                "message": "is_online_only must be true or false"
+            }), 400
+
+        # Turning it on clears the map pin (store_service).
+        store_service.set_online_only(store, data["is_online_only"])
+
     db.session.commit()
 
     return jsonify({
@@ -282,6 +346,34 @@ def toggle_store_status(store_id):
     return jsonify({
         "message": "Store status updated successfully",
         "store": store.to_dict()
+    }), 200
+
+
+# --------------------------------------------------------------------------- #
+# Location (map pin)
+# --------------------------------------------------------------------------- #
+
+@store_bp.route("/<int:store_id>/location", methods=["PUT"])
+@role_required("vendor")
+def set_store_location(store_id):
+    store, error = _load_owned_store(store_id)
+    if error:
+        return error
+
+    data = request.get_json() or {}
+
+    try:
+        store_service.set_location(
+            store, data.get("latitude"), data.get("longitude")
+        )
+    except CoordinateError as exc:
+        return jsonify({"message": str(exc)}), 400
+
+    db.session.commit()
+
+    return jsonify({
+        "message": "Location updated",
+        "store": store.to_dict(),
     }), 200
 
 
