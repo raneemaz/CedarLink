@@ -484,7 +484,12 @@
     "outsideCityFee": "Frais hors de la ville",
     "contact": "Contact",
     "productsHeading": "Produits ({{count}})",
-    "noProducts": "Ce magasin n'a pas encore de produits."
+    "noProducts": "Ce magasin n'a pas encore de produits.",
+    "todaysHours": "Horaires du jour",
+    "closedToday": "Fermé aujourd'hui",
+    "overrideClosed": "Fermé temporairement jusqu'à {{until}}.",
+    "overrideClosedReason": "Fermé — {{reason}}, jusqu'à {{until}}.",
+    "overrideOpen": "Ouvert (manuellement), jusqu'à {{until}}."
   },
   "backLink": {
     "cart": "Retour au panier",
@@ -514,6 +519,7 @@
     "browseProducts": "Parcourir les produits",
     "subtitle": "Vérifiez les produits sélectionnés avant de passer au paiement.",
     "storeHeading": "Magasin nº {{id}}",
+    "storeClosedWarning": "Ce magasin est fermé pour le moment — vous ne pourrez pas valider cette commande avant sa réouverture.",
     "priceEach": "{{price}} l'unité",
     "removeItem": "Retirer l'article",
     "storeSubtotal": "Sous-total du magasin",
@@ -526,6 +532,7 @@
   "checkout": {
     "loading": "Chargement du paiement…",
     "errLoadCart": "Impossible de charger votre panier.",
+    "storeClosedError": "« {{store}} » est fermé pour le moment. Cette commande ne peut pas être passée avant sa réouverture.",
     "emptyTitle": "Votre panier est vide",
     "emptyBody": "Ajoutez des produits avant de passer au paiement.",
     "browseProducts": "Parcourir les produits",
@@ -903,6 +910,44 @@
     "errResume": "Impossible de reprendre les horaires normaux.",
     "toastApplied": "Forçage appliqué.",
     "toastResumed": "Retour aux horaires hebdomadaires."
+  },
+  "storeOpenBadge": {
+    "open": "Ouvert",
+    "closed": "Fermé"
+  },
+  "storeAnnouncements": {
+    "title": "Annonces",
+    "description": "De courtes notes affichées sur la page de votre magasin — horaires de fêtes, nouveaux stocks, retard de livraison.",
+    "loading": "Chargement des annonces...",
+    "empty": "Aucune annonce pour l'instant.",
+    "activeCount": "{{count}} sur 5 actives",
+    "new": "Nouvelle annonce",
+    "newHeading": "Nouvelle annonce",
+    "editHeading": "Modifier l'annonce",
+    "fieldTitle": "Titre",
+    "fieldBody": "Message",
+    "fieldStart": "Début (facultatif)",
+    "fieldEnd": "Fin (facultatif)",
+    "fieldActive": "Active",
+    "save": "Enregistrer l'annonce",
+    "cancel": "Annuler",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "activate": "Activer",
+    "deactivate": "Désactiver",
+    "confirmDelete": "Supprimer cette annonce ?",
+    "errLoad": "Impossible de charger les annonces.",
+    "errTitleBody": "Un titre et un message sont tous deux requis.",
+    "errSave": "Impossible d'enregistrer l'annonce.",
+    "toastCreated": "Annonce publiée.",
+    "toastUpdated": "Annonce mise à jour.",
+    "toastDeleted": "Annonce supprimée.",
+    "status": {
+      "live": "En ligne",
+      "scheduled": "Programmée",
+      "ended": "Terminée",
+      "inactive": "Inactive"
+    }
   },
   "vendorProducts": {
     "loading": "Chargement de vos produits…",

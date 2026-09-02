@@ -169,9 +169,16 @@ function Cart() {
                 {/* Store Header */}
                 <div className="border-b border-slate-200 px-6 py-4">
                   <h2 className="text-lg font-semibold text-gray-900">
-                    {t("cart.storeHeading", { id: store.store_id })}
+                    {store.store_name ||
+                      t("cart.storeHeading", { id: store.store_id })}
                   </h2>
                 </div>
+
+                {store.is_open_now === false && (
+                  <div className="border-b border-amber-200 bg-amber-50 px-6 py-3 text-sm text-amber-800">
+                    {t("cart.storeClosedWarning")}
+                  </div>
+                )}
 
                 {/* Store Items */}
                 <div className="divide-y divide-slate-200">

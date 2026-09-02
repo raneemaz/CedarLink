@@ -496,7 +496,12 @@
     "outsideCityFee": "رسوم خارج المدينة",
     "contact": "التواصل",
     "productsHeading": "المنتجات ({{count}})",
-    "noProducts": "لا توجد منتجات في هذا المتجر بعد."
+    "noProducts": "لا توجد منتجات في هذا المتجر بعد.",
+    "todaysHours": "ساعات اليوم",
+    "closedToday": "مغلق اليوم",
+    "overrideClosed": "مغلق مؤقتًا حتى {{until}}.",
+    "overrideClosedReason": "مغلق — {{reason}}، حتى {{until}}.",
+    "overrideOpen": "مفتوح الآن (يدويًا)، حتى {{until}}."
   },
   "backLink": {
     "cart": "العودة إلى السلة",
@@ -526,6 +531,7 @@
     "browseProducts": "تصفّح المنتجات",
     "subtitle": "راجع المنتجات المختارة قبل إتمام الشراء.",
     "storeHeading": "المتجر رقم {{id}}",
+    "storeClosedWarning": "هذا المتجر مغلق الآن — لا يمكنك إتمام شراء هذا الطلب حتى يعيد الفتح.",
     "priceEach": "{{price}} للقطعة",
     "removeItem": "إزالة العنصر",
     "storeSubtotal": "المجموع الفرعي للمتجر",
@@ -538,6 +544,7 @@
   "checkout": {
     "loading": "جارٍ تحميل صفحة الدفع…",
     "errLoadCart": "تعذّر تحميل سلتك.",
+    "storeClosedError": "«{{store}}» مغلق الآن. لا يمكن تقديم هذا الطلب حتى يعيد الفتح.",
     "emptyTitle": "سلتك فارغة",
     "emptyBody": "أضف بعض المنتجات قبل المتابعة إلى الدفع.",
     "browseProducts": "تصفّح المنتجات",
@@ -915,6 +922,44 @@
     "errResume": "تعذّر استئناف ساعات العمل المعتادة.",
     "toastApplied": "تم تطبيق التجاوز.",
     "toastResumed": "العودة إلى الجدول الأسبوعي."
+  },
+  "storeOpenBadge": {
+    "open": "مفتوح الآن",
+    "closed": "مغلق"
+  },
+  "storeAnnouncements": {
+    "title": "الإعلانات",
+    "description": "إشعارات قصيرة تظهر على صفحة متجرك — ساعات العطلات، بضاعة جديدة، تأخير في التوصيل.",
+    "loading": "جارٍ تحميل الإعلانات…",
+    "empty": "لا توجد إعلانات بعد.",
+    "activeCount": "{{count}} من 5 نشطة",
+    "new": "إعلان جديد",
+    "newHeading": "إعلان جديد",
+    "editHeading": "تعديل الإعلان",
+    "fieldTitle": "العنوان",
+    "fieldBody": "الرسالة",
+    "fieldStart": "يبدأ (اختياري)",
+    "fieldEnd": "ينتهي (اختياري)",
+    "fieldActive": "نشط",
+    "save": "حفظ الإعلان",
+    "cancel": "إلغاء",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "activate": "تفعيل",
+    "deactivate": "إيقاف",
+    "confirmDelete": "حذف هذا الإعلان؟",
+    "errLoad": "تعذّر تحميل الإعلانات.",
+    "errTitleBody": "العنوان والرسالة كلاهما مطلوب.",
+    "errSave": "تعذّر حفظ الإعلان.",
+    "toastCreated": "تم نشر الإعلان.",
+    "toastUpdated": "تم تحديث الإعلان.",
+    "toastDeleted": "تم حذف الإعلان.",
+    "status": {
+      "live": "معروض",
+      "scheduled": "مجدول",
+      "ended": "منتهٍ",
+      "inactive": "غير نشط"
+    }
   },
   "vendorProducts": {
     "loading": "جارٍ تحميل منتجاتك…",

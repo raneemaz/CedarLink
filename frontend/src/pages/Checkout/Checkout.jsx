@@ -178,10 +178,15 @@ function Checkout() {
 
         setPreview(null);
 
+        const data = error.response?.data;
         setPreviewError(
-          error.response?.data?.error ||
-            error.response?.data?.message ||
-            t("checkout.errCalcDelivery"),
+          data?.code === "store_closed"
+            ? t("checkout.storeClosedError", {
+                store: data.store_name || "",
+              }).trim()
+            : data?.error ||
+                data?.message ||
+                t("checkout.errCalcDelivery"),
         );
       } finally {
         setPreviewLoading(false);
@@ -530,10 +535,9 @@ function Checkout() {
                         </div>
 
                         <span className="font-medium text-slate-900">
-                          $
-                          {(Number(item.price) * Number(item.quantity)).toFixed(
-                            2,
-                          )}
+                          {/* Server-computed line total — never multiply in
+                              the client (single source of pricing truth). */}
+                          ${Number(item.subtotal).toFixed(2)}
                         </span>
                       </div>
                     ))}
