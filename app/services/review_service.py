@@ -438,6 +438,7 @@ def _admin_serialize(review):
     author = review.user
     return {
         **review.to_dict(),
+        "moderation_note": review.moderation_note,
         "author": {
             "id": review.user_id,
             "name": (
@@ -492,6 +493,13 @@ def reviewable_for_order(user, order_id):
             "You can only review your own orders", 403, code="not_your_order"
         )
 
+    # Every review the user wrote against this order, INCLUDING removed
+    # ones. A removed review still holds its (user, order, target) slot —
+    # the unique constraint blocks a replacement — so the honest thing is
+    # to keep already_reviewed=True and surface status="removed" so the UI
+    # can say a moderator took it down, rather than pretend it never
+    # existed and offer a "write a review" button that would 409. See
+    # docs/decisions/0017-review-moderation.md.
     mine = [r for r in order.reviews if r.user_id == user.id]
     product_review = {
         r.product_id: r for r in mine if r.product_id is not None
