@@ -9,8 +9,11 @@ Reference day: 2026-01-05 is a Monday, so ``weekday() == 0``. Beirut is on
 EET (UTC+2) in January.
 """
 
+import contextlib
 from datetime import datetime, time, timedelta, timezone
 from zoneinfo import ZoneInfo
+
+from sqlalchemy import event
 
 from app.extensions import db
 from app.models.store_hours import StoreHours
@@ -23,6 +26,21 @@ MON, TUE, WED = 0, 1, 2
 
 def beirut(year, month, day, hour, minute=0):
     return datetime(year, month, day, hour, minute, tzinfo=BEIRUT)
+
+
+@contextlib.contextmanager
+def count_queries():
+    """Count SQL statements issued on db.engine for the duration of the block."""
+    counter = {"n": 0}
+
+    def _on_execute(conn, cursor, statement, parameters, context, executemany):
+        counter["n"] += 1
+
+    event.listen(db.engine, "before_cursor_execute", _on_execute)
+    try:
+        yield counter
+    finally:
+        event.remove(db.engine, "before_cursor_execute", _on_execute)
 
 
 def add_hours(store, *rows):
@@ -442,3 +460,25 @@ def test_store_payload_carries_open_and_override_fields(
     listing = client.get("/api/stores").get_json()["stores"]
     row = next(s for s in listing if s["id"] == store.id)
     assert row["is_open_now"] is True
+
+
+def test_store_directory_does_not_issue_a_query_per_store(client, make_store):
+    """The directory's query count must not grow with the number of stores.
+
+    _store_with_status() calls is_open_now() for every row, which walks
+    store.hours. Without selectinload(Store.hours) that is one extra SELECT
+    per store — a classic N+1 (CL-18).
+    """
+    for _ in range(3):
+        make_store()  # make_store gives each a full 7-row week
+
+    with count_queries() as first:
+        assert client.get("/api/stores?limit=10").status_code == 200
+
+    for _ in range(7):
+        make_store()  # 10 stores now — still a single page
+
+    with count_queries() as second:
+        assert client.get("/api/stores?limit=10").status_code == 200
+
+    assert second["n"] == first["n"]
