@@ -1,8 +1,11 @@
+from decimal import Decimal
+
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from app.extensions import db
 from app.models import Address
+from app.utils.geo import CoordinateError, validate_coords
 
 
 address_bp = Blueprint(
@@ -10,6 +13,46 @@ address_bp = Blueprint(
     __name__,
     url_prefix="/api/addresses"
 )
+
+
+def _serialize(address):
+    return {
+        "id": address.id,
+        "label": address.label,
+        "recipient_name": address.recipient_name,
+        "phone": address.phone,
+        "address_line": address.address_line,
+        "city": address.city,
+        "delivery_instructions": address.delivery_instructions,
+        "is_default": address.is_default,
+        "latitude": (
+            float(address.latitude)
+            if address.latitude is not None
+            else None
+        ),
+        "longitude": (
+            float(address.longitude)
+            if address.longitude is not None
+            else None
+        ),
+    }
+
+
+def _apply_coords(address, data):
+    """Set / clear the address pin if the request mentions coordinates.
+
+    Same rules as Store: both together or neither, valid ranges. Raises
+    ``CoordinateError``.
+    """
+    if "latitude" not in data and "longitude" not in data:
+        return
+    lat, lng = validate_coords(data.get("latitude"), data.get("longitude"))
+    if lat is None:
+        address.latitude = None
+        address.longitude = None
+    else:
+        address.latitude = Decimal(str(lat)).quantize(Decimal("0.000001"))
+        address.longitude = Decimal(str(lng)).quantize(Decimal("0.000001"))
 
 
 @address_bp.route("", methods=["GET"])
@@ -25,19 +68,7 @@ def get_addresses():
     ).all()
 
     return jsonify({
-        "addresses": [
-            {
-                "id": address.id,
-                "label": address.label,
-                "recipient_name": address.recipient_name,
-                "phone": address.phone,
-                "address_line": address.address_line,
-                "city": address.city,
-                "delivery_instructions": address.delivery_instructions,
-                "is_default": address.is_default
-            }
-            for address in addresses
-        ]
+        "addresses": [_serialize(address) for address in addresses]
     }), 200
 
 
@@ -104,21 +135,17 @@ def create_address():
         is_default=bool(is_default)
     )
 
+    try:
+        _apply_coords(new_address, data)
+    except CoordinateError as exc:
+        return jsonify({"message": str(exc)}), 400
+
     db.session.add(new_address)
     db.session.commit()
 
     return jsonify({
         "message": "Address added successfully",
-        "address": {
-            "id": new_address.id,
-            "label": new_address.label,
-            "recipient_name": new_address.recipient_name,
-            "phone": new_address.phone,
-            "address_line": new_address.address_line,
-            "city": new_address.city,
-            "delivery_instructions": new_address.delivery_instructions,
-            "is_default": new_address.is_default
-        }
+        "address": _serialize(new_address),
     }), 201
 
 
@@ -137,18 +164,7 @@ def get_address(address_id):
             "message": "Address not found"
         }), 404
 
-    return jsonify({
-        "address": {
-            "id": address.id,
-            "label": address.label,
-            "recipient_name": address.recipient_name,
-            "phone": address.phone,
-            "address_line": address.address_line,
-            "city": address.city,
-            "delivery_instructions": address.delivery_instructions,
-            "is_default": address.is_default
-        }
-    }), 200
+    return jsonify({"address": _serialize(address)}), 200
 
 
 @address_bp.route("/<int:address_id>", methods=["PUT"])
@@ -211,20 +227,16 @@ def update_address(address_id):
     )
     address.is_default = bool(is_default)
 
+    try:
+        _apply_coords(address, data)
+    except CoordinateError as exc:
+        return jsonify({"message": str(exc)}), 400
+
     db.session.commit()
 
     return jsonify({
         "message": "Address updated successfully",
-        "address": {
-            "id": address.id,
-            "label": address.label,
-            "recipient_name": address.recipient_name,
-            "phone": address.phone,
-            "address_line": address.address_line,
-            "city": address.city,
-            "delivery_instructions": address.delivery_instructions,
-            "is_default": address.is_default
-        }
+        "address": _serialize(address),
     }), 200
 
 
@@ -294,14 +306,5 @@ def set_default_address(address_id):
 
     return jsonify({
         "message": "Default address updated successfully",
-        "address": {
-            "id": address.id,
-            "label": address.label,
-            "recipient_name": address.recipient_name,
-            "phone": address.phone,
-            "address_line": address.address_line,
-            "city": address.city,
-            "delivery_instructions": address.delivery_instructions,
-            "is_default": address.is_default
-        }
+        "address": _serialize(address),
     }), 200
