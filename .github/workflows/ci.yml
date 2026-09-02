@@ -29,6 +29,21 @@ jobs:
           FLASK_CONFIG: development
           DATABASE_URL: sqlite:////tmp/ci_migrations.db
 
+      - name: Models and migrations agree
+        # `flask db check` autogenerates a diff of the SQLAlchemy models
+        # against the database the previous step just built from an empty
+        # file, and exits non-zero if that diff is not empty. A failure here
+        # means a model changed without a matching migration (or a migration
+        # was hand-edited away from the model): run `flask db migrate`,
+        # review the generated revision, and commit it — or fix the model.
+        # `flask db check` writes no files, so nothing to clean up.
+        # See docs/decisions/0016-model-migration-drift-guard.md.
+        run: flask db check
+        env:
+          FLASK_APP: run.py
+          FLASK_CONFIG: development
+          DATABASE_URL: sqlite:////tmp/ci_migrations.db
+
       - name: Tests
         run: pytest -q
 
