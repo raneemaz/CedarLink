@@ -16,6 +16,7 @@ import { localizedName } from "../../utils/localize";
 const SORT_OPTIONS = [
   { value: "", labelKey: "products.sortDefault" },
   { value: "newest", labelKey: "products.sortNewest" },
+  { value: "rating", labelKey: "products.sortRating" },
   { value: "price_asc", labelKey: "products.sortPriceAsc" },
   { value: "price_desc", labelKey: "products.sortPriceDesc" },
 ];

@@ -4,10 +4,13 @@ import { useTranslation } from "react-i18next";
 import api from "../../services/api";
 import BackLink from "../../components/common/BackLink";
 import { localizedField } from "../../utils/localize";
+import { useAuth } from "../../context/AuthContext";
+import RateYourOrder from "../../components/reviews/RateYourOrder";
 
 function OrderDetails() {
   const { t, i18n } = useTranslation();
   const { id } = useParams();
+  const { user } = useAuth();
 
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -17,8 +20,6 @@ function OrderDetails() {
     const fetchOrder = async () => {
       try {
         const response = await api.get(`/orders/${id}`);
-
-        console.log("ORDER DETAILS:", response.data.order);
 
         setOrder(response.data.order);
       } catch (error) {
@@ -170,6 +171,12 @@ const total = Number(order.total_price || 0);
               </div>
             </div>
           </div>
+
+          {user?.role === "customer" && order.status === "delivered" && (
+            <div className="mt-6">
+              <RateYourOrder orderId={order.id} />
+            </div>
+          )}
         </section>
 
         {/* Summary */}

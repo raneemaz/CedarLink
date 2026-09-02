@@ -7,6 +7,8 @@ import BackLink from "../../components/common/BackLink";
 import api from "../../services/api";
 import ProductCard from "../../components/product/ProductCard";
 import StoreStatusBadge from "../../components/store/StoreStatusBadge";
+import RatingSummary from "../../components/reviews/RatingSummary";
+import ReviewList from "../../components/reviews/ReviewList";
 import { formatDateTime } from "../../utils/helpers";
 import { overrideIsActive, beirutWeekday } from "../../utils/storeStatus";
 
@@ -120,6 +122,13 @@ function StoreDetails() {
             {store.location || t("storeDetails.locationNotSet")}
           </p>
 
+          <RatingSummary
+            average={store.rating_avg}
+            count={store.rating_count}
+            className="mt-2"
+          />
+
+
           {overrideOn && store.override_status === "closed" && (
             <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
               {store.override_reason
@@ -222,6 +231,21 @@ function StoreDetails() {
             ))}
           </div>
         )}
+
+        <section className="mt-10 rounded-xl border border-gray-200 bg-white p-6">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-xl font-bold text-gray-900">
+              {t("reviews.storeHeading")}
+            </h2>
+            <RatingSummary
+              average={store.rating_avg}
+              count={store.rating_count}
+            />
+          </div>
+          <div className="mt-5">
+            <ReviewList endpoint={`/stores/${store.id}/reviews`} />
+          </div>
+        </section>
       </div>
     </div>
   );

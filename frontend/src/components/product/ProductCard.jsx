@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Price from "../common/Price";
+import RatingSummary from "../reviews/RatingSummary";
 import { localizedName, localizedDescription } from "../../utils/localize";
 
 function ProductCard({ product }) {
@@ -36,6 +37,13 @@ function ProductCard({ product }) {
         <p className="mt-1 text-sm text-gray-500">
           {product.store_name || t("productCard.localStore")}
         </p>
+
+        <RatingSummary
+          average={product.rating_avg}
+          count={product.rating_count}
+          compact
+          className="mt-1"
+        />
 
         {description && (
           <p className="mt-1 line-clamp-2 text-sm text-gray-500">

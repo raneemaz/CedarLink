@@ -4,6 +4,8 @@ import { useTranslation } from "react-i18next";
 import api from "../../services/api";
 import Price from "../../components/common/Price";
 import BackLink from "../../components/common/BackLink";
+import RatingSummary from "../../components/reviews/RatingSummary";
+import ReviewList from "../../components/reviews/ReviewList";
 import { localizedName, localizedDescription } from "../../utils/localize";
 
 function ProductDetails() {
@@ -179,6 +181,12 @@ function ProductDetails() {
               approxClassName="text-sm"
             />
 
+            <RatingSummary
+              average={product.rating_avg}
+              count={product.rating_count}
+              className="mt-3"
+            />
+
             <div className="mt-6 border-t border-gray-100 pt-6">
               <h2 className="text-sm font-semibold text-gray-900">
                 {t("productDetails.description")}
@@ -270,6 +278,22 @@ function ProductDetails() {
             )}
           </div>
         </div>
+
+        {/* Reviews */}
+        <section className="mt-10 rounded-xl border border-gray-200 bg-white p-6">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-xl font-bold text-gray-900">
+              {t("reviews.heading")}
+            </h2>
+            <RatingSummary
+              average={product.rating_avg}
+              count={product.rating_count}
+            />
+          </div>
+          <div className="mt-5">
+            <ReviewList endpoint={`/products/${product.id}/reviews`} />
+          </div>
+        </section>
       </div>
     </div>
   );
