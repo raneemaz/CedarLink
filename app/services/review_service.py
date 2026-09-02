@@ -22,17 +22,35 @@ from decimal import ROUND_HALF_UP, Decimal
 
 from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import selectinload
 
 from app.extensions import db
 from app.models.order import Order
 from app.models.product import Product
 from app.models.review import Review
+from app.models.review_report import ReviewReport
 from app.models.store import Store
 
 PUBLISHED = "published"
-REVIEW_STATUSES = ("published", "flagged", "removed")
+FLAGGED = "flagged"
+REMOVED = "removed"
+REVIEW_STATUSES = (PUBLISHED, FLAGGED, REMOVED)
+
+# published and flagged both count toward a rating and stay publicly
+# visible; a report only surfaces a review in the admin queue. Removal is
+# the one action that hides it and drops it from the average. ADR 0017.
+COUNTING_STATUSES = (PUBLISHED, FLAGGED)
+
+# action -> (resulting status, statuses it may be applied from)
+MODERATION_ACTIONS = {
+    "flag": (FLAGGED, (PUBLISHED,)),
+    "remove": (REMOVED, (PUBLISHED, FLAGGED)),
+    "restore": (PUBLISHED, (FLAGGED, REMOVED)),
+}
 
 RATING_MIN, RATING_MAX = 1, 5
+
+REASON_MAX = 500
 
 _UNSET = object()
 
@@ -141,7 +159,11 @@ def _assert_verified_purchase(user, order, kind, entity):
 # --------------------------------------------------------------------------- #
 
 def _recalculate_rating(kind, entity):
-    """Recompute (avg, count) from the published rows in one query."""
+    """Recompute (avg, count) from the counting rows in one query.
+
+    Counting = every status except 'removed' (ADR 0017). Never
+    read-modify-write — that is the CL-06 lost-update hazard (ADR 0015).
+    """
     where = (
         Review.product_id == entity.id
         if kind == "product"
@@ -150,7 +172,7 @@ def _recalculate_rating(kind, entity):
 
     avg, count = db.session.execute(
         select(func.avg(Review.rating), func.count(Review.id)).where(
-            where, Review.status == PUBLISHED
+            where, Review.status.in_(COUNTING_STATUSES)
         )
     ).one()
 
@@ -265,23 +287,110 @@ def delete_review(user, review_id):
     _recalculate_rating(kind, entity)
 
 
+def _transition(review, new_status, note=_UNSET):
+    """Move a review to ``new_status`` and refresh its target's rating.
+
+    The single seam every status change goes through, so the recompute can
+    never be forgotten. ``note`` (when given) is stored as the moderation
+    note; pass it only for admin actions.
+    """
+    review.status = new_status
+    if note is not _UNSET:
+        review.moderation_note = note
+    review.updated_at = _now()
+
+    kind, entity = _entity_for_review(review)
+    _recalculate_rating(kind, entity)
+
+
 def set_review_status(review_id, new_status):
-    """Moderation primitive (no route yet). Refreshes the rating."""
+    """Direct status set for tests / seed. The admin path uses
+    :func:`moderate_review`."""
     if new_status not in REVIEW_STATUSES:
         raise ReviewError(
             "status must be one of " + ", ".join(REVIEW_STATUSES),
             code="invalid_status",
         )
+    review = db.session.get(Review, review_id)
+    if review is None:
+        raise ReviewError("Review not found", 404, code="review_not_found")
+    _transition(review, new_status)
+    return review
+
+
+def report_review(user, review_id, reason):
+    """Record one user's report of a review; flag it if still published.
+
+    Any authenticated user, once per review. The first report on a
+    ``published`` review moves it to ``flagged`` so it shows in the admin
+    queue — it stays visible and keeps counting until an admin removes it.
+    """
+    reason = _clean_text(reason, REASON_MAX, "Reason")
+    if not reason:
+        raise ReviewError(
+            "A reason is required to report a review", code="reason_required"
+        )
+
+    review = db.session.get(Review, review_id)
+    if review is None or review.status == REMOVED:
+        raise ReviewError("Review not found", 404, code="review_not_found")
+
+    if ReviewReport.query.filter_by(
+        review_id=review_id, user_id=user.id
+    ).first() is not None:
+        raise ReviewError(
+            "You have already reported this review",
+            409,
+            code="already_reported",
+        )
+
+    report = ReviewReport(
+        review_id=review_id, user_id=user.id, reason=reason
+    )
+    db.session.add(report)
+    try:
+        db.session.flush()
+    except IntegrityError:
+        db.session.rollback()
+        raise ReviewError(
+            "You have already reported this review",
+            409,
+            code="already_reported",
+        )
+
+    if review.status == PUBLISHED:
+        _transition(review, FLAGGED)
+
+    return report
+
+
+def moderate_review(review_id, action, reason):
+    """Admin action: ``flag`` / ``remove`` / ``restore``. Records the reason
+    and refreshes the rating."""
+    if action not in MODERATION_ACTIONS:
+        raise ReviewError(
+            "action must be one of " + ", ".join(MODERATION_ACTIONS),
+            code="invalid_action",
+        )
+    target_status, allowed_from = MODERATION_ACTIONS[action]
 
     review = db.session.get(Review, review_id)
     if review is None:
         raise ReviewError("Review not found", 404, code="review_not_found")
 
-    review.status = new_status
-    review.updated_at = _now()
+    if review.status == target_status:
+        raise ReviewError(
+            f"Review is already {target_status}", code="no_op"
+        )
+    if review.status not in allowed_from:
+        raise ReviewError(
+            f"Cannot {action} a review that is {review.status}",
+            code="invalid_transition",
+        )
 
-    kind, entity = _entity_for_review(review)
-    _recalculate_rating(kind, entity)
+    _transition(review, target_status, note=_clean_text(
+        reason, REASON_MAX, "Reason"
+    ))
     return review
 
 
@@ -293,15 +402,80 @@ def _serialize(review):
     return review.to_dict()
 
 
-def list_published_for(kind, entity_id, page, per_page):
+def list_public_for(kind, entity_id, page, per_page):
+    """Public review list for a product or store: everything except
+    ``removed`` (flagged reviews stay visible — ADR 0017), newest first."""
     column = Review.product_id if kind == "product" else Review.store_id
     pagination = (
-        Review.query.filter(column == entity_id, Review.status == PUBLISHED)
+        Review.query.filter(
+            column == entity_id, Review.status != REMOVED
+        )
         .order_by(Review.created_at.desc(), Review.id.desc())
         .paginate(page=page, per_page=per_page, error_out=False)
     )
     return {
         "reviews": [_serialize(r) for r in pagination.items],
+        "page": pagination.page,
+        "pages": max(pagination.pages, 1),
+        "total": pagination.total,
+    }
+
+
+def _admin_serialize(review):
+    if review.product_id is not None:
+        target = {
+            "type": "product",
+            "id": review.product_id,
+            "name": review.product.name_en if review.product else None,
+        }
+    else:
+        target = {
+            "type": "store",
+            "id": review.store_id,
+            "name": review.store.name if review.store else None,
+        }
+
+    author = review.user
+    return {
+        **review.to_dict(),
+        "author": {
+            "id": review.user_id,
+            "name": (
+                f"{author.first_name} {author.last_name}"
+                if author
+                else None
+            ),
+            "email": author.email if author else None,
+        },
+        "target": target,
+        "report_count": len(review.reports),
+        "reports": [rp.to_dict() for rp in review.reports],
+    }
+
+
+def admin_list_reviews(status_filter, page, per_page):
+    """Moderation queue. ``status_filter``: one of the review statuses,
+    ``all``, or (default) ``queue`` = everything still needing a decision,
+    which is exactly the ``flagged`` set — a report always flags, and
+    remove / restore both clear the flag."""
+    query = Review.query.options(
+        selectinload(Review.reports).selectinload(ReviewReport.user),
+        selectinload(Review.user),
+        selectinload(Review.product),
+        selectinload(Review.store),
+    )
+
+    if status_filter in REVIEW_STATUSES:
+        query = query.filter(Review.status == status_filter)
+    elif status_filter != "all":
+        query = query.filter(Review.status == FLAGGED)
+
+    pagination = query.order_by(
+        Review.updated_at.desc(), Review.id.desc()
+    ).paginate(page=page, per_page=per_page, error_out=False)
+
+    return {
+        "reviews": [_admin_serialize(r) for r in pagination.items],
         "page": pagination.page,
         "pages": max(pagination.pages, 1),
         "total": pagination.total,

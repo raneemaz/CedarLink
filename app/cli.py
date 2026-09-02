@@ -606,6 +606,18 @@ def _seed_reviews(customers, products, stores_by_name):
             customer, order.id, target, rating, title, body
         )
 
+    # One report so the admin moderation queue is not empty in the demo:
+    # a second customer flags the first review.
+    db.session.flush()
+    flagged = review_service.Review.query.order_by(
+        review_service.Review.id
+    ).first()
+    reporter = customers[1] if len(customers) > 1 else None
+    if flagged is not None and reporter is not None and not flagged.reports:
+        review_service.report_review(
+            reporter, flagged.id, "Reads like it was left by the store owner."
+        )
+
 
 @click.command("seed")
 @with_appcontext

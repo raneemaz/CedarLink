@@ -4,7 +4,7 @@ Every write goes through ``review_service``; handlers parse, call, commit.
 """
 
 from flask import Blueprint, jsonify, request
-from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import get_jwt_identity, jwt_required
 
 from app.extensions import db
 from app.models.user import User
@@ -47,7 +47,7 @@ def get_product_reviews(product_id):
     if error:
         return error
     return jsonify(
-        review_service.list_published_for("product", product_id, page, per_page)
+        review_service.list_public_for("product", product_id, page, per_page)
     ), 200
 
 
@@ -57,7 +57,7 @@ def get_store_reviews(store_id):
     if error:
         return error
     return jsonify(
-        review_service.list_published_for("store", store_id, page, per_page)
+        review_service.list_public_for("store", store_id, page, per_page)
     ), 200
 
 
@@ -152,3 +152,61 @@ def delete_review(review_id):
         return internal_error(exc, "review delete failed")
 
     return jsonify({"message": "Review deleted"}), 200
+
+
+# --------------------------------------------------------------------------- #
+# Moderation — report (any authenticated user) and the admin queue
+# --------------------------------------------------------------------------- #
+
+@review_bp.route("/reviews/<int:review_id>/report", methods=["POST"])
+@jwt_required()
+def report_review(review_id):
+    data = request.get_json() or {}
+    try:
+        review_service.report_review(
+            _current_user(), review_id, data.get("reason")
+        )
+        db.session.commit()
+    except ReviewError as exc:
+        db.session.rollback()
+        return jsonify(exc.payload), exc.status_code
+    except Exception as exc:
+        db.session.rollback()
+        return internal_error(exc, "review report failed")
+
+    return jsonify({"message": "Report received"}), 201
+
+
+@review_bp.route("/admin/reviews", methods=["GET"])
+@role_required("admin")
+def admin_list_reviews():
+    page, per_page, error = _page_args()
+    if error:
+        return error
+    return jsonify(
+        review_service.admin_list_reviews(
+            request.args.get("status", "queue"), page, per_page
+        )
+    ), 200
+
+
+@review_bp.route("/admin/reviews/<int:review_id>", methods=["PATCH"])
+@role_required("admin")
+def admin_moderate_review(review_id):
+    data = request.get_json() or {}
+    try:
+        review = review_service.moderate_review(
+            review_id, data.get("action"), data.get("reason")
+        )
+        db.session.commit()
+    except ReviewError as exc:
+        db.session.rollback()
+        return jsonify(exc.payload), exc.status_code
+    except Exception as exc:
+        db.session.rollback()
+        return internal_error(exc, "review moderation failed")
+
+    return jsonify({
+        "message": f"Review {review.status}",
+        "review": review.to_dict(),
+    }), 200

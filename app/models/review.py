@@ -81,14 +81,18 @@ class Review(db.Model):
     title = db.Column(db.String(120), nullable=True)
     body = db.Column(db.Text, nullable=True)
 
-    # published (default) / flagged / removed — moderation lands in a later
-    # slice; only 'published' rows count toward a rating.
+    # published (default) / flagged / removed. published and flagged both
+    # count toward a rating and stay publicly visible; only 'removed' is
+    # hidden and de-counted. See docs/decisions/0017-review-moderation.md.
     status = db.Column(
         db.String(20),
         nullable=False,
         default="published",
         server_default="published",
     )
+
+    # The reason recorded on the last admin remove / restore.
+    moderation_note = db.Column(db.String(500), nullable=True)
 
     created_at = db.Column(db.DateTime, nullable=False, default=_utc_now)
     updated_at = db.Column(
@@ -99,6 +103,16 @@ class Review(db.Model):
     order = db.relationship("Order", back_populates="reviews")
     product = db.relationship("Product", back_populates="reviews")
     store = db.relationship("Store", back_populates="reviews")
+
+    # Reports are evidence — they outlive moderation. delete-orphan only
+    # fires if the author deletes their own review, taking its reports with
+    # it (nothing to moderate once the review is gone).
+    reports = db.relationship(
+        "ReviewReport",
+        back_populates="review",
+        cascade="all, delete-orphan",
+        order_by="ReviewReport.created_at.desc()",
+    )
 
     def to_dict(self):
         return {
@@ -111,6 +125,7 @@ class Review(db.Model):
             "title": self.title,
             "body": self.body,
             "status": self.status,
+            "moderation_note": self.moderation_note,
             "author_name": (
                 self.user.first_name if self.user else None
             ),
