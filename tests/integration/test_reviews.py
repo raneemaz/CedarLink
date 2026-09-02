@@ -339,7 +339,7 @@ def test_non_author_cannot_edit_or_delete(
 # Reads
 # --------------------------------------------------------------------------- #
 
-def test_public_list_shows_published_only_newest_first(
+def test_public_list_excludes_removed_keeps_flagged_newest_first(
     client, auth, make_order, make_product, make_user
 ):
     product = make_product()
@@ -353,13 +353,14 @@ def test_public_list_shows_published_only_newest_first(
         ).get_json()["review"])
 
     review_service.set_review_status(reviews[0]["id"], "removed")
+    review_service.set_review_status(reviews[1]["id"], "flagged")
     db.session.commit()
 
     body = client.get(
         f"/api/products/{product.id}/reviews"
     ).get_json()
     titles = [r["title"] for r in body["reviews"]]
-    assert titles == ["r2", "r1"]  # newest first, removed one gone
+    assert titles == ["r2", "r1"]  # newest first; flagged r1 stays, r0 gone
     assert body["total"] == 2
 
 
