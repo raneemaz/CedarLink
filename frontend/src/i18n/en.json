@@ -484,7 +484,12 @@
     "outsideCityFee": "Outside-city fee",
     "contact": "Contact",
     "productsHeading": "Products ({{count}})",
-    "noProducts": "This store has no products yet."
+    "noProducts": "This store has no products yet.",
+    "todaysHours": "Today's hours",
+    "closedToday": "Closed today",
+    "overrideClosed": "Temporarily closed until {{until}}.",
+    "overrideClosedReason": "Closed — {{reason}}, until {{until}}.",
+    "overrideOpen": "Open now (manually), until {{until}}."
   },
   "backLink": {
     "cart": "Back to Cart",
@@ -514,6 +519,7 @@
     "browseProducts": "Browse Products",
     "subtitle": "Review your selected products before checkout.",
     "storeHeading": "Store #{{id}}",
+    "storeClosedWarning": "This store is closed right now — you can't check out this order until it reopens.",
     "priceEach": "{{price}} each",
     "removeItem": "Remove item",
     "storeSubtotal": "Store subtotal",
@@ -526,6 +532,7 @@
   "checkout": {
     "loading": "Loading checkout...",
     "errLoadCart": "Failed to load your cart.",
+    "storeClosedError": "\"{{store}}\" is closed right now. This order can't be placed until it reopens.",
     "emptyTitle": "Your cart is empty",
     "emptyBody": "Add some products before proceeding to checkout.",
     "browseProducts": "Browse Products",
@@ -903,6 +910,44 @@
     "errResume": "Unable to resume normal hours.",
     "toastApplied": "Override applied.",
     "toastResumed": "Back on the weekly schedule."
+  },
+  "storeOpenBadge": {
+    "open": "Open now",
+    "closed": "Closed"
+  },
+  "storeAnnouncements": {
+    "title": "Announcements",
+    "description": "Short notices shown on your store page — holiday hours, new stock, a delivery delay.",
+    "loading": "Loading announcements...",
+    "empty": "No announcements yet.",
+    "activeCount": "{{count}} of 5 active",
+    "new": "New announcement",
+    "newHeading": "New announcement",
+    "editHeading": "Edit announcement",
+    "fieldTitle": "Title",
+    "fieldBody": "Message",
+    "fieldStart": "Starts (optional)",
+    "fieldEnd": "Ends (optional)",
+    "fieldActive": "Active",
+    "save": "Save announcement",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "confirmDelete": "Delete this announcement?",
+    "errLoad": "Unable to load announcements.",
+    "errTitleBody": "A title and a message are both required.",
+    "errSave": "Unable to save the announcement.",
+    "toastCreated": "Announcement posted.",
+    "toastUpdated": "Announcement updated.",
+    "toastDeleted": "Announcement deleted.",
+    "status": {
+      "live": "Live",
+      "scheduled": "Scheduled",
+      "ended": "Ended",
+      "inactive": "Inactive"
+    }
   },
   "vendorProducts": {
     "loading": "Loading your products...",
