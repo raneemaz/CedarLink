@@ -12,8 +12,10 @@ class StoreHours(db.Model):
     or before ``opens_at`` the interval crosses midnight into the next day.
     See docs/decisions/0013-store-hours-timezone.md.
 
-    Rows go away with the store through the ORM cascade below; the store
-    itself is soft-deleted, so this never reaches order history.
+    There is deliberately no ORM cascade: the store is soft-deleted
+    (``deleted_at``), never row-deleted, so these rows persist with it. A
+    soft-deleted store is not ``is_visible`` and is therefore never "open"
+    regardless of its hours. See the ``hours`` relationship in ``store.py``.
     """
 
     __tablename__ = "store_hours"
