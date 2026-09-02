@@ -592,7 +592,33 @@
     "closedToday": "Fermé aujourd'hui",
     "overrideClosed": "Fermé temporairement jusqu'à {{until}}.",
     "overrideClosedReason": "Fermé — {{reason}}, jusqu'à {{until}}.",
-    "overrideOpen": "Ouvert (manuellement), jusqu'à {{until}}."
+    "overrideOpen": "Ouvert (manuellement), jusqu'à {{until}}.",
+    "onlineOnly": "Magasin en ligne uniquement — pas de boutique à visiter. Il livre partout au Liban."
+  },
+  "locationPicker": {
+    "useMyLocation": "Utiliser ma position actuelle",
+    "locating": "Localisation…",
+    "clear": "Effacer",
+    "coords": "Repère : {{lat}}, {{lng}}",
+    "noPin": "Pas encore de repère — faites glisser le marqueur ou utilisez votre position.",
+    "dragInstead": "Faites glisser le repère pour définir l'emplacement.",
+    "geoDenied": "L'autorisation de localisation a été refusée.",
+    "geoUnavailable": "Votre position n'a pas pu être déterminée.",
+    "geoTimeout": "La demande de localisation a expiré.",
+    "geoUnsupported": "Ce navigateur ne prend pas en charge la géolocalisation."
+  },
+  "storeLocation": {
+    "title": "Emplacement",
+    "description": "Où se trouve votre boutique. Les clients l'utilisent pour « magasins à proximité ».",
+    "save": "Enregistrer l'emplacement",
+    "saved": "Emplacement enregistré.",
+    "errSave": "Impossible d'enregistrer l'emplacement.",
+    "onlineToggle": "En ligne uniquement — pas de boutique",
+    "onlineToggleDesc": "Activez si aucune boutique physique n'est ouverte aux clients.",
+    "onlineExplainer": "Votre magasin n'apparaîtra pas dans les recherches à proximité. Il reste répertorié partout ailleurs et livre partout au Liban.",
+    "toastOnline": "Marqué « en ligne uniquement ». L'emplacement sur la carte a été effacé.",
+    "toastPhysical": "Boutique rétablie — ajoutez un emplacement sur la carte ci-dessous.",
+    "errFlag": "Impossible de mettre à jour ce paramètre."
   },
   "backLink": {
     "cart": "Retour au panier",

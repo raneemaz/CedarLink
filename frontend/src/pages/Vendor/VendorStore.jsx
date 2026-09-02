@@ -9,6 +9,7 @@ import { lebanonLocations } from "../../data/lebanonLocations";
 import StoreHoursEditor from "./StoreHoursEditor";
 import StoreOverridePanel from "./StoreOverridePanel";
 import StoreAnnouncementsManager from "./StoreAnnouncementsManager";
+import StoreLocationSection from "./StoreLocationSection";
 
 // Flattened, de-duplicated list of Lebanese cities. The store location must
 // come from the same vocabulary as customer addresses — delivery-fee logic
@@ -465,6 +466,8 @@ function VendorStore() {
             </div>
           </div>
         </Section>
+
+        <StoreLocationSection store={store} onStoreChange={applyStore} />
 
         <StoreHoursEditor storeId={store.id} />
 
