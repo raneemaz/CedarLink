@@ -4,6 +4,7 @@ import { Minus, Plus, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import api from "../../services/api";
 import { localizedField } from "../../utils/localize";
+import CouponField from "../../components/coupon/CouponField";
 
 function Cart() {
   const { t, i18n } = useTranslation();
@@ -273,9 +274,33 @@ function Cart() {
               <div className="flex justify-between text-slate-600">
                 <span>{t("cart.subtotal")}</span>
 
-                <span>
+                <span dir="ltr">
                   ${Number(cart.total).toFixed(2)}
                 </span>
+              </div>
+
+              {Number(cart.discount) > 0 && (
+                <div className="flex justify-between text-emerald-700">
+                  <span>
+                    {t("cart.discount")}{" "}
+                    <span dir="ltr" className="font-mono text-xs">
+                      {cart.coupon_code}
+                    </span>
+                  </span>
+
+                  {/* A credit, so it is signed — and the minus sign is
+                      directional, hence dir="ltr". */}
+                  <span dir="ltr" className="font-medium">
+                    −${Number(cart.discount).toFixed(2)}
+                  </span>
+                </div>
+              )}
+
+              <div className="border-t border-slate-200 pt-4">
+                <CouponField
+                  appliedCode={cart.coupon_code}
+                  onChanged={fetchCart}
+                />
               </div>
 
               <div className="border-t border-slate-200 pt-4">
@@ -284,8 +309,10 @@ function Cart() {
                     {t("cart.total")}
                   </span>
 
-                  <span className="text-lg font-bold text-emerald-700">
-                    ${Number(cart.total).toFixed(2)}
+                  <span dir="ltr" className="text-lg font-bold text-emerald-700">
+                    ${(
+                      Number(cart.total) - Number(cart.discount || 0)
+                    ).toFixed(2)}
                   </span>
                 </div>
               </div>

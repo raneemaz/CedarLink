@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import BackLink from "../../components/common/BackLink";
 import api from "../../services/api";
+import CouponField from "../../components/coupon/CouponField";
 import { lebanonLocations } from "../../data/lebanonLocations";
 import { localizedField } from "../../utils/localize";
 
@@ -23,6 +24,8 @@ function Checkout() {
   const [deliveryCity, setDeliveryCity] = useState("");
 
   const [preview, setPreview] = useState(null);
+  // Bumped by the coupon field so the preview re-runs after apply/clear.
+  const [couponNonce, setCouponNonce] = useState(0);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewError, setPreviewError] = useState("");
 
@@ -194,7 +197,7 @@ function Checkout() {
     };
 
     fetchPreview();
-  }, [deliveryCity, t]);
+  }, [deliveryCity, couponNonce, t]);
 
   if (loading) {
     return (
@@ -569,7 +572,7 @@ function Checkout() {
               <div className="flex justify-between">
                 <span className="text-slate-600">{t("checkout.cartSubtotal")}</span>
 
-                <span className="font-medium">
+                <span className="font-medium" dir="ltr">
                   ${Number(preview?.subtotal ?? cart?.total ?? 0).toFixed(2)}
                 </span>
               </div>
@@ -577,7 +580,7 @@ function Checkout() {
               <div className="flex justify-between">
                 <span className="text-slate-600">{t("checkout.delivery")}</span>
 
-                <span className="font-medium">
+                <span className="font-medium" dir="ltr">
                   {previewLoading
                     ? t("checkout.calculating")
                     : preview
@@ -586,15 +589,41 @@ function Checkout() {
                 </span>
               </div>
 
+              {Number(preview?.discount) > 0 && (
+                <div className="flex justify-between text-emerald-700">
+                  <span>
+                    {t("checkout.discount")}{" "}
+                    <span dir="ltr" className="font-mono text-xs">
+                      {preview.coupon_code}
+                    </span>
+                  </span>
+
+                  <span dir="ltr" className="font-medium">
+                    −${Number(preview.discount).toFixed(2)}
+                  </span>
+                </div>
+              )}
+
               {previewError && (
                 <p className="text-sm text-red-600">{previewError}</p>
               )}
 
               <div className="border-t border-slate-200 pt-4">
+                <CouponField
+                  /* Falls back to the cart's held code so the chip does
+                     not disappear between arriving here and choosing a
+                     city — the coupon is applied either way. */
+                  appliedCode={preview?.coupon_code ?? cart?.coupon_code}
+                  disabled={previewLoading}
+                  onChanged={() => setCouponNonce((n) => n + 1)}
+                />
+              </div>
+
+              <div className="border-t border-slate-200 pt-4">
                 <div className="flex justify-between text-lg font-bold">
                   <span>{t("checkout.total")}</span>
 
-                  <span className="text-emerald-700">
+                  <span className="text-emerald-700" dir="ltr">
                     ${Number(preview?.total ?? cart?.total ?? 0).toFixed(2)}
                   </span>
                 </div>

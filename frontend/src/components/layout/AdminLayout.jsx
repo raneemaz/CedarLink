@@ -6,6 +6,7 @@ import {
   Store,
   Tags,
   Star,
+  TicketPercent,
   ArrowLeft,
 } from "lucide-react";
 
@@ -15,6 +16,7 @@ const NAV_ITEMS = [
   { to: "/admin/stores", key: "stores", icon: Store },
   { to: "/admin/categories", key: "categories", icon: Tags },
   { to: "/admin/reviews", key: "reviews", icon: Star },
+  { to: "/admin/coupons", key: "coupons", icon: TicketPercent },
 ];
 
 function AdminLayout() {

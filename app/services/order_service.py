@@ -96,12 +96,23 @@ def _serialize_item(item):
 
 
 def _serialize_order(order):
+    # What a coupon actually took off this order, read from the redemption
+    # row rather than recomputed: a coupon's value can be edited after the
+    # fact, so the recorded amount is the only trustworthy answer (ADR
+    # 0021). Both the customer and the vendor may see it — it is their own
+    # order either way, and it explains the total.
+    redemption = order.coupon_redemption
+
     return {
         "id": order.id,
         "store_id": order.store_id,
         "status": order.status,
         "delivery_address": order.delivery_address,
         "total_price": float(order.total_price),
+        "discount": (
+            float(redemption.amount_applied) if redemption else 0.0
+        ),
+        "coupon_code": redemption.coupon.code if redemption else None,
         "created_at": order.created_at.isoformat(),
         "delivery_city": order.delivery_city,
         "items": [_serialize_item(item) for item in order.items],
@@ -231,7 +242,7 @@ def price_cart(user_id, delivery_city, coupon_code=None):
         subtotal_total += subtotal
         delivery_total += delivery_fee
 
-    coupon = _apply_coupon(cart, user_id, coupon_code, stores)
+    coupon = apply_coupon_to_groups(cart, user_id, coupon_code, stores)
 
     discount_total = sum(
         (group["discount"] for group in stores), Decimal("0")
@@ -250,8 +261,13 @@ def price_cart(user_id, delivery_city, coupon_code=None):
     }
 
 
-def _apply_coupon(cart, user_id, coupon_code, stores):
+def apply_coupon_to_groups(cart, user_id, coupon_code, stores):
     """Discount each store group in place; return the coupon, or None.
+
+    Public because the cart summary needs the same answer without a
+    delivery city. Both callers land here, so the rule for *which* groups a
+    coupon touches lives in one place, next to the arithmetic it shares
+    with coupon_service.discount_for.
 
     The discount comes off the **goods subtotal only** — never the delivery
     fee, which is a real cost the store incurs whatever the customer paid
@@ -285,6 +301,75 @@ def _apply_coupon(cart, user_id, coupon_code, stores):
         group["total"] = group["subtotal"] - discount + group["delivery_fee"]
 
     return coupon
+
+
+def price_cart_goods(cart, user_id, coupon_code=None):
+    """(coupon_code, discount, goods_subtotal) with no delivery involved.
+
+    The cart has no delivery city, so it has no fees — but a discount only
+    ever touches the goods, so the answer is well defined without one.
+    Routed through the same apply_coupon_to_groups that checkout uses, so
+    the cart cannot quote a discount the order would not honour.
+
+    Raises ``CouponError``; ``cart_discount`` is the swallowing wrapper.
+    """
+    if not cart:
+        return None, Decimal("0.00"), Decimal("0.00")
+
+    groups = [
+        {
+            "store_id": store_id,
+            "subtotal": subtotal,
+            "delivery_fee": Decimal("0"),
+            "discount": Decimal("0.00"),
+            "total": subtotal,
+        }
+        for store_id, subtotal in _cart_goods_by_store(cart).items()
+    ]
+
+    goods = sum((group["subtotal"] for group in groups), Decimal("0"))
+
+    coupon = apply_coupon_to_groups(cart, user_id, coupon_code, groups)
+
+    if coupon is None:
+        return None, Decimal("0.00"), goods
+
+    discount = sum((group["discount"] for group in groups), Decimal("0"))
+
+    return coupon.code, discount, goods
+
+
+def cart_discount(cart, user_id):
+    """(coupon_code, discount) for the cart's held code, goods only.
+
+    A code that has stopped being valid since it was applied reports no
+    discount rather than breaking the cart — the customer meets the actual
+    reason when they try to apply or check out, where there is somewhere
+    to show it.
+    """
+    if not cart or not cart.coupon_code:
+        return None, Decimal("0.00")
+
+    try:
+        code, discount, _goods = price_cart_goods(cart, user_id)
+    except coupon_service.CouponError:
+        return None, Decimal("0.00")
+
+    return code, discount
+
+
+def _cart_goods_by_store(cart):
+    """{store_id: goods subtotal} straight off the cart items."""
+    totals = {}
+
+    for item in cart.items:
+        product = item.product
+        if product is None:
+            continue
+        totals.setdefault(product.store_id, Decimal("0"))
+        totals[product.store_id] += product.price * item.quantity
+
+    return totals
 
 
 def serialize_quote(pricing):

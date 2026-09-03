@@ -57,7 +57,9 @@ class CouponRedemption(db.Model):
 
     created_at = db.Column(db.DateTime, nullable=False, default=_utc_now)
 
-    coupon = db.relationship("Coupon", back_populates="redemptions")
+    coupon = db.relationship(
+        "Coupon", back_populates="redemptions", lazy="selectin"
+    )
     user = db.relationship("User")
     order = db.relationship("Order")
 

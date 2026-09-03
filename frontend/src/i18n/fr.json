@@ -253,7 +253,8 @@
     "users": "Utilisateurs",
     "stores": "Magasins",
     "categories": "Catégories",
-    "reviews": "Avis"
+    "reviews": "Avis",
+    "coupons": "Coupons"
   },
   "vendorLayout": {
     "console": "Console vendeur",
@@ -265,7 +266,8 @@
     "pendingTitle": "Votre magasin est en attente d’approbation par un administrateur.",
     "pendingBody": "Configurez-le et ajoutez des produits dès maintenant — les clients ne le verront pas tant qu’il n’est pas approuvé.",
     "rejectedTitle": "Votre magasin n’a pas été approuvé.",
-    "rejectedBodyDefault": "Contactez le support pour plus de détails."
+    "rejectedBodyDefault": "Contactez le support pour plus de détails.",
+    "coupons": "Coupons"
   },
   "productCard": {
     "noImage": "Aucune image",
@@ -690,7 +692,8 @@
     "subtotal": "Sous-total",
     "total": "Total",
     "proceedToCheckout": "Passer au paiement",
-    "continueShopping": "Continuer les achats"
+    "continueShopping": "Continuer les achats",
+    "discount": "Remise"
   },
   "checkout": {
     "loading": "Chargement du paiement…",
@@ -735,7 +738,8 @@
     "errSelectCity": "Veuillez sélectionner votre ville.",
     "errSelectPayment": "Veuillez sélectionner un mode de paiement.",
     "errWaitTotal": "Veuillez attendre le calcul du total de livraison.",
-    "errPlaceOrder": "Impossible de passer votre commande. Veuillez réessayer."
+    "errPlaceOrder": "Impossible de passer votre commande. Veuillez réessayer.",
+    "discount": "Remise"
   },
   "orders": {
     "loading": "Chargement de vos commandes…",
@@ -748,7 +752,8 @@
     "deliveryAddress": "Adresse de livraison",
     "total": "Total",
     "viewDetails": "Voir les détails",
-    "priceLine": "{{price}} × {{quantity}}"
+    "priceLine": "{{price}} × {{quantity}}",
+    "discountApplied": "Coupon {{code}}"
   },
   "orderDetails": {
     "loading": "Chargement de la commande…",
@@ -764,7 +769,8 @@
     "deliveryFee": "Frais de livraison",
     "total": "Total",
     "priceLine": "{{price}} × {{quantity}}",
-    "loadError": "Impossible de charger les détails de la commande."
+    "loadError": "Impossible de charger les détails de la commande.",
+    "discount": "Remise"
   },
   "profile": {
     "loading": "Chargement de votre profil…",
@@ -1356,5 +1362,108 @@
     "filled": "Traduction ajoutée",
     "notFilled": "Pas encore de traduction",
     "fallbackHint": "L'arabe et le français sont facultatifs — ils reviennent à l'anglais s'ils sont laissés vides."
+  },
+  "coupon": {
+    "status": {
+      "active": "Active",
+      "scheduled": "Programmée",
+      "expired": "Expirée",
+      "limitReached": "Limite atteinte",
+      "inactive": "Inactive"
+    },
+    "form": {
+      "code": "Code",
+      "codeHint": "Les clients le saisissent au paiement. La casse n'a pas d'importance.",
+      "discountType": "Type de remise",
+      "typePercentage": "Pourcentage",
+      "typeFixed": "Montant fixe",
+      "valuePercentage": "Pourcentage",
+      "valueFixed": "Montant",
+      "valuePercentageHint": "Entre 1 et 100.",
+      "valueFixedHint": "En USD. Déduit des articles, jamais des frais de livraison.",
+      "minOrderTotal": "Commande minimum",
+      "noMinimum": "Aucun minimum",
+      "minOrderTotalHint": "Calculé sur les articles avant la remise.",
+      "startsAt": "Début",
+      "endsAt": "Fin",
+      "windowHint": "Laissez les deux vides pour un code sans limite de date.",
+      "usageLimit": "Utilisations totales",
+      "unlimited": "Illimité",
+      "usageLimitHint": "Nombre total d'utilisations de ce code. Une commande couvrant plusieurs boutiques devient une commande par boutique et consomme une utilisation par boutique, donc parfois plus d'une.",
+      "perUserLimit": "Utilisations par client",
+      "perUserLimitHint": "Nombre d'utilisations qu'un client peut faire - des utilisations, pas des clients. Un seul paiement couvrant plusieurs boutiques consomme une utilisation par boutique.",
+      "isActive": "Active",
+      "isActiveHint": "Désactivez pour suspendre le code sans le supprimer.",
+      "createTitle": "Nouveau coupon",
+      "createPlatformTitle": "Nouveau coupon pour toute la plateforme",
+      "editTitle": "Modifier {{code}}",
+      "platformScopeNote": "Ce code fonctionne dans toutes les boutiques CedarLink. Un montant fixe ne peut pas s'appliquer à un panier couvrant plusieurs boutiques ; un pourcentage le peut.",
+      "create": "Créer le coupon",
+      "saveChanges": "Enregistrer",
+      "errCodeRequired": "Un code est requis.",
+      "errValueRequired": "Une valeur est requise.",
+      "errValueNumber": "La valeur doit être un nombre.",
+      "errPercentageRange": "Le pourcentage doit être compris entre 1 et 100.",
+      "errFixedPositive": "Le montant doit être supérieur à zéro.",
+      "errWindow": "La date de fin doit suivre la date de début."
+    },
+    "table": {
+      "code": "Code",
+      "store": "Boutique",
+      "discount": "Remise",
+      "minimum": "Minimum",
+      "window": "Dates",
+      "used": "Utilisations",
+      "status": "Statut"
+    },
+    "vendorTitle": "Coupons",
+    "vendorSubtitle": "Codes de remise pour {{store}}. Ils s'appliquent à votre boutique uniquement.",
+    "adminTitle": "Coupons",
+    "adminSubtitle": "Codes valables partout, et tout ce qui est actif sur la marketplace.",
+    "newCoupon": "Nouveau coupon",
+    "newPlatformCoupon": "Nouveau coupon plateforme",
+    "platformSection": "Toute la plateforme",
+    "storeSection": "Coupons de boutique",
+    "storeSectionNote": "Créés par les vendeurs pour leur boutique. Lecture seule ici.",
+    "platformWide": "Toute la plateforme",
+    "emptyTitle": "Aucun coupon pour l'instant",
+    "emptyBody": "Créez un code pour proposer une remise dans votre boutique.",
+    "emptyPlatformTitle": "Aucun coupon plateforme",
+    "emptyPlatformBody": "Créez-en un pour proposer une remise dans toutes les boutiques.",
+    "emptyStoreScoped": "Aucun vendeur n'a encore créé de coupon.",
+    "noStore": "Créez votre boutique avant de créer des coupons.",
+    "windowAlways": "Sans limite de date",
+    "windowBoth": "{{from}} - {{to}}",
+    "windowFrom": "À partir du {{from}}",
+    "windowUntil": "Jusqu'au {{to}}",
+    "usedOfLimit_one": "{{used}} sur {{limit}} utilisation",
+    "usedOfLimit_other": "{{used}} sur {{limit}} utilisations",
+    "usedUnlimited_one": "{{count}} utilisation",
+    "usedUnlimited_other": "{{count}} utilisations",
+    "fieldLabel": "Vous avez un code ?",
+    "placeholder": "Saisir le code",
+    "apply": "Appliquer",
+    "applying": "Application...",
+    "removeAria": "Retirer le coupon {{code}}",
+    "editAria": "Modifier le coupon {{code}}",
+    "deleteAria": "Supprimer le coupon {{code}}",
+    "toastCreated": "Coupon créé.",
+    "toastUpdated": "Coupon mis à jour.",
+    "toastDeleted": "Coupon supprimé.",
+    "errLoad": "Impossible de charger les coupons.",
+    "errSave": "Impossible d'enregistrer le coupon.",
+    "errDelete": "Impossible de supprimer le coupon.",
+    "errEmpty": "Saisissez un code.",
+    "errClear": "Impossible de retirer le coupon.",
+    "errGeneric": "Ce coupon n'a pas pu être appliqué.",
+    "errUnknown": "Nous ne reconnaissons pas ce code.",
+    "errInactive": "Ce coupon n'est plus disponible.",
+    "errNotStarted": "Ce coupon n'est pas encore actif.",
+    "errExpired": "Ce coupon a expiré.",
+    "errBelowMinimum": "Votre commande doit atteindre {{amount}} pour utiliser ce coupon.",
+    "errUsageLimit": "Ce coupon a été entièrement utilisé.",
+    "errUserLimit": "Vous avez déjà utilisé ce coupon.",
+    "errWrongStore": "Ce coupon n'est pas valable pour les boutiques de votre panier.",
+    "errFixedMultiStore": "Ce coupon ne peut pas s'appliquer à un panier de plusieurs boutiques."
   }
 }

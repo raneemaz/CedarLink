@@ -253,7 +253,8 @@
     "users": "Users",
     "stores": "Stores",
     "categories": "Categories",
-    "reviews": "Reviews"
+    "reviews": "Reviews",
+    "coupons": "Coupons"
   },
   "vendorLayout": {
     "console": "Vendor Console",
@@ -265,7 +266,8 @@
     "pendingTitle": "Your store is awaiting administrator approval.",
     "pendingBody": "Set it up and add products now — customers can’t see it until it’s approved.",
     "rejectedTitle": "Your store was not approved.",
-    "rejectedBodyDefault": "Contact support for details."
+    "rejectedBodyDefault": "Contact support for details.",
+    "coupons": "Coupons"
   },
   "productCard": {
     "noImage": "No image",
@@ -690,7 +692,8 @@
     "subtotal": "Subtotal",
     "total": "Total",
     "proceedToCheckout": "Proceed to Checkout",
-    "continueShopping": "Continue Shopping"
+    "continueShopping": "Continue Shopping",
+    "discount": "Discount"
   },
   "checkout": {
     "loading": "Loading checkout...",
@@ -735,7 +738,8 @@
     "errSelectCity": "Please select your city.",
     "errSelectPayment": "Please select a payment method.",
     "errWaitTotal": "Please wait for the delivery total to be calculated.",
-    "errPlaceOrder": "Failed to place your order. Please try again."
+    "errPlaceOrder": "Failed to place your order. Please try again.",
+    "discount": "Discount"
   },
   "orders": {
     "loading": "Loading your orders...",
@@ -748,7 +752,8 @@
     "deliveryAddress": "Delivery address",
     "total": "Total",
     "viewDetails": "View Details",
-    "priceLine": "{{price}} × {{quantity}}"
+    "priceLine": "{{price}} × {{quantity}}",
+    "discountApplied": "Coupon {{code}}"
   },
   "orderDetails": {
     "loading": "Loading order...",
@@ -764,7 +769,8 @@
     "deliveryFee": "Delivery Fee",
     "total": "Total",
     "priceLine": "{{price}} × {{quantity}}",
-    "loadError": "Failed to load order details."
+    "loadError": "Failed to load order details.",
+    "discount": "Discount"
   },
   "profile": {
     "loading": "Loading your profile...",
@@ -1356,5 +1362,108 @@
     "filled": "Translation added",
     "notFilled": "No translation yet",
     "fallbackHint": "Arabic and French are optional — they fall back to English when left blank."
+  },
+  "coupon": {
+    "status": {
+      "active": "Active",
+      "scheduled": "Scheduled",
+      "expired": "Expired",
+      "limitReached": "Limit reached",
+      "inactive": "Inactive"
+    },
+    "form": {
+      "code": "Code",
+      "codeHint": "Customers type this at checkout. Case does not matter.",
+      "discountType": "Discount type",
+      "typePercentage": "Percentage off",
+      "typeFixed": "Fixed amount off",
+      "valuePercentage": "Percentage",
+      "valueFixed": "Amount",
+      "valuePercentageHint": "Between 1 and 100.",
+      "valueFixedHint": "In USD. Comes off the goods, never the delivery fee.",
+      "minOrderTotal": "Minimum order",
+      "noMinimum": "No minimum",
+      "minOrderTotalHint": "Measured on the goods before the discount.",
+      "startsAt": "Starts",
+      "endsAt": "Ends",
+      "windowHint": "Leave both blank for a coupon with no date limit.",
+      "usageLimit": "Total uses",
+      "unlimited": "Unlimited",
+      "usageLimitHint": "How many times this code can be redeemed in total. An order covering several stores becomes one order per store and uses one per store, so a single checkout can consume more than one.",
+      "perUserLimit": "Uses per customer",
+      "perUserLimitHint": "How many uses one customer may redeem - uses, not customers. A single checkout covering several stores consumes one use per store.",
+      "isActive": "Active",
+      "isActiveHint": "Turn off to stop the code working without deleting it.",
+      "createTitle": "New coupon",
+      "createPlatformTitle": "New platform-wide coupon",
+      "editTitle": "Edit {{code}}",
+      "platformScopeNote": "This code works across every store on CedarLink. A fixed amount cannot be used on a basket spanning more than one store; a percentage can.",
+      "create": "Create coupon",
+      "saveChanges": "Save changes",
+      "errCodeRequired": "A code is required.",
+      "errValueRequired": "A value is required.",
+      "errValueNumber": "The value must be a number.",
+      "errPercentageRange": "A percentage must be between 1 and 100.",
+      "errFixedPositive": "The amount must be greater than zero.",
+      "errWindow": "The end date must be after the start date."
+    },
+    "table": {
+      "code": "Code",
+      "store": "Store",
+      "discount": "Discount",
+      "minimum": "Minimum",
+      "window": "Dates",
+      "used": "Used",
+      "status": "Status"
+    },
+    "vendorTitle": "Coupons",
+    "vendorSubtitle": "Discount codes for {{store}}. They apply to your store only.",
+    "adminTitle": "Coupons",
+    "adminSubtitle": "Platform-wide codes, and everything live across the marketplace.",
+    "newCoupon": "New coupon",
+    "newPlatformCoupon": "New platform-wide coupon",
+    "platformSection": "Platform-wide",
+    "storeSection": "Store coupons",
+    "storeSectionNote": "Created by vendors for their own stores. Read-only here.",
+    "platformWide": "Platform-wide",
+    "emptyTitle": "No coupons yet",
+    "emptyBody": "Create a code to offer a discount on your store.",
+    "emptyPlatformTitle": "No platform-wide coupons",
+    "emptyPlatformBody": "Create one to offer a discount across every store.",
+    "emptyStoreScoped": "No vendor has created a coupon yet.",
+    "noStore": "Set up your store before creating coupons.",
+    "windowAlways": "No date limit",
+    "windowBoth": "{{from}} - {{to}}",
+    "windowFrom": "From {{from}}",
+    "windowUntil": "Until {{to}}",
+    "usedOfLimit_one": "{{used}} of {{limit}} used",
+    "usedOfLimit_other": "{{used}} of {{limit}} used",
+    "usedUnlimited_one": "{{count}} use",
+    "usedUnlimited_other": "{{count}} uses",
+    "fieldLabel": "Have a coupon code?",
+    "placeholder": "Enter code",
+    "apply": "Apply",
+    "applying": "Applying...",
+    "removeAria": "Remove coupon {{code}}",
+    "editAria": "Edit coupon {{code}}",
+    "deleteAria": "Delete coupon {{code}}",
+    "toastCreated": "Coupon created.",
+    "toastUpdated": "Coupon updated.",
+    "toastDeleted": "Coupon deleted.",
+    "errLoad": "Could not load coupons.",
+    "errSave": "Could not save the coupon.",
+    "errDelete": "Could not delete the coupon.",
+    "errEmpty": "Enter a coupon code.",
+    "errClear": "Could not remove the coupon.",
+    "errGeneric": "That coupon could not be applied.",
+    "errUnknown": "We do not recognise that code.",
+    "errInactive": "That coupon is no longer available.",
+    "errNotStarted": "That coupon is not active yet.",
+    "errExpired": "That coupon has expired.",
+    "errBelowMinimum": "Your order needs to reach {{amount}} before this coupon applies.",
+    "errUsageLimit": "That coupon has been fully redeemed.",
+    "errUserLimit": "You have already used that coupon.",
+    "errWrongStore": "That coupon is not valid for the stores in your basket.",
+    "errFixedMultiStore": "That coupon cannot be used on a basket from more than one store."
   }
 }
