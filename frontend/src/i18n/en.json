@@ -471,8 +471,38 @@
     "deliveryUnavailable": "Delivery unavailable",
     "insideCity": "Inside city",
     "outsideCity": "Outside city",
+    "onlineMarker": "Online",
     "count_one": "{{count}} store",
-    "count_other": "{{count}} stores"
+    "count_other": "{{count}} stores",
+    "countNearby_one": "{{count}} store within {{km}} km",
+    "countNearby_other": "{{count}} stores within {{km}} km",
+    "distanceAway_one": "{{km}} km away",
+    "distanceAway_other": "{{km}} km away"
+  },
+  "nearbySearch": {
+    "nearMe": "Near me",
+    "locating": "Locating...",
+    "or": "or",
+    "pickPlace": "Choose a place",
+    "radius": "Within",
+    "km": "{{count}} km",
+    "showAll": "Show all stores",
+    "yourLocation": "your location",
+    "centeredOn": "Showing stores near {{place}}, nearest first.",
+    "useThePicker": "Choose a place from the list instead."
+  },
+  "places": {
+    "beirut": "Beirut",
+    "hamra": "Hamra",
+    "achrafieh": "Achrafieh",
+    "verdun": "Verdun",
+    "gemmayzeh": "Gemmayzeh",
+    "jounieh": "Jounieh",
+    "tripoli": "Tripoli",
+    "saida": "Saida",
+    "tyre": "Tyre",
+    "zahle": "Zahle",
+    "byblos": "Byblos"
   },
   "reviews": {
     "heading": "Reviews",
@@ -595,17 +625,19 @@
     "overrideOpen": "Open now (manually), until {{until}}.",
     "onlineOnly": "This is an online-only store — no shopfront to visit. It delivers across Lebanon."
   },
+  "geolocation": {
+    "denied": "Location permission was denied.",
+    "unavailable": "Your location could not be determined.",
+    "timeout": "The location request timed out.",
+    "unsupported": "This browser does not support geolocation."
+  },
   "locationPicker": {
     "useMyLocation": "Use my current location",
     "locating": "Locating...",
     "clear": "Clear",
     "coords": "Pin: {{lat}}, {{lng}}",
     "noPin": "No pin yet — drag the marker or use your location.",
-    "dragInstead": "Drag the pin to set the location.",
-    "geoDenied": "Location permission was denied.",
-    "geoUnavailable": "Your location could not be determined.",
-    "geoTimeout": "The location request timed out.",
-    "geoUnsupported": "This browser does not support geolocation."
+    "dragInstead": "Drag the pin to set the location."
   },
   "storeLocation": {
     "title": "Location",

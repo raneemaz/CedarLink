@@ -7,8 +7,11 @@ import api from "../../services/api";
 import { lebanonLocations } from "../../data/lebanonLocations";
 import StoreStatusBadge from "../../components/store/StoreStatusBadge";
 import RatingSummary from "../../components/reviews/RatingSummary";
+import NearbySearch from "./NearbySearch";
+import { formattingLocale } from "../../utils/helpers";
 
 const PAGE_SIZE = 12;
+const DEFAULT_RADIUS_KM = 5;
 
 const CITY_OPTIONS = Array.from(
   new Set(
@@ -19,7 +22,7 @@ const CITY_OPTIONS = Array.from(
 ).sort((a, b) => a.localeCompare(b));
 
 function Stores() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [stores, setStores] = useState([]);
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
@@ -31,21 +34,34 @@ function Stores() {
   const [locationInput, setLocationInput] = useState("");
   const [applied, setApplied] = useState({ keyword: "", location: "" });
 
+  // Nearby search. `center` holds the customer's chosen point ONLY for the
+  // lifetime of this view — it goes into the query string and nowhere
+  // else: no localStorage, no URL, no persisted state, no log.
+  const [center, setCenter] = useState(null);
+  const [radiusKm, setRadiusKm] = useState(DEFAULT_RADIUS_KM);
+  const nearby = center !== null;
+
   useEffect(() => {
     let cancelled = false;
 
     const load = async () => {
       setLoading(true);
       try {
-        const response = await api.get("/stores", {
-          params: {
-            keyword: applied.keyword || undefined,
-            location: applied.location || undefined,
-            sort: "name",
-            page,
-            limit: PAGE_SIZE,
-          },
-        });
+        const params = {
+          keyword: applied.keyword || undefined,
+          location: applied.location || undefined,
+          page,
+          limit: PAGE_SIZE,
+        };
+        if (center) {
+          params.near = `${center.lat},${center.lng}`;
+          params.radius = radiusKm;
+          params.sort = "distance";
+        } else {
+          params.sort = "name";
+        }
+
+        const response = await api.get("/stores", { params });
         if (cancelled) return;
 
         setStores(response.data.stores || []);
@@ -66,7 +82,25 @@ function Stores() {
     return () => {
       cancelled = true;
     };
-  }, [applied, page, t]);
+  }, [applied, page, center, radiusKm, t]);
+
+  const setSearchCenter = (next) => {
+    setPage(1);
+    setCenter(next);
+  };
+
+  const changeRadius = (km) => {
+    setPage(1);
+    setRadiusKm(km);
+  };
+
+  const distanceLabel = (km) =>
+    t("storesPage.distanceAway", {
+      count: km,
+      km: new Intl.NumberFormat(formattingLocale(i18n.language), {
+        maximumFractionDigits: 1,
+      }).format(km),
+    });
 
   const handleSearch = (event) => {
     event.preventDefault();
@@ -86,6 +120,13 @@ function Stores() {
             {t("storesPage.subtitle")}
           </p>
         </div>
+
+        <NearbySearch
+          center={center}
+          radiusKm={radiusKm}
+          onCenterChange={setSearchCenter}
+          onRadiusChange={changeRadius}
+        />
 
         <form
           onSubmit={handleSearch}
@@ -138,7 +179,9 @@ function Stores() {
         ) : (
           <>
             <p className="mb-3 text-sm text-gray-500">
-              {t("storesPage.count", { count: total })}
+              {nearby
+                ? t("storesPage.countNearby", { count: total, km: radiusKm })
+                : t("storesPage.count", { count: total })}
             </p>
 
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -154,9 +197,19 @@ function Stores() {
                     </h3>
                     <StoreStatusBadge store={store} className="shrink-0" />
                   </div>
-                  <p className="mt-1 text-sm text-gray-500">
-                    {store.location || t("storesPage.locationNotSet")}
-                  </p>
+                  <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-gray-500">
+                    <span>{store.location || t("storesPage.locationNotSet")}</span>
+                    {store.is_online_only && (
+                      <span className="rounded-full bg-sky-100 px-2 py-0.5 text-xs font-medium text-sky-700">
+                        {t("storesPage.onlineMarker")}
+                      </span>
+                    )}
+                    {typeof store.distance_km === "number" && (
+                      <span className="font-medium text-emerald-700">
+                        · {distanceLabel(store.distance_km)}
+                      </span>
+                    )}
+                  </div>
 
                   <RatingSummary
                     average={store.rating_avg}
