@@ -253,7 +253,8 @@
     "users": "المستخدمون",
     "stores": "المتاجر",
     "categories": "الفئات",
-    "reviews": "التقييمات"
+    "reviews": "التقييمات",
+    "coupons": "القسائم"
   },
   "vendorLayout": {
     "console": "لوحة البائع",
@@ -265,7 +266,8 @@
     "pendingTitle": "متجرك في انتظار موافقة المشرف.",
     "pendingBody": "قم بإعداده وأضف المنتجات الآن — لن يتمكن العملاء من رؤيته حتى تتم الموافقة عليه.",
     "rejectedTitle": "لم تتم الموافقة على متجرك.",
-    "rejectedBodyDefault": "تواصل مع الدعم لمعرفة التفاصيل."
+    "rejectedBodyDefault": "تواصل مع الدعم لمعرفة التفاصيل.",
+    "coupons": "القسائم"
   },
   "productCard": {
     "noImage": "لا توجد صورة",
@@ -722,7 +724,8 @@
     "subtotal": "المجموع الفرعي",
     "total": "الإجمالي",
     "proceedToCheckout": "المتابعة إلى الدفع",
-    "continueShopping": "متابعة التسوّق"
+    "continueShopping": "متابعة التسوّق",
+    "discount": "الخصم"
   },
   "checkout": {
     "loading": "جارٍ تحميل صفحة الدفع…",
@@ -767,7 +770,8 @@
     "errSelectCity": "يرجى اختيار مدينتك.",
     "errSelectPayment": "يرجى اختيار طريقة دفع.",
     "errWaitTotal": "يرجى انتظار احتساب إجمالي التوصيل.",
-    "errPlaceOrder": "تعذّر تأكيد طلبك. يرجى المحاولة مرة أخرى."
+    "errPlaceOrder": "تعذّر تأكيد طلبك. يرجى المحاولة مرة أخرى.",
+    "discount": "الخصم"
   },
   "orders": {
     "loading": "جارٍ تحميل طلباتك…",
@@ -780,7 +784,8 @@
     "deliveryAddress": "عنوان التوصيل",
     "total": "الإجمالي",
     "viewDetails": "عرض التفاصيل",
-    "priceLine": "{{price}} × {{quantity}}"
+    "priceLine": "{{price}} × {{quantity}}",
+    "discountApplied": "قسيمة {{code}}"
   },
   "orderDetails": {
     "loading": "جارٍ تحميل الطلب…",
@@ -796,7 +801,8 @@
     "deliveryFee": "رسوم التوصيل",
     "total": "الإجمالي",
     "priceLine": "{{price}} × {{quantity}}",
-    "loadError": "تعذّر تحميل تفاصيل الطلب."
+    "loadError": "تعذّر تحميل تفاصيل الطلب.",
+    "discount": "الخصم"
   },
   "profile": {
     "loading": "جارٍ تحميل ملفك الشخصي…",
@@ -1396,5 +1402,116 @@
     "filled": "تمت إضافة الترجمة",
     "notFilled": "لا توجد ترجمة بعد",
     "fallbackHint": "العربية والفرنسية اختياريتان — تعودان إلى الإنجليزية عند تركهما فارغتين."
+  },
+  "coupon": {
+    "status": {
+      "active": "نشط",
+      "scheduled": "مجدول",
+      "expired": "منتهٍ",
+      "limitReached": "بلغ الحد",
+      "inactive": "معطّل"
+    },
+    "form": {
+      "code": "الرمز",
+      "codeHint": "يكتبه العملاء عند الدفع. حالة الأحرف لا تهم.",
+      "discountType": "نوع الخصم",
+      "typePercentage": "نسبة مئوية",
+      "typeFixed": "مبلغ ثابت",
+      "valuePercentage": "النسبة",
+      "valueFixed": "المبلغ",
+      "valuePercentageHint": "بين 1 و100.",
+      "valueFixedHint": "بالدولار الأمريكي. يُخصم من قيمة البضائع، لا من رسوم التوصيل.",
+      "minOrderTotal": "الحد الأدنى للطلب",
+      "noMinimum": "بلا حد أدنى",
+      "minOrderTotalHint": "يُحتسب على قيمة البضائع قبل الخصم.",
+      "startsAt": "يبدأ",
+      "endsAt": "ينتهي",
+      "windowHint": "اترك الحقلين فارغين لرمز بلا حدّ زمني.",
+      "usageLimit": "إجمالي مرات الاستخدام",
+      "unlimited": "بلا حدّ",
+      "usageLimitHint": "عدد مرات استخدام هذا الرمز إجمالًا. الطلب الذي يشمل عدة متاجر يصبح طلبًا لكل متجر ويستهلك استخدامًا لكل منها، فقد يستهلك أكثر من واحد.",
+      "perUserLimit": "مرات الاستخدام لكل عميل",
+      "perUserLimitHint": "عدد مرات الاستخدام المتاحة للعميل الواحد — مرات استخدام، لا عدد عملاء. الطلب الواحد الذي يشمل عدة متاجر يستهلك استخدامًا لكل متجر.",
+      "isActive": "نشط",
+      "isActiveHint": "عطّله لإيقاف الرمز دون حذفه.",
+      "createTitle": "قسيمة جديدة",
+      "createPlatformTitle": "قسيمة جديدة لكل المنصة",
+      "editTitle": "تعديل {{code}}",
+      "platformScopeNote": "يعمل هذا الرمز في جميع متاجر CedarLink. لا يمكن استخدام مبلغ ثابت على سلة تشمل أكثر من متجر، أما النسبة المئوية فيمكن.",
+      "create": "إنشاء القسيمة",
+      "saveChanges": "حفظ التغييرات",
+      "errCodeRequired": "الرمز مطلوب.",
+      "errValueRequired": "القيمة مطلوبة.",
+      "errValueNumber": "يجب أن تكون القيمة رقمًا.",
+      "errPercentageRange": "يجب أن تكون النسبة بين 1 و100.",
+      "errFixedPositive": "يجب أن يكون المبلغ أكبر من صفر.",
+      "errWindow": "يجب أن يكون تاريخ الانتهاء بعد تاريخ البدء."
+    },
+    "table": {
+      "code": "الرمز",
+      "store": "المتجر",
+      "discount": "الخصم",
+      "minimum": "الحد الأدنى",
+      "window": "التواريخ",
+      "used": "الاستخدام",
+      "status": "الحالة"
+    },
+    "vendorTitle": "القسائم",
+    "vendorSubtitle": "رموز الخصم الخاصة بـ{{store}}. تنطبق على متجرك وحده.",
+    "adminTitle": "القسائم",
+    "adminSubtitle": "رموز على مستوى المنصة، وكل ما هو فعّال في السوق.",
+    "newCoupon": "قسيمة جديدة",
+    "newPlatformCoupon": "قسيمة جديدة لكل المنصة",
+    "platformSection": "على مستوى المنصة",
+    "storeSection": "قسائم المتاجر",
+    "storeSectionNote": "أنشأها البائعون لمتاجرهم. للاطّلاع فقط هنا.",
+    "platformWide": "كل المنصة",
+    "emptyTitle": "لا توجد قسائم بعد",
+    "emptyBody": "أنشئ رمزًا لتقديم خصم في متجرك.",
+    "emptyPlatformTitle": "لا توجد قسائم على مستوى المنصة",
+    "emptyPlatformBody": "أنشئ واحدة لتقديم خصم في جميع المتاجر.",
+    "emptyStoreScoped": "لم ينشئ أي بائع قسيمة بعد.",
+    "noStore": "أنشئ متجرك قبل إنشاء القسائم.",
+    "windowAlways": "بلا حدّ زمني",
+    "windowBoth": "{{from}} - {{to}}",
+    "windowFrom": "من {{from}}",
+    "windowUntil": "حتى {{to}}",
+    "usedOfLimit_zero": "استُخدم {{used}} من {{limit}}",
+    "usedOfLimit_one": "استُخدم {{used}} من استخدام واحد",
+    "usedOfLimit_two": "استُخدم {{used}} من استخدامين",
+    "usedOfLimit_few": "استُخدم {{used}} من {{limit}} استخدامات",
+    "usedOfLimit_many": "استُخدم {{used}} من {{limit}} استخدامًا",
+    "usedOfLimit_other": "استُخدم {{used}} من {{limit}} استخدام",
+    "usedUnlimited_zero": "لم يُستخدم بعد",
+    "usedUnlimited_one": "استُخدم مرة واحدة",
+    "usedUnlimited_two": "استُخدم مرتين",
+    "usedUnlimited_few": "استُخدم {{count}} مرات",
+    "usedUnlimited_many": "استُخدم {{count}} مرة",
+    "usedUnlimited_other": "استُخدم {{count}} مرة",
+    "fieldLabel": "لديك رمز قسيمة؟",
+    "placeholder": "أدخل الرمز",
+    "apply": "تطبيق",
+    "applying": "جارٍ التطبيق...",
+    "removeAria": "إزالة القسيمة {{code}}",
+    "editAria": "تعديل القسيمة {{code}}",
+    "deleteAria": "حذف القسيمة {{code}}",
+    "toastCreated": "تم إنشاء القسيمة.",
+    "toastUpdated": "تم تحديث القسيمة.",
+    "toastDeleted": "تم حذف القسيمة.",
+    "errLoad": "تعذّر تحميل القسائم.",
+    "errSave": "تعذّر حفظ القسيمة.",
+    "errDelete": "تعذّر حذف القسيمة.",
+    "errEmpty": "أدخل رمز القسيمة.",
+    "errClear": "تعذّرت إزالة القسيمة.",
+    "errGeneric": "تعذّر تطبيق هذه القسيمة.",
+    "errUnknown": "هذا الرمز غير معروف لدينا.",
+    "errInactive": "هذه القسيمة لم تعد متاحة.",
+    "errNotStarted": "هذه القسيمة لم تبدأ بعد.",
+    "errExpired": "انتهت صلاحية هذه القسيمة.",
+    "errBelowMinimum": "يجب أن يبلغ طلبك {{amount}} قبل تطبيق هذه القسيمة.",
+    "errUsageLimit": "استُنفدت هذه القسيمة بالكامل.",
+    "errUserLimit": "لقد استخدمت هذه القسيمة من قبل.",
+    "errWrongStore": "هذه القسيمة غير صالحة لمتاجر سلتك.",
+    "errFixedMultiStore": "لا يمكن استخدام هذه القسيمة على سلة من أكثر من متجر."
   }
 }

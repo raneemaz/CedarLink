@@ -160,9 +160,22 @@ function Orders() {
                     {t("orders.total")}
                   </p>
 
-                  <p className="text-xl font-bold text-emerald-700">
+                  <p className="text-xl font-bold text-emerald-700" dir="ltr">
                     ${Number(order.total_price).toFixed(2)}
                   </p>
+
+                  {/* The order the customer has just placed lands here, so
+                      this is where they first see what came off. */}
+                  {Number(order.discount) > 0 && (
+                    <p className="mt-0.5 text-xs font-medium text-emerald-700">
+                      {t("orders.discountApplied", {
+                        code: order.coupon_code,
+                      })}{" "}
+                      <span dir="ltr">
+                        −${Number(order.discount).toFixed(2)}
+                      </span>
+                    </p>
+                  )}
                 </div>
 
                 <Link

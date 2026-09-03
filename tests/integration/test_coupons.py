@@ -13,6 +13,7 @@ from decimal import Decimal
 from flask_jwt_extended import create_access_token
 
 from app.extensions import db
+from app.models.cart import Cart
 from app.models.coupon import Coupon
 from app.models.coupon_redemption import CouponRedemption
 from app.services import coupon_service
@@ -599,13 +600,16 @@ def test_applying_a_coupon_holds_it_and_clearing_drops_it(
     add_to_cart(customer, make_product(price=Decimal("100.00"), stock=5), 1)
     make_coupon(code="SAVE10", value="10")
 
+    # No delivery city: a discount only touches the goods, so the cart can
+    # apply a code before the customer has said where it is going.
     applied = client.post(
-        CART_COUPON_URL,
-        json={"code": "save10", "delivery_city": CITY},
-        headers=auth(customer),
+        CART_COUPON_URL, json={"code": "save10"}, headers=auth(customer),
     )
     assert applied.status_code == 200
-    assert applied.get_json()["discount"] == 10.00
+    body = applied.get_json()
+    assert body["discount"] == 10.00
+    assert body["subtotal"] == 100.00
+    assert body["total"] == 90.00
 
     # Held: a later quote that names no code still gets the discount.
     held = _preview(client, auth, customer).get_json()
@@ -627,9 +631,7 @@ def test_applying_a_bad_coupon_does_not_hold_it(
     make_coupon(code="GONE", ends_at=_utc(days=-1))
 
     rejected = client.post(
-        CART_COUPON_URL,
-        json={"code": "GONE", "delivery_city": CITY},
-        headers=auth(customer),
+        CART_COUPON_URL, json={"code": "GONE"}, headers=auth(customer),
     )
     assert rejected.status_code == 400
     assert rejected.get_json()["code"] == coupon_service.EXPIRED
@@ -645,16 +647,57 @@ def test_checkout_spends_the_held_code(
     add_to_cart(customer, product, 1)
 
     client.post(
-        CART_COUPON_URL,
-        json={"code": "SAVE10", "delivery_city": CITY},
-        headers=auth(customer),
+        CART_COUPON_URL, json={"code": "SAVE10"}, headers=auth(customer),
     )
 
     assert _checkout(client, auth, customer).get_json()["discount"] == 10.00
 
+    # Cleared on the row itself, not merely absent from the next quote:
+    # a spent code must not ride along into the customer's next basket.
+    cart = Cart.query.filter_by(user_id=customer.id).one()
+    assert cart.coupon_code is None
+
     # The next cart starts clean.
     add_to_cart(customer, product, 1)
     assert _preview(client, auth, customer).get_json()["coupon_code"] is None
+
+
+def test_the_order_payload_carries_what_was_taken_off(
+    client, auth, customer, make_product, add_to_cart
+):
+    """A customer has to be able to see the discount after the fact, so it
+    is on the order itself and not only on the checkout reply."""
+    add_to_cart(customer, make_product(price=Decimal("100.00"), stock=5), 1)
+    make_coupon(code="SAVE10", value="10")
+
+    order_id = (
+        _checkout(client, auth, customer, "SAVE10")
+        .get_json()["orders"][0]["id"]
+    )
+
+    detail = client.get(
+        f"/api/orders/{order_id}", headers=auth(customer)
+    ).get_json()
+    order = detail.get("order", detail)
+
+    assert order["discount"] == 10.00
+    assert order["coupon_code"] == "SAVE10"
+
+
+def test_an_undiscounted_order_reports_no_coupon(
+    client, auth, customer, make_product, add_to_cart
+):
+    add_to_cart(customer, make_product(price=Decimal("100.00"), stock=5), 1)
+
+    order_id = _checkout(client, auth, customer).get_json()["orders"][0]["id"]
+
+    detail = client.get(
+        f"/api/orders/{order_id}", headers=auth(customer)
+    ).get_json()
+    order = detail.get("order", detail)
+
+    assert order["discount"] == 0.0
+    assert order["coupon_code"] is None
 
 
 # --------------------------------------------------------------------------- #

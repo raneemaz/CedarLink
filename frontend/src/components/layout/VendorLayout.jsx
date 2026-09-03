@@ -5,6 +5,7 @@ import {
   Store,
   Package,
   ClipboardList,
+  TicketPercent,
   ArrowLeft,
   AlertTriangle,
 } from "lucide-react";
@@ -15,6 +16,7 @@ const NAV_ITEMS = [
   { to: "/vendor/store", key: "store", icon: Store },
   { to: "/vendor/products", key: "products", icon: Package },
   { to: "/vendor/orders", key: "orders", icon: ClipboardList },
+  { to: "/vendor/coupons", key: "coupons", icon: TicketPercent },
 ];
 
 function VendorLayout() {

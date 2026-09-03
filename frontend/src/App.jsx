@@ -25,11 +25,13 @@ import VendorStore from "./pages/Vendor/VendorStore";
 import VendorProducts from "./pages/Vendor/VendorProducts";
 import VendorProductForm from "./pages/Vendor/VendorProductForm";
 import VendorOrders from "./pages/Vendor/VendorOrders";
+import VendorCoupons from "./pages/Vendor/VendorCoupons";
 import AdminOverview from "./pages/Admin/AdminOverview";
 import AdminUsers from "./pages/Admin/AdminUsers";
 import AdminStores from "./pages/Admin/AdminStores";
 import AdminCategories from "./pages/Admin/AdminCategories";
 import AdminReviews from "./pages/Admin/AdminReviews";
+import AdminCoupons from "./pages/Admin/AdminCoupons";
 import Settings from "./pages/Settings/Settings";
 import SavedAddresses from "./pages/Settings/SavedAddresses";
 import AddAddress from "./pages/Settings/AddAddress";
@@ -138,6 +140,7 @@ function App() {
           element={<VendorProductForm />}
         />
         <Route path="orders" element={<VendorOrders />} />
+        <Route path="coupons" element={<VendorCoupons />} />
         <Route path="*" element={<NotFound />} />
       </Route>
 
@@ -155,6 +158,7 @@ function App() {
         <Route path="stores" element={<AdminStores />} />
         <Route path="categories" element={<AdminCategories />} />
         <Route path="reviews" element={<AdminReviews />} />
+        <Route path="coupons" element={<AdminCoupons />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>

@@ -68,6 +68,17 @@ class Order(db.Model):
         back_populates="orders"
     )
 
+    # At most one, written in the same transaction as the order (ADR
+    # 0021). viewonly: the redemption owns the link, and cancellation
+    # deletes the row through coupon_service, not through this side.
+    # selectin so serialising a list of orders stays one extra query.
+    coupon_redemption = db.relationship(
+        "CouponRedemption",
+        uselist=False,
+        viewonly=True,
+        lazy="selectin",
+    )
+
     items = db.relationship(
         "OrderItem",
         back_populates="order",

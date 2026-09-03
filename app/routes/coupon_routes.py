@@ -300,11 +300,26 @@ def delete_store_coupon(store_id, coupon_id):
 @admin_coupon_bp.route("/coupons", methods=["GET"])
 @role_required("admin")
 def admin_list_coupons():
-    """Every coupon, platform-wide and store-scoped alike."""
-    coupons = Coupon.query.order_by(Coupon.created_at.desc()).all()
+    """Every coupon, platform-wide and store-scoped alike.
+
+    ``store_name`` is added here rather than in ``Coupon.to_dict``: the
+    base serializer is an allowlist, and this is the one caller that needs
+    to label somebody else's coupon (CLAUDE.md). Joined rather than looked
+    up per row — an administrator scanning the marketplace should not cost
+    one query per coupon.
+    """
+    rows = (
+        db.session.query(Coupon, Store.name)
+        .outerjoin(Store, Coupon.store_id == Store.id)
+        .order_by(Coupon.created_at.desc())
+        .all()
+    )
 
     return jsonify({
-        "coupons": [coupon.to_dict() for coupon in coupons]
+        "coupons": [
+            {**coupon.to_dict(), "store_name": store_name}
+            for coupon, store_name in rows
+        ]
     }), 200
 
 

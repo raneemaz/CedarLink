@@ -23,7 +23,9 @@ def get_cart():
     if not cart:
         return jsonify({
             "stores": [],
-            "total": 0
+            "total": 0,
+            "coupon_code": None,
+            "discount": 0,
         }), 200
 
     stores = {}
@@ -66,10 +68,17 @@ def get_cart():
         for store in store_groups
     )
 
+    # Goods only — the cart has no delivery city, so no fees. Computed by
+    # the same function checkout uses, so the cart cannot quote a discount
+    # the order would not honour.
+    coupon_code, discount = order_service.cart_discount(cart, user_id)
+
     return jsonify({
         "cart_id": cart.id,
         "stores": store_groups,
-        "total": total
+        "total": total,
+        "coupon_code": coupon_code,
+        "discount": float(discount),
     }), 200
 
 
@@ -263,9 +272,12 @@ def apply_coupon():
     if not cart:
         return jsonify({"error": "Cart is empty"}), 400
 
+    # Validated against the goods, which is all a discount ever touches —
+    # so the cart can apply a code without knowing where it is going. The
+    # checkout page re-prices with its own city and gets the fees.
     try:
-        pricing = order_service.price_cart(
-            user_id, data.get("delivery_city"), code
+        applied, discount, goods = order_service.price_cart_goods(
+            cart, user_id, code
         )
     except OrderError as exc:
         return jsonify(exc.payload), exc.status_code
@@ -275,7 +287,12 @@ def apply_coupon():
     cart.coupon_code = code
     db.session.commit()
 
-    return jsonify(order_service.serialize_quote(pricing)), 200
+    return jsonify({
+        "coupon_code": applied,
+        "discount": float(discount),
+        "subtotal": float(goods),
+        "total": float(goods - discount),
+    }), 200
 
 
 @cart_bp.route("/coupon", methods=["DELETE"])

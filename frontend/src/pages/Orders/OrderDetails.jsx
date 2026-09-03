@@ -66,7 +66,13 @@ function OrderDetails() {
   0
 );
 
-const deliveryFee = Number(order.total_price || 0) - subtotal;
+const discount = Number(order.discount || 0);
+
+// total_price = goods - discount + delivery, so the fee is what is left
+// once the discount is added back. Deriving it as total - subtotal alone
+// would silently subtract the discount from the delivery line and could
+// even show it negative.
+const deliveryFee = Number(order.total_price || 0) - subtotal + discount;
 
 const total = Number(order.total_price || 0);
 
@@ -192,7 +198,7 @@ const total = Number(order.total_price || 0);
           {t("orderDetails.subtotal")}
         </span>
 
-        <span className="font-medium">
+        <span className="font-medium" dir="ltr">
           ${subtotal.toFixed(2)}
         </span>
       </div>
@@ -202,16 +208,31 @@ const total = Number(order.total_price || 0);
           {t("orderDetails.deliveryFee")}
         </span>
 
-        <span className="font-medium">
+        <span className="font-medium" dir="ltr">
           ${deliveryFee.toFixed(2)}
         </span>
       </div>
+
+      {discount > 0 && (
+        <div className="flex justify-between text-emerald-700">
+          <span>
+            {t("orderDetails.discount")}{" "}
+            <span dir="ltr" className="font-mono text-xs">
+              {order.coupon_code}
+            </span>
+          </span>
+
+          <span dir="ltr" className="font-medium">
+            −${discount.toFixed(2)}
+          </span>
+        </div>
+      )}
 
       <div className="border-t border-slate-200 pt-4">
         <div className="flex justify-between text-lg font-bold">
           <span>{t("orderDetails.total")}</span>
 
-          <span className="text-emerald-700">
+          <span className="text-emerald-700" dir="ltr">
             ${total.toFixed(2)}
           </span>
         </div>
