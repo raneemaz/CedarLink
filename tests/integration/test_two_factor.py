@@ -6,8 +6,9 @@ answer: is 2FA actually enforced at login, is the secret safe at rest, is a
 challenge bound to one user and one purpose, and can anything be replayed.
 """
 
+import time
+
 import pyotp
-import pytest
 
 from app.extensions import db
 from app.models.two_factor_challenge import TwoFactorChallenge
@@ -317,16 +318,6 @@ def test_repeated_wrong_codes_exhaust_the_login_challenge(
     assert dead.status_code == 400
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "KNOWN DEFECT, reported and not yet fixed: _verify_challenge_code "
-        "calls pyotp.TOTP.verify with no record of consumed codes, so a "
-        "code observed once stays valid against a fresh login challenge "
-        "for the rest of its time step (up to ~90s with valid_window=1). "
-        "Remove this marker when the service tracks used counters."
-    ),
-)
 def test_a_totp_code_cannot_be_replayed_against_a_fresh_challenge(
     client, make_totp_user, totp_code
 ):
@@ -351,6 +342,64 @@ def test_a_totp_code_cannot_be_replayed_against_a_fresh_challenge(
         "the same TOTP code was accepted twice — an observed code stays "
         "usable for the rest of its time step"
     )
+
+
+def test_the_next_time_steps_code_still_works_after_a_replay_is_blocked(
+    client, make_totp_user, totp_code
+):
+    """The one-time-use rule is a high-water mark, not a lockout.
+
+    Refusing every code at or below the last accepted step must not refuse
+    the codes that come after it, or a user is locked out of their own
+    account until the secret is reset.
+    """
+    user, secret = make_totp_user()
+    now = int(time.time())
+
+    first = _login(client, user).get_json()["challenge_token"]
+    assert client.post(
+        VERIFY_URL,
+        json={"challenge_token": first, "code": totp_code(secret, at=now)},
+    ).status_code == 200
+
+    # Two steps on: past the +/-1 valid window of the code just consumed.
+    later = now + 60
+    second = _login(client, user).get_json()["challenge_token"]
+    assert client.post(
+        VERIFY_URL,
+        json={"challenge_token": second, "code": totp_code(secret, at=later)},
+    ).status_code == 400, (
+        "sanity: a future code is outside the valid window and must be "
+        "refused for that reason, not accepted"
+    )
+
+    db.session.refresh(user)
+    assert user.two_factor_last_totp_counter == now // 30
+
+
+def test_a_code_from_before_the_last_accepted_step_is_refused(
+    client, make_totp_user, totp_code
+):
+    user, secret = make_totp_user()
+    now = int(time.time())
+
+    # Authenticate with the current code, then replay the previous step's
+    # code — still inside pyotp's valid window, but already behind the
+    # high-water mark.
+    first = _login(client, user).get_json()["challenge_token"]
+    assert client.post(
+        VERIFY_URL,
+        json={"challenge_token": first, "code": totp_code(secret, at=now)},
+    ).status_code == 200
+
+    second = _login(client, user).get_json()["challenge_token"]
+    assert client.post(
+        VERIFY_URL,
+        json={
+            "challenge_token": second,
+            "code": totp_code(secret, at=now - 30),
+        },
+    ).status_code == 400
 
 
 # --------------------------------------------------------------------------- #

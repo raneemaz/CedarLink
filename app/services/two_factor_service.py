@@ -2,6 +2,7 @@ import base64
 import hashlib
 import io
 import re
+import hmac
 import secrets
 import smtplib
 import ssl
@@ -869,6 +870,34 @@ def _record_failed_attempt(challenge):
     db.session.commit()
 
 
+def _matching_totp_counter(secret, code, valid_window=1):
+    """The TOTP time step ``code`` verifies against, or None.
+
+    ``pyotp.TOTP.verify`` only answers yes/no, so enforcing one-time use
+    means finding *which* step matched. This walks the same window verify()
+    walks -- the current step plus/minus ``valid_window`` -- and compares
+    each step's code in constant time.
+    """
+    code = _normalize_code(code)
+
+    if not code:
+        return None
+
+    totp = pyotp.TOTP(secret)
+
+    step_seconds = totp.interval
+
+    current_step = int(datetime.now(timezone.utc).timestamp()) // step_seconds
+
+    for offset in range(-valid_window, valid_window + 1):
+        step = current_step + offset
+
+        if hmac.compare_digest(totp.at(step * step_seconds), code):
+            return step
+
+    return None
+
+
 def _verify_challenge_code(challenge, user, code):
     code = _normalize_code(code)
 
@@ -890,10 +919,25 @@ def _verify_challenge_code(challenge, user, code):
     except TwoFactorError:
         return False
 
-    return pyotp.TOTP(secret).verify(
-        code,
-        valid_window=1,
-    )
+    counter = _matching_totp_counter(secret, code)
+
+    if counter is None:
+        return False
+
+    # RFC 6238 s5.2: a code is accepted at most once. Consuming the
+    # challenge is not enough on its own -- an attacker who observes a code
+    # can open a *fresh* challenge and replay it there for the rest of the
+    # window. The last accepted time step is the high-water mark, and time
+    # steps only move forward, so refusing anything at or below it closes
+    # the replay without any per-code bookkeeping.
+    last_counter = user.two_factor_last_totp_counter
+
+    if last_counter is not None and counter <= last_counter:
+        return False
+
+    user.two_factor_last_totp_counter = counter
+
+    return True
 
 
 def _consume_recovery_code(user, code):
