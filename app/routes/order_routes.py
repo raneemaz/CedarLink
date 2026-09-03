@@ -4,6 +4,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.extensions import db
 from app.models.payment_method import PaymentMethod
 from app.services import order_service
+from app.services.coupon_service import CouponError
 from app.services.order_service import OrderError
 from app.utils.errors import internal_error
 
@@ -55,8 +56,12 @@ def checkout_preview():
     data = request.get_json() or {}
 
     try:
-        pricing = order_service.price_cart(user_id, data.get("delivery_city"))
+        pricing = order_service.price_cart(
+            user_id, data.get("delivery_city"), data.get("coupon_code")
+        )
     except OrderError as exc:
+        return jsonify(exc.payload), exc.status_code
+    except CouponError as exc:
         return jsonify(exc.payload), exc.status_code
 
     return jsonify(order_service.serialize_quote(pricing)), 200
@@ -82,10 +87,19 @@ def checkout():
         return jsonify({"error": "Delivery city is required"}), 400
 
     try:
+        # Only the code is read from the body. Any "discount" the client
+        # cares to send is ignored — the amount is computed server-side
+        # from the coupon record, in price_cart, and nowhere else.
         result = order_service.checkout(
-            user_id, delivery_address, delivery_city
+            user_id,
+            delivery_address,
+            delivery_city,
+            data.get("coupon_code"),
         )
     except OrderError as exc:
+        db.session.rollback()
+        return jsonify(exc.payload), exc.status_code
+    except CouponError as exc:
         db.session.rollback()
         return jsonify(exc.payload), exc.status_code
     except Exception as exc:

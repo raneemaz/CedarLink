@@ -17,10 +17,12 @@ from app.extensions import db
 from app.models.cart import Cart
 from app.models.cart_item import CartItem
 from app.models.order import Order
+from app.models.coupon_redemption import CouponRedemption
 from app.models.order_item import OrderItem
 from app.models.product import Product
 from app.models.store import Store
-from app.services import store_service
+from app.models.user import User
+from app.services import coupon_service, store_service
 from app.services.notification_service import (
     notify_order_canceled,
     notify_order_placed,
@@ -119,12 +121,16 @@ def _serialize_status_change(order):
 # Pricing — the single source of truth (CL-15)
 # --------------------------------------------------------------------------- #
 
-def price_cart(user_id, delivery_city):
+def price_cart(user_id, delivery_city, coupon_code=None):
     """Group the user's cart by store and compute subtotals + delivery fees.
 
     Returns a dict holding the resolved city, the flat cart-item list (for
     the caller that persists), and one entry per store with its ``Store``,
-    its cart items, subtotal, delivery fee and total.
+    its cart items, subtotal, delivery fee, discount and total.
+
+    ``coupon_code`` defaults to whatever the cart has applied. The
+    discount is always computed here, from the coupon record — a
+    client-submitted amount is never read, let alone trusted.
 
     Raises ``OrderError`` — with the legacy status code and body — on an
     empty cart, a vanished or hidden product, insufficient stock, a missing
@@ -218,20 +224,67 @@ def price_cart(user_id, delivery_city):
             "items": grouped_items,
             "subtotal": subtotal,
             "delivery_fee": delivery_fee,
+            "discount": Decimal("0.00"),
             "total": subtotal + delivery_fee,
         })
 
         subtotal_total += subtotal
         delivery_total += delivery_fee
 
+    coupon = _apply_coupon(cart, user_id, coupon_code, stores)
+
+    discount_total = sum(
+        (group["discount"] for group in stores), Decimal("0")
+    )
+
     return {
         "delivery_city": city,
         "cart_items": cart_items,
         "stores": stores,
+        "coupon": coupon,
+        "coupon_code": coupon.code if coupon else None,
         "subtotal": subtotal_total,
         "delivery_fee": delivery_total,
-        "total": subtotal_total + delivery_total,
+        "discount": discount_total,
+        "total": subtotal_total + delivery_total - discount_total,
     }
+
+
+def _apply_coupon(cart, user_id, coupon_code, stores):
+    """Discount each store group in place; return the coupon, or None.
+
+    The discount comes off the **goods subtotal only** — never the delivery
+    fee, which is a real cost the store incurs whatever the customer paid
+    for the goods. ``coupon_service.discount_for`` clamps it to the goods
+    it is discounting, so a store total can fall to its delivery fee but
+    never below zero.
+
+    A store-scoped coupon touches only its own store's group; the other
+    orders in a multi-store cart are untouched. A platform-wide percentage
+    applies to each group, which sums to the same number as applying it to
+    the whole basket. A platform-wide fixed amount never reaches here on a
+    multi-store cart — validate_for_cart refuses it. See ADR 0021.
+    """
+    if coupon_code is None:
+        coupon_code = cart.coupon_code
+
+    if not coupon_service.normalize_code(coupon_code):
+        return None
+
+    user = db.session.get(User, user_id)
+
+    coupon = coupon_service.validate_for_cart(coupon_code, user, stores)
+
+    for group in stores:
+        if coupon.store_id is not None and group["store_id"] != coupon.store_id:
+            continue
+
+        discount = coupon_service.discount_for(coupon, group["subtotal"])
+
+        group["discount"] = discount
+        group["total"] = group["subtotal"] - discount + group["delivery_fee"]
+
+    return coupon
 
 
 def serialize_quote(pricing):
@@ -243,6 +296,8 @@ def serialize_quote(pricing):
         "delivery_city": pricing["delivery_city"],
         "subtotal": float(pricing["subtotal"]),
         "delivery_fee": float(pricing["delivery_fee"]),
+        "discount": float(pricing["discount"]),
+        "coupon_code": pricing["coupon_code"],
         "total": float(pricing["total"]),
         "stores": [
             {
@@ -250,6 +305,7 @@ def serialize_quote(pricing):
                 "store_name": group["store_name"],
                 "subtotal": float(group["subtotal"]),
                 "delivery_fee": float(group["delivery_fee"]),
+                "discount": float(group["discount"]),
                 "total": float(group["total"]),
             }
             for group in pricing["stores"]
@@ -290,13 +346,20 @@ def _reserve_stock(product, quantity):
         )
 
 
-def checkout(user_id, delivery_address, delivery_city):
+def checkout(user_id, delivery_address, delivery_city, coupon_code=None):
     """Turn the priced cart into one order per store and empty the cart.
 
-    Raises ``OrderError`` for the pricing failures above; lets unexpected
-    errors propagate so the route can roll back and return its 500 shape.
+    Raises ``OrderError`` for the pricing failures above, ``CouponError``
+    for a coupon that has stopped being usable; lets unexpected errors
+    propagate so the route can roll back and return its 500 shape.
+
+    The coupon is claimed here, not at pricing time: a preview must never
+    consume a use. Each order redeems one use and carries its own
+    redemption row, so cancelling one order releases exactly what that
+    order took — the same per-order symmetry as restoring stock.
     """
-    pricing = price_cart(user_id, delivery_city)
+    pricing = price_cart(user_id, delivery_city, coupon_code)
+    coupon = pricing["coupon"]
 
     address = delivery_address.strip()
     city = pricing["delivery_city"]
@@ -316,6 +379,12 @@ def checkout(user_id, delivery_address, delivery_city):
         db.session.add(order)
         db.session.flush()
 
+        if coupon is not None and group["discount"] > 0:
+            coupon_service.claim(coupon, user_id)
+            coupon_service.record(
+                coupon, user_id, order.id, group["discount"]
+            )
+
         for entry in group["items"]:
             _reserve_stock(entry["product"], entry["cart_item"].quantity)
 
@@ -330,10 +399,16 @@ def checkout(user_id, delivery_address, delivery_city):
             "order": order,
             "subtotal": group["subtotal"],
             "delivery_fee": group["delivery_fee"],
+            "discount": group["discount"],
         })
 
     for item in pricing["cart_items"]:
         db.session.delete(item)
+
+    # The code is spent; it must not survive into the next cart.
+    cart = Cart.query.filter_by(user_id=user_id).first()
+    if cart is not None:
+        cart.coupon_code = None
 
     db.session.commit()
 
@@ -343,6 +418,8 @@ def checkout(user_id, delivery_address, delivery_city):
 
     return {
         "message": "Checkout successful",
+        "coupon_code": pricing["coupon_code"],
+        "discount": float(pricing["discount"]),
         "checkout_price": float(
             sum(
                 (entry["order"].total_price for entry in created),
@@ -357,6 +434,7 @@ def checkout(user_id, delivery_address, delivery_city):
                 "subtotal": float(entry["subtotal"]),
                 "delivery_city": city,
                 "delivery_fee": float(entry["delivery_fee"]),
+                "discount": float(entry["discount"]),
                 "total_price": float(entry["order"].total_price),
             }
             for entry in created
@@ -513,6 +591,13 @@ def cancel_order(user_id, order_id):
 
         if product:
             product.stock += item.quantity
+
+    # Same symmetry as the stock above: whatever this order consumed, it
+    # gives back. The code becomes usable again.
+    redemption = CouponRedemption.query.filter_by(order_id=order.id).first()
+
+    if redemption is not None:
+        coupon_service.release(redemption.coupon_id, order.id)
 
     db.session.commit()
 

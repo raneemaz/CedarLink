@@ -68,8 +68,14 @@ def create_app(config_object=None):
     from app.routes.notification_routes import notification_bp
     from app.routes.vendor_routes import vendor_bp
     from app.routes.review_routes import review_bp
+    from app.routes.coupon_routes import (
+        admin_coupon_bp,
+        vendor_coupon_bp,
+    )
 
     app.register_blueprint(admin_bp, url_prefix="/api/admin")
+    app.register_blueprint(admin_coupon_bp, url_prefix="/api/admin")
+    app.register_blueprint(vendor_coupon_bp)
     # Delivery routes are defined as /delivery/... — mount them under /api so
     # they share the API surface every other blueprint uses.
     app.register_blueprint(delivery_bp, url_prefix="/api")
