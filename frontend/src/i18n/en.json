@@ -490,7 +490,8 @@
     "showAll": "Show all stores",
     "yourLocation": "your location",
     "centeredOn": "Showing stores near {{place}}, nearest first.",
-    "useThePicker": "Choose a place from the list instead."
+    "useThePicker": "Choose a place from the list instead.",
+    "savedAddresses": "Saved addresses:"
   },
   "places": {
     "beirut": "Beirut",
@@ -818,6 +819,8 @@
     "cityPlaceholder": "Enter city",
     "deliveryInstructions": "Delivery Instructions",
     "deliveryInstructionsPlaceholder": "Example: Leave at the door",
+    "pinField": "Map pin (optional)",
+    "pinHelp": "Pin this address on the map to search for stores near it. You can save the address without a pin.",
     "setDefaultAddress": "Set as default address",
     "setDefaultAddressDesc": "Your default address will be selected automatically during checkout.",
     "cancel": "Cancel",

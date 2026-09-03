@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 import api from "../../services/api";
+import { useAuth } from "../../context/AuthContext";
 import { lebanonLocations } from "../../data/lebanonLocations";
 import StoreStatusBadge from "../../components/store/StoreStatusBadge";
 import RatingSummary from "../../components/reviews/RatingSummary";
@@ -23,6 +24,7 @@ const CITY_OPTIONS = Array.from(
 
 function Stores() {
   const { t, i18n } = useTranslation();
+  const { isAuthenticated } = useAuth();
   const [stores, setStores] = useState([]);
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
@@ -40,6 +42,39 @@ function Stores() {
   const [center, setCenter] = useState(null);
   const [radiusKm, setRadiusKm] = useState(DEFAULT_RADIUS_KM);
   const nearby = center !== null;
+
+  // The customer's own saved addresses, offered as one-tap search centres.
+  // Unlike the live geolocation above, these coordinates are already
+  // stored — the customer pinned them deliberately when saving the
+  // address (ADR 0018). Signed-out visitors get "near me" and the place
+  // picker only; /addresses is authenticated.
+  const [savedAddresses, setSavedAddresses] = useState([]);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setSavedAddresses([]);
+      return;
+    }
+
+    let cancelled = false;
+
+    api
+      .get("/addresses")
+      .then((response) => {
+        if (!cancelled) {
+          setSavedAddresses(response.data.addresses || []);
+        }
+      })
+      .catch(() => {
+        // A shortcut that fails to load is not worth interrupting the
+        // store listing for — the other two centres still work.
+        if (!cancelled) setSavedAddresses([]);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated]);
 
   useEffect(() => {
     let cancelled = false;
@@ -126,6 +161,7 @@ function Stores() {
           radiusKm={radiusKm}
           onCenterChange={setSearchCenter}
           onRadiusChange={changeRadius}
+          savedAddresses={savedAddresses}
         />
 
         <form

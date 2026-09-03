@@ -150,6 +150,40 @@ for that one request only. They are **not logged** — not in an access
 log line, not in an analytics event, nowhere. The route has no logging on
 that path and a comment says why.
 
+### Two kinds of coordinate, and only one of them is stored
+
+Since the saved-address slice landed, `/stores` can be centred on three
+things, and they do **not** get the same treatment:
+
+| centre | source | stored? |
+|---|---|---|
+| "Near me" | `navigator.geolocation`, on press only | **never** |
+| A Lebanese place | hardcoded table, not personal data | n/a |
+| A saved address | `Address.latitude` / `longitude` | **yes, already** |
+
+The distinction is consent, not sensitivity. **Live geolocation is
+where the customer is right now.** They did not ask us to keep it, only
+to use it, so it lives in React state for the lifetime of the view and
+goes into the query string and nowhere else — no `localStorage`, no URL,
+no persisted state, no log.
+
+**A saved address is different: the customer deliberately saved it.**
+They opened the address form, dropped a pin, and pressed save. Persisting
+it is the whole point of the feature — the pin is theirs, it is attached
+to an address they chose to keep, and they can clear it from the same
+form. Reusing it as a search centre discloses nothing they have not
+already stored on purpose, and it spares them a geolocation prompt on
+every visit.
+
+So: **storing the pin is fine because the customer saved it; storing the
+live fix would not be, because they did not.** Do not let the two merge —
+in particular, do not "helpfully" write a live geolocation fix onto a
+saved address, and do not use a saved pin as an implicit default centre
+without the customer tapping it.
+
+The pin stays optional. An address with no coordinates saves and behaves
+exactly as it did before; it simply does not appear as a search centre.
+
 ## Migration
 
 `da88ef8e28e3` — `stores` + `addresses` gain `latitude` / `longitude`;
