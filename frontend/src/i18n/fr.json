@@ -490,7 +490,8 @@
     "showAll": "Voir tous les magasins",
     "yourLocation": "votre position",
     "centeredOn": "Magasins près de {{place}}, du plus proche au plus loin.",
-    "useThePicker": "Choisissez plutôt un lieu dans la liste."
+    "useThePicker": "Choisissez plutôt un lieu dans la liste.",
+    "savedAddresses": "Adresses enregistrées :"
   },
   "places": {
     "beirut": "Beyrouth",
@@ -818,6 +819,8 @@
     "cityPlaceholder": "Saisissez la ville",
     "deliveryInstructions": "Instructions de livraison",
     "deliveryInstructionsPlaceholder": "Exemple : Laisser devant la porte",
+    "pinField": "Repère sur la carte (facultatif)",
+    "pinHelp": "Placez un repère sur la carte pour rechercher les boutiques proches de cette adresse. Vous pouvez enregistrer l'adresse sans repère.",
     "setDefaultAddress": "Définir comme adresse par défaut",
     "setDefaultAddressDesc": "Votre adresse par défaut sera sélectionnée automatiquement lors du paiement.",
     "cancel": "Annuler",

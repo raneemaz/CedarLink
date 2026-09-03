@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import api from "../../services/api";
 import BackLink from "../../components/common/BackLink";
+import LocationPicker from "../../components/map/LocationPicker";
 
 function EditAddress() {
   const navigate = useNavigate();
@@ -18,6 +19,8 @@ function EditAddress() {
     city: "",
     delivery_instructions: "",
     is_default: false,
+    latitude: null,
+    longitude: null,
   });
 
   const [loading, setLoading] = useState(true);
@@ -39,6 +42,8 @@ function EditAddress() {
           city: address.city || "",
           delivery_instructions: address.delivery_instructions || "",
           is_default: address.is_default || false,
+          latitude: address.latitude ?? null,
+          longitude: address.longitude ?? null,
         });
       } catch (error) {
         console.error("Error fetching address:", error);
@@ -257,6 +262,39 @@ function EditAddress() {
                 placeholder={t("addresses.deliveryInstructionsPlaceholder")}
                 rows="3"
                 className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
+              />
+            </div>
+
+            {/* Map pin — optional. An address with no pin saves and
+                behaves exactly as it did before this existed; it just
+                cannot be used as a search centre on /stores. */}
+            <div>
+              <span className="mb-2 block text-sm font-medium text-gray-700">
+                {t("addresses.pinField")}
+              </span>
+
+              <p className="mb-3 text-xs text-gray-500">
+                {t("addresses.pinHelp")}
+              </p>
+
+              <LocationPicker
+                latitude={formData.latitude}
+                longitude={formData.longitude}
+                onChange={(lat, lng) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    latitude: lat,
+                    longitude: lng,
+                  }))
+                }
+                onClear={() =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    latitude: null,
+                    longitude: null,
+                  }))
+                }
+                disabled={saving}
               />
             </div>
 
