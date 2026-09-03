@@ -479,12 +479,50 @@
     "deliveryUnavailable": "التوصيل غير متاح",
     "insideCity": "داخل المدينة",
     "outsideCity": "خارج المدينة",
+    "onlineMarker": "إلكتروني",
     "count_zero": "لا توجد متاجر",
     "count_one": "متجر واحد",
     "count_two": "متجران",
     "count_few": "{{count}} متاجر",
     "count_many": "{{count}} متجرًا",
-    "count_other": "{{count}} متجر"
+    "count_other": "{{count}} متجر",
+    "countNearby_zero": "لا توجد متاجر ضمن {{km}} كم",
+    "countNearby_one": "متجر واحد ضمن {{km}} كم",
+    "countNearby_two": "متجران ضمن {{km}} كم",
+    "countNearby_few": "{{count}} متاجر ضمن {{km}} كم",
+    "countNearby_many": "{{count}} متجرًا ضمن {{km}} كم",
+    "countNearby_other": "{{count}} متجر ضمن {{km}} كم",
+    "distanceAway_zero": "على بُعد أقل من كيلومتر",
+    "distanceAway_one": "على بُعد كيلومتر واحد",
+    "distanceAway_two": "على بُعد كيلومترين",
+    "distanceAway_few": "على بُعد {{km}} كيلومترات",
+    "distanceAway_many": "على بُعد {{km}} كيلومترًا",
+    "distanceAway_other": "على بُعد {{km}} كم"
+  },
+  "nearbySearch": {
+    "nearMe": "بالقرب مني",
+    "locating": "جارٍ تحديد الموقع…",
+    "or": "أو",
+    "pickPlace": "اختر مكانًا",
+    "radius": "ضمن",
+    "km": "{{count}} كم",
+    "showAll": "عرض جميع المتاجر",
+    "yourLocation": "موقعك",
+    "centeredOn": "عرض المتاجر بالقرب من {{place}}، الأقرب أولًا.",
+    "useThePicker": "اختر مكانًا من القائمة بدلًا من ذلك."
+  },
+  "places": {
+    "beirut": "بيروت",
+    "hamra": "الحمرا",
+    "achrafieh": "الأشرفية",
+    "verdun": "فردان",
+    "gemmayzeh": "الجميزة",
+    "jounieh": "جونية",
+    "tripoli": "طرابلس",
+    "saida": "صيدا",
+    "tyre": "صور",
+    "zahle": "زحلة",
+    "byblos": "جبيل"
   },
   "reviews": {
     "heading": "التقييمات",
@@ -619,17 +657,19 @@
     "overrideOpen": "مفتوح الآن (يدويًا)، حتى {{until}}.",
     "onlineOnly": "هذا متجر إلكتروني فقط — لا يوجد محل لزيارته. يوصّل إلى جميع أنحاء لبنان."
   },
+  "geolocation": {
+    "denied": "تم رفض إذن الوصول إلى الموقع.",
+    "unavailable": "تعذّر تحديد موقعك.",
+    "timeout": "انتهت مهلة طلب الموقع.",
+    "unsupported": "هذا المتصفح لا يدعم تحديد الموقع الجغرافي."
+  },
   "locationPicker": {
     "useMyLocation": "استخدام موقعي الحالي",
     "locating": "جارٍ تحديد الموقع…",
     "clear": "مسح",
     "coords": "الدبوس: {{lat}}، {{lng}}",
     "noPin": "لا يوجد دبوس بعد — اسحب العلامة أو استخدم موقعك.",
-    "dragInstead": "اسحب الدبوس لتحديد الموقع.",
-    "geoDenied": "تم رفض إذن الوصول إلى الموقع.",
-    "geoUnavailable": "تعذّر تحديد موقعك.",
-    "geoTimeout": "انتهت مهلة طلب الموقع.",
-    "geoUnsupported": "هذا المتصفح لا يدعم تحديد الموقع الجغرافي."
+    "dragInstead": "اسحب الدبوس لتحديد الموقع."
   },
   "storeLocation": {
     "title": "الموقع",

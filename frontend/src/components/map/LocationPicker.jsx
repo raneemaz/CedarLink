@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { LocateFixed, X } from "lucide-react";
 
 import { isRtl } from "../../i18n/i18n";
+import { requestPosition } from "../../utils/geolocation";
 import {
   BEIRUT,
   TILE_ATTRIBUTION,
@@ -10,8 +11,6 @@ import {
   TILE_URL,
   useLeaflet,
 } from "../../hooks/useLeaflet";
-
-const GEO_TIMEOUT_MS = 10000;
 
 const round6 = (n) => Math.round(n * 1e6) / 1e6;
 
@@ -100,32 +99,22 @@ function LocationPicker({
 
   const useMyLocation = () => {
     setGeoError("");
-    if (!navigator.geolocation) {
-      setGeoError(t("locationPicker.geoUnsupported"));
-      return;
-    }
     setLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
+    requestPosition(
+      (rawLat, rawLng) => {
         setLocating(false);
-        const lat = round6(pos.coords.latitude);
-        const lng = round6(pos.coords.longitude);
+        const lat = round6(rawLat);
+        const lng = round6(rawLng);
         if (mapRef.current && markerRef.current) {
           markerRef.current.setLatLng([lat, lng]);
           mapRef.current.setView([lat, lng], 16);
         }
         onChange(lat, lng);
       },
-      (err) => {
+      (errKey) => {
         setLocating(false);
-        const byCode = {
-          1: "locationPicker.geoDenied",
-          2: "locationPicker.geoUnavailable",
-          3: "locationPicker.geoTimeout",
-        };
-        setGeoError(t(byCode[err.code] || "locationPicker.geoUnavailable"));
+        setGeoError(t(errKey));
       },
-      { timeout: GEO_TIMEOUT_MS, maximumAge: 0 },
     );
   };
 

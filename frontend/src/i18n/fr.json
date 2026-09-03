@@ -471,8 +471,38 @@
     "deliveryUnavailable": "Livraison indisponible",
     "insideCity": "Dans la ville",
     "outsideCity": "Hors de la ville",
+    "onlineMarker": "En ligne",
     "count_one": "{{count}} magasin",
-    "count_other": "{{count}} magasins"
+    "count_other": "{{count}} magasins",
+    "countNearby_one": "{{count}} magasin à moins de {{km}} km",
+    "countNearby_other": "{{count}} magasins à moins de {{km}} km",
+    "distanceAway_one": "à {{km}} km",
+    "distanceAway_other": "à {{km}} km"
+  },
+  "nearbySearch": {
+    "nearMe": "Près de moi",
+    "locating": "Localisation…",
+    "or": "ou",
+    "pickPlace": "Choisir un lieu",
+    "radius": "Dans un rayon de",
+    "km": "{{count}} km",
+    "showAll": "Voir tous les magasins",
+    "yourLocation": "votre position",
+    "centeredOn": "Magasins près de {{place}}, du plus proche au plus loin.",
+    "useThePicker": "Choisissez plutôt un lieu dans la liste."
+  },
+  "places": {
+    "beirut": "Beyrouth",
+    "hamra": "Hamra",
+    "achrafieh": "Achrafieh",
+    "verdun": "Verdun",
+    "gemmayzeh": "Gemmayzeh",
+    "jounieh": "Jounieh",
+    "tripoli": "Tripoli",
+    "saida": "Saïda",
+    "tyre": "Tyr",
+    "zahle": "Zahlé",
+    "byblos": "Byblos"
   },
   "reviews": {
     "heading": "Avis",
@@ -595,17 +625,19 @@
     "overrideOpen": "Ouvert (manuellement), jusqu'à {{until}}.",
     "onlineOnly": "Magasin en ligne uniquement — pas de boutique à visiter. Il livre partout au Liban."
   },
+  "geolocation": {
+    "denied": "L'autorisation de localisation a été refusée.",
+    "unavailable": "Votre position n'a pas pu être déterminée.",
+    "timeout": "La demande de localisation a expiré.",
+    "unsupported": "Ce navigateur ne prend pas en charge la géolocalisation."
+  },
   "locationPicker": {
     "useMyLocation": "Utiliser ma position actuelle",
     "locating": "Localisation…",
     "clear": "Effacer",
     "coords": "Repère : {{lat}}, {{lng}}",
     "noPin": "Pas encore de repère — faites glisser le marqueur ou utilisez votre position.",
-    "dragInstead": "Faites glisser le repère pour définir l'emplacement.",
-    "geoDenied": "L'autorisation de localisation a été refusée.",
-    "geoUnavailable": "Votre position n'a pas pu être déterminée.",
-    "geoTimeout": "La demande de localisation a expiré.",
-    "geoUnsupported": "Ce navigateur ne prend pas en charge la géolocalisation."
+    "dragInstead": "Faites glisser le repère pour définir l'emplacement."
   },
   "storeLocation": {
     "title": "Emplacement",
