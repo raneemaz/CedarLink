@@ -6,6 +6,7 @@ answer: is 2FA actually enforced at login, is the secret safe at rest, is a
 challenge bound to one user and one purpose, and can anything be replayed.
 """
 
+import threading
 import time
 
 import pyotp
@@ -400,6 +401,95 @@ def test_a_code_from_before_the_last_accepted_step_is_refused(
             "code": totp_code(secret, at=now - 30),
         },
     ).status_code == 400
+
+
+def test_two_concurrent_verifications_of_one_code_admit_only_one(
+    app, auth, monkeypatch, make_totp_user, totp_code
+):
+    """The one-time-use rule has to survive a race.
+
+    Read-compare-write would let both threads read the same high-water
+    mark, both find the code newer, and both accept — the oversell shape
+    from ADR 0007. The comparison is in the UPDATE instead, so the
+    database picks the winner and the loser gets rowcount 0.
+
+    A login and a security challenge, not two logins:
+    _invalidate_active_challenges is per purpose, so a second login would
+    just kill the first challenge and leave no race to run. These two
+    coexist and both accept the same authenticator code.
+
+    Determinism, same as the stock test: both threads are held at a
+    barrier the instant the code has been matched to a time step — the
+    read is done, nothing written yet — then released together. That is
+    the seam a read-then-write loses at.
+
+    Everything the threads need is captured as a plain value first: an
+    ORM attribute read inside a worker thread would trigger an expired
+    load with no application context.
+    """
+    user, secret = make_totp_user()
+    code = totp_code(secret)
+    headers = auth(user)
+    user_id, email, password = user.id, user.email, user.plain_password
+
+    login_token = (
+        app.test_client()
+        .post(LOGIN_URL, json={"email": email, "password": password})
+        .get_json()["challenge_token"]
+    )
+    security_token = (
+        app.test_client()
+        .post(
+            f"/api/users/{user_id}/2fa/security-challenge",
+            json={"current_password": password},
+            headers=headers,
+        )
+        .get_json()["challenge_token"]
+    )
+
+    real_match = two_factor_service._matching_totp_counter
+    gate = threading.Barrier(2, timeout=15)
+
+    def synced_match(*args, **kwargs):
+        counter = real_match(*args, **kwargs)
+        try:
+            gate.wait()
+        except threading.BrokenBarrierError:
+            pass
+        return counter
+
+    monkeypatch.setattr(
+        two_factor_service, "_matching_totp_counter", synced_match
+    )
+
+    results = {}
+
+    def do_login():
+        results["login"] = app.test_client().post(
+            VERIFY_URL,
+            json={"challenge_token": login_token, "code": code},
+        ).status_code
+
+    def do_security():
+        results["security"] = app.test_client().post(
+            f"/api/users/{user_id}/2fa/recovery-codes/regenerate",
+            json={"challenge_token": security_token, "code": code},
+            headers=headers,
+        ).status_code
+
+    threads = [
+        threading.Thread(target=do_login),
+        threading.Thread(target=do_security),
+    ]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(timeout=20)
+
+    assert len(results) == 2, f"a thread never finished: {results}"
+    assert sorted(results.values()) == [200, 400], (
+        f"expected exactly one to accept the code, got {results}"
+    )
 
 
 # --------------------------------------------------------------------------- #

@@ -17,6 +17,7 @@ import qrcode
 from cryptography.fernet import Fernet, InvalidToken
 from flask import current_app
 from flask_jwt_extended import create_access_token, create_refresh_token
+from sqlalchemy import or_, update
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from app.extensions import db
@@ -910,6 +911,40 @@ def _matching_totp_counter(secret, code, valid_window=1):
     return None
 
 
+def _claim_totp_counter(user, counter):
+    """Claim ``counter`` as this user's newest accepted TOTP time step.
+
+    RFC 6238 s5.2: a code is accepted at most once. Consuming the challenge
+    is not enough on its own -- an attacker who observes a code can open a
+    *fresh* challenge and replay it there for the rest of the window. The
+    last accepted step is a high-water mark, and steps only move forward,
+    so refusing anything at or below it closes the replay.
+
+    The comparison belongs *in* the statement. Read-compare-write loses
+    updates: two logins presenting the same code can both read the old
+    value, both find it lower, and both accept -- exactly the oversell
+    shape from ADR 0007. Here the database picks the winner, and a
+    rowcount of 0 means somebody else claimed this step first, which is
+    precisely the replay we are refusing.
+
+    Returns True when this call claimed the step.
+    """
+    claimed = db.session.execute(
+        update(User)
+        .where(
+            User.id == user.id,
+            or_(
+                User.two_factor_last_totp_counter.is_(None),
+                User.two_factor_last_totp_counter < counter,
+            ),
+        )
+        .values(two_factor_last_totp_counter=counter)
+        .execution_options(synchronize_session=False)
+    )
+
+    return claimed.rowcount == 1
+
+
 def _verify_challenge_code(challenge, user, code):
     code = _normalize_code(code)
 
@@ -936,20 +971,7 @@ def _verify_challenge_code(challenge, user, code):
     if counter is None:
         return False
 
-    # RFC 6238 s5.2: a code is accepted at most once. Consuming the
-    # challenge is not enough on its own -- an attacker who observes a code
-    # can open a *fresh* challenge and replay it there for the rest of the
-    # window. The last accepted time step is the high-water mark, and time
-    # steps only move forward, so refusing anything at or below it closes
-    # the replay without any per-code bookkeeping.
-    last_counter = user.two_factor_last_totp_counter
-
-    if last_counter is not None and counter <= last_counter:
-        return False
-
-    user.two_factor_last_totp_counter = counter
-
-    return True
+    return _claim_totp_counter(user, counter)
 
 
 def _consume_recovery_code(user, code):
