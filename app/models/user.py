@@ -42,6 +42,11 @@ class User(db.Model):
 
     two_factor_totp_secret = db.Column(db.Text, nullable=True)
 
+    # Highest TOTP time step this user has already authenticated with.
+    # RFC 6238 s5.2 requires a code be accepted at most once, and pyotp
+    # is stateless, so the high-water mark lives here.
+    two_factor_last_totp_counter = db.Column(db.Integer, nullable=True)
+
     # User-controlled self-deactivation. The user can clear this via
     # POST /auth/reactivate.
     is_active = db.Column(
