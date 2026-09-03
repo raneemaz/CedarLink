@@ -21,3 +21,5 @@ from app.models.notification_preferences import NotificationPreferences  # noqa:
 from app.models.notification import Notification  # noqa: F401
 from app.models.shopping_preferences import ShoppingPreferences  # noqa: F401
 from app.models.token_denylist import TokenDenylist  # noqa: F401
+from app.models.coupon import Coupon  # noqa: F401
+from app.models.coupon_redemption import CouponRedemption  # noqa: F401

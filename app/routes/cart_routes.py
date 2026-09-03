@@ -5,7 +5,8 @@ from app.extensions import db
 from app.models.cart import Cart
 from app.models.cart_item import CartItem
 from app.models.product import Product
-from app.services import order_service, store_service
+from app.services import coupon_service, order_service, store_service
+from app.services.coupon_service import CouponError
 from app.services.order_service import OrderError
 
 
@@ -230,3 +231,63 @@ def delete_cart_item(item_id):
     return jsonify({
         "message": "Cart item removed"
     }), 200
+
+
+# --------------------------------------------------------------------------- #
+# Coupon — validate and hold, never redeem
+# --------------------------------------------------------------------------- #
+
+@cart_bp.route("/coupon", methods=["POST"])
+@jwt_required()
+def apply_coupon():
+    """Validate a code against the current cart and quote it.
+
+    Redeems nothing: a preview must never consume a use. On success the
+    code is held on the cart so it survives a reload, and the body is the
+    same quote shape ``/orders/preview`` returns, discount included.
+
+    On failure the body carries the specific ``code`` — expired, below
+    minimum, wrong store — so the interface can say why rather than
+    "invalid coupon".
+    """
+    user_id = int(get_jwt_identity())
+    data = request.get_json() or {}
+
+    code = coupon_service.normalize_code(data.get("code"))
+
+    if not code:
+        return jsonify({"error": "A coupon code is required"}), 400
+
+    cart = Cart.query.filter_by(user_id=user_id).first()
+
+    if not cart:
+        return jsonify({"error": "Cart is empty"}), 400
+
+    try:
+        pricing = order_service.price_cart(
+            user_id, data.get("delivery_city"), code
+        )
+    except OrderError as exc:
+        return jsonify(exc.payload), exc.status_code
+    except CouponError as exc:
+        return jsonify(exc.payload), exc.status_code
+
+    cart.coupon_code = code
+    db.session.commit()
+
+    return jsonify(order_service.serialize_quote(pricing)), 200
+
+
+@cart_bp.route("/coupon", methods=["DELETE"])
+@jwt_required()
+def clear_coupon():
+    """Drop the held code. Idempotent — no cart, or none applied, is fine."""
+    user_id = int(get_jwt_identity())
+
+    cart = Cart.query.filter_by(user_id=user_id).first()
+
+    if cart is not None and cart.coupon_code is not None:
+        cart.coupon_code = None
+        db.session.commit()
+
+    return jsonify({"message": "Coupon removed", "coupon_code": None}), 200
