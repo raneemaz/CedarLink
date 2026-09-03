@@ -6,6 +6,7 @@ answer: is 2FA actually enforced at login, is the secret safe at rest, is a
 challenge bound to one user and one purpose, and can anything be replayed.
 """
 
+import pyotp
 import pytest
 
 from app.extensions import db
@@ -198,19 +199,6 @@ def test_login_with_two_factor_returns_a_challenge_and_no_usable_token(
         )
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "KNOWN DEFECT, reported and not yet fixed: create_login_challenge "
-        "tests user.verification_method before user.two_factor_enabled, so "
-        "a user who confirmed TOTP while verification_method is still "
-        "'email' is asked for an emailed code at login instead of their "
-        "authenticator — a silent downgrade of the second factor. This is "
-        "the normal state after setup: confirm_setup never touches "
-        "verification_method. Remove this marker when the configured 2FA "
-        "method takes precedence."
-    ),
-)
 def test_confirming_totp_actually_changes_what_login_asks_for(
     client, auth, make_user, totp_code, sent_codes
 ):
@@ -235,6 +223,40 @@ def test_confirming_totp_actually_changes_what_login_asks_for(
         "an email code was sent even though the user's second factor is an "
         "authenticator app"
     )
+
+
+def test_a_legacy_row_with_a_stale_verification_method_is_challenged_by_totp(
+    client, make_user, totp_code, sent_codes
+):
+    """The state every pre-fix TOTP user is already in.
+
+    No data migration backfills these rows; create_login_challenge simply
+    stops consulting verification_method once a second factor is set, so
+    they are covered by precedence alone.
+    """
+    user = make_user("customer")
+    secret = pyotp.random_base32()
+    user.verification_method = "email"        # never rewritten by setup
+    user.two_factor_enabled = True
+    user.two_factor_method = "totp"
+    user.two_factor_totp_secret = two_factor_service.encrypt_totp_secret(
+        secret
+    )
+    db.session.commit()
+
+    login = _login(client, user)
+    assert login.status_code == 202
+    assert login.get_json()["method"] == "totp"
+    assert sent_codes == []
+
+    verified = client.post(
+        VERIFY_URL,
+        json={
+            "challenge_token": login.get_json()["challenge_token"],
+            "code": totp_code(secret),
+        },
+    )
+    assert verified.status_code == 200
 
 
 def test_completing_the_challenge_returns_working_tokens(
