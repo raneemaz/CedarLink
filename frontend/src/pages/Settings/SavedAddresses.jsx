@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import api from "../../services/api";
 import BackLink from "../../components/common/BackLink";
+import { addressLabel } from "../../utils/addressLabel";
 
 function SavedAddresses() {
   const { t } = useTranslation();
@@ -149,7 +150,7 @@ function SavedAddresses() {
                   <div>
                     <div className="flex items-center gap-3">
                       <h2 className="text-lg font-semibold text-gray-900">
-                        {address.label}
+                        {addressLabel(t, address.label)}
                       </h2>
 
                       {address.is_default && (
