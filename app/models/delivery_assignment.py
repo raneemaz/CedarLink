@@ -53,12 +53,14 @@ class DeliveryAssignment(db.Model):
         )
     )
 
-    def to_dict(self):
-        return {
+    def to_dict(self, include_driver_phone=False):
+        # driver_phone is a third party's personal number. It is NOT in the
+        # base payload; callers opt in: the vendor always, the customer only
+        # while the delivery is in progress (see delivery_routes). ADR 0019.
+        payload = {
             "id": self.id,
             "order_id": self.order_id,
             "driver_name": self.driver_name,
-            "driver_phone": self.driver_phone,
             "status": self.status,
             "assigned_at": (
                 self.assigned_at.isoformat()
@@ -71,3 +73,6 @@ class DeliveryAssignment(db.Model):
                 else None
             )
         }
+        if include_driver_phone:
+            payload["driver_phone"] = self.driver_phone
+        return payload

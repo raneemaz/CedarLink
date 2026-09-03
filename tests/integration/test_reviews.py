@@ -428,6 +428,27 @@ def test_order_reviewable_reports_what_is_left(
     assert after["store"]["already_reviewed"] is False
 
 
+def test_public_review_payload_has_no_user_id(
+    client, auth, make_order, make_product
+):
+    """A public author id + verified-purchase reviews == scrapeable
+    purchase history. author_name (first name) is the only disclosure.
+    See docs/decisions/0019."""
+    product = make_product()
+    order = _delivered_order(make_order, product=product)
+    _post_review(
+        client, auth, order.user, order, rating=4, product_id=product.id,
+        title="ok", body="fine",
+    )
+
+    row = client.get(
+        f"/api/products/{product.id}/reviews"
+    ).get_json()["reviews"][0]
+
+    assert "user_id" not in row
+    assert row["author_name"] == order.user.first_name
+
+
 def test_product_payload_carries_rating_fields(
     client, auth, make_order, make_product
 ):
