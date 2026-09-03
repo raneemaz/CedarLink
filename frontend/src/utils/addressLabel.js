@@ -2,10 +2,6 @@
 // select produced ("Home" / "Work" / "Other"), so it needs translating for
 // display. Anything else — an older row, or a value from outside the form —
 // is shown as the customer typed it rather than dropped.
-//
-// NOTE: pages/Settings/SavedAddresses.jsx still renders address.label raw.
-// Left alone here to keep this change to its own scope; worth switching it
-// to this helper next time that page is touched.
 
 const KNOWN = {
   Home: "addresses.labelHome",
