@@ -83,7 +83,9 @@ def create_delivery_assignment():
 
         return jsonify({
             "message": "Delivery assignment created successfully",
-            "delivery_assignment": assignment.to_dict()
+            "delivery_assignment": assignment.to_dict(
+                include_driver_phone=True
+            )
         }), 201
 
     except Exception:
@@ -141,8 +143,14 @@ def get_delivery_assignment(id):
             "error": "You are not authorized to view this delivery"
         }), 403
 
+    # The vendor always sees the driver's phone; the customer only while
+    # the delivery is still in progress, never after it is delivered.
+    show_phone = is_vendor_owner or assignment.status != "delivered"
+
     return jsonify({
-        "delivery_assignment": assignment.to_dict()
+        "delivery_assignment": assignment.to_dict(
+            include_driver_phone=show_phone
+        )
     }), 200
 
 
@@ -235,7 +243,9 @@ def update_delivery_status(id):
 
         return jsonify({
             "message": "Delivery status updated successfully",
-            "delivery_assignment": assignment.to_dict()
+            "delivery_assignment": assignment.to_dict(
+                include_driver_phone=True
+            )
         }), 200
 
     except Exception:

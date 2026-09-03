@@ -115,9 +115,14 @@ class Review(db.Model):
     )
 
     def to_dict(self):
+        # Public allowlist. Two fields deliberately absent:
+        #  - user_id: reviews require a delivered order, so a public author
+        #    id would make this list a scrapeable purchase history per
+        #    person. author_name (first name) is the intended disclosure.
+        #  - moderation_note: an admin-internal reason.
+        # admin_list_reviews re-adds both explicitly where it needs them.
         return {
             "id": self.id,
-            "user_id": self.user_id,
             "order_id": self.order_id,
             "product_id": self.product_id,
             "store_id": self.store_id,
@@ -125,9 +130,6 @@ class Review(db.Model):
             "title": self.title,
             "body": self.body,
             "status": self.status,
-            # moderation_note is an admin-internal reason — it is NOT in this
-            # base payload (which feeds the public list and the customer's
-            # own reviewable payload). admin_list_reviews adds it explicitly.
             "author_name": (
                 self.user.first_name if self.user else None
             ),

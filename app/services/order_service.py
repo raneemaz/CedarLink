@@ -431,7 +431,10 @@ def list_vendor_orders(user_id, status_filter=None):
             "total_price": float(order.total_price),
             "created_at": order.created_at.isoformat(),
             "delivery_assignment": (
-                assignment.to_dict() if assignment else None
+                # Vendor view — they assigned the driver.
+                assignment.to_dict(include_driver_phone=True)
+                if assignment
+                else None
             ),
             "items": [_serialize_item(item) for item in order.items],
         })
