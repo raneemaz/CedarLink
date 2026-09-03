@@ -19,6 +19,7 @@ Layout:
 import functools
 from datetime import time
 
+import pyotp
 import pytest
 from flask_jwt_extended import create_access_token
 from werkzeug.security import generate_password_hash as _hash
@@ -34,6 +35,7 @@ from app.models.product import Product
 from app.models.store import Store
 from app.models.store_hours import StoreHours
 from app.models.user import User
+from app.services import two_factor_service
 
 # Cheap, deterministic hashing for factory users — keeps the suite fast.
 # check_password_hash() verifies any scheme, so login still works end to end.
@@ -152,6 +154,85 @@ def make_user(_reset_db):
         _db.session.commit()
         user.plain_password = password
         return user
+
+    return _make
+
+
+# --------------------------------------------------------------------------- #
+# Two-factor / password-reset helpers
+# --------------------------------------------------------------------------- #
+
+class _SentCodes(list):
+    """Verification codes the service tried to email, newest last."""
+
+    @property
+    def last(self):
+        return self[-1][1]
+
+
+@pytest.fixture()
+def sent_codes(monkeypatch):
+    """Capture emailed verification codes instead of delivering them.
+
+    TestConfig already sets MAIL_SUPPRESS_SEND, which logs the code — but
+    scraping log records is brittle. This replaces the sender itself, so a
+    test reads the exact code the challenge was created with.
+    """
+    captured = _SentCodes()
+
+    def _capture(user, code):
+        captured.append((user.email, code))
+
+    monkeypatch.setattr(
+        two_factor_service, "send_email_verification_code", _capture
+    )
+    return captured
+
+
+@pytest.fixture()
+def totp_code():
+    """A currently-valid TOTP code for a base32 secret."""
+
+    def _code(secret, at=None):
+        totp = pyotp.TOTP(secret)
+        return totp.at(at) if at is not None else totp.now()
+
+    return _code
+
+
+@pytest.fixture()
+def make_totp_user(make_user):
+    """A user with TOTP two-factor already confirmed.
+
+    Returns ``(user, base32_secret)``. ``verification_method`` is cleared on
+    purpose: ``create_login_challenge`` consults it *before* the configured
+    2FA method, so leaving it as "email" would send an email code instead of
+    exercising the TOTP path.
+    """
+
+    def _make(role="customer", **kw):
+        secret = pyotp.random_base32()
+        user = make_user(role=role, **kw)
+        user.verification_method = None
+        user.two_factor_enabled = True
+        user.two_factor_method = two_factor_service.TOTP_METHOD
+        user.two_factor_totp_secret = two_factor_service.encrypt_totp_secret(
+            secret
+        )
+        _db.session.commit()
+        return user, secret
+
+    return _make
+
+
+@pytest.fixture()
+def make_recovery_codes():
+    """Issue recovery codes for a user; returns the plaintext list."""
+
+    def _make(user, count=10):
+        codes = two_factor_service.generate_recovery_codes(user, count)
+        _db.session.commit()
+        return codes
 
     return _make
 

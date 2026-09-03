@@ -45,7 +45,18 @@ jobs:
           DATABASE_URL: sqlite:////tmp/ci_migrations.db
 
       - name: Tests
-        run: pytest -q
+        run: pytest -q --cov=app --cov-report=term-missing
+
+      - name: Coverage total
+        # Reported, not enforced. A threshold picked today would either sit
+        # below the current figure and never fire, or above it and block
+        # every unrelated change until the gap is closed — neither tells us
+        # anything. The number and the per-module gaps go in the report; the
+        # weakest modules are payments, user_routes, addresses and the CLI.
+        run: |
+          total=$(coverage report --format=total)
+          echo "Backend line coverage: ${total}%"
+          echo "### Backend line coverage: ${total}%" >> "$GITHUB_STEP_SUMMARY"
 
   frontend:
     name: Frontend (lint · build on Linux)
