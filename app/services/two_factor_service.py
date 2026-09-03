@@ -640,10 +640,22 @@ def resend_registration_code(challenge_token):
 
 
 def _account_can_reset(user):
+    """Whether a password reset may be started for this account.
+
+    Suspended and never-verified accounts are refused as well as deleted
+    and deactivated ones: a suspension is an admin decision that should
+    reach every credential path, and mailing a code to an address whose
+    ownership was never confirmed sends mail the platform cannot vouch
+    for. The refusal is invisible to the caller -- request_password_reset
+    returns the same decoy payload for all four reasons, so this is not an
+    account-status oracle. See docs/decisions/0020-two-factor-corrections.
+    """
     return (
         user is not None
         and user.deleted_at is None
         and user.is_active
+        and user.suspended_at is None
+        and user.is_verified
     )
 
 

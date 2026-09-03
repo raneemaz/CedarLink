@@ -248,17 +248,6 @@ def test_a_deactivated_account_is_refused_indistinguishably(
     assert TwoFactorChallenge.query.count() == 0
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "KNOWN GAP, reported and not yet fixed: _account_can_reset checks "
-        "deleted_at and is_active but not suspended_at, so a suspended "
-        "account can complete a password reset. Login still refuses it "
-        "(403), so this is not an escalation — but the reset should not "
-        "be reachable. Remove this marker when the check includes "
-        "suspended_at."
-    ),
-)
 def test_a_suspended_account_cannot_reset_its_password(
     client, make_user, sent_codes
 ):
@@ -271,15 +260,6 @@ def test_a_suspended_account_cannot_reset_its_password(
     assert TwoFactorChallenge.query.count() == 0
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "KNOWN GAP, reported and not yet fixed: _account_can_reset does not "
-        "check is_verified, so an address that was never confirmed can be "
-        "sent a reset code. Remove this marker when the check includes "
-        "is_verified."
-    ),
-)
 def test_an_unverified_account_cannot_reset_its_password(
     client, make_user, sent_codes
 ):
@@ -289,6 +269,65 @@ def test_an_unverified_account_cannot_reset_its_password(
     _request(client, user.email)
     assert sent_codes == []
     assert TwoFactorChallenge.query.count() == 0
+
+
+@pytest.mark.parametrize(
+    "make_refusable",
+    [
+        pytest.param(
+            lambda u: setattr(u, "deleted_at", two_factor_service.utcnow()),
+            id="deleted",
+        ),
+        pytest.param(
+            lambda u: setattr(u, "is_active", False),
+            id="deactivated",
+        ),
+        pytest.param(
+            lambda u: setattr(u, "suspended_at", two_factor_service.utcnow()),
+            id="suspended",
+        ),
+        pytest.param(
+            lambda u: setattr(u, "is_verified", False),
+            id="unverified",
+        ),
+    ],
+)
+def test_every_refusal_reason_looks_identical_to_success(
+    client, make_user, sent_codes, make_refusable
+):
+    """The response is what stops this becoming an account-status oracle.
+
+    Four different reasons to refuse, one response. If any of them differed
+    -- a status code, a key, a message -- an attacker could sort addresses
+    into live, suspended, unverified and unknown without ever logging in.
+    """
+    healthy = make_user("customer", email="healthy@test.local")
+    refused = make_user("customer", email="refused@test.local")
+    make_refusable(refused)
+    db.session.commit()
+
+    success = _request(client, healthy.email)
+    refusal = _request(client, refused.email)
+    unknown = _request(client, "no-such-address@test.local")
+
+    assert success.status_code == refusal.status_code == 200
+    assert unknown.status_code == 200
+
+    bodies = [r.get_json() for r in (success, refusal, unknown)]
+    assert bodies[0].keys() == bodies[1].keys() == bodies[2].keys()
+    assert len({b["message"] for b in bodies}) == 1
+    assert len({b["method"] for b in bodies}) == 1
+    assert len({b["challenge_token"] for b in bodies}) == 3
+
+    # Only the healthy account got a code, and only it has a live challenge.
+    assert [email for email, _ in sent_codes] == [healthy.email]
+    assert TwoFactorChallenge.query.count() == 1
+    assert TwoFactorChallenge.query.one().user_id == healthy.id
+
+    # And the refused account's decoy token resets nothing.
+    assert _confirm(
+        client, bodies[1]["challenge_token"], "000000"
+    ).status_code == 400
 
 
 # --------------------------------------------------------------------------- #
