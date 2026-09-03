@@ -16,6 +16,7 @@ function Login() {
 
   const [twoFactorRequired, setTwoFactorRequired] = useState(false);
   const [challengeToken, setChallengeToken] = useState("");
+  const [challengeMethod, setChallengeMethod] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
   const [useRecoveryCode, setUseRecoveryCode] = useState(false);
 
@@ -60,6 +61,7 @@ function Login() {
 
       if (response.data.verification_required) {
         setChallengeToken(response.data.challenge_token);
+        setChallengeMethod(response.data.method);
         setTwoFactorRequired(true);
 
         toast.info(t("login.infoVerificationRequired"));
@@ -194,9 +196,15 @@ function Login() {
   const handleBackToLogin = () => {
     setTwoFactorRequired(false);
     setChallengeToken("");
+    setChallengeMethod("");
     setVerificationCode("");
     setUseRecoveryCode(false);
   };
+
+  // "totp" means an authenticator app: the code is generated on the
+  // device, so there is nothing to resend and nothing to check an inbox
+  // for. Anything else is a delivered code (currently email).
+  const isAuthenticatorChallenge = challengeMethod === "totp";
 
   if (twoFactorRequired) {
     return (
@@ -209,7 +217,9 @@ function Login() {
           <p className="text-center text-sm text-gray-500 mt-2 mb-6">
             {useRecoveryCode
               ? t("login.promptRecovery")
-              : t("login.promptCode")}
+              : isAuthenticatorChallenge
+                ? t("login.promptCodeTotp")
+                : t("login.promptCode")}
           </p>
 
           <Input
@@ -238,7 +248,7 @@ function Login() {
             {loading ? t("auth.verifying") : t("auth.verify")}
           </Button>
 
-          {!useRecoveryCode && (
+          {!useRecoveryCode && !isAuthenticatorChallenge && (
             <button
               type="button"
               onClick={handleResendCode}

@@ -767,19 +767,12 @@ def start_setup(user, method=None):
 
 
 def create_login_challenge(user):
-    method = getattr(
-        user,
-        "verification_method",
-        None,
-    )
-
-    if method in DELIVERY_METHODS:
-        return _create_delivery_challenge(
-            user,
-            LOGIN_PURPOSE,
-            method,
-        )
-
+    # A configured second factor wins over verification_method. The two
+    # fields answer different questions -- two_factor_method is the factor
+    # the user chose, verification_method is how the account was confirmed
+    # at registration -- and confirm_setup never rewrites the latter, so
+    # reading it first downgraded every TOTP user to an emailed code.
+    # See docs/decisions/0020-two-factor-corrections.md.
     if user.two_factor_enabled and user.two_factor_method in SUPPORTED_METHODS:
         if user.two_factor_method == EMAIL_METHOD:
             return _create_delivery_challenge(
@@ -791,6 +784,19 @@ def create_login_challenge(user):
         return _create_totp_challenge(
             user,
             LOGIN_PURPOSE,
+        )
+
+    method = getattr(
+        user,
+        "verification_method",
+        None,
+    )
+
+    if method in DELIVERY_METHODS:
+        return _create_delivery_challenge(
+            user,
+            LOGIN_PURPOSE,
+            method,
         )
 
     raise TwoFactorError("No verification method is configured")
