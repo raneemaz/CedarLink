@@ -12,7 +12,7 @@ every position in the resulting order can be explained in one sentence.
 See docs/decisions/0022-customer-interests.md.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import func, select
 
@@ -110,7 +110,7 @@ def apply_preference_updates(prefs, data):
         if not ok:
             return False, error
 
-    prefs.updated_at = datetime.utcnow()
+    prefs.updated_at = datetime.now(timezone.utc)
 
     return True, None
 
@@ -158,12 +158,37 @@ def _apply_interests(prefs, value):
                 + ", ".join(str(cid) for cid in missing),
             )
 
-    prefs.interests.clear()
+    # Diff, never clear-and-recreate. Within one flush SQLAlchemy emits
+    # INSERTs before DELETEs, so clearing the collection and re-appending
+    # a category the customer had already chosen collided with the row
+    # that had not been deleted yet — a UNIQUE violation on
+    # (preferences_id, category_id), i.e. a 500 for anyone who saved a
+    # second time and kept one of their picks.
+    #
+    # Diffing also means reordering the same five categories is an UPDATE
+    # of position rather than five deletes and five inserts, and no save
+    # burns a fresh primary key for a row that already existed.
+    existing = {
+        interest.category_id: interest for interest in prefs.interests
+    }
+    selected = set(ids)
 
     for position, category_id in enumerate(ids):
-        prefs.interests.append(
-            ShoppingInterest(category_id=category_id, position=position)
-        )
+        interest = existing.get(category_id)
+
+        if interest is None:
+            prefs.interests.append(
+                ShoppingInterest(category_id=category_id, position=position)
+            )
+        elif interest.position != position:
+            interest.position = position
+
+    # Only the categories that are genuinely gone. These can never collide
+    # with an insert above, because the two sets are disjoint by
+    # construction — so nothing here depends on flush ordering either.
+    for category_id, interest in existing.items():
+        if category_id not in selected:
+            prefs.interests.remove(interest)
 
     return True, None
 

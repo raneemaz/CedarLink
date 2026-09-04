@@ -155,6 +155,138 @@ def test_sending_the_list_replaces_it_rather_than_merging(
     assert prefs.interest_category_ids == [c.id]
 
 
+# --------------------------------------------------------------------------- #
+# Saving over an existing set
+#
+# The gap that let the clear-and-recreate bug ship: every interest test
+# above saves once, or saves a *disjoint* second set. Nothing re-saved a
+# set that kept a category, which is the only shape that collided —
+# SQLAlchemy emits INSERTs before DELETEs in a flush, so the re-appended
+# row hit the UNIQUE index on (preferences_id, category_id) before the old
+# row was deleted. Every test below starts from a customer who already has
+# interests.
+# --------------------------------------------------------------------------- #
+
+def _rows(prefs):
+    """(category_id, position, primary key) for each stored interest."""
+    return sorted(
+        (i.category_id, i.position, i.id) for i in prefs.interests
+    )
+
+
+def test_saving_the_same_interests_twice_is_a_no_op(prefs, make_category):
+    a, b, c = (make_category(n) for n in ("A", "B", "C"))
+
+    _apply(prefs, {"interest_category_ids": [a.id, b.id, c.id]})
+    before = _rows(prefs)
+
+    _apply(prefs, {"interest_category_ids": [a.id, b.id, c.id]})
+
+    assert prefs.interest_category_ids == [a.id, b.id, c.id]
+    assert _rows(prefs) == before, (
+        "an unchanged save must not touch the rows — same ids, same "
+        "positions, no primary keys burned"
+    )
+
+
+def test_adding_one_to_an_existing_set_keeps_the_others(prefs, make_category):
+    a, b, c = (make_category(n) for n in ("A", "B", "C"))
+
+    _apply(prefs, {"interest_category_ids": [a.id, b.id]})
+    kept = {cid: pk for cid, _pos, pk in _rows(prefs)}
+
+    _apply(prefs, {"interest_category_ids": [a.id, b.id, c.id]})
+
+    assert prefs.interest_category_ids == [a.id, b.id, c.id]
+    still = {cid: pk for cid, _pos, pk in _rows(prefs)}
+    assert still[a.id] == kept[a.id]
+    assert still[b.id] == kept[b.id], (
+        "the categories that did not change should be the same rows"
+    )
+
+
+def test_removing_one_from_an_existing_set_leaves_the_rest(
+    prefs, make_category
+):
+    a, b, c = (make_category(n) for n in ("A", "B", "C"))
+
+    _apply(prefs, {"interest_category_ids": [a.id, b.id, c.id]})
+    kept = {cid: pk for cid, _pos, pk in _rows(prefs)}
+
+    _apply(prefs, {"interest_category_ids": [a.id, c.id]})
+
+    assert prefs.interest_category_ids == [a.id, c.id]
+    assert ShoppingInterest.query.count() == 2, "the dropped row is gone"
+
+    still = {cid: pk for cid, _pos, pk in _rows(prefs)}
+    assert still[a.id] == kept[a.id]
+    assert still[c.id] == kept[c.id]
+    # c moves up into the gap.
+    assert [i.position for i in sorted(
+        prefs.interests, key=lambda i: i.position)] == [0, 1]
+
+
+def test_reordering_the_same_set_updates_rather_than_reinserts(
+    prefs, make_category
+):
+    """The reason to diff rather than replace: a reorder is an UPDATE."""
+    a, b, c = (make_category(n) for n in ("A", "B", "C"))
+
+    _apply(prefs, {"interest_category_ids": [a.id, b.id, c.id]})
+    keys_before = {cid: pk for cid, _pos, pk in _rows(prefs)}
+
+    _apply(prefs, {"interest_category_ids": [c.id, a.id, b.id]})
+
+    assert prefs.interest_category_ids == [c.id, a.id, b.id]
+
+    keys_after = {cid: pk for cid, _pos, pk in _rows(prefs)}
+    assert keys_after == keys_before, (
+        "reordering must move positions, not delete and reinsert the rows"
+    )
+    assert {cid: pos for cid, pos, _pk in _rows(prefs)} == {
+        c.id: 0, a.id: 1, b.id: 2
+    }
+
+
+def test_clearing_an_existing_set_removes_every_row(prefs, make_category):
+    a, b, c = (make_category(n) for n in ("A", "B", "C"))
+
+    _apply(prefs, {"interest_category_ids": [a.id, b.id, c.id]})
+    assert ShoppingInterest.query.count() == 3
+
+    _apply(prefs, {"interest_category_ids": []})
+
+    assert prefs.interest_category_ids == []
+    assert ShoppingInterest.query.count() == 0
+
+
+def test_a_full_set_can_be_swapped_for_a_different_full_set(
+    prefs, make_category
+):
+    """Five in, five different out — the largest re-save the form allows."""
+    first = [make_category(f"First{n}") for n in range(svc.MAX_INTERESTS)]
+    second = [make_category(f"Second{n}") for n in range(svc.MAX_INTERESTS)]
+
+    _apply(prefs, {"interest_category_ids": [c.id for c in first]})
+    _apply(prefs, {"interest_category_ids": [c.id for c in second]})
+
+    assert prefs.interest_category_ids == [c.id for c in second]
+    assert ShoppingInterest.query.count() == svc.MAX_INTERESTS
+
+
+def test_overlapping_resave_survives_a_reload(prefs, make_category, customer):
+    """Not just in the session — the rows on disk are right too."""
+    a, b, c = (make_category(n) for n in ("A", "B", "C"))
+
+    _apply(prefs, {"interest_category_ids": [a.id, b.id]})
+    _apply(prefs, {"interest_category_ids": [b.id, c.id]})
+
+    db.session.expire_all()
+
+    reloaded = svc.get_or_create_preferences(customer.id)
+    assert reloaded.interest_category_ids == [b.id, c.id]
+
+
 def test_interests_can_be_cleared_entirely(prefs, make_category):
     a = make_category("A")
     _apply(prefs, {"interest_category_ids": [a.id]})
