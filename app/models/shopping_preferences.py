@@ -61,10 +61,25 @@ class ShoppingPreferences(db.Model):
         back_populates="shopping_preferences",
     )
 
+    # Explicitly chosen categories, in the customer's own order. Ordered
+    # by position so the home page can render them without re-sorting.
+    interests = db.relationship(
+        "ShoppingInterest",
+        back_populates="preferences",
+        cascade="all, delete-orphan",
+        order_by="ShoppingInterest.position",
+        lazy="selectin",
+    )
+
+    @property
+    def interest_category_ids(self):
+        return [interest.category_id for interest in self.interests]
+
     def to_dict(self):
         return {
             "autofill_default_address": self.autofill_default_address,
             "preferred_payment_method": self.preferred_payment_method,
             "default_delivery_city": self.default_delivery_city,
             "hide_out_of_stock": self.hide_out_of_stock,
+            "interest_category_ids": self.interest_category_ids,
         }

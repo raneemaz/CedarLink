@@ -8,13 +8,19 @@ import api from "../../services/api";
 import Toggle from "../../components/common/Toggle/Toggle";
 import { lebanonLocations } from "../../data/lebanonLocations";
 import BackLink from "../../components/common/BackLink";
+import { localizedField } from "../../utils/localize";
 
 const DEFAULT_PREFERENCES = {
   autofill_default_address: true,
   preferred_payment_method: "cash_on_delivery",
   default_delivery_city: null,
   hide_out_of_stock: false,
+  interest_category_ids: [],
 };
+
+// Mirrors shopping_preferences_service.MAX_INTERESTS. The server is the
+// authority; this only keeps the form from offering a save it will refuse.
+const MAX_INTERESTS = 5;
 
 function getStoredUser() {
   const savedUser = localStorage.getItem("user");
@@ -33,44 +39,83 @@ function getStoredUser() {
 
 function ShoppingPreferences() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const [preferences, setPreferences] = useState(DEFAULT_PREFERENCES);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [categories, setCategories] = useState([]);
 
+  // Everything happens inside the async body, so nothing sets state
+  // synchronously while the effect is running.
   useEffect(() => {
-    const storedUser = getStoredUser();
+    let cancelled = false;
 
-    if (!storedUser?.id) {
-      toast.error(t("shoppingPreferences.loadError"));
-      setLoading(false);
-      return;
-    }
+    (async () => {
+      const storedUser = getStoredUser();
 
-    const fetchPreferences = async () => {
+      if (!storedUser?.id) {
+        if (!cancelled) {
+          toast.error(t("shoppingPreferences.loadError"));
+          setLoading(false);
+        }
+        return;
+      }
+
       try {
-        const response = await api.get(
-          `/users/${storedUser.id}/shopping-preferences`,
-        );
-        const server = response.data?.shopping_preferences;
+        const [prefsResponse, categoriesResponse] = await Promise.all([
+          api.get(`/users/${storedUser.id}/shopping-preferences`),
+          api.get("/categories"),
+        ]);
+
+        if (cancelled) return;
+
+        const server = prefsResponse.data?.shopping_preferences;
 
         if (server) {
           setPreferences({ ...DEFAULT_PREFERENCES, ...server });
         }
+
+        setCategories(categoriesResponse.data || []);
       } catch (error) {
         console.error("Failed to load shopping preferences:", error);
-        toast.error(t("shoppingPreferences.loadError"));
+        if (!cancelled) toast.error(t("shoppingPreferences.loadError"));
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
-    };
+    })();
 
-    fetchPreferences();
+    return () => {
+      cancelled = true;
+    };
   }, [t]);
 
   const setField = (key, value) => {
     setPreferences((previous) => ({ ...previous, [key]: value }));
+  };
+
+  const interests = preferences.interest_category_ids || [];
+
+  // Selection order is meaningful — it is the order the home page uses —
+  // so a newly ticked category goes on the end rather than sorting in.
+  const toggleInterest = (categoryId) => {
+    setPreferences((previous) => {
+      const current = previous.interest_category_ids || [];
+
+      if (current.includes(categoryId)) {
+        return {
+          ...previous,
+          interest_category_ids: current.filter((id) => id !== categoryId),
+        };
+      }
+
+      if (current.length >= MAX_INTERESTS) return previous;
+
+      return {
+        ...previous,
+        interest_category_ids: [...current, categoryId],
+      };
+    });
   };
 
   const handleSave = async () => {
@@ -91,6 +136,7 @@ function ShoppingPreferences() {
           preferred_payment_method: preferences.preferred_payment_method,
           default_delivery_city: preferences.default_delivery_city || null,
           hide_out_of_stock: preferences.hide_out_of_stock,
+          interest_category_ids: preferences.interest_category_ids || [],
         },
       );
 
@@ -233,6 +279,82 @@ function ShoppingPreferences() {
                     ))}
                   </select>
                 </div>
+              </div>
+            </section>
+
+            {/* Interests — stated, never inferred. The home page leads
+                with these; nothing here is derived from what the customer
+                has browsed or bought, because none of that is recorded. */}
+            <section className="overflow-hidden rounded-2xl bg-white shadow-sm">
+              <div className="border-b border-gray-100 px-6 py-5">
+                <h2 className="text-xl font-semibold text-gray-900">
+                  {t("shoppingPreferences.interestsSection")}
+                </h2>
+                <p className="mt-1 text-sm text-gray-500">
+                  {t("shoppingPreferences.interestsSectionDesc")}
+                </p>
+              </div>
+
+              <div className="px-6 py-5">
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+                  <p className="text-sm text-gray-600">
+                    {t("shoppingPreferences.interestsChosen", {
+                      count: interests.length,
+                      max: MAX_INTERESTS,
+                    })}
+                  </p>
+
+                  {interests.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setField("interest_category_ids", [])}
+                      className="cursor-pointer text-sm font-medium text-green-700 hover:underline"
+                    >
+                      {t("shoppingPreferences.interestsClear")}
+                    </button>
+                  )}
+                </div>
+
+                {categories.length === 0 ? (
+                  <p className="text-sm text-gray-500">
+                    {t("shoppingPreferences.interestsNone")}
+                  </p>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {categories.map((category) => {
+                      const chosen = interests.includes(category.id);
+                      const rank = interests.indexOf(category.id) + 1;
+                      const full =
+                        !chosen && interests.length >= MAX_INTERESTS;
+
+                      return (
+                        <button
+                          key={category.id}
+                          type="button"
+                          onClick={() => toggleInterest(category.id)}
+                          disabled={full}
+                          aria-pressed={chosen}
+                          className={`inline-flex cursor-pointer items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-40 ${
+                            chosen
+                              ? "border-green-700 bg-green-700 text-white"
+                              : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+                          }`}
+                        >
+                          {chosen && (
+                            <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white/25 text-xs">
+                              {rank}
+                            </span>
+                          )}
+                          {localizedField(category, "name", i18n.language)}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                <p className="mt-4 text-xs text-gray-500">
+                  {t("shoppingPreferences.interestsHint")}
+                </p>
               </div>
             </section>
 

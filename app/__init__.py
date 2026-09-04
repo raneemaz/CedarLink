@@ -68,6 +68,7 @@ def create_app(config_object=None):
     from app.routes.notification_routes import notification_bp
     from app.routes.vendor_routes import vendor_bp
     from app.routes.review_routes import review_bp
+    from app.routes.home_routes import home_bp
     from app.routes.coupon_routes import (
         admin_coupon_bp,
         vendor_coupon_bp,
@@ -95,6 +96,7 @@ def create_app(config_object=None):
     app.register_blueprint(store_bp)
     app.register_blueprint(vendor_bp)
     app.register_blueprint(review_bp, url_prefix="/api")
+    app.register_blueprint(home_bp, url_prefix="/api")
 
     # load models (safe here). Use a different name so we do not
     # overwrite the local Flask instance named `app`.

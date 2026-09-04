@@ -8,6 +8,11 @@ from app.models.store import Store
 from sqlalchemy import or_
 from app.models.category import Category
 from app.utils.file_utils import product_image_url
+from app.utils.product_payload import (
+    product_card,
+    rating_fields,
+    translation_fields,
+)
 
 
 product_bp = Blueprint("product_bp", __name__)
@@ -18,30 +23,9 @@ product_bp = Blueprint("product_bp", __name__)
 _LANGUAGES = ("en", "ar", "fr")
 
 
-def _translation_fields(product):
-    """name_en/ar/fr + description_en/ar/fr, plus `name` / `description`
-    as English-canonical aliases for any consumer that is not yet
-    language-aware."""
-    fields = {
-        f"{base}_{lang}": getattr(product, f"{base}_{lang}")
-        for base in ("name", "description")
-        for lang in _LANGUAGES
-    }
-    fields["name"] = product.name_en
-    fields["description"] = product.description_en
-    return fields
-
-
-def _rating_fields(entity):
-    """``rating_avg`` (float or None) + ``rating_count`` for a product/store."""
-    return {
-        "rating_avg": (
-            float(entity.rating_avg)
-            if entity.rating_avg is not None
-            else None
-        ),
-        "rating_count": entity.rating_count or 0,
-    }
+# Shared with the home page's sections, which render the same card.
+_translation_fields = translation_fields
+_rating_fields = rating_fields
 
 
 def _read_translations(data, *, require_name):
@@ -243,26 +227,7 @@ def get_products():
         error_out=False
     )
 
-    result = []
-
-    for product in products.items:
-        first_image = (
-            product.images[0].image_url
-            if product.images
-            else None
-        )
-
-        result.append({
-            "id": product.id,
-            "price": float(product.price),
-            "stock": product.stock,
-            "store_id": product.store_id,
-            "store_name": product.store.name,
-            "category_id": product.category_id,
-            "image": product_image_url(first_image),
-            **_translation_fields(product),
-            **_rating_fields(product),
-        })
+    result = [product_card(product) for product in products.items]
 
     return jsonify({
         "products": result,
