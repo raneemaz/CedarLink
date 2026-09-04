@@ -68,11 +68,11 @@ function OrderDetails() {
 
 const discount = Number(order.discount || 0);
 
-// total_price = goods - discount + delivery, so the fee is what is left
-// once the discount is added back. Deriving it as total - subtotal alone
-// would silently subtract the discount from the delivery line and could
-// even show it negative.
-const deliveryFee = Number(order.total_price || 0) - subtotal + discount;
+// Read, not derived. Recovering the fee by subtracting the goods from the
+// total was only correct while nothing else was in that sum, and it broke
+// the moment discounts existed. The server charges it, so the server
+// records it.
+const deliveryFee = Number(order.delivery_fee || 0);
 
 const total = Number(order.total_price || 0);
 

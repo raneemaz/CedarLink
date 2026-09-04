@@ -109,6 +109,7 @@ def _serialize_order(order):
         "status": order.status,
         "delivery_address": order.delivery_address,
         "total_price": float(order.total_price),
+        "delivery_fee": float(order.delivery_fee),
         "discount": (
             float(redemption.amount_applied) if redemption else 0.0
         ),
@@ -459,6 +460,7 @@ def checkout(user_id, delivery_address, delivery_city, coupon_code=None):
             delivery_address=address,
             delivery_city=city,
             total_price=group["total"],
+            delivery_fee=group["delivery_fee"],
         )
 
         db.session.add(order)

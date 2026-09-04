@@ -45,6 +45,17 @@ class Order(db.Model):
         nullable=False
     )
 
+    # Stored, not derived. total_price = goods - discount + delivery, so a
+    # client subtracting the goods from the total gets the fee only while
+    # nothing else is in that sum — which stopped being true the day
+    # coupons landed. Every term the server charges is a term the server
+    # records.
+    delivery_fee = db.Column(
+        db.Numeric(10, 2),
+        nullable=False,
+        default=0
+    )
+
     created_at = db.Column(
         db.DateTime,
         default=_utc_now,
