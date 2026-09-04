@@ -1,0 +1,104 @@
+---
+title: CedarLink — layered architecture
+---
+%% Four layers. An arrow crosses exactly one boundary: a React page calls a
+%% route, a route calls a service, a service uses the models. Nothing skips
+%% a layer — in particular no route touches the database directly and no
+%% model imports Flask (CLAUDE.md).
+%% --
+%% Generated from the code on 2026-09-04: 12 services, 21 registered
+%% blueprints (20 modules), 26 tables, 121 route rules.
+
+flowchart TB
+
+    subgraph presentation["Presentation — React 19 SPA (Vite, Tailwind, i18next)"]
+        direction TB
+        pages["Pages (18 areas)<br/>Home · Products · Stores · Cart · Checkout<br/>Orders · Settings · Vendor · Admin"]
+        components["Components (31)<br/>coupon · reviews · map · product · store · layout"]
+        contexts["Contexts<br/>Auth · Cart · Currency · Notifications"]
+        i18n["i18n — en / ar / fr<br/>RTL, Arabic plurals"]
+        apiclient["services/api.js<br/>axios, VITE_API_URL, JWT refresh"]
+
+        pages --> components
+        pages --> contexts
+        pages --> i18n
+        pages --> apiclient
+    end
+
+    subgraph routes["HTTP — Flask blueprints (121 route rules)"]
+        direction TB
+        r_auth["auth · two_factor<br/>login, 2FA, password reset"]
+        r_catalog["product · product_image · category<br/>store · vendor · home"]
+        r_commerce["cart · order · coupon<br/>payment · payment_method · delivery"]
+        r_people["user · address · notification<br/>review · admin · currency"]
+    end
+
+    subgraph services["Business logic — app/services (12 modules)"]
+        direction TB
+        s_order["order_service<br/>price_cart · checkout · cancel"]
+        s_coupon["coupon_service<br/>validate · claim · release"]
+        s_store["store_service<br/>is_open_now · hours · override · nearby"]
+        s_review["review_service<br/>create · report · moderate · aggregates"]
+        s_2fa["two_factor_service<br/>TOTP · recovery codes · reset"]
+        s_notify["notification_service"]
+        s_prefs["shopping_preferences_service<br/>interests · ordering"]
+        s_home["home_service"]
+        s_ann["announcement_service"]
+        s_account["account_service"]
+        s_token["token_service"]
+        s_fx["exchange_rate_service"]
+    end
+
+    subgraph data["Data — SQLAlchemy 2.0 · Alembic · SQLite"]
+        direction TB
+        models["Models (26 tables)<br/>data only — columns, relationships, to_dict"]
+        alembic["Alembic<br/>42 migrations · flask db check drift guard"]
+        sqlite[("SQLite<br/>Decimal money, soft deletes")]
+
+        models --> alembic
+        models --> sqlite
+    end
+
+    apiclient -->|"HTTPS JSON + JWT"| routes
+
+    r_auth --> s_2fa
+    r_auth --> s_token
+    r_auth --> s_account
+    r_catalog --> s_store
+    r_catalog --> s_home
+    r_catalog --> s_ann
+    r_commerce --> s_order
+    r_commerce --> s_coupon
+    r_people --> s_review
+    r_people --> s_notify
+    r_people --> s_prefs
+    r_people --> s_fx
+
+    s_order --> models
+    s_coupon --> models
+    s_store --> models
+    s_review --> models
+    s_2fa --> models
+    s_notify --> models
+    s_prefs --> models
+    s_home --> models
+    s_ann --> models
+    s_account --> models
+    s_token --> models
+    s_fx --> models
+
+    %% Cross-service calls that actually exist in the code.
+    s_order -.->|"discount"| s_coupon
+    s_order -.->|"is_open_now"| s_store
+    s_order -.->|"order placed"| s_notify
+    s_home -.->|"interest order"| s_prefs
+
+    classDef pres fill:#e0f2fe,stroke:#0369a1,color:#0c4a6e
+    classDef http fill:#dcfce7,stroke:#15803d,color:#14532d
+    classDef svc fill:#fef3c7,stroke:#b45309,color:#78350f
+    classDef dat fill:#f3e8ff,stroke:#7e22ce,color:#4c1d95
+
+    class pages,components,contexts,i18n,apiclient pres
+    class r_auth,r_catalog,r_commerce,r_people http
+    class s_order,s_coupon,s_store,s_review,s_2fa,s_notify,s_prefs,s_home,s_ann,s_account,s_token,s_fx svc
+    class models,alembic,sqlite dat

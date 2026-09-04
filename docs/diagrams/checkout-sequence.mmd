@@ -1,0 +1,114 @@
+---
+title: CedarLink — checkout, with the conditional stock decrement
+---
+%% Traced from app/routes/order_routes.py::checkout and
+%% app/services/order_service.py::checkout / price_cart / _reserve_stock
+%% on 2026-09-04.
+%% --
+%% The point of this figure is the alt block at the decrement: stock is
+%% never read-then-written. The condition is in the UPDATE, so the database
+%% decides who gets the last unit and a rowcount of 0 is the refusal. That
+%% is CL-06 / ADR 0007, and it is the same shape used for coupon used_count
+%% and the TOTP counter (ADR 0021, ADR 0020).
+
+sequenceDiagram
+    autonumber
+    actor C as Customer (React)
+    participant R as POST /api/orders<br/>order_routes.checkout
+    participant OS as order_service
+    participant CS as coupon_service
+    participant DB as SQLite
+
+    C->>R: POST /api/orders<br/>{delivery_address, delivery_city, coupon_code}
+    Note over R: Only the code is read from the body.<br/>A client-sent "discount" is ignored.
+
+    R->>R: validate payment method, address, city
+    alt a required field is missing
+        R-->>C: 400 {error}
+    end
+
+    R->>OS: checkout(user_id, address, city, coupon_code)
+
+    rect rgb(240, 249, 255)
+        Note over OS,DB: price_cart() — the same function /orders/preview calls,<br/>so the quote and the charge cannot diverge (CL-15)
+        OS->>DB: SELECT cart + items + products
+        DB-->>OS: cart rows
+
+        alt cart empty or a product is gone / hidden
+            OS-->>R: OrderError 400
+            R-->>C: 400 {error, product_id}
+        end
+
+        OS->>OS: group by store, subtotal per store
+        OS->>DB: SELECT store, hours, override
+        OS->>OS: assert_store_open(store)
+        alt store closed now
+            OS-->>R: OrderError 400 {code: store_closed}
+            R-->>C: 400 {error, store_name}
+        end
+        OS->>OS: delivery fee per store (inside / outside city)
+    end
+
+    opt a coupon code was sent
+        rect rgb(254, 249, 231)
+            Note over OS,CS: validation only — a preview must never consume a use
+            OS->>CS: validate_for_cart(code, user, store groups)
+            CS->>DB: SELECT coupon WHERE code = UPPER(:code)
+            alt unknown / inactive / not started / expired /<br/>below minimum / limit reached / wrong store /<br/>fixed amount on a multi-store cart
+                CS-->>R: CouponError 400 {code: coupon_*}
+                R-->>C: 400 {error, code}
+            end
+            CS-->>OS: coupon
+            OS->>OS: discount per store, goods only,<br/>clamped to the subtotal
+        end
+    end
+
+    loop one order per store in the cart
+        OS->>DB: INSERT orders (total, delivery_fee, status=pending)
+
+        opt this store's group has a discount
+            OS->>CS: claim(coupon, user_id)
+            rect rgb(254, 242, 242)
+                CS->>DB: UPDATE coupons SET used_count = used_count + 1<br/>WHERE id = :id AND (usage_limit IS NULL<br/>OR used_count < usage_limit)
+                alt rowcount = 0 — somebody took the last use
+                    DB-->>CS: 0 rows
+                    CS-->>R: CouponError 400 {code: coupon_usage_limit}
+                    R->>DB: ROLLBACK
+                    R-->>C: 400 {error}
+                else rowcount = 1
+                    DB-->>CS: 1 row
+                    CS->>DB: INSERT coupon_redemptions (amount_applied)
+                end
+            end
+        end
+
+        loop each line item
+            OS->>OS: _reserve_stock(product, quantity)
+
+            rect rgb(254, 242, 242)
+                Note over OS,DB: the conditional decrement — never read-then-write
+                OS->>DB: UPDATE products SET stock = stock - :qty<br/>WHERE id = :id AND stock >= :qty
+
+                alt rowcount = 0 — oversold between pricing and here
+                    DB-->>OS: 0 rows affected
+                    OS->>DB: SELECT stock WHERE id = :id
+                    DB-->>OS: units actually on hand
+                    OS-->>R: OrderError 400 "Insufficient stock"<br/>{product_id, available_stock, requested_quantity}
+                    R->>DB: ROLLBACK
+                    Note over R,DB: the whole checkout unwinds —<br/>no order, no redemption, no partial decrement
+                    R-->>C: 400 {error, available_stock}
+                else rowcount = 1 — the units are ours
+                    DB-->>OS: 1 row affected
+                    OS->>DB: INSERT order_items (quantity, unit_price)
+                end
+            end
+        end
+    end
+
+    OS->>DB: DELETE cart_items, clear cart.coupon_code
+    OS->>DB: COMMIT
+    Note over OS,DB: one transaction: orders, redemptions,<br/>decrements and the emptied cart land together
+
+    OS-)OS: notify_order_placed(order) — best effort, after commit
+    OS-->>R: {orders, discount, checkout_price}
+    R-->>C: 201 {orders[], coupon_code, discount}
