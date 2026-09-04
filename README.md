@@ -11,11 +11,66 @@ Three actors:
 
 | Actor | Can |
 |---|---|
-| **Customer** | Browse stores and products, filter and search, cart across multiple stores, checkout (COD), track and cancel orders, manage addresses and preferences |
-| **Vendor** | Run one store, manage products and images, set delivery fees and availability, advance orders through their fulfilment states |
-| **Admin** | Approve and suspend stores and users, manage categories, view platform reports. Created only via CLI — never through public registration |
+| **Customer** | Browse stores and products, search and filter, find stores near a point, cart across multiple stores, apply a coupon, checkout (COD), track and cancel orders, review what they received, manage addresses, interests and preferences |
+| **Vendor** | Run one store, manage products and images, set opening hours and temporary overrides, post announcements, issue store coupons, set delivery fees and availability, advance orders through their fulfilment states |
+| **Admin** | Approve and suspend stores and users, manage categories, issue platform-wide coupons, moderate reported reviews, view platform reports. Created only via CLI — never through public registration |
 
 A fourth actor, **driver**, is planned (see the roadmap).
+
+---
+
+## What it does
+
+Each of these has a decision record in `docs/decisions/` explaining the
+design and its trade-offs.
+
+**Storefront**
+- Multi-store cart, priced in one place so a quote and a charge cannot
+  drift (`/orders/preview` and `/orders` call the same function).
+- Stock is decremented with a conditional `UPDATE`, so concurrent
+  checkouts cannot oversell — proven by a barrier test, not by hope.
+- Opening hours per weekday plus temporary overrides ("closed until 3pm"),
+  answered by one function and DST-aware for Asia/Beirut.
+- Store announcements, surfaced on the storefront.
+- Distance search: pin a store on a map, then find stores near your
+  location, a Lebanese place, or one of your saved addresses. Haversine
+  straight-line distance — not driving distance.
+
+**Money**
+- Coupons: percentage or fixed, platform-wide or scoped to one store, with
+  date windows, minimum order, usage and per-customer limits. Discounts
+  come off the goods and never the delivery fee; the total clamps at zero;
+  redemption is claimed with a conditional `UPDATE` and released when a
+  pending order is cancelled.
+- All money is `Decimal` end to end, converted to float only at the JSON
+  boundary. USD is authoritative; LBP is shown as an approximate
+  conversion and never as the charged amount.
+
+**Trust**
+- Reviews of a product or a store, gated on a delivered order the reviewer
+  actually owns. Ratings are stored as aggregates, not recomputed per page.
+- Reporting and moderation: a reported review moves published → flagged →
+  removed, with an admin queue. Removed reviews are invisible to everyone
+  but admins.
+- Serializers are allowlists: moderation notes, approval notes and user ids
+  are added back by admin routes, never leaked by a base `to_dict()`.
+
+**Accounts**
+- Two-factor authentication by authenticator app (TOTP, secret encrypted at
+  rest) or emailed code, with single-use recovery codes. A TOTP code is
+  accepted at most once (RFC 6238 §5.2).
+- Password reset that cannot be used to discover which addresses are
+  registered, and that revokes sessions issued before it.
+- Interests: a customer picks up to five categories and the home page leads
+  with them. **Stated, never inferred** — there is no browsing history, no
+  view counter and no affinity model anywhere in the codebase.
+
+**Localisation**
+- English, Arabic and French across the whole interface, with correct RTL
+  layout (logical properties, mirrored icons, unmirrored maps) and real
+  Arabic plural categories including the dual.
+- The API returns every translation and the client picks — locale is never
+  negotiated server-side, so switching language needs no refetch.
 
 ---
 
@@ -153,18 +208,29 @@ Layout under `tests/`:
 | Folder | What lives there |
 |---|---|
 | `conftest.py` | app / client / `db` fixtures, an `auth` helper that mints a JWT so tests skip the 2FA challenge, and factories: `customer`, `vendor`, `admin`, `make_store`, `make_product`, `make_order`, `add_to_cart` |
+| `unit/` | service-level tests that need no HTTP layer |
 | `integration/` | one test per user story in `files related/CedarLink.md` — customer, vendor and admin flows through the real HTTP layer |
 | `regression/` | one test per fixed finding (CL-06, CL-12, CL-20, CL-23, CL-24), so it stays fixed |
+
+**Foreign keys are enforced in the test suite.** SQLite ignores foreign-key
+constraints unless `PRAGMA foreign_keys=ON` is issued per connection;
+`conftest.py` issues it, so a green suite is evidence the schema holds under
+real enforcement. Development and production do not yet enable it — see
+`docs/decisions/0023-foreign-key-enforcement.md`.
 
 Exactly one test walks the real register → verify → login → verify flow
 (`test_register_verify_login_full_flow`); every other test uses the `auth`
 helper.
 
-`tests/integration/test_concurrent_checkout.py` fires simultaneous
-checkouts for the last unit(s) and asserts the conditional-UPDATE decrement
-lets through exactly the stock's worth (CL-06). Every checkout thread is
-held at a lock-free barrier the instant it finishes pricing, so the test
-is deterministic — no sleeps. A clean run is fully green, no xfail.
+Three tests exercise concurrency, all with the same shape: threads are
+held at a lock-free barrier at the read/write seam, then released
+together, so the result is deterministic and there are no sleeps.
+`test_concurrent_checkout.py` proves the stock decrement cannot oversell
+(CL-06); `test_coupons.py` proves two checkouts cannot both take the last
+use of a coupon; `test_two_factor.py` proves one TOTP code cannot be
+accepted twice. Each was run against the naive read-then-write version
+first and fails there — a concurrency test that has never been seen to
+fail is not evidence of anything. A clean run is fully green, no xfail.
 
 ---
 

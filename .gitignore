@@ -39,3 +39,7 @@ build/
 # OS
 .DS_Store
 Thumbs.db
+
+# Dev-server pidfiles — written by a local `flask run`, never committed.
+flask.pid
+*.pid
