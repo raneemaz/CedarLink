@@ -14,6 +14,15 @@ Layout:
   * ``auth``     — mints a JWT directly via ``create_access_token`` so tests
                    skip the 2FA challenge. Exactly one test
                    (test_register_verify_login_full_flow) walks the real flow.
+
+Foreign keys are **enforced here and only here**. SQLite parses FK clauses
+but ignores them unless ``PRAGMA foreign_keys=ON`` is issued per
+connection, so every constraint in the schema is inert at runtime. The
+listener below turns them on for the test database, which makes the suite
+evidence that the schema holds up under real enforcement rather than
+evidence that nothing was ever checked. Development and production are
+deliberately unchanged — see
+docs/decisions/0023-foreign-key-enforcement.md.
 """
 
 import functools
@@ -22,6 +31,8 @@ from datetime import time
 import pyotp
 import pytest
 from flask_jwt_extended import create_access_token
+from sqlalchemy import event
+from sqlalchemy.engine import Engine
 from werkzeug.security import generate_password_hash as _hash
 
 from app import create_app
@@ -40,6 +51,25 @@ from app.services import two_factor_service
 # Cheap, deterministic hashing for factory users — keeps the suite fast.
 # check_password_hash() verifies any scheme, so login still works end to end.
 fast_hash = functools.partial(_hash, method="pbkdf2:sha256:1")
+
+
+@event.listens_for(Engine, "connect")
+def _enforce_sqlite_foreign_keys(dbapi_connection, connection_record):
+    """Turn foreign keys on for every SQLite connection the tests open.
+
+    Per connection, not per database: the pragma is connection-scoped, so
+    a pool that opens a second connection would silently drop back to
+    unenforced without this. Registered on ``Engine`` rather than one
+    engine so it covers the app's engine and anything a migration test
+    opens.
+
+    Guarded on the dialect so a non-SQLite backend is untouched — it does
+    not need telling.
+    """
+    if dbapi_connection.__class__.__module__.startswith("sqlite3"):
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA foreign_keys=ON")
+        cursor.close()
 
 
 @pytest.fixture(scope="session")
