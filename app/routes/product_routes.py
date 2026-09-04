@@ -7,6 +7,7 @@ from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
 from app.models.store import Store
 from sqlalchemy import or_
 from app.models.category import Category
+from app.services import shopping_preferences_service
 from app.utils.file_utils import product_image_url
 from app.utils.product_payload import (
     product_card,
@@ -84,6 +85,22 @@ def _owns_store(store_id):
         return False
 
     return get_jwt().get("role") == "admin" or store.owner_id == int(identity)
+
+
+def _hides_out_of_stock():
+    """The caller's saved "hide sold-out products" preference.
+
+    Customers only. A vendor browsing the catalogue still needs to see
+    their own sold-out stock, and an admin moderating it needs the whole
+    picture; neither should have a shopping preference quietly filter the
+    listing under them.
+    """
+    identity = get_jwt_identity()
+
+    if not identity or get_jwt().get("role") != "customer":
+        return False
+
+    return shopping_preferences_service.hides_out_of_stock(int(identity))
 
 
 @product_bp.route("/products", methods=["GET"])
@@ -176,7 +193,15 @@ def get_products():
             )
         )
 
-    if request.args.get("in_stock", "").lower() == "true":
+    # An explicit in_stock= on the request always wins: the customer is
+    # asking for something specific right now, and "in_stock=false" has to
+    # be able to override a standing preference. Only when the request says
+    # nothing does the saved preference apply.
+    in_stock_param = request.args.get("in_stock", "").lower()
+
+    if in_stock_param == "true":
+        query = query.filter(Product.stock > 0)
+    elif in_stock_param == "" and _hides_out_of_stock():
         query = query.filter(Product.stock > 0)
     if min_price is not None and max_price is not None:
         if min_price > max_price:

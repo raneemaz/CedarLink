@@ -216,6 +216,21 @@ def _default_category_order():
     return list(rows)
 
 
+def hides_out_of_stock(user_id):
+    """Whether this user asked not to be shown sold-out products.
+
+    Read-only, and never creates a row: a product listing is a GET, and a
+    GET must not write. A user with no preferences row has not asked for
+    anything, which is the same answer as False.
+    """
+    if user_id is None:
+        return False
+
+    prefs = ShoppingPreferences.query.filter_by(user_id=user_id).first()
+
+    return bool(prefs and prefs.hide_out_of_stock)
+
+
 def has_interests(user_id):
     """Whether this user has stated any interest.
 
