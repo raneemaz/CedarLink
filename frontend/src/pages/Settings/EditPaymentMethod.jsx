@@ -14,23 +14,24 @@ function EditPaymentMethod() {
   const navigate = useNavigate();
   const [existingLast4, setExistingLast4] = useState("");
   const [existingBrand, setExistingBrand] = useState("");
+  // No card number, here or anywhere else on the client — "replace the
+  // card number" is now "correct the last four", because the number was
+  // never on this page to begin with.
+  // See docs/decisions/0024-no-card-data.md.
   const [formData, setFormData] = useState({
-    cardNumber: "",
+    brand: "",
+    last4: "",
+    expMonth: "",
+    expYear: "",
     label: "",
     is_default: false,
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  const detectCardBrand = (number) => {
-    const digits = number.replace(/\D/g, "");
-
-    if (/^4/.test(digits)) return "Visa";
-
-    if (/^(5[1-5]|2[2-7])/.test(digits)) return "Mastercard";
-
-    return "";
-  };
+  const thisYear = new Date().getFullYear();
+  const years = Array.from({ length: 15 }, (_, index) => thisYear + index);
+  const months = Array.from({ length: 12 }, (_, index) => index + 1);
 
   useEffect(() => {
     const fetchCard = async () => {
@@ -45,7 +46,14 @@ function EditPaymentMethod() {
         setExistingLast4(paymentMethod.last4 || "");
         setExistingBrand(paymentMethod.brand || "");
         setFormData({
-          cardNumber: "",
+          brand: paymentMethod.brand || "",
+          last4: paymentMethod.last4 || "",
+          expMonth: paymentMethod.exp_month
+            ? String(paymentMethod.exp_month)
+            : "",
+          expYear: paymentMethod.exp_year
+            ? String(paymentMethod.exp_year)
+            : "",
           label: paymentMethod.label || "",
           is_default: Boolean(paymentMethod.is_default),
         });
@@ -63,28 +71,21 @@ function EditPaymentMethod() {
     fetchCard();
   }, [id, navigate, t]);
 
-  const handleCardNumberChange = (event) => {
-    let value = event.target.value.replace(/\D/g, "").slice(0, 19);
-    value = value.replace(/(.{4})/g, "$1 ").trim();
-
-    setFormData((previous) => ({
-      ...previous,
-      cardNumber: value,
-    }));
-  };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    const cardNumber = formData.cardNumber.replace(/\D/g, "");
 
     if (!formData.label.trim()) {
       toast.error(t("paymentMethods.errCardholderName"));
       return;
     }
 
-    if (cardNumber && (cardNumber.length < 12 || cardNumber.length > 19)) {
-      toast.error(t("paymentMethods.errValidNumber"));
+    if (!/^\d{4}$/.test(formData.last4)) {
+      toast.error(t("paymentMethods.errLastFour"));
+      return;
+    }
+
+    if (!formData.expMonth || !formData.expYear) {
+      toast.error(t("paymentMethods.errExpiry"));
       return;
     }
 
@@ -94,8 +95,10 @@ function EditPaymentMethod() {
       await api.put(`/payment-methods/${id}`, {
         type: "card",
         label: formData.label.trim(),
-        ...(cardNumber ? { card_number: cardNumber } : {}),
-        brand: detectCardBrand(cardNumber) || existingBrand || null,
+        brand: formData.brand || existingBrand || null,
+        last4: formData.last4,
+        exp_month: Number(formData.expMonth),
+        exp_year: Number(formData.expYear),
         is_default: formData.is_default,
       });
 
@@ -157,24 +160,122 @@ function EditPaymentMethod() {
           </div>
 
           <div className="space-y-6">
-            <div>
-              <label
-                htmlFor="cardNumber"
-                className="mb-2 block text-sm font-medium text-gray-700"
-              >
-                {t("paymentMethods.replaceCardNumber")}
-              </label>
+            <p className="rounded-lg bg-gray-50 px-4 py-3 text-sm text-gray-600">
+              {t("paymentMethods.noNumberNotice")}
+            </p>
 
-              <input
-                id="cardNumber"
-                type="text"
-                inputMode="numeric"
-                autoComplete="cc-number"
-                value={formData.cardNumber}
-                onChange={handleCardNumberChange}
-                placeholder={t("paymentMethods.replaceCardPlaceholder")}
-                className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-green-600 focus:ring-2 focus:ring-green-100"
-              />
+            <div className="grid gap-6 sm:grid-cols-2">
+              <div>
+                <label
+                  htmlFor="brand"
+                  className="mb-2 block text-sm font-medium text-gray-700"
+                >
+                  {t("paymentMethods.brand")}
+                </label>
+
+                <select
+                  id="brand"
+                  value={formData.brand}
+                  onChange={(event) =>
+                    setFormData((previous) => ({
+                      ...previous,
+                      brand: event.target.value,
+                    }))
+                  }
+                  className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-green-600 focus:ring-2 focus:ring-green-100"
+                >
+                  <option value="">{t("paymentMethods.brandNone")}</option>
+                  <option value="Visa">Visa</option>
+                  <option value="Mastercard">Mastercard</option>
+                  <option value="Amex">American Express</option>
+                </select>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="last4"
+                  className="mb-2 block text-sm font-medium text-gray-700"
+                >
+                  {t("paymentMethods.lastFour")}
+                </label>
+
+                <input
+                  id="last4"
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={4}
+                  autoComplete="off"
+                  dir="ltr"
+                  value={formData.last4}
+                  onChange={(event) =>
+                    setFormData((previous) => ({
+                      ...previous,
+                      last4: event.target.value.replace(/\D/g, "").slice(0, 4),
+                    }))
+                  }
+                  placeholder="4242"
+                  required
+                  className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-green-600 focus:ring-2 focus:ring-green-100"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="expMonth"
+                  className="mb-2 block text-sm font-medium text-gray-700"
+                >
+                  {t("paymentMethods.expiryMonth")}
+                </label>
+
+                <select
+                  id="expMonth"
+                  value={formData.expMonth}
+                  onChange={(event) =>
+                    setFormData((previous) => ({
+                      ...previous,
+                      expMonth: event.target.value,
+                    }))
+                  }
+                  required
+                  className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-green-600 focus:ring-2 focus:ring-green-100"
+                >
+                  <option value="">--</option>
+                  {months.map((month) => (
+                    <option key={month} value={month}>
+                      {String(month).padStart(2, "0")}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="expYear"
+                  className="mb-2 block text-sm font-medium text-gray-700"
+                >
+                  {t("paymentMethods.expiryYear")}
+                </label>
+
+                <select
+                  id="expYear"
+                  value={formData.expYear}
+                  onChange={(event) =>
+                    setFormData((previous) => ({
+                      ...previous,
+                      expYear: event.target.value,
+                    }))
+                  }
+                  required
+                  className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-green-600 focus:ring-2 focus:ring-green-100"
+                >
+                  <option value="">----</option>
+                  {years.map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             <div>

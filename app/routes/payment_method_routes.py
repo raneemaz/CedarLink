@@ -1,4 +1,4 @@
-import hashlib
+from datetime import datetime, timezone
 
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
@@ -16,9 +16,24 @@ payment_method_bp = Blueprint(
 
 CARD_TYPE = "card"
 
-
-def hash_card_number(card_number):
-    return hashlib.sha256(card_number.encode("utf-8")).hexdigest()
+# Field names that would carry a full card number or a security code.
+# The endpoint refuses a request containing any of them rather than
+# ignoring it: silently dropping the field would let an old client keep
+# putting a PAN on the wire believing it was being handled, and the wire
+# is the part that matters. See docs/decisions/0024-no-card-data.md.
+FORBIDDEN_FIELDS = (
+    "card_number",
+    "cardnumber",
+    "card_no",
+    "number",
+    "full_number",
+    "pan",
+    "number_hash",
+    "cvv",
+    "cvc",
+    "csc",
+    "security_code",
+)
 
 
 def payment_method_to_dict(payment_method):
@@ -28,6 +43,8 @@ def payment_method_to_dict(payment_method):
         "label": payment_method.label,
         "brand": payment_method.brand,
         "last4": payment_method.last4,
+        "exp_month": payment_method.exp_month,
+        "exp_year": payment_method.exp_year,
         "provider": payment_method.provider,
         "provider_customer_id": payment_method.provider_customer_id,
         "provider_payment_method_id": (
@@ -55,19 +72,61 @@ def get_saved_card(payment_method_id, user_id):
     ).first()
 
 
-def validate_card_number(card_number):
-    if not card_number:
-        return None, "Card number is required"
+def reject_card_data(data):
+    """The message for a request carrying a PAN or a CVV, else None.
 
-    normalized_number = str(card_number).replace(" ", "").strip()
+    This is the whole point of the change: the server cannot leak, log or
+    store what it never receives, and an endpoint that never receives a
+    card number is out of PCI DSS scope rather than in it and compliant.
+    """
+    present = [field for field in FORBIDDEN_FIELDS if field in data]
 
-    if not normalized_number.isdigit():
-        return None, "Card number must contain only digits"
+    if not present:
+        return None
 
-    if not 12 <= len(normalized_number) <= 19:
-        return None, "Card number must contain between 12 and 19 digits"
+    return (
+        "Card numbers and security codes are not accepted. Send brand, "
+        "last four digits, expiry and cardholder name only. Rejected "
+        "field(s): " + ", ".join(sorted(present))
+    )
 
-    return normalized_number, None
+
+def validate_last4(value):
+    """The four digits a customer reads off their own card."""
+    if value is None or str(value).strip() == "":
+        return None, "Last four digits are required"
+
+    digits = str(value).strip()
+
+    if not digits.isdigit() or len(digits) != 4:
+        return None, "Last four digits must be exactly four digits"
+
+    return digits, None
+
+
+def validate_expiry(month, year):
+    """(month, year) or an error. Four-digit year, and not in the past."""
+    if month is None or year is None or month == "" or year == "":
+        return None, None, "Card expiry is required"
+
+    try:
+        month = int(month)
+        year = int(year)
+    except (TypeError, ValueError):
+        return None, None, "Card expiry must be numeric"
+
+    if not 1 <= month <= 12:
+        return None, None, "Expiry month must be between 1 and 12"
+
+    if not 2000 <= year <= 2099:
+        return None, None, "Expiry year must be a four-digit year"
+
+    now = datetime.now(timezone.utc)
+
+    if (year, month) < (now.year, now.month):
+        return None, None, "That card has expired"
+
+    return month, year, None
 
 
 def normalize_optional_value(value):
@@ -107,6 +166,10 @@ def create_payment_method():
     current_user_id = int(get_jwt_identity())
     data = request.get_json() or {}
 
+    rejection = reject_card_data(data)
+    if rejection:
+        return jsonify({"message": rejection}), 400
+
     if data.get("type") != CARD_TYPE:
         return invalid_saved_method_response()
 
@@ -117,10 +180,13 @@ def create_payment_method():
             "message": "Cardholder name is required"
         }), 400
 
-    card_number, validation_error = validate_card_number(
-        data.get("card_number")
-    )
+    last4, validation_error = validate_last4(data.get("last4"))
+    if validation_error:
+        return jsonify({"message": validation_error}), 400
 
+    exp_month, exp_year, validation_error = validate_expiry(
+        data.get("exp_month"), data.get("exp_year")
+    )
     if validation_error:
         return jsonify({"message": validation_error}), 400
 
@@ -143,8 +209,9 @@ def create_payment_method():
         type=CARD_TYPE,
         label=str(label).strip(),
         brand=normalize_optional_value(data.get("brand")),
-        last4=card_number[-4:],
-        number_hash=hash_card_number(card_number),
+        last4=last4,
+        exp_month=exp_month,
+        exp_year=exp_year,
         provider=normalize_optional_value(data.get("provider")),
         provider_customer_id=normalize_optional_value(
             data.get("provider_customer_id")
@@ -189,6 +256,10 @@ def update_payment_method(payment_method_id):
 
     data = request.get_json() or {}
 
+    rejection = reject_card_data(data)
+    if rejection:
+        return jsonify({"message": rejection}), 400
+
     if data.get("type") != CARD_TYPE:
         return invalid_saved_method_response()
 
@@ -199,16 +270,20 @@ def update_payment_method(payment_method_id):
             "message": "Cardholder name is required"
         }), 400
 
-    card_number = data.get("card_number")
-
-    if card_number:
-        card_number, validation_error = validate_card_number(card_number)
-
+    if "last4" in data:
+        last4, validation_error = validate_last4(data.get("last4"))
         if validation_error:
             return jsonify({"message": validation_error}), 400
+        payment_method.last4 = last4
 
-        payment_method.last4 = card_number[-4:]
-        payment_method.number_hash = hash_card_number(card_number)
+    if "exp_month" in data or "exp_year" in data:
+        exp_month, exp_year, validation_error = validate_expiry(
+            data.get("exp_month"), data.get("exp_year")
+        )
+        if validation_error:
+            return jsonify({"message": validation_error}), 400
+        payment_method.exp_month = exp_month
+        payment_method.exp_year = exp_year
 
     is_default = bool(data.get("is_default", payment_method.is_default))
 
