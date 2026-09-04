@@ -1,6 +1,11 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.extensions import db
+
+
+def _utc_now():
+    """Timezone-aware UTC now — never ``datetime.utcnow`` (CLAUDE.md)."""
+    return datetime.now(timezone.utc)
 
 
 class ShoppingPreferences(db.Model):
@@ -25,6 +30,18 @@ class ShoppingPreferences(db.Model):
     )
 
     # Which payment option checkout preselects.
+    #
+    # "card" is genuinely reachable, so this is not a preference for
+    # something that cannot happen: POST /api/payment-methods saves a card,
+    # the settings page offers both options, and Checkout preselects the
+    # default card when this says "card". validate_checkout_payment_method
+    # accepts it and the order is created.
+    #
+    # What it does NOT do is charge anything. Checkout creates no Payment
+    # row and calls no provider — POST /api/payments is a separate endpoint
+    # nothing invokes during checkout. So choosing a card today records an
+    # intent and collects on delivery all the same. Worth knowing before
+    # anyone reads this column as evidence that card payment is wired up.
     preferred_payment_method = db.Column(
         db.Enum("card", "cash_on_delivery"),
         nullable=False,
@@ -45,14 +62,14 @@ class ShoppingPreferences(db.Model):
 
     created_at = db.Column(
         db.DateTime,
-        default=datetime.utcnow,
+        default=_utc_now,
         nullable=False,
     )
 
     updated_at = db.Column(
         db.DateTime,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow,
+        default=_utc_now,
+        onupdate=_utc_now,
         nullable=False,
     )
 
@@ -73,7 +90,19 @@ class ShoppingPreferences(db.Model):
 
     @property
     def interest_category_ids(self):
-        return [interest.category_id for interest in self.interests]
+        """Chosen category ids, in the customer's own order.
+
+        Sorted here rather than trusting the relationship's ``order_by``:
+        that only orders the collection as it is loaded, and reordering an
+        existing set now updates ``position`` in place, so between the
+        update and the next load the loaded order is stale.
+        """
+        return [
+            interest.category_id
+            for interest in sorted(
+                self.interests, key=lambda interest: interest.position
+            )
+        ]
 
     def to_dict(self):
         return {
