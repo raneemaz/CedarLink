@@ -103,6 +103,36 @@ def _hides_out_of_stock():
     return shopping_preferences_service.hides_out_of_stock(int(identity))
 
 
+def _store_availability(store):
+    """is_open_now / accepts_orders / next_opening_time for one store.
+
+    Only the product *detail* page gets this: the listing shows dozens of
+    products at once and nobody reads an opening time on a grid tile.
+    """
+    from app.services import store_service
+
+    open_now, reason = store_service.is_open_now(store)
+
+    accepts = open_now or (
+        reason == store_service.CLOSED_OUTSIDE_HOURS
+        and store.accepts_orders_when_closed
+    )
+
+    opens_at = (
+        store_service.next_opening_time(store)
+        if not open_now and accepts
+        else None
+    )
+
+    return {
+        "store_is_open_now": open_now,
+        "store_accepts_orders": accepts,
+        "store_next_opening_time": (
+            opens_at.isoformat() if opens_at else None
+        ),
+    }
+
+
 @product_bp.route("/products", methods=["GET"])
 @jwt_required(optional=True)
 def get_products():
@@ -293,6 +323,10 @@ def get_product(id):
         "stock": product.stock,
         "store_id": product.store_id,
         "store_name": product.store.name,
+        # The product page has to say whether this can be bought right
+        # now, and if not, when it will arrive — a closed store that takes
+        # orders is a sale, not a dead end (ADR 0025).
+        **_store_availability(product.store),
         "category_id": product.category_id,
         "images": images,
         "image": images[0]["url"] if images else None,

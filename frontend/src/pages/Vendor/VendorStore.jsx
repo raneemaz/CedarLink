@@ -8,6 +8,7 @@ import Toggle from "../../components/common/Toggle/Toggle";
 import { lebanonLocations } from "../../data/lebanonLocations";
 import StoreHoursEditor from "./StoreHoursEditor";
 import StoreOverridePanel from "./StoreOverridePanel";
+import StoreClosedOrdersPanel from "./StoreClosedOrdersPanel";
 import StoreAnnouncementsManager from "./StoreAnnouncementsManager";
 import StoreLocationSection from "./StoreLocationSection";
 
@@ -470,6 +471,11 @@ function VendorStore() {
         <StoreLocationSection store={store} onStoreChange={applyStore} />
 
         <StoreHoursEditor storeId={store.id} />
+
+        {/* Right after the schedule and before the override: the vendor
+            reads "these are my hours", then "and this is what happens
+            outside them", then "and this is how I shut right now". */}
+        <StoreClosedOrdersPanel store={store} onStoreChange={applyStore} />
 
         <StoreOverridePanel store={store} onStoreChange={applyStore} />
 

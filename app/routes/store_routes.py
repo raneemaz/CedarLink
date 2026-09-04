@@ -14,9 +14,28 @@ store_bp = Blueprint("store", __name__, url_prefix="/api/stores")
 
 
 def _store_with_status(store):
-    """Store payload for the storefront — adds the live open/closed flag."""
-    open_now, _ = store_service.is_open_now(store)
-    return {**store.to_dict(), "is_open_now": open_now}
+    """Store payload for the storefront — adds the live open/closed flag.
+
+    ``next_opening_time`` rides along only when the store is shut and can
+    still take an order: that is the one case the interface has to say
+    something more than "closed", and computing it for every open store in
+    a directory listing would be work nobody reads.
+    """
+    open_now, reason = store_service.is_open_now(store)
+
+    payload = {**store.to_dict(), "is_open_now": open_now}
+
+    if (
+        not open_now
+        and reason == store_service.CLOSED_OUTSIDE_HOURS
+        and store.accepts_orders_when_closed
+    ):
+        opens_at = store_service.next_opening_time(store)
+        payload["next_opening_time"] = (
+            opens_at.isoformat() if opens_at else None
+        )
+
+    return payload
 
 
 def _load_owned_store(store_id):
@@ -287,6 +306,14 @@ def update_store(store_id):
             }), 400
 
         store.delivery_available = data["delivery_available"]
+
+    if "accepts_orders_when_closed" in data:
+        if not isinstance(data["accepts_orders_when_closed"], bool):
+            return jsonify({
+                "message": "accepts_orders_when_closed must be true or false"
+            }), 400
+
+        store.accepts_orders_when_closed = data["accepts_orders_when_closed"]
 
     if "is_online_only" in data:
         if not isinstance(data["is_online_only"], bool):

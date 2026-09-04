@@ -7,6 +7,7 @@ import BackLink from "../../components/common/BackLink";
 import api from "../../services/api";
 import ProductCard from "../../components/product/ProductCard";
 import StoreStatusBadge from "../../components/store/StoreStatusBadge";
+import ClosedStoreNotice from "../../components/store/ClosedStoreNotice";
 import RatingSummary from "../../components/reviews/RatingSummary";
 import ReviewList from "../../components/reviews/ReviewList";
 import MapView from "../../components/map/MapView";
@@ -129,6 +130,17 @@ function StoreDetails() {
             className="mt-2"
           />
 
+
+          {/* Only when the schedule is what shut it — an override has its
+              own, more specific message just below. */}
+          {!overrideOn && (
+            <ClosedStoreNotice
+              isOpen={store.is_open_now}
+              acceptsOrders={store.accepts_orders_when_closed}
+              nextOpeningTime={store.next_opening_time}
+              className="mt-3"
+            />
+          )}
 
           {overrideOn && store.override_status === "closed" && (
             <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">

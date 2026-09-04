@@ -36,11 +36,29 @@ def get_cart():
 
         if store_id not in stores:
             store_obj = item.product.store
-            open_now, _ = store_service.is_open_now(store_obj)
+            open_now, reason = store_service.is_open_now(store_obj)
+
+            # The cart has to tell "closed, we will deliver later" from
+            # "closed, you cannot order" — the old warning implied the
+            # second for both. See ADR 0025.
+            takes_orders = open_now or (
+                reason == store_service.CLOSED_OUTSIDE_HOURS
+                and store_obj.accepts_orders_when_closed
+            )
+            opens_at = (
+                store_service.next_opening_time(store_obj)
+                if not open_now and takes_orders
+                else None
+            )
+
             stores[store_id] = {
                 "store_id": store_id,
                 "store_name": store_obj.name,
                 "is_open_now": open_now,
+                "accepts_orders": takes_orders,
+                "next_opening_time": (
+                    opens_at.isoformat() if opens_at else None
+                ),
                 "items": [],
                 "store_subtotal": 0
             }
@@ -116,7 +134,7 @@ def add_to_cart():
     # A closed store cannot take new cart items (enforced in the service so
     # cart-add and checkout share one rule).
     try:
-        order_service.assert_store_open(product.store)
+        order_service.assert_store_accepts_orders(product.store)
     except OrderError as exc:
         return jsonify(exc.payload), exc.status_code
 
