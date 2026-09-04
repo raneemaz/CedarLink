@@ -54,24 +54,47 @@ class OrderError(Exception):
 # Store availability gate — one rule, enforced here (never in a route)
 # --------------------------------------------------------------------------- #
 
-def assert_store_open(store):
-    """Raise ``OrderError(code="store_closed")`` when the store is not open now.
+def assert_store_accepts_orders(store):
+    """Raise ``OrderError(code="store_closed")`` when the store cannot take
+    an order right now.
 
     Called both when a product is added to the cart and again inside
-    ``price_cart`` at checkout — the same single check on both paths, the way
-    pricing itself is single-sourced (CL-15). ``store_service.is_open_now``
-    is the only place that decides open/closed.
+    ``price_cart`` at checkout — the same single check on both paths, the
+    way pricing itself is single-sourced (CL-15).
+    ``store_service.is_open_now`` remains the only place that decides
+    open/closed; this decides whether *closed* means *refuse*.
+
+    Being shut and refusing an order are no longer the same thing:
+
+    * **Closed by schedule** — a vendor who has set
+      ``accepts_orders_when_closed`` takes the order and fulfils it after
+      they next open. A clothes shop wants the 11pm sale; the alternative
+      is refusing it and never learning it existed.
+    * **Closed by an active override** — refused whatever the flag says.
+      An override is the vendor saying something is wrong *right now*;
+      letting orders through it would make setting one pointless.
+
+    See docs/decisions/0025-orders-while-closed.md.
     """
     open_now, reason = store_service.is_open_now(store)
-    if not open_now:
-        raise OrderError(
-            f"\"{store.name}\" is closed right now.",
-            400,
-            code="store_closed",
-            reason=reason,
-            store_id=store.id,
-            store_name=store.name,
-        )
+
+    if open_now:
+        return
+
+    if (
+        reason == store_service.CLOSED_OUTSIDE_HOURS
+        and store.accepts_orders_when_closed
+    ):
+        return
+
+    raise OrderError(
+        f"\"{store.name}\" is closed right now.",
+        400,
+        code="store_closed",
+        reason=reason,
+        store_id=store.id,
+        store_name=store.name,
+    )
 
 
 # --------------------------------------------------------------------------- #
@@ -204,7 +227,7 @@ def price_cart(user_id, delivery_city, coupon_code=None):
         if not store:
             raise OrderError(f"Store {store_id} not found", 404)
 
-        assert_store_open(store)
+        assert_store_accepts_orders(store)
 
         if not store.delivery_available:
             raise OrderError(

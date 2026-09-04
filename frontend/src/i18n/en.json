@@ -697,7 +697,6 @@
     "browseProducts": "Browse Products",
     "subtitle": "Review your selected products before checkout.",
     "storeHeading": "Store #{{id}}",
-    "storeClosedWarning": "This store is closed right now — you can't check out this order until it reopens.",
     "priceEach": "{{price}} each",
     "removeItem": "Remove item",
     "storeSubtotal": "Store subtotal",
@@ -1029,7 +1028,18 @@
     "errCreate": "Unable to create your store.",
     "errSaveDetails": "Unable to save store details.",
     "errSaveDelivery": "Unable to save delivery settings.",
-    "errSaveStatus": "Unable to update store status."
+    "errSaveStatus": "Unable to update store status.",
+    "closedOrders": {
+      "title": "Orders outside opening hours",
+      "description": "Decide what happens when someone wants to buy while your store is closed.",
+      "label": "Take orders while closed",
+      "onDesc": "Customers can order at any time. Orders placed while you are closed are delivered after you next open.",
+      "offDesc": "Customers cannot order while you are closed. The sale is refused and you will not hear about it.",
+      "overrideNote": "This does not apply to a temporary closure. While an override is active, orders are refused even with this turned on — an override means something is wrong right now.",
+      "toastOn": "Your store now takes orders while closed.",
+      "toastOff": "Your store no longer takes orders while closed.",
+      "errSave": "Could not save that setting."
+    }
   },
   "storeHours": {
     "title": "Weekly schedule",
@@ -1482,5 +1492,10 @@
     "errUserLimit": "You have already used that coupon.",
     "errWrongStore": "That coupon is not valid for the stores in your basket.",
     "errFixedMultiStore": "That coupon cannot be used on a basket from more than one store."
+  },
+  "storeClosed": {
+    "opensAt": "Closed right now — opens {{opening}}. You can still order; it will be delivered after that.",
+    "ordersWelcome": "Closed right now, but you can still order. It will be delivered once the store reopens.",
+    "cannotOrder": "This store is closed and is not taking orders right now."
   }
 }

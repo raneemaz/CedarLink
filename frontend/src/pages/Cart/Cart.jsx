@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import api from "../../services/api";
 import { localizedField } from "../../utils/localize";
 import CouponField from "../../components/coupon/CouponField";
+import ClosedStoreNotice from "../../components/store/ClosedStoreNotice";
 
 function Cart() {
   const { t, i18n } = useTranslation();
@@ -176,8 +177,12 @@ function Cart() {
                 </div>
 
                 {store.is_open_now === false && (
-                  <div className="border-b border-amber-200 bg-amber-50 px-6 py-3 text-sm text-amber-800">
-                    {t("cart.storeClosedWarning")}
+                  <div className="border-b border-slate-200 px-6 py-3">
+                    <ClosedStoreNotice
+                      isOpen={store.is_open_now}
+                      acceptsOrders={store.accepts_orders}
+                      nextOpeningTime={store.next_opening_time}
+                    />
                   </div>
                 )}
 

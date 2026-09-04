@@ -84,6 +84,19 @@ class Store(db.Model):
     # override_status is "open" or "closed". override_until is naive UTC, like
     # every other timestamp in this schema. See
     # docs/decisions/0013-store-hours-timezone.md.
+    # Whether a store that is shut by its weekly schedule may still take
+    # orders for later. False preserves the original behaviour, which is
+    # right for anything perishable; a clothes shop wants True, so an
+    # 11pm sale is captured instead of refused. A manual override still
+    # blocks orders regardless — see
+    # docs/decisions/0025-orders-while-closed.md.
+    accepts_orders_when_closed = db.Column(
+        db.Boolean,
+        nullable=False,
+        default=False,
+        server_default=db.false(),
+    )
+
     override_status = db.Column(db.String(10), nullable=True)
     override_reason = db.Column(db.String(255), nullable=True)
     override_until = db.Column(db.DateTime, nullable=True)
@@ -207,4 +220,9 @@ class Store(db.Model):
                 float(self.longitude) if self.longitude is not None else None
             ),
             "is_online_only": bool(self.is_online_only),
+            # Public on purpose: the storefront needs it to tell "closed,
+            # order anyway" from "closed, come back later".
+            "accepts_orders_when_closed": bool(
+                self.accepts_orders_when_closed
+            ),
         }

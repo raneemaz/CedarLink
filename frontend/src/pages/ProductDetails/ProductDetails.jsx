@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import api from "../../services/api";
+import ClosedStoreNotice from "../../components/store/ClosedStoreNotice";
 import Price from "../../components/common/Price";
 import BackLink from "../../components/common/BackLink";
 import RatingSummary from "../../components/reviews/RatingSummary";
@@ -259,11 +260,21 @@ function ProductDetails() {
             </div>
 
             {/* Actions */}
-            <div className="mt-6 flex gap-3"></div>
+            <ClosedStoreNotice
+              isOpen={product.store_is_open_now}
+              acceptsOrders={product.store_accepts_orders}
+              nextOpeningTime={product.store_next_opening_time}
+              className="mt-6"
+            />
+
             <div className="mt-8 flex gap-3">
               <button
                 onClick={handleAddToCart}
-                disabled={product.stock <= 0 || addingToCart}
+                disabled={
+                  product.stock <= 0 ||
+                  addingToCart ||
+                  product.store_accepts_orders === false
+                }
                 className="flex-1 cursor-pointer rounded-md bg-emerald-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:bg-gray-300"
               >
                 {addingToCart ? t("productDetails.adding") : t("productDetails.addToCart")}

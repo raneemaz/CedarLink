@@ -31,3 +31,27 @@ export function beirutWeekday(date = new Date()) {
     "Sunday",
   ].indexOf(name);
 }
+
+/**
+ * "Tuesday at 09:00" for a next-opening ISO instant, in the viewer's
+ * language but the *store's* clock.
+ *
+ * Asia/Beirut, not the browser's zone: a customer in Paris reading
+ * "opens Tuesday at 09:00" means the shop's nine, and shifting it to
+ * their own would be a lie about when the shop unlocks its door.
+ * Returns "" for a missing or unparseable value so callers can fall back.
+ */
+export function formatNextOpening(iso, language) {
+  if (!iso) return "";
+
+  const when = new Date(iso);
+  if (Number.isNaN(when.getTime())) return "";
+
+  return new Intl.DateTimeFormat(language || "en", {
+    timeZone: "Asia/Beirut",
+    weekday: "long",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(when);
+}

@@ -140,6 +140,86 @@ def is_open_now(store, at=None):
     return False, CLOSED_OUTSIDE_HOURS
 
 
+def _schedule_covers(store, local):
+    """Does the weekly schedule cover this Beirut instant? Override ignored."""
+    weekday = local.weekday()
+    local_time = local.time()
+    return any(
+        _row_covers(row, weekday, local_time) for row in store.hours
+    )
+
+
+def next_opening_time(store, at=None):
+    """The next instant the store opens, as an aware Beirut datetime.
+
+    ``None`` when the store has no hours at all — a store with an empty
+    schedule is never open, so there is no answer to give rather than a
+    misleading one.
+
+    Two constraints, and the store opens at the **later** of them:
+
+    * the weekly schedule, with the same edge cases ``is_open_now``
+      handles — a split day has two intervals, and an interval whose
+      ``closes_at`` is at or before its ``opens_at`` runs past midnight
+      into the next day;
+    * an active *closed* override, which holds the store shut until it
+      expires even during scheduled hours. An override expiring at 14:00
+      on a day the store is scheduled 09:00-20:00 means it opens at
+      14:00, not 09:00.
+
+    An *open* override is not consulted: the store is open now, so the
+    answer is now.
+
+    Looks ahead seven days and gives up after that. A weekly schedule with
+    any row in it always opens inside seven days, so the cap only bites on
+    data that could not open anyway.
+    """
+    if not store.hours:
+        return None
+
+    local = _as_beirut(at) if at is not None else _now_local()
+    now_utc = local.astimezone(timezone.utc)
+
+    # A closed override postpones the answer to at least its expiry.
+    if _override_status(store, now_utc) == "closed":
+        until = store.override_until
+        if until.tzinfo is None:
+            until = until.replace(tzinfo=timezone.utc)
+        expiry_local = until.astimezone(BEIRUT)
+        if expiry_local > local:
+            local = expiry_local
+
+    # Already inside an open interval at that moment — including the
+    # morning half of an interval that began the previous evening.
+    if _schedule_covers(store, local):
+        return local
+
+    horizon = local + timedelta(days=OVERRIDE_MAX_DAYS)
+    best = None
+
+    # Candidate openings are each row's opens_at on each day the row
+    # applies to. The morning half of a midnight-crossing interval is a
+    # continuation, not a fresh opening, so it is deliberately not a
+    # candidate.
+    for offset in range(OVERRIDE_MAX_DAYS + 1):
+        day = (local + timedelta(days=offset)).date()
+
+        for row in store.hours:
+            if row.day_of_week != day.weekday():
+                continue
+
+            candidate = datetime.combine(
+                day, row.opens_at, tzinfo=BEIRUT
+            )
+
+            if candidate < local or candidate > horizon:
+                continue
+            if best is None or candidate < best:
+                best = candidate
+
+    return best
+
+
 # --------------------------------------------------------------------------- #
 # Writes — hours and override
 # --------------------------------------------------------------------------- #

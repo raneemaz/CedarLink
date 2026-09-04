@@ -445,7 +445,7 @@ def _seed_stores(categories):
 def _apply_schedules(stores):
     """Put the real opening hours and the override on, last.
 
-    Deliberately after the seeded checkouts: `assert_store_open` is a real
+    Deliberately after the seeded checkouts: `assert_store_accepts_orders` is a real
     rule, so a store that is genuinely shut cannot be ordered from. Running
     this at the end means the demo gets its interesting schedules without
     the seed's success depending on the clock.
