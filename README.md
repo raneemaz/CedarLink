@@ -144,8 +144,10 @@ flask seed                    # load demo data (skip for a bare database)
 flask run                     # http://localhost:5000
 ```
 
-`flask seed` is idempotent — safe to run again — and refuses to run when
-`FLASK_CONFIG=production`.
+`flask seed` is re-runnable — it fills in whatever is missing, and
+`flask seed --reset` rebuilds the demo data from scratch. Both refuse to
+run when `FLASK_CONFIG=production`. See **Demo accounts** for what it
+creates.
 
 ### Environment variables
 
@@ -266,23 +268,68 @@ contents of `frontend/dist/` as static files, with a fallback to
 
 ## Demo accounts
 
-After `flask seed`, these accounts exist. **Password for all of them:
-`Cedar!2026`**
+`flask seed` builds a demo marketplace where every screen has something
+real on it. **Password for every account below: `Cedar!2026`**
+
+### Start here
+
+| Role | Email | What it shows |
+|---|---|---|
+| **Admin** | `admin@cedarlink.demo` | Store approval queue (one store waiting), review moderation queue (one flagged, one removed), platform coupons |
+| **Vendor** | `vendor.hamra@cedarlink.demo` | Hamra Grocery — 8 products, opening hours, three announcements, store coupon, incoming orders |
+| **Customer** | `customer.rania@cedarlink.demo` | Two pinned addresses, three chosen interests, order history with reviews and a discounted order, notifications |
+
+### Every account
 
 | Email | Role | Notes |
 |---|---|---|
-| `admin@cedarlink.demo` | admin | Admin console (`/admin`). Created by `flask seed` — safe because the seed refuses to run in production. |
-| `vendor.beirut@cedarlink.demo` | vendor | Hamra Grocery (Beirut) |
-| `vendor.tripoli@cedarlink.demo` | vendor | Tripoli Threads (Tripoli) |
-| `vendor.saida@cedarlink.demo` | vendor | Saida Electronics (Saida) |
-| `vendor.jounieh@cedarlink.demo` | vendor | Jounieh Beauty Bar (Jounieh) — **store deactivated** |
-| `customer.rania@cedarlink.demo` | customer | Beirut addresses, has delivered + pending orders |
-| `customer.karim@cedarlink.demo` | customer | Jounieh address, has processing + canceled orders |
-| `customer.lina@cedarlink.demo` | customer | Tripoli address, has delivered + processing orders |
+| `admin@cedarlink.demo` | admin | Admin console (`/admin`) |
+| `vendor.hamra@cedarlink.demo` | vendor | Hamra Grocery, Beirut |
+| `vendor.achrafieh@cedarlink.demo` | vendor | Achrafieh Pantry — **split opening hours** (09:00–14:00, 16:00–20:00) |
+| `vendor.marmikhael@cedarlink.demo` | vendor | Mar Mikhael Books — **hours cross midnight** (20:00–02:00) |
+| `vendor.tripoli@cedarlink.demo` | vendor | Tripoli Threads — **closed on Sundays** |
+| `vendor.saida@cedarlink.demo` | vendor | Saida Electronics — **under an active override, "Power outage"** |
+| `vendor.jounieh@cedarlink.demo` | vendor | Jounieh Beauty Bar — **store deactivated** by its owner |
+| `vendor.cedarloom@cedarlink.demo` | vendor | Cedar Loom — **online only**, no shopfront, never in a distance result |
+| `vendor.badaro@cedarlink.demo` | vendor | Badaro Home — **pending approval**, so the admin queue is not empty |
+| `customer.rania@cedarlink.demo` | customer | Beirut. Home + Work addresses both pinned; interests set; wrote most of the reviews |
+| `customer.karim@cedarlink.demo` | customer | Jounieh. **No interests chosen** — sees the default home order. Hides sold-out products |
+| `customer.lina@cedarlink.demo` | customer | Tripoli. Left the two- and four-star reviews |
+| `customer.omar@cedarlink.demo` | customer | Beirut. Has the **multi-store order** |
 
-The seed also creates 5 categories, 4 stores, 20 products (2 out of stock,
-with generated placeholder images), saved addresses, and orders in every
-status.
+### What the seed creates
+
+6 categories · 8 stores · 64 products · 60 opening-hours rows ·
+10 announcements · 13 orders · 11 reviews · 6 coupons · 2 coupon
+redemptions · 6 addresses · 6 stated interests · notifications for three
+customers.
+
+Deliberately included so that every state renders somewhere:
+
+- **Products** — 5 out of stock, 8 on low stock, prices $3.50–$140.00, all
+  trilingual, all with an image.
+- **Announcements** — live, scheduled and expired, so all badge states appear.
+- **Orders** — pending, processing, delivered and cancelled; one spanning
+  two stores; one with a coupon applied so the discount line is visible.
+- **Reviews** — ratings from 2 to 5 so nothing is uniformly 5.0; one
+  reported and flagged, one removed by an admin.
+- **Coupons** — active percentage, active fixed, expired, scheduled,
+  store-scoped, and one that has reached its usage limit.
+
+Aggregates are computed, not typed in: reviews go through `review_service`
+so `rating_avg` is real, and the coupon that shows "Limit reached" got
+there by actually being redeemed at checkout.
+
+### Re-running it
+
+```bash
+flask seed            # fills in whatever is missing
+flask seed --reset    # empties the demo tables and rebuilds from scratch
+```
+
+`--reset` is there for a screenshot session that goes wrong halfway: it
+returns the database to a known state without touching the schema. Both
+refuse to run when `FLASK_CONFIG=production`.
 
 ### Logging in
 
