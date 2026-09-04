@@ -316,7 +316,7 @@ def get_shopping_preferences(user_id):
     if current_user_id != user_id:
         return jsonify({"message": "Access denied"}), 403
 
-    user = User.query.get(user_id)
+    user = db.session.get(User, user_id)
 
     if not user:
         return jsonify({"message": "User not found"}), 404
@@ -339,7 +339,7 @@ def update_shopping_preferences(user_id):
     if current_user_id != user_id:
         return jsonify({"message": "Access denied"}), 403
 
-    user = User.query.get(user_id)
+    user = db.session.get(User, user_id)
 
     if not user:
         return jsonify({"message": "User not found"}), 404

@@ -31,6 +31,17 @@ class Category(db.Model):
         lazy=True
     )
 
+    # Removing a category removes the "I care about this" rows pointing at
+    # it, so no customer is left holding an id for something that is gone.
+    # The cascade lives here rather than on the foreign key because SQLite
+    # only honours ON DELETE actions with PRAGMA foreign_keys=ON, which
+    # this app does not set.
+    interests = db.relationship(
+        "ShoppingInterest",
+        back_populates="category",
+        cascade="all, delete-orphan",
+    )
+
     def localized_name(self, language):
         """The name in `language`, falling back to English when blank."""
         if language not in SUPPORTED_LANGUAGES:

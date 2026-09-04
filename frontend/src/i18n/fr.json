@@ -130,7 +130,14 @@
     "browsingSection": "Navigation",
     "browsingSectionDesc": "Contrôlez ce que vous voyez en parcourant les produits.",
     "hideOosLabel": "Masquer les produits en rupture de stock",
-    "hideOosDesc": "Exclure les produits sans stock de la liste des produits."
+    "hideOosDesc": "Exclure les produits sans stock de la liste des produits.",
+    "interestsSection": "Vos centres d'intérêt",
+    "interestsSectionDesc": "Choisissez les catégories qui vous intéressent et votre page d'accueil commencera par elles.",
+    "interestsClear": "Tout effacer",
+    "interestsNone": "Aucune catégorie disponible pour l'instant.",
+    "interestsHint": "Basé uniquement sur vos choix ici — CedarLink ne suit pas ce que vous consultez ou achetez.",
+    "interestsChosen_one": "{{count}} sur {{max}} choisie",
+    "interestsChosen_other": "{{count}} sur {{max}} choisies"
   },
   "privacyData": {
     "title": "Confidentialité et données",
@@ -230,11 +237,7 @@
       "browseStores": "Parcourir les magasins"
     },
     "categories": {
-      "title": "Explorer les catégories",
-      "grocery": "Épicerie",
-      "fashion": "Mode",
-      "electronics": "Électronique",
-      "home": "Maison et vie"
+      "title": "Explorer les catégories"
     },
     "featuredProducts": {
       "title": "Produits en vedette",
@@ -245,6 +248,16 @@
     "guestExperience": {
       "title": "Bienvenue sur CedarLink",
       "description": "Connectez-vous ou créez un compte pour profiter pleinement de l'expérience CedarLink."
+    },
+    "order": {
+      "personalized": "Classé selon les catégories que vous avez choisies.",
+      "default": "Les catégories les plus actives en premier.",
+      "edit": "Modifier vos centres d'intérêt",
+      "choose": "Choisir vos centres d'intérêt"
+    },
+    "empty": {
+      "title": "Rien à afficher pour l'instant",
+      "description": "Il n'y a aucun produit sur CedarLink pour le moment. Revenez bientôt."
     }
   },
   "adminLayout": {

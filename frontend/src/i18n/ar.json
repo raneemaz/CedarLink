@@ -130,7 +130,18 @@
     "browsingSection": "التصفح",
     "browsingSectionDesc": "تحكّم بما تراه أثناء تصفح المنتجات.",
     "hideOosLabel": "إخفاء المنتجات غير المتوفرة",
-    "hideOosDesc": "استبعاد المنتجات غير المتوفرة من قائمة المنتجات."
+    "hideOosDesc": "استبعاد المنتجات غير المتوفرة من قائمة المنتجات.",
+    "interestsSection": "اهتماماتك",
+    "interestsSectionDesc": "اختر الفئات التي تهمّك وستتصدّر صفحتك الرئيسية.",
+    "interestsClear": "مسح الكل",
+    "interestsNone": "لا توجد فئات للاختيار منها بعد.",
+    "interestsHint": "يعتمد على ما تختاره هنا فقط — لا يتتبّع CedarLink ما تتصفّحه أو تشتريه.",
+    "interestsChosen_zero": "لم تختر شيئًا من {{max}}",
+    "interestsChosen_one": "اخترت فئة واحدة من {{max}}",
+    "interestsChosen_two": "اخترت فئتين من {{max}}",
+    "interestsChosen_few": "اخترت {{count}} فئات من {{max}}",
+    "interestsChosen_many": "اخترت {{count}} فئة من {{max}}",
+    "interestsChosen_other": "اخترت {{count}} فئة من {{max}}"
   },
   "privacyData": {
     "title": "الخصوصية والبيانات",
@@ -230,11 +241,7 @@
       "browseStores": "تصفح المتاجر"
     },
     "categories": {
-      "title": "استكشف الفئات",
-      "grocery": "البقالة",
-      "fashion": "الأزياء",
-      "electronics": "الإلكترونيات",
-      "home": "المنزل والمعيشة"
+      "title": "استكشف الفئات"
     },
     "featuredProducts": {
       "title": "منتجات مميزة",
@@ -245,6 +252,16 @@
     "guestExperience": {
       "title": "مرحبًا بك في CedarLink",
       "description": "سجّل الدخول أو أنشئ حسابًا للاستمتاع بتجربة CedarLink الكاملة."
+    },
+    "order": {
+      "personalized": "مرتّب حسب الفئات التي اخترتها.",
+      "default": "تُعرض الفئات الأكثر نشاطًا أولًا.",
+      "edit": "تعديل اهتماماتك",
+      "choose": "اختر اهتماماتك"
+    },
+    "empty": {
+      "title": "لا يوجد ما نعرضه بعد",
+      "description": "لا توجد منتجات على CedarLink حاليًا. عُد قريبًا."
     }
   },
   "adminLayout": {

@@ -1,39 +1,50 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { SlidersHorizontal } from "lucide-react";
+
 import api from "../../services/api";
 import ProductCard from "../../components/product/ProductCard";
+import { useAuth } from "../../context/AuthContext";
+import { localizedField } from "../../utils/localize";
 
 export default function Home() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const { isAuthenticated } = useAuth();
 
-  const [products, setProducts] = useState([]);
+  const [sections, setSections] = useState([]);
+  const [personalized, setPersonalized] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  // One request for the whole page. The order is decided on the server —
+  // stated interests first, then the busiest categories — so a signed-out
+  // visitor and a customer with five interests take the same path here.
   useEffect(() => {
-    const loadFeaturedProducts = async () => {
+    let cancelled = false;
+
+    (async () => {
       try {
-        const response = await api.get("/products", {
-          params: {
-            limit: 8,
-            sort: "newest",
-          },
-        });
+        const response = await api.get("/home/sections");
 
-        setProducts(response.data.products || []);
+        if (cancelled) return;
+
+        setSections(response.data.sections || []);
+        setPersonalized(Boolean(response.data.personalized));
       } catch (error) {
-        console.error("Failed to load products:", error);
+        console.error("Failed to load home sections:", error);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
-    };
+    })();
 
-    loadFeaturedProducts();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (
     <div className="space-y-12">
-      {/* Hero Section */}
+      {/* Hero */}
       <section className="grid gap-8 rounded-3xl bg-gradient-to-r from-emerald-700 to-emerald-500 px-6 py-12 text-white md:grid-cols-2 md:px-10">
         <div className="space-y-5">
           <span className="inline-flex rounded-full bg-white/15 px-4 py-1 text-sm font-medium">
@@ -65,66 +76,91 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Featured Categories */}
+        {/* The categories actually on the page, in the order they appear —
+            not a fixed decorative list. */}
         <div className="rounded-3xl bg-white/10 p-6 backdrop-blur">
           <p className="text-sm uppercase tracking-widest text-white/70">
             {t("home.categories.title")}
           </p>
 
           <div className="mt-4 grid grid-cols-2 gap-3">
-            {[
-              t("home.categories.grocery"),
-              t("home.categories.fashion"),
-              t("home.categories.electronics"),
-              t("home.categories.home"),
-            ].map((item) => (
-              <div
-                key={item}
-                className="rounded-2xl bg-white/15 px-4 py-6 text-center font-medium"
+            {sections.slice(0, 4).map((section) => (
+              <Link
+                key={section.category.id}
+                to={`/products?category_id=${section.category.id}`}
+                className="rounded-2xl bg-white/15 px-4 py-6 text-center font-medium transition hover:bg-white/25"
               >
-                {item}
+                {localizedField(section.category, "name", i18n.language)}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Why the page is in this order — and how to change it. */}
+      {!loading && sections.length > 0 && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4">
+          <p className="text-sm text-slate-600">
+            {personalized
+              ? t("home.order.personalized")
+              : t("home.order.default")}
+          </p>
+
+          {isAuthenticated && (
+            <Link
+              to="/settings/shopping"
+              className="inline-flex items-center gap-2 text-sm font-medium text-emerald-700 hover:underline"
+            >
+              <SlidersHorizontal size={16} />
+              {personalized
+                ? t("home.order.edit")
+                : t("home.order.choose")}
+            </Link>
+          )}
+        </div>
+      )}
+
+      {loading ? (
+        <div className="text-slate-500">{t("home.loadingProducts")}</div>
+      ) : (
+        sections.map((section) => (
+          <section key={section.category.id} className="space-y-5">
+            <div className="flex items-end justify-between">
+              <div>
+                <h2 className="text-2xl font-bold">
+                  {localizedField(section.category, "name", i18n.language)}
+                </h2>
+
+                {section.category.description && (
+                  <p className="text-slate-500">
+                    {section.category.description}
+                  </p>
+                )}
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* Featured Products */}
-      <section className="space-y-5">
-        <div className="flex items-end justify-between">
-          <div>
-            <h2 className="text-2xl font-bold">
-              {t("home.featuredProducts.title")}
-            </h2>
+              <Link
+                to={`/products?category_id=${section.category.id}`}
+                className="shrink-0 font-medium text-emerald-700"
+              >
+                {t("home.featuredProducts.viewAll")}
+              </Link>
+            </div>
 
-            <p className="text-slate-500">
-              {t("home.featuredProducts.description")}
-            </p>
-          </div>
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {section.products.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          </section>
+        ))
+      )}
 
-          <Link
-            to="/products"
-            className="font-medium text-emerald-700"
-          >
-            {t("home.featuredProducts.viewAll")}
-          </Link>
-        </div>
-
-        {loading ? (
-          <div className="text-slate-500">
-            {t("home.loadingProducts")}
-          </div>
-        ) : (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {products.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-              />
-            ))}
-          </div>
-        )}
-      </section>
+      {!loading && sections.length === 0 && (
+        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 className="text-2xl font-bold">{t("home.empty.title")}</h2>
+          <p className="mt-2 text-slate-500">{t("home.empty.description")}</p>
+        </section>
+      )}
 
       {/* Guest Experience */}
       <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">

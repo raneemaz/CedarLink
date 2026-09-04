@@ -130,7 +130,14 @@
     "browsingSection": "Browsing",
     "browsingSectionDesc": "Control what you see while browsing products.",
     "hideOosLabel": "Hide out-of-stock products",
-    "hideOosDesc": "Leave products with no stock out of the product list."
+    "hideOosDesc": "Leave products with no stock out of the product list.",
+    "interestsSection": "Your interests",
+    "interestsSectionDesc": "Pick the categories you care about and your home page will lead with them.",
+    "interestsClear": "Clear all",
+    "interestsNone": "There are no categories to choose from yet.",
+    "interestsHint": "Based only on what you pick here — CedarLink does not track what you browse or buy.",
+    "interestsChosen_one": "{{count}} of {{max}} chosen",
+    "interestsChosen_other": "{{count}} of {{max}} chosen"
   },
   "privacyData": {
     "title": "Privacy & Data",
@@ -230,11 +237,7 @@
       "browseStores": "Browse Stores"
     },
     "categories": {
-      "title": "Featured categories",
-      "grocery": "Grocery",
-      "fashion": "Fashion",
-      "electronics": "Electronics",
-      "home": "Home"
+      "title": "Featured categories"
     },
     "featuredProducts": {
       "title": "Featured Products",
@@ -245,6 +248,16 @@
     "guestExperience": {
       "title": "Guest experience",
       "description": "Guests can browse stores and products, then log in when they are ready to add items to cart or place orders."
+    },
+    "order": {
+      "personalized": "Ordered by the categories you chose.",
+      "default": "Showing the busiest categories first.",
+      "edit": "Edit your interests",
+      "choose": "Choose your interests"
+    },
+    "empty": {
+      "title": "Nothing to show yet",
+      "description": "There are no products on CedarLink at the moment. Check back soon."
     }
   },
   "adminLayout": {
