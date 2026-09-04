@@ -11,42 +11,33 @@ import api from "../../services/api";
 function AddPaymentMethod() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  // The full card number is never collected — not typed, not held in
+  // state, not sent. The customer reads the last four off their own card.
+  // See docs/decisions/0024-no-card-data.md.
   const [formData, setFormData] = useState({
-    cardNumber: "",
+    brand: "",
+    last4: "",
+    expMonth: "",
+    expYear: "",
     cardholderName: "",
     is_default: false,
   });
   const [saving, setSaving] = useState(false);
 
-  const detectCardBrand = (number) => {
-    const digits = number.replace(/\D/g, "");
-
-    if (/^4/.test(digits)) return "Visa";
-
-    if (/^(5[1-5]|2[2-7])/.test(digits)) return "Mastercard";
-
-    return "";
-  };
-
-  const cardBrand = detectCardBrand(formData.cardNumber);
-
-  const handleCardNumberChange = (event) => {
-    let value = event.target.value.replace(/\D/g, "").slice(0, 19);
-    value = value.replace(/(.{4})/g, "$1 ").trim();
-
-    setFormData((previous) => ({
-      ...previous,
-      cardNumber: value,
-    }));
-  };
+  const thisYear = new Date().getFullYear();
+  const years = Array.from({ length: 15 }, (_, index) => thisYear + index);
+  const months = Array.from({ length: 12 }, (_, index) => index + 1);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const cardNumber = formData.cardNumber.replace(/\D/g, "");
+    if (!/^\d{4}$/.test(formData.last4)) {
+      toast.error(t("paymentMethods.errLastFour"));
+      return;
+    }
 
-    if (cardNumber.length < 12 || cardNumber.length > 19) {
-      toast.error(t("paymentMethods.errValidNumber"));
+    if (!formData.expMonth || !formData.expYear) {
+      toast.error(t("paymentMethods.errExpiry"));
       return;
     }
 
@@ -61,8 +52,10 @@ function AddPaymentMethod() {
       await api.post("/payment-methods", {
         type: "card",
         label: formData.cardholderName.trim(),
-        card_number: cardNumber,
-        brand: cardBrand || null,
+        brand: formData.brand || null,
+        last4: formData.last4,
+        exp_month: Number(formData.expMonth),
+        exp_year: Number(formData.expYear),
         is_default: formData.is_default,
       });
 
@@ -112,31 +105,125 @@ function AddPaymentMethod() {
           </div>
 
           <div className="space-y-6">
-            <div>
-              <label
-                htmlFor="cardNumber"
-                className="mb-2 block text-sm font-medium text-gray-700"
-              >
-                {t("paymentMethods.cardNumber")}
-              </label>
+            <p className="rounded-lg bg-gray-50 px-4 py-3 text-sm text-gray-600">
+              {t("paymentMethods.noNumberNotice")}
+            </p>
 
-              <input
-                id="cardNumber"
-                type="text"
-                inputMode="numeric"
-                autoComplete="cc-number"
-                value={formData.cardNumber}
-                onChange={handleCardNumberChange}
-                placeholder="1234 5678 9012 3456"
-                required
-                className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-green-600 focus:ring-2 focus:ring-green-100"
-              />
+            <div className="grid gap-6 sm:grid-cols-2">
+              <div>
+                <label
+                  htmlFor="brand"
+                  className="mb-2 block text-sm font-medium text-gray-700"
+                >
+                  {t("paymentMethods.brand")}
+                </label>
 
-              {cardBrand && (
-                <p className="mt-2 text-sm font-medium text-green-700">
-                  {cardBrand}
-                </p>
-              )}
+                <select
+                  id="brand"
+                  value={formData.brand}
+                  onChange={(event) =>
+                    setFormData((previous) => ({
+                      ...previous,
+                      brand: event.target.value,
+                    }))
+                  }
+                  className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-green-600 focus:ring-2 focus:ring-green-100"
+                >
+                  <option value="">{t("paymentMethods.brandNone")}</option>
+                  <option value="Visa">Visa</option>
+                  <option value="Mastercard">Mastercard</option>
+                  <option value="Amex">American Express</option>
+                </select>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="last4"
+                  className="mb-2 block text-sm font-medium text-gray-700"
+                >
+                  {t("paymentMethods.lastFour")}
+                </label>
+
+                {/* Deliberately not autoComplete="cc-number": the browser
+                    must not offer to fill a whole card number into a
+                    field that accepts four digits. */}
+                <input
+                  id="last4"
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={4}
+                  autoComplete="off"
+                  dir="ltr"
+                  value={formData.last4}
+                  onChange={(event) =>
+                    setFormData((previous) => ({
+                      ...previous,
+                      last4: event.target.value.replace(/\D/g, "").slice(0, 4),
+                    }))
+                  }
+                  placeholder="4242"
+                  required
+                  className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-green-600 focus:ring-2 focus:ring-green-100"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="expMonth"
+                  className="mb-2 block text-sm font-medium text-gray-700"
+                >
+                  {t("paymentMethods.expiryMonth")}
+                </label>
+
+                <select
+                  id="expMonth"
+                  value={formData.expMonth}
+                  onChange={(event) =>
+                    setFormData((previous) => ({
+                      ...previous,
+                      expMonth: event.target.value,
+                    }))
+                  }
+                  required
+                  className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-green-600 focus:ring-2 focus:ring-green-100"
+                >
+                  <option value="">--</option>
+                  {months.map((month) => (
+                    <option key={month} value={month}>
+                      {String(month).padStart(2, "0")}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="expYear"
+                  className="mb-2 block text-sm font-medium text-gray-700"
+                >
+                  {t("paymentMethods.expiryYear")}
+                </label>
+
+                <select
+                  id="expYear"
+                  value={formData.expYear}
+                  onChange={(event) =>
+                    setFormData((previous) => ({
+                      ...previous,
+                      expYear: event.target.value,
+                    }))
+                  }
+                  required
+                  className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-green-600 focus:ring-2 focus:ring-green-100"
+                >
+                  <option value="">----</option>
+                  {years.map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             <div>

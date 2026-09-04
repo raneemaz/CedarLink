@@ -35,20 +35,19 @@ class PaymentMethod(db.Model):
         nullable=True
     )
 
-    # Only the last four digits are stored for cards.
+    # Only the last four digits, and they arrive as the last four — the
+    # full number never reaches this server, so there is nothing here
+    # derived from it. See docs/decisions/0024-no-card-data.md.
     last4 = db.Column(
         db.String(4),
         nullable=True
     )
-    # Hash of the full card number.
-    # The raw card number is never stored.
-    number_hash = db.Column(
-        db.String(255),
-        nullable=True
-    )
+    # Expiry, so a customer can tell two cards apart and see which is
+    # about to lapse. Nullable: rows saved before this existed have none,
+    # and nothing here charges a card, so an absent expiry breaks nothing.
+    exp_month = db.Column(db.Integer, nullable=True)
+    exp_year = db.Column(db.Integer, nullable=True)
 
-    # Provider information.
-    # These are identifiers/tokens, NOT card numbers or CVV.
     provider = db.Column(
         db.String(50),
         nullable=True
