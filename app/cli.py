@@ -13,6 +13,7 @@ from flask import current_app
 from flask.cli import with_appcontext
 from werkzeug.security import generate_password_hash
 
+from app import seed_data
 from app.extensions import db
 from app.models import (
     Address,
@@ -109,6 +110,7 @@ DEMO_PASSWORD = "Cedar!2026"
 ADMIN_EMAIL = "admin@cedarlink.demo"
 
 # Distinct fill colours for the generated placeholder images.
+
 _IMAGE_COLORS = (
     (198, 40, 40),
     (2, 119, 189),
@@ -118,363 +120,6 @@ _IMAGE_COLORS = (
     (0, 131, 143),
     (191, 54, 12),
     (69, 90, 100),
-)
-
-# Category names in the three interface languages (C.5).
-_CATEGORY_SPECS = (
-    ("Food", "طعام", "Alimentation"),
-    ("Clothes", "ملابس", "Vêtements"),
-    ("Electronics", "إلكترونيات", "Électronique"),
-    ("Books", "كتب", "Livres"),
-    ("Beauty", "تجميل", "Beauté"),
-)
-
-
-def _p(name_en, name_ar, name_fr, desc_en, desc_ar, desc_fr,
-       price, stock, category):
-    """One product spec, trilingual. Keyed by its English name elsewhere."""
-    return {
-        "name": {"en": name_en, "ar": name_ar, "fr": name_fr},
-        "description": {"en": desc_en, "ar": desc_ar, "fr": desc_fr},
-        "price": price,
-        "stock": stock,
-        "category": category,
-    }
-
-
-# Products grouped by store. English is the canonical name; Arabic and
-# French are real translations so the demo catalogue is genuinely trilingual.
-_STORE_SPECS = (
-    {
-        "vendor_email": "vendor.beirut@cedarlink.demo",
-        "vendor_name": ("Nadia", "Khoury"),
-        "phone": "+961 3 100 001",
-        "store": "Hamra Grocery",
-        "city": "Beirut",
-        # Real Beirut neighbourhoods so the demo distance search returns a
-        # meaningful spread rather than four identical results.
-        "lat": 33.896800,   # Hamra
-        "lng": 35.479700,
-        "description": "Pantry staples and Lebanese specialties in the "
-        "heart of Hamra.",
-        "inside_fee": 2.00,
-        "outside_fee": 5.00,
-        "active": True,
-        "announcement": {
-            "title": "New olive-oil pressing just arrived",
-            "body": "This season's cold-pressed oil from the Koura hills "
-            "is in stock. Limited quantity.",
-        },
-        "products": (
-            _p("Zaatar Blend 200g",
-               "خلطة زعتر ٢٠٠ غرام",
-               "Mélange de zaatar 200 g",
-               "House wild-thyme blend with sumac and sesame.",
-               "خلطة الزعتر البري من إعدادنا مع السماق والسمسم.",
-               "Mélange maison de thym sauvage au sumac et sésame.",
-               3.50, 40, "Food"),
-            _p("Lebanese Extra Virgin Olive Oil 1L",
-               "زيت زيتون لبناني بكر ممتاز ١ لتر",
-               "Huile d'olive vierge extra libanaise 1 L",
-               "Cold-pressed, single-estate from the Koura hills.",
-               "معصور على البارد، من بستان واحد في تلال الكورة.",
-               "Pressée à froid, d'un seul domaine des collines du Koura.",
-               12.00, 25, "Food"),
-            _p("Baklava Assortment (12 pcs)",
-               "تشكيلة بقلاوة (١٢ قطعة)",
-               "Assortiment de baklava (12 pièces)",
-               "Walnut and pistachio, layered and soaked in "
-               "orange-blossom syrup.",
-               "بالجوز والفستق، طبقات مشبعة بشراب ماء الزهر.",
-               "Noix et pistache, en couches, imbibées de sirop à la "
-               "fleur d'oranger.",
-               9.00, 0, "Food"),
-            _p("Arabic Coffee with Cardamom 250g",
-               "قهوة عربية بالهيل ٢٥٠ غرام",
-               "Café arabe à la cardamome 250 g",
-               "Finely ground, medium roast.",
-               "مطحونة ناعماً، تحميص متوسط.",
-               "Mouture fine, torréfaction moyenne.",
-               6.50, 30, "Food"),
-            _p("Pomegranate Molasses 500ml",
-               "دبس رمان ٥٠٠ مل",
-               "Mélasse de grenade 500 ml",
-               "Thick, tart, no added sugar.",
-               "كثيف، حامض، دون سكر مضاف.",
-               "Épaisse, acidulée, sans sucre ajouté.",
-               4.25, 18, "Food"),
-            _p("\"Beirut Nightingale\" - Poems",
-               "«عندليب بيروت» - قصائد",
-               "« Le Rossignol de Beyrouth » - Poèmes",
-               "A bilingual pocket collection by a local press.",
-               "مجموعة جيب ثنائية اللغة من دار نشر محلية.",
-               "Un recueil de poche bilingue d'un éditeur local.",
-               13.00, 20, "Books"),
-        ),
-    },
-    {
-        "vendor_email": "vendor.tripoli@cedarlink.demo",
-        "vendor_name": ("Omar", "Baroudi"),
-        "phone": "+961 3 100 002",
-        "store": "Tripoli Threads",
-        "city": "Tripoli",
-        "lat": 33.888700,   # Achrafieh
-        "lng": 35.519700,
-        "description": "Hand-finished clothing and textiles from the old "
-        "souks of Tripoli.",
-        "inside_fee": 1.50,
-        "outside_fee": 4.00,
-        "active": True,
-        "announcement": {
-            "title": "Eid tailoring — order by Thursday",
-            "body": "Custom alterations for Eid close this Thursday. "
-            "Walk in or message us to book a fitting.",
-        },
-        "products": (
-            _p("Hand-Embroidered Abaya",
-               "عباءة مطرزة يدوياً",
-               "Abaya brodée à la main",
-               "Black crepe with tone-on-tone cuff embroidery.",
-               "كريب أسود مع تطريز على الأساور بلون مطابق.",
-               "Crêpe noir avec broderie ton sur ton aux poignets.",
-               45.00, 12, "Clothes"),
-            _p("Cotton Keffiyeh Scarf",
-               "كوفية قطنية",
-               "Keffieh en coton",
-               "Classic weave, generous size.",
-               "نسيج كلاسيكي، مقاس واسع.",
-               "Tissage classique, grande taille.",
-               8.00, 50, "Clothes"),
-            _p("Linen Summer Shirt",
-               "قميص كتان صيفي",
-               "Chemise d'été en lin",
-               "Breathable, relaxed fit, coconut buttons.",
-               "قابل للتهوية، قصّة مريحة، أزرار من جوز الهند.",
-               "Respirante, coupe décontractée, boutons en coco.",
-               22.00, 20, "Clothes"),
-            _p("Hand-Knit Wool Scarf",
-               "وشاح صوف محبوك يدوياً",
-               "Écharpe en laine tricotée à la main",
-               "Undyed highland wool.",
-               "صوف جبلي غير مصبوغ.",
-               "Laine de montagne non teinte.",
-               15.50, 0, "Clothes"),
-            _p("Full-Grain Leather Belt",
-               "حزام جلد طبيعي كامل الحبيبات",
-               "Ceinture en cuir pleine fleur",
-               "Vegetable-tanned, solid brass buckle.",
-               "مدبوغ نباتياً، إبزيم من النحاس الصلب.",
-               "Tannage végétal, boucle en laiton massif.",
-               18.00, 15, "Clothes"),
-        ),
-    },
-    {
-        "vendor_email": "vendor.saida@cedarlink.demo",
-        "vendor_name": ("Rami", "Haidar"),
-        "phone": "+961 3 100 003",
-        "store": "Saida Electronics",
-        "city": "Saida",
-        "lat": 33.879000,   # Verdun
-        "lng": 35.483800,
-        "description": "Everyday electronics and accessories, tested "
-        "before they ship.",
-        "inside_fee": 3.00,
-        "outside_fee": 6.00,
-        "active": True,
-        "announcement": {
-            "title": "Same-day delivery inside Saida",
-            "body": "Orders placed before 3 PM now arrive the same "
-            "evening within Saida.",
-        },
-        "products": (
-            _p("USB-C Fast Charger 30W",
-               "شاحن سريع USB-C بقوة ٣٠ واط",
-               "Chargeur rapide USB-C 30 W",
-               "Compact GaN charger, foldable pins.",
-               "شاحن GaN مدمج، أطراف قابلة للطي.",
-               "Chargeur GaN compact, broches pliables.",
-               14.99, 35, "Electronics"),
-            _p("Wireless Earbuds (BT 5.3)",
-               "سماعات لاسلكية (بلوتوث ٥٫٣)",
-               "Écouteurs sans fil (BT 5.3)",
-               "In-ear, USB-C case, ~6h per charge.",
-               "داخل الأذن، علبة USB-C، نحو ٦ ساعات لكل شحنة.",
-               "Intra-auriculaires, boîtier USB-C, ~6 h par charge.",
-               29.90, 22, "Electronics"),
-            _p("Power Bank 10000mAh",
-               "بطارية متنقلة ١٠٠٠٠ مللي أمبير",
-               "Batterie externe 10000 mAh",
-               "Dual output, pass-through charging.",
-               "مخرجان، شحن متزامن أثناء التوصيل.",
-               "Double sortie, charge simultanée.",
-               24.50, 16, "Electronics"),
-            _p("LED Desk Lamp (Dimmable)",
-               "مصباح مكتب LED (قابل لخفت الإضاءة)",
-               "Lampe de bureau LED (variable)",
-               "Three colour temperatures, USB port in the base.",
-               "ثلاث درجات حرارة لونية، منفذ USB في القاعدة.",
-               "Trois températures de couleur, port USB dans la base.",
-               19.00, 10, "Electronics"),
-            _p("Braided HDMI Cable 2m",
-               "كابل HDMI مجدول ٢ متر",
-               "Câble HDMI tressé 2 m",
-               "4K/60Hz, gold-plated ends.",
-               "دقة 4K‏/60 هرتز، أطراف مطلية بالذهب.",
-               "4K/60 Hz, embouts plaqués or.",
-               6.75, 40, "Electronics"),
-            _p("\"Arabic Grammar Made Simple\"",
-               "«قواعد اللغة العربية بيُسر»",
-               "« La grammaire arabe simplifiée »",
-               "A workbook for adult learners.",
-               "كتاب تمارين للمتعلمين البالغين.",
-               "Un cahier d'exercices pour apprenants adultes.",
-               9.50, 25, "Books"),
-        ),
-    },
-    {
-        "vendor_email": "vendor.jounieh@cedarlink.demo",
-        "vendor_name": ("Maya", "Rizk"),
-        "phone": "+961 3 100 004",
-        "store": "Jounieh Beauty Bar",
-        "city": "Jounieh",
-        "lat": 33.896100,   # Gemmayzeh
-        "lng": 35.514200,
-        "description": "Small-batch skincare and bath goods. (Store "
-        "currently deactivated.)",
-        "inside_fee": 2.50,
-        "outside_fee": 5.50,
-        "active": False,
-        "announcement": {
-            "title": "Back soon",
-            "body": "We're restocking and will reopen shortly. Thank you "
-            "for your patience.",
-        },
-        "products": (
-            _p("Damascus Rose Water Toner 200ml",
-               "تونر ماء ورد دمشقي ٢٠٠ مل",
-               "Tonique à l'eau de rose de Damas 200 ml",
-               "Single-ingredient, steam-distilled.",
-               "مكوّن واحد، مقطّر بالبخار.",
-               "Ingrédient unique, distillé à la vapeur.",
-               7.50, 28, "Beauty"),
-            _p("Pure Argan Hair Oil 100ml",
-               "زيت أركان نقي للشعر ١٠٠ مل",
-               "Huile d'argan pure pour cheveux 100 ml",
-               "Cold-pressed, unscented.",
-               "معصور على البارد، دون رائحة.",
-               "Pressée à froid, sans parfum.",
-               16.00, 14, "Beauty"),
-            _p("Olive & Laurel Aleppo Soap",
-               "صابون حلب بالزيتون والغار",
-               "Savon d'Alep à l'olive et au laurier",
-               "Traditional cure, ~20% laurel.",
-               "تجفيف تقليدي، نحو ٢٠٪ من زيت الغار.",
-               "Séchage traditionnel, ~20 % de laurier.",
-               4.00, 45, "Beauty"),
-        ),
-    },
-    {
-        # Online-only: no shopfront, no coordinates, never in a distance
-        # search. See docs/decisions/0018-location-and-distance-search.md.
-        "vendor_email": "vendor.online@cedarlink.demo",
-        "vendor_name": ("Karim", "Aoun"),
-        "phone": "+961 3 100 005",
-        "store": "Cedar Loom",
-        "city": "Beirut",
-        "online_only": True,
-        "description": "Handwoven throws and cushion covers, made to "
-        "order and shipped nationwide. No physical shop.",
-        "inside_fee": 0.00,
-        "outside_fee": 3.50,
-        "active": True,
-        "announcement": {
-            "title": "Made to order — allow 10 days",
-            "body": "Every piece is woven after you order. We ship "
-            "anywhere in Lebanon.",
-        },
-        "products": (
-            _p("Handwoven Wool Throw",
-               "بطانية صوف منسوجة يدوياً",
-               "Plaid en laine tissé à la main",
-               "Undyed highland wool, fringed edges.",
-               "صوف جبلي غير مصبوغ، أطراف مهدّبة.",
-               "Laine de montagne non teinte, bords à franges.",
-               38.00, 8, "Clothes"),
-            _p("Linen Cushion Cover 45cm",
-               "غطاء وسادة كتان ٤٥ سم",
-               "Housse de coussin en lin 45 cm",
-               "Stonewashed linen, hidden zip.",
-               "كتان مغسول بالحجر، سحّاب مخفي.",
-               "Lin délavé, fermeture éclair cachée.",
-               12.00, 20, "Clothes"),
-        ),
-    },
-)
-
-_CUSTOMER_SPECS = (
-    {
-        "email": "customer.rania@cedarlink.demo",
-        "name": ("Rania", "Haddad"),
-        "phone": "+961 3 200 001",
-        "addresses": (
-            ("Home", "Rue Gouraud, Gemmayzeh, Building 12", "Beirut", True,
-             33.896300, 35.513800),
-            ("Work", "Charles Helou Ave, Office 4B", "Beirut", False),
-        ),
-    },
-    {
-        "email": "customer.karim@cedarlink.demo",
-        "name": ("Karim", "Nassar"),
-        "phone": "+961 3 200 002",
-        "addresses": (
-            ("Home", "Rue Mar Maroun, near the port", "Jounieh", True),
-        ),
-    },
-    {
-        "email": "customer.lina@cedarlink.demo",
-        "name": ("Lina", "Fares"),
-        "phone": "+961 3 200 003",
-        "addresses": (
-            ("Home", "Azmi Street, Building Andraos", "Tripoli", True),
-        ),
-    },
-)
-
-# customer index, store name, status, ((product name, qty), ...), days ago
-# (customer_index, ("product"|"store", name), rating, title, body). Every
-# spec here must correspond to one of the delivered orders below.
-_REVIEW_SPECS = (
-    (0, ("product", "Lebanese Extra Virgin Olive Oil 1L"), 5,
-     "The real thing",
-     "Peppery and green — exactly how good Koura oil should taste."),
-    (0, ("product", "Zaatar Blend 200g"), 4,
-     "Good blend",
-     "Generous on the sumac. A touch more sesame would be perfect."),
-    (0, ("store", "Hamra Grocery"), 5,
-     "My default grocery run",
-     "Order in the morning, delivered by lunch, never a wrong item."),
-    (2, ("product", "Cotton Keffiyeh Scarf"), 5,
-     "Soft and well woven",
-     "Bought three, gave two away — everyone asked where they were from."),
-    (2, ("store", "Tripoli Threads"), 4,
-     "Careful packing",
-     "Each piece wrapped separately. A day slower, worth the wait."),
-)
-
-_ORDER_SPECS = (
-    (0, "Hamra Grocery", "delivered",
-     (("Lebanese Extra Virgin Olive Oil 1L", 1), ("Zaatar Blend 200g", 2)),
-     9),
-    (0, "Saida Electronics", "pending",
-     (("Wireless Earbuds (BT 5.3)", 1),), 0),
-    (1, "Tripoli Threads", "processing",
-     (("Linen Summer Shirt", 1), ("Full-Grain Leather Belt", 1)), 2),
-    (1, "Hamra Grocery", "canceled",
-     (("Arabic Coffee with Cardamom 250g", 1),), 5),
-    (2, "Tripoli Threads", "delivered",
-     (("Cotton Keffiyeh Scarf", 3),), 14),
-    (2, "Saida Electronics", "processing",
-     (("Power Bank 10000mAh", 1), ("Braided HDMI Cable 2m", 2)), 1),
 )
 
 
@@ -571,18 +216,448 @@ def _save_product_image(product, color):
     )
 
 
-def _seed_order(customer, store, status, line_items, days_ago):
+# --------------------------------------------------------------------------- #
+# Demo seed
+#
+# Everything below writes through the ordinary services, so the aggregates a
+# screenshot shows — rating_avg, rating_count, used_count, stock — are the
+# numbers the application computes, not numbers typed in here. The one
+# exception is backdating: an order's created_at is set after the fact,
+# because a demo needs history and checkout can only make things now.
+# --------------------------------------------------------------------------- #
+
+# Tables that hold only demo content. --reset empties them in FK-safe order
+# so a screenshot session can return to a known state mid-way through.
+_RESET_ORDER = (
+    "coupon_redemptions",
+    "review_reports",
+    "reviews",
+    "order_items",
+    "orders",
+    "cart_items",
+    "carts",
+    "shopping_interests",
+    "shopping_preferences",
+    "notifications",
+    "notification_preferences",
+    "product_images",
+    "products",
+    "store_announcements",
+    "store_hours",
+    "coupons",
+    "stores",
+    "addresses",
+    "payment_methods",
+    "payments",
+    "delivery_assignments",
+    "two_factor_recovery_codes",
+    "two_factor_challenges",
+    "categories",
+    "users",
+)
+
+
+def _reset_demo_data():
+    """Empty every demo table, children first.
+
+    A plain DELETE rather than drop/create: the schema stays exactly as the
+    migrations left it, so a reset cannot silently paper over a missing
+    migration.
+    """
+    from sqlalchemy import text
+
+    for table in _RESET_ORDER:
+        exists = db.session.execute(
+            text(
+                "SELECT 1 FROM sqlite_master "
+                "WHERE type='table' AND name=:name"
+            ),
+            {"name": table},
+        ).first()
+        if exists:
+            db.session.execute(text(f"DELETE FROM {table}"))
+
+    db.session.commit()
+
+
+def _backdate(order, days_ago):
+    """Put an order in the past. Checkout can only create it now."""
+    from datetime import datetime, timedelta, timezone
+
+    placed = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(
+        days=days_ago
+    )
+    order.created_at = placed
+    order.updated_at = placed
+
+
+def _checkout_cart(customer, line_items, city, coupon_code=None):
+    """Put items in the customer's cart and check out for real.
+
+    Real checkout means the stock decrement, the coupon claim, the
+    redemption row and the order notification all happen the way they do
+    in production — which is the point of seeding through services.
+    Returns the created orders.
+    """
+    from app.models.cart import Cart
+    from app.models.cart_item import CartItem
+    from app.services import order_service
+
+    cart = Cart.query.filter_by(user_id=customer.id).first()
+    if cart is None:
+        cart = Cart(user_id=customer.id)
+        db.session.add(cart)
+        db.session.flush()
+
+    CartItem.query.filter_by(cart_id=cart.id).delete()
+    for product, quantity in line_items:
+        db.session.add(
+            CartItem(
+                cart_id=cart.id, product_id=product.id, quantity=quantity
+            )
+        )
+    cart.coupon_code = None
+    db.session.flush()
+
+    address = customer.addresses[0] if customer.addresses else None
+    result = order_service.checkout(
+        customer.id,
+        address.address_line if address else "Main Street",
+        city,
+        coupon_code,
+    )
+
+    return [
+        db.session.get(Order, entry["id"]) for entry in result["orders"]
+    ]
+
+
+def _seed_stores(categories):
+    """Vendors, stores, announcements and products.
+
+    Hours and overrides are applied later, by _apply_schedules.
+    """
+    from datetime import datetime, timedelta, timezone
+
+    from app.services import announcement_service, store_service
+
+    products = {}
+    stores = {}
+    color_index = 0
+
+    for spec in seed_data.STORE_SPECS:
+        vendor, _ = _get_or_create_user(
+            spec["vendor_email"],
+            spec["vendor_name"][0],
+            spec["vendor_name"][1],
+            spec["phone"],
+            "vendor",
+        )
+        db.session.flush()
+
+        store, _ = _get_or_create(
+            Store,
+            {
+                "description": spec["description"],
+                "location": spec["city"],
+                "contact_info": spec["vendor_email"],
+                "is_active": spec["active"],
+                "approval_status": spec["approval"],
+                "inside_city_delivery_fee": spec["inside_fee"],
+                "outside_city_delivery_fee": spec["outside_fee"],
+                "delivery_available": True,
+                "is_online_only": spec.get("online_only", False),
+                "latitude": spec.get("lat"),
+                "longitude": spec.get("lng"),
+            },
+            owner_id=vendor.id,
+            name=spec["store"],
+        )
+        db.session.flush()
+        stores[spec["store"]] = store
+
+        # Open around the clock *for now*. The real schedules and the
+        # override go on at the end, after the seeded checkouts have run —
+        # a split day, a 20:00-02:00 window and a "closed for a power
+        # outage" override would otherwise make the seed succeed or fail
+        # depending on what time of day it was run. See _apply_schedules.
+        store_service.replace_hours(
+            store,
+            [
+                # 00:00-23:59 rather than 00:00-00:00: the service
+                # rejects equal times, and one minute of downtime a day
+                # cannot collide with a seed run.
+                {"day_of_week": d, "opens_at": "00:00",
+                 "closes_at": "23:59"}
+                for d in range(7)
+            ],
+        )
+
+        now = datetime.now(timezone.utc)
+
+        for entry in spec["announcements"]:
+            when = entry["when"]
+            data = {"title": entry["title"], "body": entry["body"]}
+
+            if when == "scheduled":
+                data["starts_at"] = (now + timedelta(days=6)).isoformat()
+                data["ends_at"] = (now + timedelta(days=20)).isoformat()
+            elif when == "expired":
+                data["starts_at"] = (now - timedelta(days=30)).isoformat()
+                data["ends_at"] = (now - timedelta(days=9)).isoformat()
+            else:
+                data["starts_at"] = (now - timedelta(days=3)).isoformat()
+
+            announcement_service.create(store, data)
+
+        for item in spec["products"]:
+            name, description = item["name"], item["description"]
+            product, _ = _get_or_create(
+                Product,
+                {
+                    "name_ar": name["ar"],
+                    "name_fr": name["fr"],
+                    "description_en": description["en"],
+                    "description_ar": description["ar"],
+                    "description_fr": description["fr"],
+                    "price": item["price"],
+                    "stock": item["stock"],
+                    "category_id": categories[item["category"]].id,
+                },
+                store_id=store.id,
+                name_en=name["en"],
+            )
+            products[name["en"]] = product
+
+    db.session.flush()
+
+    for product in products.values():
+        if not product.images:
+            _save_product_image(
+                product, _IMAGE_COLORS[color_index % len(_IMAGE_COLORS)]
+            )
+            color_index += 1
+
+    db.session.commit()
+    return stores, products
+
+
+def _apply_schedules(stores):
+    """Put the real opening hours and the override on, last.
+
+    Deliberately after the seeded checkouts: `assert_store_open` is a real
+    rule, so a store that is genuinely shut cannot be ordered from. Running
+    this at the end means the demo gets its interesting schedules without
+    the seed's success depending on the clock.
+    """
+    from datetime import datetime, timedelta, timezone
+
+    from app.services import store_service
+
+    now = datetime.now(timezone.utc)
+
+    for spec in seed_data.STORE_SPECS:
+        store = stores[spec["store"]]
+
+        # Through the service, so a split day and a wrap-around interval
+        # are validated exactly as a vendor's own edit would be.
+        store_service.replace_hours(store, spec["hours"])
+
+        if spec.get("override"):
+            override = spec["override"]
+            store_service.set_override(
+                store,
+                override["status"],
+                override["reason"],
+                until=(
+                    now + timedelta(hours=override["hours_ahead"])
+                ).isoformat(),
+            )
+
+    db.session.commit()
+
+
+def _seed_customers(categories):
+    """Customers, their saved addresses and their stated interests."""
+    from app.services import shopping_preferences_service
+
+    customers = []
+
+    for spec in seed_data.CUSTOMER_SPECS:
+        customer, _ = _get_or_create_user(
+            spec["email"],
+            spec["name"][0],
+            spec["name"][1],
+            spec["phone"],
+            "customer",
+        )
+        db.session.flush()
+        customers.append(customer)
+
+        if not customer.addresses:
+            for label, line, city, is_default, lat, lng in spec["addresses"]:
+                db.session.add(
+                    Address(
+                        user_id=customer.id,
+                        label=label,
+                        recipient_name=(
+                            f"{customer.first_name} {customer.last_name}"
+                        ),
+                        phone=customer.phone,
+                        address_line=line,
+                        city=city,
+                        is_default=is_default,
+                        latitude=lat,
+                        longitude=lng,
+                    )
+                )
+
+        # Interests through the service so the rows and their order come
+        # out exactly as a save from the settings page would leave them.
+        if spec["interests"] or spec["hide_out_of_stock"]:
+            prefs = shopping_preferences_service.get_or_create_preferences(
+                customer.id
+            )
+            ok, error = shopping_preferences_service.apply_preference_updates(
+                prefs,
+                {
+                    "interest_category_ids": [
+                        categories[name].id for name in spec["interests"]
+                    ],
+                    "hide_out_of_stock": spec["hide_out_of_stock"],
+                },
+            )
+            if not ok:
+                raise click.ClickException(f"seed interests: {error}")
+
+    db.session.commit()
+    return customers
+
+
+def _seed_coupons(stores):
+    """One coupon per badge state.
+
+    ``used_count`` is never written here — the exhausted coupon reaches its
+    limit by actually being redeemed at checkout (ADR 0021), so the number
+    on screen is one the application counted.
+    """
+    from datetime import datetime, timedelta, timezone
+
+    from app.models.coupon import Coupon
+    from app.services import coupon_service
+
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
+    created = {}
+
+    for spec in seed_data.COUPON_SPECS:
+        starts_at = ends_at = None
+        is_active = True
+
+        if spec["state"] == "expired":
+            starts_at = now - timedelta(days=60)
+            ends_at = now - timedelta(days=5)
+        elif spec["state"] == "scheduled":
+            starts_at = now + timedelta(days=10)
+            ends_at = now + timedelta(days=40)
+
+        coupon, _ = _get_or_create(
+            Coupon,
+            {
+                "discount_type": spec["discount_type"],
+                "value": spec["value"],
+                "min_order_total": spec["min_order_total"],
+                "starts_at": starts_at,
+                "ends_at": ends_at,
+                "usage_limit": spec["usage_limit"],
+                "per_user_limit": spec["per_user_limit"],
+                "used_count": 0,
+                "is_active": is_active,
+                "store_id": (
+                    stores[spec["store"]].id if spec["store"] else None
+                ),
+            },
+            code=coupon_service.normalize_code(spec["code"]),
+        )
+        created[spec["code"]] = coupon
+
+    db.session.commit()
+    return created
+
+
+def _seed_orders(customers, stores, products):
+    """History across every status, plus the two orders that must be real.
+
+    The plain history is written directly and backdated — a month of past
+    orders cannot come out of a checkout that runs today without emptying
+    the shelves. The coupon order and the multi-store order *do* go through
+    checkout, because their point is the redemption row and the two-order
+    split, which only the real path produces.
+    """
+    for (
+        customer_index,
+        store_name,
+        status,
+        line_item_specs,
+        days_ago,
+    ) in seed_data.ORDER_SPECS:
+        customer = customers[customer_index]
+        store = stores[store_name]
+        line_items = [
+            (products[name], quantity) for name, quantity in line_item_specs
+        ]
+        _seed_history_order(customer, store, status, line_items, days_ago)
+
+    db.session.commit()
+
+    spec = seed_data.COUPON_ORDER
+    coupon_orders = _checkout_cart(
+        customers[spec["customer"]],
+        [(products[n], q) for n, q in spec["items"]],
+        spec["city"],
+        spec["coupon"],
+    )
+    for order in coupon_orders:
+        order.status = "delivered"
+        _backdate(order, 6)
+    db.session.commit()
+
+    # A second real checkout, this one against a usage_limit of 1, so that
+    # coupon reaches "Limit reached" by being spent rather than by being
+    # told it was.
+    exhausted = next(
+        s for s in seed_data.COUPON_SPECS if s["state"] == "exhausted"
+    )
+    _checkout_cart(
+        customers[2],
+        [(products["Leather Belt, Hand-Tooled"], 1)],
+        "Tripoli",
+        exhausted["code"],
+    )
+    db.session.commit()
+
+    spec = seed_data.MULTI_STORE_ORDER
+    multi = _checkout_cart(
+        customers[spec["customer"]],
+        [(products[n], q) for n, q in spec["items"]],
+        spec["city"],
+    )
+    for order in multi:
+        _backdate(order, 4)
+    db.session.commit()
+
+    return coupon_orders, multi
+
+
+def _seed_history_order(customer, store, status, line_items, days_ago):
+    """A past order, written directly and backdated."""
     from datetime import datetime, timedelta, timezone
 
     address = customer.addresses[0] if customer.addresses else None
     delivery_city = address.city if address else store.location
-    delivery_address = (
-        address.address_line if address else "Main Street"
-    )
+    delivery_address = address.address_line if address else "Main Street"
 
     subtotal = sum(
-        float(product.price) * quantity
-        for product, quantity in line_items
+        float(product.price) * quantity for product, quantity in line_items
     )
 
     if delivery_city.strip().lower() == store.location.strip().lower():
@@ -601,6 +676,7 @@ def _seed_order(customer, store, status, line_items, days_ago):
         delivery_address=delivery_address,
         delivery_city=delivery_city,
         total_price=subtotal + delivery_fee,
+        delivery_fee=delivery_fee,
         created_at=placed_at,
         updated_at=placed_at,
     )
@@ -617,21 +693,30 @@ def _seed_order(customer, store, status, line_items, days_ago):
             )
         )
 
+    return order
 
-def _seed_reviews(customers, products, stores_by_name):
-    """One review per _REVIEW_SPECS, through review_service so the product
-    and store rating_avg / rating_count get recomputed like real writes."""
+
+def _seed_reviews(customers, products, stores):
+    """Reviews through review_service, so every rating_avg is computed.
+
+    Then one report and one removal, so the admin moderation queue has a
+    flagged item to act on and a removed item to show as already handled.
+    """
     from app.services import review_service
 
-    for customer_index, (kind, name), rating, title, body in _REVIEW_SPECS:
+    written = {}
+
+    for customer_index, (kind, name), rating, title, body in (
+        seed_data.REVIEW_SPECS
+    ):
         customer = customers[customer_index]
 
         if kind == "product":
-            target_entity = products[name]
-            store = target_entity.store
-            target = {"product_id": target_entity.id}
+            entity = products[name]
+            store = entity.store
+            target = {"product_id": entity.id}
         else:
-            store = stores_by_name[name]
+            store = stores[name]
             target = {"store_id": store.id}
 
         order = Order.query.filter_by(
@@ -647,45 +732,111 @@ def _seed_reviews(customers, products, stores_by_name):
             store_id=target.get("store_id"),
         ).first()
         if already is not None:
+            written[(kind, name)] = already
             continue
 
-        review_service.create_review(
+        written[(kind, name)] = review_service.create_review(
             customer, order.id, target, rating, title, body
         )
 
-    # One report so the admin moderation queue is not empty in the demo:
-    # a second customer flags the first review.
-    db.session.flush()
-    flagged = review_service.Review.query.order_by(
-        review_service.Review.id
-    ).first()
-    reporter = customers[1] if len(customers) > 1 else None
-    if flagged is not None and reporter is not None and not flagged.reports:
-        review_service.report_review(
-            reporter, flagged.id, "Reads like it was left by the store owner."
+    db.session.commit()
+
+    flagged = written.get(seed_data.FLAGGED_REVIEW)
+    if flagged is not None and not flagged.reports:
+        reporter = next(
+            (c for c in customers if c.id != flagged.user_id), None
+        )
+        if reporter is not None:
+            review_service.report_review(
+                reporter, flagged.id, seed_data.FLAG_REASON
+            )
+            db.session.commit()
+
+    removed = written.get(seed_data.REMOVED_REVIEW)
+    if removed is not None and removed.status != "removed":
+        review_service.moderate_review(
+            removed.id, "remove", seed_data.REMOVE_REASON
+        )
+        db.session.commit()
+
+    return written
+
+
+def _seed_notifications(customers):
+    """Make sure at least one customer's feed has something in it.
+
+    Checkout already emits an order notification, so this only tops up the
+    kinds a seeded history would otherwise never produce.
+    """
+    from app.services import notification_service
+
+    customer = customers[0]
+
+    # Additive, not all-or-nothing: checkout has already left an order
+    # notification in this feed, and skipping on "has any" would mean the
+    # demo feed is a single line. Keyed on the types added here so a
+    # re-run does not duplicate them.
+    existing = {n.type for n in customer.notifications}
+
+    if "order_delivered" not in existing:
+        notification_service.create_notification(
+            user_id=customer.id,
+            category="order_updates",
+            notification_type="order_delivered",
+            title="Your order has been delivered",
+            message="Hamra Grocery marked your order as delivered. "
+                    "You can review what you received.",
+            link="/orders",
+        )
+
+    if "store_announcement" not in existing:
+        notification_service.create_notification(
+            user_id=customer.id,
+            category="promotions",
+            notification_type="store_announcement",
+            title="Hamra Grocery posted an update",
+            message="New olive-oil pressing just arrived.",
+            link="/stores",
+        )
+
+    db.session.commit()
+
+    if not customer.notifications:
+        raise click.ClickException(
+            "seed: no notifications were created — create_notification "
+            "returns None for an unknown category rather than raising, so "
+            "check the category names against notification_service."
         )
 
 
 @click.command("seed")
+@click.option(
+    "--reset",
+    is_flag=True,
+    help="Empty the demo tables first. Use this to return a half-finished "
+         "screenshot session to a known state.",
+)
 @with_appcontext
-def seed():
+def seed(reset):
     """Populate the database with a realistic demo marketplace.
 
-    Idempotent — safe to run repeatedly; it fills in whatever is missing.
+    Re-runnable: plain `flask seed` fills in whatever is missing, and
+    `flask seed --reset` clears the demo tables and rebuilds from scratch.
     Refuses to run when FLASK_CONFIG=production.
     """
     _refuse_in_production()
 
-    # A demo admin so the admin console is reachable straight from the seed.
-    # `_refuse_in_production` keeps this out of real deployments; admins there
-    # are still CLI-only via `flask create-admin`.
+    if reset:
+        _reset_demo_data()
+        click.echo("Demo tables emptied.")
+
     _get_or_create_user(
         ADMIN_EMAIL, "Site", "Admin", "+961 1 000 000", "admin"
     )
     db.session.flush()
 
     categories = {}
-    for name_en, name_ar, name_fr in _CATEGORY_SPECS:
+    for name_en, name_ar, name_fr in seed_data.CATEGORY_SPECS:
         category, _ = _get_or_create(
             Category,
             {
@@ -695,214 +846,71 @@ def seed():
             },
             name_en=name_en,
         )
-        # Backfill translations onto a category that predates C.5.
-        category.name_ar = category.name_ar or name_ar
-        category.name_fr = category.name_fr or name_fr
         categories[name_en] = category
-
-    db.session.flush()
-
-    products = {}
-    color_index = 0
-
-    for spec in _STORE_SPECS:
-        vendor, _ = _get_or_create_user(
-            spec["vendor_email"],
-            spec["vendor_name"][0],
-            spec["vendor_name"][1],
-            spec["phone"],
-            "vendor",
-        )
-        db.session.flush()
-
-        store, _ = _get_or_create(
-            Store,
-            {
-                "description": spec["description"],
-                "location": spec["city"],
-                "contact_info": spec["vendor_email"],
-                "is_active": spec["active"],
-                # Demo stores skip the approval queue.
-                "approval_status": "approved",
-                "inside_city_delivery_fee": spec["inside_fee"],
-                "outside_city_delivery_fee": spec["outside_fee"],
-                "delivery_available": True,
-                "is_online_only": spec.get("online_only", False),
-                "latitude": spec.get("lat"),
-                "longitude": spec.get("lng"),
-            },
-            owner_id=vendor.id,
-            name=spec["store"],
-        )
-
-        # Backfill coordinates / online-only onto a store that predates C.2.
-        store.is_online_only = spec.get("online_only", False)
-        if store.is_online_only:
-            store.latitude = store.longitude = None
-        elif store.latitude is None and spec.get("lat") is not None:
-            store.latitude = spec["lat"]
-            store.longitude = spec["lng"]
-
-        db.session.flush()
-
-        # A plain weekday schedule so the demo storefront shows real
-        # open/closed state (Mon-Sat 09:00-21:00, closed Sunday). Monday = 0.
-        if not store.hours:
-            from datetime import time as _time
-
-            for weekday in range(6):
-                db.session.add(
-                    StoreHours(
-                        store_id=store.id,
-                        day_of_week=weekday,
-                        opens_at=_time(9, 0),
-                        closes_at=_time(21, 0),
-                    )
-                )
-
-        # One live announcement so the storefront shows the feature.
-        _get_or_create(
-            StoreAnnouncement,
-            {"body": spec["announcement"]["body"]},
-            store_id=store.id,
-            title=spec["announcement"]["title"],
-        )
-
-        for item in spec["products"]:
-            name = item["name"]
-            description = item["description"]
-            product, _ = _get_or_create(
-                Product,
-                {
-                    "name_ar": name["ar"],
-                    "name_fr": name["fr"],
-                    "description_en": description["en"],
-                    "description_ar": description["ar"],
-                    "description_fr": description["fr"],
-                    "price": item["price"],
-                    "stock": item["stock"],
-                    "category_id": categories[item["category"]].id,
-                },
-                store_id=store.id,
-                name_en=name["en"],
-            )
-            # Backfill translations onto a product that predates C.5.
-            product.name_ar = product.name_ar or name["ar"]
-            product.name_fr = product.name_fr or name["fr"]
-            product.description_ar = product.description_ar or description["ar"]
-            product.description_fr = product.description_fr or description["fr"]
-            products[name["en"]] = product
-
-    db.session.flush()
-
-    for product in products.values():
-        if not product.images:
-            _save_product_image(
-                product,
-                _IMAGE_COLORS[color_index % len(_IMAGE_COLORS)],
-            )
-            color_index += 1
-
-    customers = []
-
-    for spec in _CUSTOMER_SPECS:
-        customer, _ = _get_or_create_user(
-            spec["email"],
-            spec["name"][0],
-            spec["name"][1],
-            spec["phone"],
-            "customer",
-        )
-        db.session.flush()
-        customers.append(customer)
-
-        if not customer.addresses:
-            for entry in spec["addresses"]:
-                label, line, city, is_default = entry[:4]
-                lat, lng = (entry[4], entry[5]) if len(entry) > 4 else (None, None)
-                db.session.add(
-                    Address(
-                        user_id=customer.id,
-                        label=label,
-                        recipient_name=(
-                            f"{customer.first_name} {customer.last_name}"
-                        ),
-                        phone=customer.phone,
-                        address_line=line,
-                        city=city,
-                        is_default=is_default,
-                        latitude=lat,
-                        longitude=lng,
-                    )
-                )
-
-    db.session.flush()
-
-    stores_by_name = {
-        store.name: store for store in Store.query.all()
-    }
-
-    for (
-        customer_index,
-        store_name,
-        status,
-        line_item_specs,
-        days_ago,
-    ) in _ORDER_SPECS:
-        customer = customers[customer_index]
-
-        if customer.orders:
-            continue
-
-        line_items = [
-            (products[name], quantity)
-            for name, quantity in line_item_specs
-        ]
-        _seed_order(
-            customer,
-            stores_by_name[store_name],
-            status,
-            line_items,
-            days_ago,
-        )
-
     db.session.commit()
 
-    _seed_reviews(customers, products, stores_by_name)
-    db.session.commit()
+    stores, products = _seed_stores(categories)
+    customers = _seed_customers(categories)
+    coupons = _seed_coupons(stores)
+    _seed_orders(customers, stores, products)
+    _apply_schedules(stores)
+    _seed_reviews(customers, products, stores)
+    _seed_notifications(customers)
+
+    _report(stores, products, customers, coupons)
+
+
+def _report(stores, products, customers, coupons):
+    """What was created, and how to log in as each role."""
+    from app.models.coupon import Coupon
+    from app.models.coupon_redemption import CouponRedemption
+    from app.models.review import Review
+    from app.models.shopping_interest import ShoppingInterest
+
+    counts = (
+        ("Categories", Category.query.count()),
+        ("Stores", Store.query.count()),
+        ("Products", Product.query.count()),
+        ("Store hours rows", StoreHours.query.count()),
+        ("Announcements", StoreAnnouncement.query.count()),
+        ("Orders", Order.query.count()),
+        ("Reviews", Review.query.count()),
+        ("Coupons", Coupon.query.count()),
+        ("Coupon redemptions", CouponRedemption.query.count()),
+        ("Addresses", Address.query.count()),
+        ("Interests", ShoppingInterest.query.count()),
+    )
 
     click.echo("")
-    click.echo("=" * 64)
+    click.echo("=" * 68)
     click.echo("CedarLink demo data is ready.")
     click.echo("")
-    click.echo(f"Admin      (password: {DEMO_PASSWORD})")
-    click.echo(f"  {ADMIN_EMAIL}")
-    click.echo("")
-    click.echo(f"Vendors    (password: {DEMO_PASSWORD})")
-    for spec in _STORE_SPECS:
-        flag = "" if spec["active"] else "  [store deactivated]"
-        click.echo(
-            f"  {spec['vendor_email']:<32} {spec['store']:<20} "
-            f"{spec['city']}{flag}"
-        )
+    for label, value in counts:
+        click.echo(f"  {label:<22} {value}")
 
     click.echo("")
-    click.echo(f"Customers  (password: {DEMO_PASSWORD})")
-    for spec in _CUSTOMER_SPECS:
-        click.echo(
-            f"  {spec['email']:<32} "
-            f"{spec['name'][0]} {spec['name'][1]}"
-        )
-
+    click.echo(f"Sign in with any of these — password: {DEMO_PASSWORD}")
+    click.echo("")
+    click.echo(f"  admin     {ADMIN_EMAIL}")
+    click.echo(
+        f"  vendor    {seed_data.STORE_SPECS[0]['vendor_email']:<38}"
+        f"{seed_data.STORE_SPECS[0]['store']}"
+    )
+    click.echo(
+        f"  customer  {seed_data.CUSTOMER_SPECS[0]['email']:<38}"
+        f"{seed_data.CUSTOMER_SPECS[0]['name'][0]} "
+        f"{seed_data.CUSTOMER_SPECS[0]['name'][1]}"
+    )
+    click.echo("")
+    click.echo("Every other demo vendor and customer uses the same password;")
+    click.echo("the full list is in the README.")
     click.echo("")
     click.echo(
         "Logging in sends a 6-digit code. With MAIL_SUPPRESS_SEND=true "
         "(the .env.example"
     )
-    click.echo(
-        "default) the code is printed to the Flask server console."
-    )
-    click.echo("=" * 64)
+    click.echo("default) the code is printed to the Flask server console.")
+    click.echo("=" * 68)
 
 
 def register_cli(app):
