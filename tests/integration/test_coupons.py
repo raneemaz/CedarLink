@@ -683,6 +683,16 @@ def test_the_order_payload_carries_what_was_taken_off(
     assert order["discount"] == 10.00
     assert order["coupon_code"] == "SAVE10"
 
+    # The fee is reported, not left to be recovered by subtraction: the
+    # parts the server charged must add up to the total it charged.
+    assert order["delivery_fee"] > 0
+    assert (
+        Decimal(str(order["total_price"]))
+        == Decimal("100.00")
+        - Decimal(str(order["discount"]))
+        + Decimal(str(order["delivery_fee"]))
+    )
+
 
 def test_an_undiscounted_order_reports_no_coupon(
     client, auth, customer, make_product, add_to_cart
@@ -698,6 +708,10 @@ def test_an_undiscounted_order_reports_no_coupon(
 
     assert order["discount"] == 0.0
     assert order["coupon_code"] is None
+    assert (
+        Decimal(str(order["total_price"]))
+        == Decimal("100.00") + Decimal(str(order["delivery_fee"]))
+    )
 
 
 # --------------------------------------------------------------------------- #
