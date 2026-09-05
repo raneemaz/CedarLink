@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
@@ -7,10 +5,31 @@ from app.extensions import db
 from app.models.delivery_assignment import DeliveryAssignment
 from app.models.order import Order
 from app.models.store import Store
-from app.services.notification_service import notify_delivery_update
+from app.services import delivery_service
+from app.services.delivery_service import DeliveryError
 
 
 delivery_bp = Blueprint("delivery_bp", __name__)
+
+
+def _load_assignment_context(assignment_id):
+    """Assignment, its order and its store — or the 404 to return."""
+    assignment = db.session.get(DeliveryAssignment, assignment_id)
+
+    if not assignment:
+        raise DeliveryError("Delivery assignment not found", status_code=404)
+
+    order = db.session.get(Order, assignment.order_id)
+
+    if not order:
+        raise DeliveryError("Order not found", status_code=404)
+
+    store = db.session.get(Store, order.store_id)
+
+    if not store:
+        raise DeliveryError("Store not found", status_code=404)
+
+    return assignment, order, store
 
 
 @delivery_bp.route("/delivery/assignments", methods=["POST"])
@@ -19,24 +38,11 @@ def create_delivery_assignment():
     user_id = int(get_jwt_identity())
 
     data = request.get_json() or {}
-
     order_id = data.get("order_id")
-    driver_name = data.get("driver_name")
-    driver_phone = data.get("driver_phone")
 
     if not order_id:
         return jsonify({
             "error": "order_id is required"
-        }), 400
-
-    if not driver_name or not str(driver_name).strip():
-        return jsonify({
-            "error": "driver_name is required"
-        }), 400
-
-    if not driver_phone or not str(driver_phone).strip():
-        return jsonify({
-            "error": "driver_phone is required"
         }), 400
 
     order = db.session.get(Order, order_id)
@@ -59,41 +65,27 @@ def create_delivery_assignment():
             "error": "You are not authorized to assign delivery"
         }), 403
 
-    existing_assignment = DeliveryAssignment.query.filter_by(
-        order_id=order.id
-    ).first()
-
-    if existing_assignment:
-        return jsonify({
-            "error": "Delivery assignment already exists for this order"
-        }), 409
-
     try:
-        assignment = DeliveryAssignment(
-            order_id=order.id,
-            driver_name=str(driver_name).strip(),
-            driver_phone=str(driver_phone).strip(),
-            status="assigned"
+        assignment = delivery_service.assign_driver(
+            order,
+            data.get("driver_name"),
+            data.get("driver_phone"),
         )
-
-        db.session.add(assignment)
-        db.session.commit()
-
-        notify_delivery_update(order, "assigned")
-
-        return jsonify({
-            "message": "Delivery assignment created successfully",
-            "delivery_assignment": assignment.to_dict(
-                include_driver_phone=True
-            )
-        }), 201
-
+    except DeliveryError as exc:
+        return jsonify(exc.payload), exc.status_code
     except Exception:
         db.session.rollback()
 
         return jsonify({
             "error": "Failed to create delivery assignment"
         }), 500
+
+    return jsonify({
+        "message": "Delivery assignment created successfully",
+        "delivery_assignment": assignment.to_dict(
+            include_driver_phone=True
+        )
+    }), 201
 
 
 @delivery_bp.route(
@@ -104,35 +96,10 @@ def create_delivery_assignment():
 def get_delivery_assignment(id):
     user_id = int(get_jwt_identity())
 
-    assignment = db.session.get(
-        DeliveryAssignment,
-        id
-    )
-
-    if not assignment:
-        return jsonify({
-            "error": "Delivery assignment not found"
-        }), 404
-
-    order = db.session.get(
-        Order,
-        assignment.order_id
-    )
-
-    if not order:
-        return jsonify({
-            "error": "Order not found"
-        }), 404
-
-    store = db.session.get(
-        Store,
-        order.store_id
-    )
-
-    if not store:
-        return jsonify({
-            "error": "Store not found"
-        }), 404
+    try:
+        assignment, order, store = _load_assignment_context(id)
+    except DeliveryError as exc:
+        return jsonify(exc.payload), exc.status_code
 
     # Customer who owns order OR vendor who owns store
     is_customer_owner = order.user_id == user_id
@@ -143,9 +110,9 @@ def get_delivery_assignment(id):
             "error": "You are not authorized to view this delivery"
         }), 403
 
-    # The vendor always sees the driver's phone; the customer only while
-    # the delivery is still in progress, never after it is delivered.
-    show_phone = is_vendor_owner or assignment.status != "delivered"
+    show_phone = delivery_service.may_disclose_phone(
+        assignment, is_vendor=is_vendor_owner
+    )
 
     return jsonify({
         "delivery_assignment": assignment.to_dict(
@@ -170,35 +137,10 @@ def update_delivery_status(id):
             "error": "Status is required"
         }), 400
 
-    assignment = db.session.get(
-        DeliveryAssignment,
-        id
-    )
-
-    if not assignment:
-        return jsonify({
-            "error": "Delivery assignment not found"
-        }), 404
-
-    order = db.session.get(
-        Order,
-        assignment.order_id
-    )
-
-    if not order:
-        return jsonify({
-            "error": "Order not found"
-        }), 404
-
-    store = db.session.get(
-        Store,
-        order.store_id
-    )
-
-    if not store:
-        return jsonify({
-            "error": "Store not found"
-        }), 404
+    try:
+        assignment, order, store = _load_assignment_context(id)
+    except DeliveryError as exc:
+        return jsonify(exc.payload), exc.status_code
 
     # For current CedarLink implementation,
     # store owner updates delivery status
@@ -207,50 +149,20 @@ def update_delivery_status(id):
             "error": "You are not authorized to update this delivery"
         }), 403
 
-    allowed_transitions = {
-        "assigned": "picked_up",
-        "picked_up": "delivered"
-    }
-
-    expected_next_status = allowed_transitions.get(
-        assignment.status
-    )
-
-    if expected_next_status is None:
-        return jsonify({
-            "error": (
-                f"Delivery with status "
-                f"'{assignment.status}' cannot be updated"
-            )
-        }), 400
-
-    if new_status != expected_next_status:
-        return jsonify({
-            "error": "Invalid delivery status transition",
-            "current_status": assignment.status,
-            "allowed_next_status": expected_next_status
-        }), 400
-
     try:
-        assignment.status = new_status
-
-        if new_status == "delivered":
-            assignment.delivered_at = datetime.utcnow()
-
-        db.session.commit()
-
-        notify_delivery_update(order, assignment.status)
-
-        return jsonify({
-            "message": "Delivery status updated successfully",
-            "delivery_assignment": assignment.to_dict(
-                include_driver_phone=True
-            )
-        }), 200
-
+        delivery_service.advance_status(assignment, order, new_status)
+    except DeliveryError as exc:
+        return jsonify(exc.payload), exc.status_code
     except Exception:
         db.session.rollback()
 
         return jsonify({
             "error": "Failed to update delivery status"
         }), 500
+
+    return jsonify({
+        "message": "Delivery status updated successfully",
+        "delivery_assignment": assignment.to_dict(
+            include_driver_phone=True
+        )
+    }), 200

@@ -300,9 +300,9 @@ real on it. **Password for every account below: `Cedar!2026`**
 ### What the seed creates
 
 6 categories · 8 stores · 64 products · 60 opening-hours rows ·
-10 announcements · 13 orders · 11 reviews · 6 coupons · 2 coupon
-redemptions · 6 addresses · 6 stated interests · notifications for three
-customers.
+10 announcements · 13 orders · 4 delivery assignments · 11 reviews ·
+6 coupons · 2 coupon redemptions · 6 addresses · 6 stated interests ·
+notifications for three customers.
 
 Deliberately included so that every state renders somewhere:
 
@@ -311,14 +311,21 @@ Deliberately included so that every state renders somewhere:
 - **Announcements** — live, scheduled and expired, so all badge states appear.
 - **Orders** — pending, processing, delivered and cancelled; one spanning
   two stores; one with a coupon applied so the discount line is visible.
+- **Deliveries** — one assigned, one picked up, two delivered. Two of
+  them are on Rania's account on purpose: her Cedar Loom delivery is still
+  out, so she is shown the driver's name *and* his phone number, while her
+  Hamra Grocery delivery is finished, so the number is gone and only the
+  name remains. That pair is ADR 0019 on screen.
 - **Reviews** — ratings from 2 to 5 so nothing is uniformly 5.0; one
   reported and flagged, one removed by an admin.
 - **Coupons** — active percentage, active fixed, expired, scheduled,
   store-scoped, and one that has reached its usage limit.
 
 Aggregates are computed, not typed in: reviews go through `review_service`
-so `rating_avg` is real, and the coupon that shows "Limit reached" got
-there by actually being redeemed at checkout.
+so `rating_avg` is real, the coupon that shows "Limit reached" got there by
+actually being redeemed at checkout, and each delivery walks
+`assigned → picked_up → delivered` one step at a time through
+`delivery_service`.
 
 ### Re-running it
 
