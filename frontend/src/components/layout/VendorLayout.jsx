@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { NavLink, Outlet, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
+  LayoutDashboard,
   Store,
   Package,
   ClipboardList,
@@ -13,6 +14,7 @@ import {
 import api from "../../services/api";
 
 const NAV_ITEMS = [
+  { to: "/vendor/dashboard", key: "dashboard", icon: LayoutDashboard },
   { to: "/vendor/store", key: "store", icon: Store },
   { to: "/vendor/products", key: "products", icon: Package },
   { to: "/vendor/orders", key: "orders", icon: ClipboardList },

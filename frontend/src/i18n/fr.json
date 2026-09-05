@@ -276,7 +276,8 @@
     "pendingBody": "Configurez-le et ajoutez des produits dès maintenant — les clients ne le verront pas tant qu’il n’est pas approuvé.",
     "rejectedTitle": "Votre magasin n’a pas été approuvé.",
     "rejectedBodyDefault": "Contactez le support pour plus de détails.",
-    "coupons": "Coupons"
+    "coupons": "Coupons",
+    "dashboard": "Tableau de bord"
   },
   "productCard": {
     "noImage": "Aucune image",
@@ -1523,6 +1524,79 @@
       "website": "Site web",
       "email": "E-mail",
       "phone": "Téléphone"
+    }
+  },
+  "vendorDashboard": {
+    "title": "Tableau de bord",
+    "subtitle": "Comment se porte votre boutique.",
+    "loading": "Chargement de vos chiffres...",
+    "loadError": "Impossible de charger le tableau de bord. Veuillez réessayer.",
+    "showingRange": "Du {{from}} au {{to}}",
+    "nothingDeliveredYet": "Rien n'a été livré sur cette période, donc rien n'a été encaissé. Les commandes en cours sont indiquées séparément ci-dessous.",
+    "period": {
+      "lastDays_one": "Dernier jour",
+      "lastDays_other": "{{count}} derniers jours",
+      "from": "Du",
+      "to": "Au",
+      "apply": "Appliquer"
+    },
+    "collected": {
+      "heading": "Encaissé",
+      "revenue": "Votre revenu",
+      "revenueHint": "Marchandises vendues moins remises, sur les commandes livrées.",
+      "goods": "Marchandises vendues",
+      "goodsHint": "Avant remises.",
+      "discounts": "Remises accordées",
+      "discountsHint": "Déduites par les coupons.",
+      "delivery": "Livraison encaissée",
+      "deliveryHint": "Dû au livreur. Ne fait pas partie de votre revenu."
+    },
+    "inProgress": {
+      "revenue": "En cours",
+      "revenueHint_zero": "Aucune commande en route",
+      "revenueHint_one": "Sur {{count}} commande pas encore livrée",
+      "revenueHint_other": "Sur {{count}} commandes pas encore livrées"
+    },
+    "totals": {
+      "orders": "Commandes",
+      "ordersHint": "Toute commande passée, quel qu'en soit le sort.",
+      "units": "Unités vendues",
+      "unitsHint": "Commandes annulées exclues.",
+      "average": "Commande moyenne",
+      "averageHint": "Votre revenu par commande livrée."
+    },
+    "status": {
+      "title": "Commandes par statut"
+    },
+    "chart": {
+      "title": "Commandes par jour",
+      "peak_one": "Jour le plus chargé : {{count}} commande",
+      "peak_other": "Jour le plus chargé : {{count}} commandes",
+      "ordersCount_one": "{{count}} commande",
+      "ordersCount_other": "{{count}} commandes",
+      "summary_one": "{{count}} commande entre le {{from}} et le {{to}}",
+      "summary_other": "{{count}} commandes entre le {{from}} et le {{to}}",
+      "busiest_one": "Le jour le plus chargé était le {{date}}, avec {{count}} commande.",
+      "busiest_other": "Le jour le plus chargé était le {{date}}, avec {{count}} commandes.",
+      "noOrdersInRange": "Aucune commande sur cette période."
+    },
+    "tables": {
+      "byUnits": "Meilleures ventes en unités",
+      "byUnitsCaption": "Ce qui se vend le plus souvent.",
+      "byRevenue": "Meilleures ventes en revenu",
+      "byRevenueCaption": "Ce qui vous rapporte le plus.",
+      "bestRated": "Produits les mieux notés",
+      "bestRatedCaption": "Produits ayant au moins deux avis, pour qu'un seul avis ne domine pas la liste.",
+      "notEnoughReviews": "Aucun produit n'a encore deux avis.",
+      "nothingSold": "Rien de vendu sur cette période.",
+      "units_one": "{{count}} unité",
+      "units_other": "{{count}} unités",
+      "reviews_one": "{{count}} avis",
+      "reviews_other": "{{count}} avis"
+    },
+    "empty": {
+      "title": "Aucune commande pour l'instant",
+      "body": "Dès que vos clients commanderont, votre revenu, vos meilleures ventes et vos jours les plus chargés apparaîtront ici. D'ici là, il n'y a rien à mesurer."
     }
   }
 }

@@ -800,6 +800,15 @@ ORDER_SPECS = (
      (("Mountain Honey 500g", 1), ("Village Labneh 500g", 2)), 2),
     (3, "Badaro Home", "pending",
      (("Cezve Coffee Pot, Copper", 1),), 1),
+    # A second delivered order for two of Hamra's products, so they carry
+    # two reviews each. The vendor dashboard's "best rated" list needs a
+    # minimum of two, so that a single five-star opinion cannot top it —
+    # with one review apiece the list is correct and permanently empty.
+    (3, "Hamra Grocery", "delivered",
+     (("Lebanese Extra Virgin Olive Oil 1L", 1),
+      ("Zaatar Blend 200g", 2)), 9),
+    (1, "Hamra Grocery", "delivered",
+     (("Zaatar Blend 200g", 1), ("Tahini 400g", 1)), 6),
 )
 
 # The order that runs through a real checkout with a coupon, so the
@@ -887,6 +896,23 @@ REVIEW_SPECS = (
     (2, ("product", "Olive Oil Soap, Aleppo Style"), 5,
      "Lasts for weeks",
      "One bar has outlasted three of the supermarket kind."),
+    # The second opinion on each, so both clear the best-rated minimum.
+    (3, ("product", "Lebanese Extra Virgin Olive Oil 1L"), 5,
+     "Better than the tinned oil I was buying",
+     "Bought it after a friend brought a bottle. I will not go back."),
+    (3, ("product", "Zaatar Blend 200g"), 4,
+     "Good on manoushe",
+     "Generous with the sesame. A little dry on its own, fine with oil."),
+    (1, ("product", "Zaatar Blend 200g"), 4,
+     "Does what it says",
+     "Nothing exotic, just a solid everyday blend. I go through a jar a "
+     "month."),
+    # Deliberately the only review this product has, so the dashboard's
+    # best-rated list visibly leaves it out despite the rating.
+    (1, ("product", "Tahini 400g"), 5,
+     "Smooth, no bitterness",
+     "Pours rather than sits in a lump. Better than the brand I usually "
+     "buy."),
 )
 
 # The review a customer reports, and the one an admin then removes, so

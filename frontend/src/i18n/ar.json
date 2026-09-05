@@ -280,7 +280,8 @@
     "pendingBody": "قم بإعداده وأضف المنتجات الآن — لن يتمكن العملاء من رؤيته حتى تتم الموافقة عليه.",
     "rejectedTitle": "لم تتم الموافقة على متجرك.",
     "rejectedBodyDefault": "تواصل مع الدعم لمعرفة التفاصيل.",
-    "coupons": "القسائم"
+    "coupons": "القسائم",
+    "dashboard": "لوحة المعلومات"
   },
   "productCard": {
     "noImage": "لا توجد صورة",
@@ -1575,6 +1576,109 @@
       "website": "الموقع الإلكتروني",
       "email": "البريد الإلكتروني",
       "phone": "الهاتف"
+    }
+  },
+  "vendorDashboard": {
+    "title": "لوحة المعلومات",
+    "subtitle": "كيف يسير متجرك.",
+    "loading": "جارٍ تحميل أرقامك...",
+    "loadError": "تعذّر تحميل لوحة المعلومات. حاول مرة أخرى.",
+    "showingRange": "من {{from}} إلى {{to}}",
+    "nothingDeliveredYet": "لم يُسلَّم أي طلب في هذه الفترة، لذلك لم يُحصَّل شيء بعد. الطلبات الجارية معروضة على حدة في الأسفل.",
+    "period": {
+      "lastDays_zero": "لا أيام",
+      "lastDays_one": "آخر يوم",
+      "lastDays_two": "آخر يومين",
+      "lastDays_few": "آخر {{count}} أيام",
+      "lastDays_many": "آخر {{count}} يومًا",
+      "lastDays_other": "آخر {{count}} يوم",
+      "from": "من",
+      "to": "إلى",
+      "apply": "تطبيق"
+    },
+    "collected": {
+      "heading": "المُحصَّل",
+      "revenue": "إيرادك",
+      "revenueHint": "قيمة البضاعة ناقص الحسومات، على الطلبات المُسلَّمة.",
+      "goods": "قيمة البضاعة",
+      "goodsHint": "قبل الحسومات.",
+      "discounts": "الحسومات الممنوحة",
+      "discountsHint": "ما حسمته الكوبونات.",
+      "delivery": "أجرة التوصيل المُحصَّلة",
+      "deliveryHint": "مستحقة للسائق. ليست جزءًا من إيرادك."
+    },
+    "inProgress": {
+      "revenue": "قيد التنفيذ",
+      "revenueHint_zero": "لا طلبات في الطريق",
+      "revenueHint_one": "من طلب واحد لم يُسلَّم بعد",
+      "revenueHint_two": "من طلبين لم يُسلَّما بعد",
+      "revenueHint_few": "من {{count}} طلبات لم تُسلَّم بعد",
+      "revenueHint_many": "من {{count}} طلبًا لم تُسلَّم بعد",
+      "revenueHint_other": "من {{count}} طلب لم يُسلَّم بعد"
+    },
+    "totals": {
+      "orders": "الطلبات",
+      "ordersHint": "كل طلب تم تقديمه، مهما كان مصيره.",
+      "units": "القطع المباعة",
+      "unitsHint": "لا تشمل الطلبات الملغاة.",
+      "average": "متوسط الطلب",
+      "averageHint": "إيرادك لكل طلب مُسلَّم."
+    },
+    "status": {
+      "title": "الطلبات حسب الحالة"
+    },
+    "chart": {
+      "title": "الطلبات يوميًا",
+      "peak_zero": "أكثر يوم: لا طلبات",
+      "peak_one": "أكثر يوم: طلب واحد",
+      "peak_two": "أكثر يوم: طلبان",
+      "peak_few": "أكثر يوم: {{count}} طلبات",
+      "peak_many": "أكثر يوم: {{count}} طلبًا",
+      "peak_other": "أكثر يوم: {{count}} طلب",
+      "ordersCount_zero": "لا طلبات",
+      "ordersCount_one": "طلب واحد",
+      "ordersCount_two": "طلبان",
+      "ordersCount_few": "{{count}} طلبات",
+      "ordersCount_many": "{{count}} طلبًا",
+      "ordersCount_other": "{{count}} طلب",
+      "summary_zero": "لا طلبات بين {{from}} و{{to}}",
+      "summary_one": "طلب واحد بين {{from}} و{{to}}",
+      "summary_two": "طلبان بين {{from}} و{{to}}",
+      "summary_few": "{{count}} طلبات بين {{from}} و{{to}}",
+      "summary_many": "{{count}} طلبًا بين {{from}} و{{to}}",
+      "summary_other": "{{count}} طلب بين {{from}} و{{to}}",
+      "busiest_one": "أكثر يوم كان {{date}}، بطلب واحد.",
+      "busiest_two": "أكثر يوم كان {{date}}، بطلبين.",
+      "busiest_few": "أكثر يوم كان {{date}}، بـ{{count}} طلبات.",
+      "busiest_many": "أكثر يوم كان {{date}}، بـ{{count}} طلبًا.",
+      "busiest_other": "أكثر يوم كان {{date}}، بـ{{count}} طلب.",
+      "noOrdersInRange": "لا طلبات في هذه الفترة."
+    },
+    "tables": {
+      "byUnits": "الأكثر مبيعًا بالقطع",
+      "byUnitsCaption": "ما يُباع أكثر.",
+      "byRevenue": "الأكثر مبيعًا بالإيراد",
+      "byRevenueCaption": "ما يدرّ عليك أكثر.",
+      "bestRated": "الأعلى تقييمًا",
+      "bestRatedCaption": "منتجات لها تقييمان على الأقل، حتى لا يتصدّر رأي واحد القائمة.",
+      "notEnoughReviews": "لا يوجد منتج له تقييمان بعد.",
+      "nothingSold": "لم يُبَع شيء في هذه الفترة.",
+      "units_zero": "لا قطع",
+      "units_one": "قطعة واحدة",
+      "units_two": "قطعتان",
+      "units_few": "{{count}} قطع",
+      "units_many": "{{count}} قطعة",
+      "units_other": "{{count}} قطعة",
+      "reviews_zero": "لا تقييمات",
+      "reviews_one": "تقييم واحد",
+      "reviews_two": "تقييمان",
+      "reviews_few": "{{count}} تقييمات",
+      "reviews_many": "{{count}} تقييمًا",
+      "reviews_other": "{{count}} تقييم"
+    },
+    "empty": {
+      "title": "لا طلبات بعد",
+      "body": "عندما يبدأ الزبائن بالطلب، ستظهر هنا إيراداتك وأكثر منتجاتك مبيعًا وأكثر أيامك ازدحامًا. حتى ذلك الحين لا يوجد ما يُقاس."
     }
   }
 }

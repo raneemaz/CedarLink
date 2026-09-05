@@ -276,7 +276,8 @@
     "pendingBody": "Set it up and add products now — customers can’t see it until it’s approved.",
     "rejectedTitle": "Your store was not approved.",
     "rejectedBodyDefault": "Contact support for details.",
-    "coupons": "Coupons"
+    "coupons": "Coupons",
+    "dashboard": "Dashboard"
   },
   "productCard": {
     "noImage": "No image",
@@ -1523,6 +1524,79 @@
       "website": "Website",
       "email": "Email",
       "phone": "Phone"
+    }
+  },
+  "vendorDashboard": {
+    "title": "Dashboard",
+    "subtitle": "How your store is doing.",
+    "loading": "Loading your figures...",
+    "loadError": "Could not load your dashboard. Please try again.",
+    "showingRange": "Showing {{from}} to {{to}}",
+    "nothingDeliveredYet": "Nothing has been delivered in this period yet, so nothing has been collected. Orders in progress are shown separately below.",
+    "period": {
+      "lastDays_one": "Last day",
+      "lastDays_other": "Last {{count}} days",
+      "from": "From",
+      "to": "To",
+      "apply": "Apply"
+    },
+    "collected": {
+      "heading": "Collected",
+      "revenue": "Your revenue",
+      "revenueHint": "Goods sold less discounts, on delivered orders.",
+      "goods": "Goods sold",
+      "goodsHint": "Before discounts.",
+      "discounts": "Discounts given",
+      "discountsHint": "Taken off by coupons.",
+      "delivery": "Delivery collected",
+      "deliveryHint": "Owed to the driver. Not part of your revenue."
+    },
+    "inProgress": {
+      "revenue": "In progress",
+      "revenueHint_zero": "No orders on the way",
+      "revenueHint_one": "From {{count}} order not yet delivered",
+      "revenueHint_other": "From {{count}} orders not yet delivered"
+    },
+    "totals": {
+      "orders": "Orders",
+      "ordersHint": "Every order placed, whatever happened to it.",
+      "units": "Units sold",
+      "unitsHint": "Cancelled orders excluded.",
+      "average": "Average order",
+      "averageHint": "Your revenue per delivered order."
+    },
+    "status": {
+      "title": "Orders by status"
+    },
+    "chart": {
+      "title": "Orders per day",
+      "peak_one": "Busiest day: {{count}} order",
+      "peak_other": "Busiest day: {{count}} orders",
+      "ordersCount_one": "{{count}} order",
+      "ordersCount_other": "{{count}} orders",
+      "summary_one": "{{count}} order between {{from}} and {{to}}",
+      "summary_other": "{{count}} orders between {{from}} and {{to}}",
+      "busiest_one": "Busiest day was {{date}}, with {{count}} order.",
+      "busiest_other": "Busiest day was {{date}}, with {{count}} orders.",
+      "noOrdersInRange": "No orders in this period."
+    },
+    "tables": {
+      "byUnits": "Top products by units",
+      "byUnitsCaption": "What sells most often.",
+      "byRevenue": "Top products by revenue",
+      "byRevenueCaption": "What earns you most.",
+      "bestRated": "Best rated products",
+      "bestRatedCaption": "Products with at least two reviews, so one opinion cannot top the list.",
+      "notEnoughReviews": "No product has two reviews yet.",
+      "nothingSold": "Nothing sold in this period.",
+      "units_one": "{{count}} unit",
+      "units_other": "{{count}} units",
+      "reviews_one": "{{count}} review",
+      "reviews_other": "{{count}} reviews"
+    },
+    "empty": {
+      "title": "No orders yet",
+      "body": "Once customers start ordering, your revenue, best sellers and busiest days appear here. Until then there is nothing to measure."
     }
   }
 }

@@ -300,8 +300,8 @@ real on it. **Password for every account below: `Cedar!2026`**
 ### What the seed creates
 
 6 categories · 8 stores · 64 products · 60 opening-hours rows ·
-10 announcements · 13 social and contact links · 13 orders ·
-4 delivery assignments · 11 reviews · 6 coupons · 2 coupon redemptions ·
+10 announcements · 13 social and contact links · 15 orders ·
+4 delivery assignments · 15 reviews · 6 coupons · 2 coupon redemptions ·
 6 addresses · 6 stated interests · notifications for three customers.
 
 Deliberately included so that every state renders somewhere:
@@ -320,7 +320,10 @@ Deliberately included so that every state renders somewhere:
   out, so she is shown the driver's name *and* his phone number, while her
   Hamra Grocery delivery is finished, so the number is gone and only the
   name remains. That pair is ADR 0019 on screen.
-- **Reviews** — ratings from 2 to 5 so nothing is uniformly 5.0; one
+- **Reviews** — two of Hamra Grocery's products carry two reviews each
+  and one carries a single five-star review, so the vendor dashboard's
+  best-rated list has rows *and* visibly leaves the single-review product
+  out. Ratings from 2 to 5 so nothing is uniformly 5.0; one
   reported and flagged, one removed by an admin.
 - **Coupons** — active percentage, active fixed, expired, scheduled,
   store-scoped, and one that has reached its usage limit.
