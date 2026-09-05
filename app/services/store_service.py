@@ -12,13 +12,26 @@ other timestamp. See docs/decisions/0013-store-hours-timezone.md.
 """
 
 import math
+import re
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
+from urllib.parse import urlsplit, urlunsplit
 from zoneinfo import ZoneInfo
 
 from app.extensions import db
 from app.models.store import Store
 from app.models.store_hours import StoreHours
+from app.models.store_social_link import (
+    EMAIL,
+    FACEBOOK,
+    INSTAGRAM,
+    PHONE,
+    PLATFORMS,
+    StoreSocialLink,
+    TIKTOK,
+    WEBSITE,
+    WHATSAPP,
+)
 from app.utils.geo import (
     CoordinateError,
     KM_PER_DEG_LAT,
@@ -494,3 +507,371 @@ def nearby(lat, lng, radius_km, query=None):
 
     within.sort(key=lambda pair: pair[1])
     return [(store, round(distance, 1)) for store, distance in within]
+
+
+# --------------------------------------------------------------------------- #
+# Social and contact links
+#
+# The value stored is the finished href. It is built here, out of the
+# vendor's input, rather than being the vendor's input — because it ends up
+# in an anchor on a public page, and a vendor-supplied string in an href is
+# stored cross-site scripting against every customer who clicks it. That is
+# also why the scheme check lives in this module and not in the vendor form:
+# a form check is bypassed by calling PUT /api/stores/<id>/social-links
+# directly.
+# --------------------------------------------------------------------------- #
+
+class SocialLinkError(ValueError):
+    """Invalid social/contact input — the route returns it as 400."""
+
+
+# The only schemes a vendor may hand us. mailto: and tel: are never
+# accepted as input; they are constructed below for the email and phone
+# fields, whose values are validated as an address and a number first.
+ALLOWED_INPUT_SCHEMES = ("http", "https")
+
+# Everything the column may ever hold, checked once at the end as a
+# backstop: if a future edit to this module lets something else through,
+# it fails here rather than on a customer's browser.
+_ALLOWED_VALUE_PREFIXES = ("https://", "http://", "mailto:", "tel:")
+
+# platform -> (canonical prefix, hosts accepted in a pasted URL)
+_PROFILE_PLATFORMS = {
+    INSTAGRAM: (
+        "https://www.instagram.com/",
+        ("instagram.com", "www.instagram.com"),
+    ),
+    FACEBOOK: (
+        "https://www.facebook.com/",
+        ("facebook.com", "www.facebook.com", "m.facebook.com", "fb.com"),
+    ),
+    TIKTOK: (
+        "https://www.tiktok.com/@",
+        ("tiktok.com", "www.tiktok.com"),
+    ),
+}
+
+# What the three profile platforms allow in a handle. Deliberately narrower
+# than any of them documents: everything outside this set is far more likely
+# to be a paste accident than a real account name.
+_HANDLE_RE = re.compile(r"^[A-Za-z0-9._-]{1,60}$")
+
+# Not RFC 5322 — that grammar accepts addresses no mail server will. This is
+# the shape a person actually types, and it is the shape the browser's own
+# type="email" check applies.
+_EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s.]+(\.[^@\s.]+)+$")
+
+_MAX_VALUE_LENGTH = 500
+
+# 7 is the shortest national number in use anywhere; 15 is the E.164 ceiling.
+_MIN_PHONE_DIGITS = 7
+_MAX_PHONE_DIGITS = 15
+
+
+def _clean_input(raw):
+    """Trim, and refuse anything with a control character in it.
+
+    Browsers strip tabs, newlines and NULs out of a URL before resolving the
+    scheme, so ``java\tscript:alert(1)`` navigates as ``javascript:``. The
+    scheme check below would not see it. Rejecting the characters outright
+    is simpler than trying to match the parser.
+    """
+    if not isinstance(raw, str):
+        raise SocialLinkError("Each link value must be text")
+
+    value = raw.strip()
+
+    if any(ord(ch) < 0x20 or ord(ch) == 0x7F for ch in value):
+        raise SocialLinkError("A link may not contain control characters")
+
+    if len(value) > _MAX_VALUE_LENGTH:
+        raise SocialLinkError(
+            f"A link may be at most {_MAX_VALUE_LENGTH} characters"
+        )
+
+    return value
+
+
+def _scheme_of(value):
+    """The scheme a browser would resolve, lowercased, or ``None``."""
+    match = re.match(r"^([A-Za-z][A-Za-z0-9+.-]*):", value)
+    return match.group(1).lower() if match else None
+
+
+def _assert_safe_scheme(value):
+    """Reject javascript:, data:, file: and every other non-web scheme."""
+    scheme = _scheme_of(value)
+
+    if scheme is not None and scheme not in ALLOWED_INPUT_SCHEMES:
+        raise SocialLinkError(
+            f"'{scheme}:' links are not allowed — use http or https"
+        )
+
+
+def _strip_known_host(value, hosts):
+    """``instagram.com/name`` -> ``name``. Returns ``None`` if no host matched."""
+    lowered = value.lower()
+
+    for host in hosts:
+        for candidate in (host + "/", host):
+            if lowered.startswith(candidate):
+                return value[len(candidate):]
+
+    return None
+
+
+def _normalize_profile(platform, value):
+    """A handle, @handle, host/handle or full URL -> the canonical profile URL."""
+    prefix, hosts = _PROFILE_PLATFORMS[platform]
+
+    _assert_safe_scheme(value)
+
+    handle = None
+
+    if _scheme_of(value) is not None:
+        parts = urlsplit(value)
+
+        if parts.hostname is None or parts.hostname.lower() not in hosts:
+            raise SocialLinkError(
+                f"That is not a {platform} address"
+            )
+
+        handle = parts.path
+
+        # A pasted profile URL routinely carries ?igshid=... or a tracking
+        # fragment. Neither identifies the account, so neither is stored.
+        if parts.query or parts.fragment:
+            handle = handle or ""
+    else:
+        stripped = _strip_known_host(value, hosts)
+        handle = value if stripped is None else stripped
+
+    handle = handle.strip().strip("/")
+    handle = handle.split("?", 1)[0].split("#", 1)[0]
+    handle = handle.lstrip("@")
+
+    if not handle:
+        raise SocialLinkError(f"A {platform} handle is required")
+
+    if not _HANDLE_RE.match(handle):
+        raise SocialLinkError(
+            f"'{handle}' is not a valid {platform} handle"
+        )
+
+    return prefix + handle
+
+
+def _digits_of(value):
+    return "".join(ch for ch in value if ch.isdigit())
+
+
+def _international_digits(value, field):
+    """A typed phone number as bare international digits.
+
+    Accepts ``+961 3 100 001``, ``00961-3-100-001`` and ``9613100001``. A
+    number that still starts with a trunk ``0`` after that is a national
+    format we cannot expand without guessing the country, so it is refused
+    with an explanation rather than stored as something undialable.
+    """
+    _assert_safe_scheme(value)
+
+    if not re.match(r"^\+?[0-9 ()./-]+$", value):
+        raise SocialLinkError(f"'{value}' is not a valid {field} number")
+
+    digits = _digits_of(value)
+
+    if digits.startswith("00"):
+        digits = digits[2:]
+
+    if digits.startswith("0"):
+        raise SocialLinkError(
+            "Include the country code, for example +961 3 123 456"
+        )
+
+    if not _MIN_PHONE_DIGITS <= len(digits) <= _MAX_PHONE_DIGITS:
+        raise SocialLinkError(f"'{value}' is not a valid {field} number")
+
+    return digits
+
+
+def _normalize_website(value):
+    """A bare domain or a full URL -> an https URL. No other scheme."""
+    _assert_safe_scheme(value)
+
+    if _scheme_of(value) is None:
+        value = "https://" + value
+
+    parts = urlsplit(value)
+
+    if parts.scheme.lower() not in ALLOWED_INPUT_SCHEMES:
+        raise SocialLinkError("A website must be an http or https address")
+
+    # A hostname with no dot is a hostname on somebody's LAN, not a website.
+    if not parts.hostname or "." not in parts.hostname.strip("."):
+        raise SocialLinkError(f"'{value}' is not a valid website address")
+
+    return urlunsplit(
+        (
+            parts.scheme.lower(),
+            parts.netloc.lower(),
+            parts.path or "/",
+            parts.query,
+            "",
+        )
+    )
+
+
+def _normalize_email(value):
+    """An address, with or without a mailto:, -> ``mailto:address``."""
+    if value.lower().startswith("mailto:"):
+        value = value[len("mailto:"):].strip()
+
+    _assert_safe_scheme(value)
+
+    if not _EMAIL_RE.match(value):
+        raise SocialLinkError(f"'{value}' is not a valid email address")
+
+    return "mailto:" + value
+
+
+def _normalize_phone(value):
+    """A typed number, with or without a tel:, -> ``tel:+digits``."""
+    if value.lower().startswith("tel:"):
+        value = value[len("tel:"):].strip()
+
+    return "tel:+" + _international_digits(value, "phone")
+
+
+def normalize_social_value(platform, raw):
+    """The stored, ready-to-render value for one platform.
+
+    Raises :class:`SocialLinkError` for an unknown platform, an empty value,
+    a value that does not parse as that platform, or any scheme other than
+    http/https.
+    """
+    if platform not in PLATFORMS:
+        raise SocialLinkError(f"'{platform}' is not a supported platform")
+
+    value = _clean_input(raw)
+
+    if not value:
+        raise SocialLinkError(f"A value is required for {platform}")
+
+    if platform in _PROFILE_PLATFORMS:
+        normalized = _normalize_profile(platform, value)
+    elif platform == WHATSAPP:
+        normalized = "https://wa.me/" + _international_digits(
+            value, "WhatsApp"
+        )
+    elif platform == WEBSITE:
+        normalized = _normalize_website(value)
+    elif platform == EMAIL:
+        normalized = _normalize_email(value)
+    elif platform == PHONE:
+        normalized = _normalize_phone(value)
+    else:
+        raise SocialLinkError(f"'{platform}' is not a supported platform")
+
+    if not normalized.startswith(_ALLOWED_VALUE_PREFIXES):
+        raise SocialLinkError("A link must be an http or https address")
+
+    if len(normalized) > _MAX_VALUE_LENGTH:
+        raise SocialLinkError(
+            f"A link may be at most {_MAX_VALUE_LENGTH} characters"
+        )
+
+    return normalized
+
+
+def parse_social_links(entries):
+    """Validate and normalise a whole submitted set. Returns ``{platform: value}``.
+
+    A platform that is absent, or present with a blank value, is not in the
+    result — that is how the vendor form clears a field.
+    """
+    if entries is None:
+        entries = []
+
+    if not isinstance(entries, list):
+        raise SocialLinkError("social_links must be a list")
+
+    normalized = {}
+
+    for entry in entries:
+        if not isinstance(entry, dict):
+            raise SocialLinkError("Each social link must be an object")
+
+        platform = entry.get("platform")
+
+        if platform not in PLATFORMS:
+            raise SocialLinkError(
+                f"'{platform}' is not a supported platform"
+            )
+
+        if platform in normalized:
+            raise SocialLinkError(
+                f"'{platform}' appears more than once — a store may have "
+                f"one of each"
+            )
+
+        raw = entry.get("value")
+
+        # Absent or blank clears the platform rather than storing an empty
+        # row, so the form does not need a separate delete call per field.
+        if raw is None or (isinstance(raw, str) and not raw.strip()):
+            normalized[platform] = None
+            continue
+
+        normalized[platform] = normalize_social_value(platform, raw)
+
+    return {
+        platform: value
+        for platform, value in normalized.items()
+        if value is not None
+    }
+
+
+def replace_social_links(store, entries):
+    """Replace the store's whole set of links, in the caller's transaction.
+
+    Diffed by platform, never cleared and recreated. Within one flush
+    SQLAlchemy emits INSERTs before DELETEs, so re-adding a platform the
+    store already had would collide with the row that has not been deleted
+    yet — a UNIQUE violation on (store_id, platform), which is exactly how
+    ``set_interests`` used to fail. Keeping a link the vendor did not touch
+    is also an UPDATE of nothing rather than a delete and an insert, so its
+    ``created_at`` stays honest.
+    """
+    wanted = parse_social_links(entries)
+
+    existing = {link.platform: link for link in store.social_links}
+
+    for platform, value in wanted.items():
+        link = existing.get(platform)
+
+        if link is None:
+            store.social_links.append(
+                StoreSocialLink(platform=platform, value=value)
+            )
+        elif link.value != value:
+            link.value = value
+
+    # Disjoint from the loop above by construction, so nothing here depends
+    # on flush ordering either.
+    for platform, link in existing.items():
+        if platform not in wanted:
+            store.social_links.remove(link)
+            db.session.delete(link)
+
+    return wanted
+
+
+def social_links_payload(store):
+    """The store's links, in the order the interface shows them."""
+    by_platform = {link.platform: link for link in store.social_links}
+
+    return [
+        by_platform[platform].to_dict()
+        for platform in PLATFORMS
+        if platform in by_platform
+    ]

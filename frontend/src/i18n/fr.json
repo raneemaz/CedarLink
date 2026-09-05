@@ -245,10 +245,6 @@
       "viewAll": "Voir tout"
     },
     "loadingProducts": "Chargement des produits...",
-    "guestExperience": {
-      "title": "Bienvenue sur CedarLink",
-      "description": "Connectez-vous ou créez un compte pour profiter pleinement de l'expérience CedarLink."
-    },
     "order": {
       "personalized": "Classé selon les catégories que vous avez choisies.",
       "default": "Les catégories les plus actives en premier.",
@@ -1039,6 +1035,16 @@
       "toastOn": "Votre boutique accepte désormais les commandes pendant la fermeture.",
       "toastOff": "Votre boutique n'accepte plus les commandes pendant la fermeture.",
       "errSave": "Impossible d'enregistrer ce réglage."
+    },
+    "social": {
+      "title": "Liens sociaux et de contact",
+      "description": "Où vos clients peuvent vous trouver. Collez un identifiant ou un lien complet — nous le transformons en adresse valide.",
+      "loading": "Chargement des liens...",
+      "save": "Enregistrer les liens",
+      "saved": "Liens mis à jour",
+      "errSave": "Impossible d'enregistrer les liens. Veuillez réessayer.",
+      "willSaveAs": "Sera enregistré comme",
+      "clearHint": "Videz un champ pour supprimer ce lien."
     }
   },
   "storeHours": {
@@ -1497,5 +1503,26 @@
     "opensAt": "Fermé actuellement — ouvre {{opening}}. Vous pouvez commander ; la livraison suivra.",
     "ordersWelcome": "Fermé actuellement, mais vous pouvez commander. La livraison suivra la réouverture.",
     "cannotOrder": "Cette boutique est fermée et n'accepte pas de commandes pour le moment."
+  },
+  "social": {
+    "heading": "Nous trouver",
+    "linkLabel": {
+      "instagram": "{{store}} sur Instagram",
+      "facebook": "{{store}} sur Facebook",
+      "tiktok": "{{store}} sur TikTok",
+      "whatsapp": "Écrire à {{store}} sur WhatsApp",
+      "website": "Site web de {{store}}",
+      "email": "Envoyer un e-mail à {{store}}",
+      "phone": "Appeler {{store}}"
+    },
+    "platform": {
+      "instagram": "Instagram",
+      "facebook": "Facebook",
+      "tiktok": "TikTok",
+      "whatsapp": "WhatsApp",
+      "website": "Site web",
+      "email": "E-mail",
+      "phone": "Téléphone"
+    }
   }
 }

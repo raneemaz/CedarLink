@@ -161,17 +161,6 @@ export default function Home() {
           <p className="mt-2 text-slate-500">{t("home.empty.description")}</p>
         </section>
       )}
-
-      {/* Guest Experience */}
-      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className="text-2xl font-bold">
-          {t("home.guestExperience.title")}
-        </h2>
-
-        <p className="mt-2 text-slate-500">
-          {t("home.guestExperience.description")}
-        </p>
-      </section>
     </div>
   );
 }

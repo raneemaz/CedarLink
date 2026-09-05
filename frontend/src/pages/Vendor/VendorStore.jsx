@@ -11,6 +11,7 @@ import StoreOverridePanel from "./StoreOverridePanel";
 import StoreClosedOrdersPanel from "./StoreClosedOrdersPanel";
 import StoreAnnouncementsManager from "./StoreAnnouncementsManager";
 import StoreLocationSection from "./StoreLocationSection";
+import StoreSocialLinksSection from "./StoreSocialLinksSection";
 
 // Flattened, de-duplicated list of Lebanese cities. The store location must
 // come from the same vocabulary as customer addresses — delivery-fee logic
@@ -480,6 +481,8 @@ function VendorStore() {
         <StoreOverridePanel store={store} onStoreChange={applyStore} />
 
         <StoreAnnouncementsManager storeId={store.id} />
+
+        <StoreSocialLinksSection storeId={store.id} />
 
         <Section
           title={t("vendorStore.statusTitle")}

@@ -300,9 +300,9 @@ real on it. **Password for every account below: `Cedar!2026`**
 ### What the seed creates
 
 6 categories · 8 stores · 64 products · 60 opening-hours rows ·
-10 announcements · 13 orders · 4 delivery assignments · 11 reviews ·
-6 coupons · 2 coupon redemptions · 6 addresses · 6 stated interests ·
-notifications for three customers.
+10 announcements · 13 social and contact links · 13 orders ·
+4 delivery assignments · 11 reviews · 6 coupons · 2 coupon redemptions ·
+6 addresses · 6 stated interests · notifications for three customers.
 
 Deliberately included so that every state renders somewhere:
 
@@ -311,6 +311,10 @@ Deliberately included so that every state renders somewhere:
 - **Announcements** — live, scheduled and expired, so all badge states appear.
 - **Orders** — pending, processing, delivered and cancelled; one spanning
   two stores; one with a coupon applied so the discount line is visible.
+- **Links** — four stores carry a mix of Instagram, Facebook, TikTok,
+  WhatsApp, website, email and phone, so the "Find us" row on the store
+  page is not empty. They are written in the seed the way a vendor types
+  them (`@hamragrocery`, `+961 3 100 001`) and normalised on the way in.
 - **Deliveries** — one assigned, one picked up, two delivered. Two of
   them are on Rania's account on purpose: her Cedar Loom delivery is still
   out, so she is shown the driver's name *and* his phone number, while her

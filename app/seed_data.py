@@ -104,6 +104,15 @@ STORE_SPECS = (
                      "our usual hours.",
              "when": "expired"},
         ),
+        # Typed the way a vendor would type them. store_service
+        # normalises these on the way in, so the seed proves the
+        # normalisation rather than pasting its output.
+        "social": (
+            ("instagram", "@hamragrocery"),
+            ("whatsapp", "+961 3 100 001"),
+            ("phone", "+961 1 340 000"),
+            ("website", "hamragrocery.com"),
+        ),
         "products": (
             p("Zaatar Blend 200g", "خلطة زعتر ٢٠٠ غرام",
               "Mélange de zaatar 200 g",
@@ -179,6 +188,11 @@ STORE_SPECS = (
                      "kishk until we run out.",
              "when": "live"},
         ),
+        "social": (
+            ("facebook", "facebook.com/AchrafiehPantry"),
+            ("whatsapp", "+961 3 100 002"),
+            ("email", "hello@achrafiehpantry.com"),
+        ),
         "products": (
             p("Kishk 400g", "كشك ٤٠٠ غرام", "Kishk 400 g",
               "Fermented wheat and yoghurt, dried and milled.",
@@ -252,6 +266,11 @@ STORE_SPECS = (
              "body": "We will be shut for two days at the end of the "
                      "month while we count.",
              "when": "scheduled"},
+        ),
+        "social": (
+            ("instagram", "marmikhaelbooks"),
+            ("email", "orders@marmikhaelbooks.com"),
+            ("phone", "+961 1 566 300"),
         ),
         "products": (
             p("Beirut Fragments", "شظايا بيروت", "Fragments de Beyrouth",
@@ -550,6 +569,12 @@ STORE_SPECS = (
              "body": "Every piece is woven after you order it. Allow two "
                      "weeks before dispatch.",
              "when": "live"},
+        ),
+        # Online only, so the links are the whole shopfront.
+        "social": (
+            ("instagram", "https://www.instagram.com/cedarloom.lb"),
+            ("tiktok", "@cedarloom.lb"),
+            ("website", "cedarloom.example"),
         ),
         "products": (
             p("Handwoven Wool Throw", "بطانية صوف منسوجة يدوياً",

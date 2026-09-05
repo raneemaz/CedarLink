@@ -245,10 +245,6 @@
       "viewAll": "View all"
     },
     "loadingProducts": "Loading products...",
-    "guestExperience": {
-      "title": "Guest experience",
-      "description": "Guests can browse stores and products, then log in when they are ready to add items to cart or place orders."
-    },
     "order": {
       "personalized": "Ordered by the categories you chose.",
       "default": "Showing the busiest categories first.",
@@ -1039,6 +1035,16 @@
       "toastOn": "Your store now takes orders while closed.",
       "toastOff": "Your store no longer takes orders while closed.",
       "errSave": "Could not save that setting."
+    },
+    "social": {
+      "title": "Social and contact links",
+      "description": "Where customers can find you. Paste a handle or a full link — we tidy it into a working address.",
+      "loading": "Loading links...",
+      "save": "Save links",
+      "saved": "Links updated",
+      "errSave": "Could not save the links. Please try again.",
+      "willSaveAs": "Will be saved as",
+      "clearHint": "Empty a field to remove that link."
     }
   },
   "storeHours": {
@@ -1497,5 +1503,26 @@
     "opensAt": "Closed right now — opens {{opening}}. You can still order; it will be delivered after that.",
     "ordersWelcome": "Closed right now, but you can still order. It will be delivered once the store reopens.",
     "cannotOrder": "This store is closed and is not taking orders right now."
+  },
+  "social": {
+    "heading": "Find us",
+    "linkLabel": {
+      "instagram": "{{store}} on Instagram",
+      "facebook": "{{store}} on Facebook",
+      "tiktok": "{{store}} on TikTok",
+      "whatsapp": "Message {{store}} on WhatsApp",
+      "website": "{{store}} website",
+      "email": "Email {{store}}",
+      "phone": "Call {{store}}"
+    },
+    "platform": {
+      "instagram": "Instagram",
+      "facebook": "Facebook",
+      "tiktok": "TikTok",
+      "whatsapp": "WhatsApp",
+      "website": "Website",
+      "email": "Email",
+      "phone": "Phone"
+    }
   }
 }
