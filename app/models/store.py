@@ -156,6 +156,16 @@ class Store(db.Model):
         order_by="StoreAnnouncement.created_at.desc()",
     )
 
+    # Same call again: no cascade, because the store is soft-deleted and
+    # these rows persist with it. The display order is the PLATFORMS
+    # tuple, applied in store_service.social_links_payload — not this
+    # relationship, which only needs to be stable.
+    social_links = db.relationship(
+        "StoreSocialLink",
+        back_populates="store",
+        order_by="StoreSocialLink.platform",
+    )
+
     # No cascade: a store review outlives the store's soft-delete, like
     # order history. See docs/decisions/0015-review-rating-aggregates.md.
     reviews = db.relationship(

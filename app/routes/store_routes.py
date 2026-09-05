@@ -6,7 +6,7 @@ from app.models.store import Store
 from app.models.store_announcement import StoreAnnouncement
 from app.services import announcement_service, notification_service, store_service
 from app.services.announcement_service import AnnouncementError
-from app.services.store_service import StoreHoursError
+from app.services.store_service import SocialLinkError, StoreHoursError
 from app.utils.decorators import role_required
 from app.utils.geo import CoordinateError, validate_coords
 
@@ -598,3 +598,98 @@ def delete_store_announcement(store_id, aid):
     db.session.commit()
 
     return jsonify({"message": "Announcement deleted"}), 200
+
+
+# --------------------------------------------------------------------------- #
+# Social and contact links
+# --------------------------------------------------------------------------- #
+
+@store_bp.route("/<int:store_id>/social-links", methods=["GET"])
+def get_store_social_links(store_id):
+    """Public — the store's links, already normalised and safe to render."""
+    store = db.session.get(Store, store_id)
+    if not store or not store.is_visible:
+        return jsonify({"message": "Store not found"}), 404
+
+    return jsonify({
+        "social_links": store_service.social_links_payload(store)
+    }), 200
+
+
+@store_bp.route("/<int:store_id>/social-links", methods=["PUT"])
+@role_required("vendor")
+def set_store_social_links(store_id):
+    """Owner only — replace the whole set in one transaction."""
+    store, error = _load_owned_store(store_id)
+    if error:
+        return error
+
+    data = request.get_json() or {}
+
+    try:
+        store_service.replace_social_links(store, data.get("social_links"))
+    except SocialLinkError as exc:
+        db.session.rollback()
+        return jsonify({"message": str(exc)}), 400
+
+    db.session.commit()
+
+    return jsonify({
+        "message": "Links updated",
+        "social_links": store_service.social_links_payload(store),
+    }), 200
+
+
+@store_bp.route("/<int:store_id>/social-links/preview", methods=["POST"])
+@role_required("vendor")
+def preview_store_social_links(store_id):
+    """Owner only — normalise a submission without writing it.
+
+    The vendor form needs to show what ``@hamragrocery`` will become before
+    the vendor commits to it. The alternative was a copy of the rules in
+    JavaScript, which is the same mistake as a second column meaning the
+    same thing: the two would drift, and the one that matters is this one.
+    """
+    store, error = _load_owned_store(store_id)
+    if error:
+        return error
+
+    data = request.get_json() or {}
+    entries = data.get("social_links")
+
+    if entries is None:
+        entries = []
+
+    if not isinstance(entries, list):
+        return jsonify({"message": "social_links must be a list"}), 400
+
+    # Per entry, so one bad field does not hide the normalisation of the
+    # good ones — the form marks up each row on its own.
+    results = []
+
+    for entry in entries:
+        if not isinstance(entry, dict):
+            return jsonify({"message": "Each social link must be an object"}), 400
+
+        platform = entry.get("platform")
+        raw = entry.get("value")
+
+        if raw is None or (isinstance(raw, str) and not raw.strip()):
+            results.append({"platform": platform, "value": None,
+                            "error": None})
+            continue
+
+        try:
+            results.append({
+                "platform": platform,
+                "value": store_service.normalize_social_value(platform, raw),
+                "error": None,
+            })
+        except SocialLinkError as exc:
+            results.append({
+                "platform": platform,
+                "value": None,
+                "error": str(exc),
+            })
+
+    return jsonify({"social_links": results}), 200

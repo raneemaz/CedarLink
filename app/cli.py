@@ -249,6 +249,7 @@ _RESET_ORDER = (
     "product_images",
     "products",
     "store_announcements",
+    "store_social_links",
     "store_hours",
     "coupons",
     "stores",
@@ -417,6 +418,17 @@ def _seed_stores(categories):
                 data["starts_at"] = (now - timedelta(days=3)).isoformat()
 
             announcement_service.create(store, data)
+
+        # Through the service, so the values in the demo database are the
+        # normalised ones a real vendor submission produces.
+        if spec.get("social"):
+            store_service.replace_social_links(
+                store,
+                [
+                    {"platform": platform, "value": value}
+                    for platform, value in spec["social"]
+                ],
+            )
 
         for item in spec["products"]:
             name, description = item["name"], item["description"]
@@ -942,6 +954,7 @@ def _report(stores, products, customers, coupons):
     from app.models.coupon_redemption import CouponRedemption
     from app.models.delivery_assignment import DeliveryAssignment
     from app.models.review import Review
+    from app.models.store_social_link import StoreSocialLink
     from app.models.shopping_interest import ShoppingInterest
 
     counts = (
@@ -950,6 +963,7 @@ def _report(stores, products, customers, coupons):
         ("Products", Product.query.count()),
         ("Store hours rows", StoreHours.query.count()),
         ("Announcements", StoreAnnouncement.query.count()),
+        ("Social links", StoreSocialLink.query.count()),
         ("Orders", Order.query.count()),
         ("Delivery assignments", DeliveryAssignment.query.count()),
         ("Reviews", Review.query.count()),

@@ -8,6 +8,7 @@ import api from "../../services/api";
 import ProductCard from "../../components/product/ProductCard";
 import StoreStatusBadge from "../../components/store/StoreStatusBadge";
 import ClosedStoreNotice from "../../components/store/ClosedStoreNotice";
+import StoreSocialLinks from "../../components/store/StoreSocialLinks";
 import RatingSummary from "../../components/reviews/RatingSummary";
 import ReviewList from "../../components/reviews/ReviewList";
 import MapView from "../../components/map/MapView";
@@ -32,6 +33,7 @@ function StoreDetails() {
   const [products, setProducts] = useState([]);
   const [hours, setHours] = useState([]);
   const [announcements, setAnnouncements] = useState([]);
+  const [socialLinks, setSocialLinks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -51,16 +53,18 @@ function StoreDetails() {
         if (cancelled) return;
         setStore(storeResponse.data.store);
 
-        const [productsResponse, hoursResponse, annResponse] =
+        const [productsResponse, hoursResponse, annResponse, socialResponse] =
           await Promise.all([
             api.get("/products", { params: { store_id: id, limit: 100 } }),
             api.get(`/stores/${id}/hours`),
             api.get(`/stores/${id}/announcements`),
+            api.get(`/stores/${id}/social-links`),
           ]);
         if (cancelled) return;
         setProducts(productsResponse.data.products || []);
         setHours(hoursResponse.data.hours || []);
         setAnnouncements(annResponse.data.announcements || []);
+        setSocialLinks(socialResponse.data.social_links || []);
       } catch (err) {
         if (cancelled) return;
         console.error("Failed to load store:", err);
@@ -212,6 +216,12 @@ function StoreDetails() {
               {t("storeDetails.contact")}: {store.contact_info}
             </p>
           )}
+
+          <StoreSocialLinks
+            links={socialLinks}
+            storeName={store.name}
+            className="mt-5 border-t border-gray-100 pt-4"
+          />
 
           {store.is_online_only ? (
             <p className="mt-4 text-sm text-gray-600">
