@@ -21,6 +21,7 @@ import Checkout from "./pages/Checkout/Checkout";
 import Orders from "./pages/Orders/Orders";
 import OrderDetails from "./pages/Orders/OrderDetails";
 import Profile from "./pages/Profile/Profile";
+import VendorDashboard from "./pages/Vendor/VendorDashboard";
 import VendorStore from "./pages/Vendor/VendorStore";
 import VendorProducts from "./pages/Vendor/VendorProducts";
 import VendorProductForm from "./pages/Vendor/VendorProductForm";
@@ -131,7 +132,8 @@ function App() {
           </ProtectedRoute>
         }
       >
-        <Route index element={<Navigate to="store" replace />} />
+        <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="dashboard" element={<VendorDashboard />} />
         <Route path="store" element={<VendorStore />} />
         <Route path="products" element={<VendorProducts />} />
         <Route path="products/new" element={<VendorProductForm />} />
