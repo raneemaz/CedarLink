@@ -12,10 +12,10 @@ const PRESETS = [7, 30, 90];
 const STATUSES = ["pending", "processing", "delivered", "canceled"];
 
 const STATUS_TONE = {
-  pending: "bg-amber-50 text-amber-800",
-  processing: "bg-sky-50 text-sky-800",
-  delivered: "bg-emerald-50 text-emerald-800",
-  canceled: "bg-gray-100 text-gray-600",
+  pending: "bg-warning-subtle text-warning",
+  processing: "bg-info-subtle text-info",
+  delivered: "bg-brand-subtle text-brand-strong",
+  canceled: "bg-surface-sunken text-text-secondary",
 };
 
 /**
@@ -32,19 +32,19 @@ function money(value) {
 
 function Card({ label, value, hint, tone = "", icon: Icon }) {
   return (
-    <div className={`rounded-xl border border-gray-200 bg-white p-5 ${tone}`}>
+    <div className={`rounded-xl border border-border bg-surface-raised p-5 ${tone}`}>
       <div className="flex items-center gap-2">
-        {Icon && <Icon size={15} className="shrink-0 text-gray-400" />}
-        <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+        {Icon && <Icon size={15} className="shrink-0 text-text-faint" />}
+        <p className="text-xs font-medium uppercase tracking-wide text-text-muted">
           {label}
         </p>
       </div>
 
-      <p className="mt-2 text-2xl font-bold text-gray-900" dir="ltr">
+      <p className="mt-2 text-2xl font-bold text-text-primary" dir="ltr">
         {value}
       </p>
 
-      {hint && <p className="mt-1 text-xs text-gray-500">{hint}</p>}
+      {hint && <p className="mt-1 text-xs text-text-muted">{hint}</p>}
     </div>
   );
 }
@@ -53,32 +53,32 @@ function ProductTable({ title, caption, rows, measure, language }) {
   const { t } = useTranslation();
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white">
-      <div className="border-b border-gray-100 px-5 py-4">
-        <h2 className="font-semibold text-gray-900">{title}</h2>
-        <p className="mt-1 text-xs text-gray-500">{caption}</p>
+    <div className="rounded-xl border border-border bg-surface-raised">
+      <div className="border-b border-border-subtle px-5 py-4">
+        <h2 className="font-semibold text-text-primary">{title}</h2>
+        <p className="mt-1 text-xs text-text-muted">{caption}</p>
       </div>
 
       {rows.length === 0 ? (
-        <p className="px-5 py-6 text-sm text-gray-500">
+        <p className="px-5 py-6 text-sm text-text-muted">
           {t("vendorDashboard.tables.nothingSold")}
         </p>
       ) : (
-        <ol className="divide-y divide-gray-100">
+        <ol className="divide-y divide-border-subtle">
           {rows.map((row, index) => (
             <li
               key={row.id}
               className="flex items-center gap-3 px-5 py-3 text-sm"
             >
-              <span className="w-5 shrink-0 text-xs text-gray-400">
+              <span className="w-5 shrink-0 text-xs text-text-faint">
                 {index + 1}
               </span>
 
-              <span className="min-w-0 flex-1 truncate text-gray-800">
+              <span className="min-w-0 flex-1 truncate text-text-emphasis">
                 {localizedField(row, "name", language)}
               </span>
 
-              <span className="shrink-0 font-medium text-gray-900" dir="ltr">
+              <span className="shrink-0 font-medium text-text-primary" dir="ltr">
                 {measure(row)}
               </span>
             </li>
@@ -160,17 +160,17 @@ function VendorDashboard() {
 
   const header = (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900">
+      <h1 className="text-2xl font-bold text-text-primary">
         {t("vendorDashboard.title")}
       </h1>
-      <p className="mt-1 text-sm text-gray-500">
+      <p className="mt-1 text-sm text-text-muted">
         {t("vendorDashboard.subtitle")}
       </p>
     </div>
   );
 
   const periodSelector = (
-    <div className="mt-6 flex flex-wrap items-end gap-4 rounded-xl border border-gray-200 bg-white p-4">
+    <div className="mt-6 flex flex-wrap items-end gap-4 rounded-xl border border-border bg-surface-raised p-4">
       <div className="flex flex-wrap gap-2">
         {PRESETS.map((days) => (
           <button
@@ -182,8 +182,8 @@ function VendorDashboard() {
             }}
             className={`cursor-pointer rounded-lg px-3 py-2 text-sm transition ${
               preset === days
-                ? "bg-emerald-700 font-medium text-white"
-                : "border border-gray-300 text-gray-700 hover:bg-gray-50"
+                ? "bg-brand font-medium text-on-brand"
+                : "border border-border-strong text-text-body hover:bg-surface"
             }`}
           >
             {t("vendorDashboard.period.lastDays", { count: days })}
@@ -195,7 +195,7 @@ function VendorDashboard() {
         <div>
           <label
             htmlFor="range-from"
-            className="mb-1 block text-xs text-gray-500"
+            className="mb-1 block text-xs text-text-muted"
           >
             {t("vendorDashboard.period.from")}
           </label>
@@ -206,14 +206,14 @@ function VendorDashboard() {
             onChange={(e) =>
               setCustom((prev) => ({ ...prev, from: e.target.value }))
             }
-            className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
+            className="rounded-lg border border-border-strong px-3 py-2 text-sm"
           />
         </div>
 
         <div>
           <label
             htmlFor="range-to"
-            className="mb-1 block text-xs text-gray-500"
+            className="mb-1 block text-xs text-text-muted"
           >
             {t("vendorDashboard.period.to")}
           </label>
@@ -224,14 +224,14 @@ function VendorDashboard() {
             onChange={(e) =>
               setCustom((prev) => ({ ...prev, to: e.target.value }))
             }
-            className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
+            className="rounded-lg border border-border-strong px-3 py-2 text-sm"
           />
         </div>
 
         <button
           type="submit"
           disabled={!custom.from || !custom.to}
-          className="cursor-pointer rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+          className="cursor-pointer rounded-lg border border-border-strong px-3 py-2 text-sm text-text-body transition hover:bg-surface disabled:cursor-not-allowed disabled:opacity-50"
         >
           {t("vendorDashboard.period.apply")}
         </button>
@@ -243,7 +243,7 @@ function VendorDashboard() {
     return (
       <div>
         {header}
-        <p className="mt-8 text-sm text-gray-500">
+        <p className="mt-8 text-sm text-text-muted">
           {t("vendorDashboard.loading")}
         </p>
       </div>
@@ -254,7 +254,7 @@ function VendorDashboard() {
     return (
       <div>
         {header}
-        <div className="mt-8 rounded-xl border border-red-200 bg-red-50 p-5 text-sm text-red-700">
+        <div className="mt-8 rounded-xl border border-danger-border bg-danger-subtle p-5 text-sm text-danger-strong">
           {error === "loadError" ? t("vendorDashboard.loadError") : error}
         </div>
       </div>
@@ -275,7 +275,7 @@ function VendorDashboard() {
       {header}
       {periodSelector}
 
-      <p className="mt-4 text-xs text-gray-400">
+      <p className="mt-4 text-xs text-text-faint">
         {t("vendorDashboard.showingRange", {
           from: formatDate(data.range.from, i18n.language),
           to: formatDate(data.range.to, i18n.language),
@@ -283,19 +283,19 @@ function VendorDashboard() {
       </p>
 
       {nothingYet ? (
-        <div className="mt-6 rounded-xl border border-dashed border-gray-300 bg-white p-10 text-center">
-          <BarChart3 size={30} className="mx-auto text-gray-300" />
-          <h2 className="mt-4 text-lg font-semibold text-gray-900">
+        <div className="mt-6 rounded-xl border border-dashed border-border-strong bg-surface-raised p-10 text-center">
+          <BarChart3 size={30} className="mx-auto text-text-disabled" />
+          <h2 className="mt-4 text-lg font-semibold text-text-primary">
             {t("vendorDashboard.empty.title")}
           </h2>
-          <p className="mx-auto mt-2 max-w-md text-sm text-gray-500">
+          <p className="mx-auto mt-2 max-w-md text-sm text-text-muted">
             {t("vendorDashboard.empty.body")}
           </p>
         </div>
       ) : (
         <>
           {nothingCollected && (
-            <p className="mt-6 flex items-start gap-2 rounded-xl bg-sky-50 px-4 py-3 text-sm text-sky-900">
+            <p className="mt-6 flex items-start gap-2 rounded-xl bg-info-subtle px-4 py-3 text-sm text-info">
               <Info size={16} className="mt-0.5 shrink-0" />
               {t("vendorDashboard.nothingDeliveredYet")}
             </p>
@@ -303,7 +303,7 @@ function VendorDashboard() {
 
           {/* Money in hand. Cash on delivery, so this is what has actually
               been collected — never mixed with what is still coming. */}
-          <h2 className="mt-8 text-sm font-semibold uppercase tracking-wide text-gray-500">
+          <h2 className="mt-8 text-sm font-semibold uppercase tracking-wide text-text-muted">
             {t("vendorDashboard.collected.heading")}
           </h2>
 
@@ -312,7 +312,7 @@ function VendorDashboard() {
               label={t("vendorDashboard.collected.revenue")}
               value={money(collected.revenue)}
               hint={t("vendorDashboard.collected.revenueHint")}
-              tone="ring-1 ring-emerald-100"
+              tone="ring-1 ring-brand-tint"
             />
             <Card
               label={t("vendorDashboard.collected.goods")}
@@ -335,7 +335,7 @@ function VendorDashboard() {
               label={t("vendorDashboard.collected.delivery")}
               value={money(collected.delivery)}
               hint={t("vendorDashboard.collected.deliveryHint")}
-              tone="border-dashed bg-gray-50"
+              tone="border-dashed bg-surface"
             />
           </div>
 
@@ -366,11 +366,11 @@ function VendorDashboard() {
           </div>
 
           {/* Chart */}
-          <div className="mt-8 rounded-xl border border-gray-200 bg-white p-5">
+          <div className="mt-8 rounded-xl border border-border bg-surface-raised p-5">
             <OrdersBarChart series={data.orders_per_day} />
 
             {data.busiest_day && (
-              <p className="mt-4 text-sm text-gray-600">
+              <p className="mt-4 text-sm text-text-secondary">
                 {t("vendorDashboard.chart.busiest", {
                   date: formatDate(data.busiest_day.date, i18n.language),
                   count: data.busiest_day.orders,
@@ -380,8 +380,8 @@ function VendorDashboard() {
           </div>
 
           {/* Status breakdown */}
-          <div className="mt-8 rounded-xl border border-gray-200 bg-white p-5">
-            <h2 className="font-semibold text-gray-900">
+          <div className="mt-8 rounded-xl border border-border bg-surface-raised p-5">
+            <h2 className="font-semibold text-text-primary">
               {t("vendorDashboard.status.title")}
             </h2>
 
@@ -425,40 +425,40 @@ function VendorDashboard() {
           </div>
 
           {/* Best rated */}
-          <div className="mt-4 rounded-xl border border-gray-200 bg-white">
-            <div className="border-b border-gray-100 px-5 py-4">
-              <h2 className="font-semibold text-gray-900">
+          <div className="mt-4 rounded-xl border border-border bg-surface-raised">
+            <div className="border-b border-border-subtle px-5 py-4">
+              <h2 className="font-semibold text-text-primary">
                 {t("vendorDashboard.tables.bestRated")}
               </h2>
-              <p className="mt-1 text-xs text-gray-500">
+              <p className="mt-1 text-xs text-text-muted">
                 {t("vendorDashboard.tables.bestRatedCaption")}
               </p>
             </div>
 
             {data.best_rated_products.length === 0 ? (
-              <p className="px-5 py-6 text-sm text-gray-500">
+              <p className="px-5 py-6 text-sm text-text-muted">
                 {t("vendorDashboard.tables.notEnoughReviews")}
               </p>
             ) : (
-              <ol className="divide-y divide-gray-100">
+              <ol className="divide-y divide-border-subtle">
                 {data.best_rated_products.map((row, index) => (
                   <li
                     key={row.id}
                     className="flex items-center gap-3 px-5 py-3 text-sm"
                   >
-                    <span className="w-5 shrink-0 text-xs text-gray-400">
+                    <span className="w-5 shrink-0 text-xs text-text-faint">
                       {index + 1}
                     </span>
-                    <span className="min-w-0 flex-1 truncate text-gray-800">
+                    <span className="min-w-0 flex-1 truncate text-text-emphasis">
                       {localizedField(row, "name", i18n.language)}
                     </span>
                     <span
-                      className="shrink-0 font-medium text-gray-900"
+                      className="shrink-0 font-medium text-text-primary"
                       dir="ltr"
                     >
                       {row.rating_avg?.toFixed(1)}
                     </span>
-                    <span className="shrink-0 text-xs text-gray-400">
+                    <span className="shrink-0 text-xs text-text-faint">
                       {t("vendorDashboard.tables.reviews", {
                         count: row.rating_count,
                       })}

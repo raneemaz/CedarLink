@@ -77,6 +77,17 @@ jobs:
 
       - run: npm run lint
 
+      - name: No raw colour utilities
+        # Colour is expressed only as a role token from src/index.css.
+        # This fails on any `bg-white`, `text-gray-500`, `border-emerald-700`
+        # or `bg-[#hex]` that reappears in frontend/src, because without it
+        # the token layer erodes back into a second, undocumented palette
+        # within a quarter. The fix on a failure is to use the role token,
+        # or to add a role to @theme and record why — never to widen the
+        # check. Verified by deliberately reintroducing three raw utilities
+        # and watching it fail. See docs/decisions/0028-design-tokens.md.
+        run: npm run lint:tokens
+
       # Linux is case-sensitive — this is what catches an import that only
       # resolves on Windows/macOS (e.g. pages/settings vs pages/Settings).
       - run: npm run build

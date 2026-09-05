@@ -30,7 +30,7 @@ function OrdersBarChart({ series, className = "" }) {
   // as broken rather than as empty. The caller shows a message instead.
   if (max === 0) {
     return (
-      <p className={`text-sm text-gray-500 ${className}`}>
+      <p className={`text-sm text-text-muted ${className}`}>
         {t("vendorDashboard.chart.noOrdersInRange")}
       </p>
     );
@@ -43,16 +43,16 @@ function OrdersBarChart({ series, className = "" }) {
   return (
     <figure className={className}>
       <div className="flex items-baseline justify-between">
-        <figcaption className="text-sm font-medium text-gray-700">
+        <figcaption className="text-sm font-medium text-text-body">
           {t("vendorDashboard.chart.title")}
         </figcaption>
-        <span className="text-xs text-gray-500">
+        <span className="text-xs text-text-muted">
           {t("vendorDashboard.chart.peak", { count: max })}
         </span>
       </div>
 
       <div
-        className="mt-3 flex h-40 items-end gap-px border-b border-s border-gray-200 ps-2 pb-0"
+        className="mt-3 flex h-40 items-end gap-px border-b border-s border-border ps-2 pb-0"
         role="img"
         aria-label={t("vendorDashboard.chart.summary", {
           count: total,
@@ -73,7 +73,7 @@ function OrdersBarChart({ series, className = "" }) {
           >
             <div
               className={`w-full rounded-t-sm ${
-                row.orders > 0 ? "bg-emerald-600" : "bg-gray-100"
+                row.orders > 0 ? "bg-brand-ring" : "bg-surface-sunken"
               }`}
               // A day with no orders still gets a hairline, so the axis
               // reads as a series with gaps rather than as missing data.
@@ -89,7 +89,7 @@ function OrdersBarChart({ series, className = "" }) {
 
       {/* justify-between follows the inline axis, so these three flip with
           the bars rather than needing their own RTL branch. */}
-      <div className="mt-2 flex justify-between text-xs text-gray-400">
+      <div className="mt-2 flex justify-between text-xs text-text-faint">
         <span>{formatDate(first.date, i18n.language)}</span>
         {series.length > 2 && (
           <span className="hidden sm:inline">

@@ -39,7 +39,7 @@ function OrderDetails() {
   if (loading) {
     return (
       <div className="mx-auto max-w-6xl px-6 py-10">
-        <p className="text-slate-600">{t("orderDetails.loading")}</p>
+        <p className="text-text-secondary">{t("orderDetails.loading")}</p>
       </div>
     );
   }
@@ -47,8 +47,8 @@ function OrderDetails() {
   if (error) {
     return (
       <div className="mx-auto max-w-6xl px-6 py-10">
-        <div className="rounded-xl border border-red-200 bg-red-50 p-5">
-          <p className="text-red-700">{error}</p>
+        <div className="rounded-xl border border-danger-border bg-danger-subtle p-5">
+          <p className="text-danger-strong">{error}</p>
 
           <BackLink to="/orders" className="mt-4">
             Back to Orders
@@ -84,11 +84,11 @@ const total = Number(order.total_price || 0);
 
         <div className="mt-4 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900">
+            <h1 className="text-3xl font-bold text-text-primary">
               {t("orderDetails.orderNumber", { id: order.id })}
             </h1>
 
-            <p className="mt-2 text-slate-600">
+            <p className="mt-2 text-text-secondary">
               {t("orderDetails.subtitle")}
             </p>
           </div>
@@ -96,14 +96,14 @@ const total = Number(order.total_price || 0);
           <span
             className={`w-fit rounded-full px-4 py-2 text-sm font-semibold ${
               order.status === "pending"
-                ? "bg-yellow-100 text-yellow-700"
+                ? "bg-warning-tint text-warning-muted"
                 : order.status === "processing"
-                ? "bg-blue-100 text-blue-700"
+                ? "bg-info-subtle text-info"
                 : order.status === "delivered"
-                ? "bg-green-100 text-green-700"
+                ? "bg-success-subtle text-success"
                 : order.status === "canceled"
-                ? "bg-red-100 text-red-700"
-                : "bg-slate-100 text-slate-700"
+                ? "bg-danger-tint text-danger-strong"
+                : "bg-surface-sunken text-text-body"
             }`}
           >
             {t(`orderStatus.${order.status}`)}
@@ -115,25 +115,25 @@ const total = Number(order.total_price || 0);
       <div className="grid gap-8 lg:grid-cols-3">
         {/* Order items */}
         <section className="lg:col-span-2">
-          <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <div className="border-b border-slate-200 p-6">
-              <h2 className="text-xl font-semibold text-slate-900">
+          <div className="rounded-2xl border border-border bg-surface-raised shadow-sm">
+            <div className="border-b border-border p-6">
+              <h2 className="text-xl font-semibold text-text-primary">
                 {t("orderDetails.orderItems")}
               </h2>
             </div>
 
-            <div className="divide-y divide-slate-200">
+            <div className="divide-y divide-border">
               {(order.items || []).map((item) => (
                 <div
                   key={item.id}
                   className="flex items-center justify-between gap-4 p-6"
                 >
                   <div>
-                    <h3 className="font-medium text-slate-900">
+                    <h3 className="font-medium text-text-primary">
                       {localizedField(item, "product_name", i18n.language)}
                     </h3>
 
-                    <p className="mt-1 text-sm text-slate-500">
+                    <p className="mt-1 text-sm text-text-muted">
                       {t("orderDetails.priceLine", {
                         price: `$${(Number(item.subtotal) / Number(item.quantity)).toFixed(2)}`,
                         quantity: item.quantity,
@@ -141,7 +141,7 @@ const total = Number(order.total_price || 0);
                     </p>
                   </div>
 
-                  <p className="font-semibold text-slate-900">
+                  <p className="font-semibold text-text-primary">
                     ${Number(item.subtotal).toFixed(2)}
                   </p>
                 </div>
@@ -150,28 +150,28 @@ const total = Number(order.total_price || 0);
           </div>
 
           {/* Delivery information */}
-          <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-slate-900">
+          <div className="mt-6 rounded-2xl border border-border bg-surface-raised p-6 shadow-sm">
+            <h2 className="text-xl font-semibold text-text-primary">
               {t("orderDetails.deliveryInfo")}
             </h2>
 
             <div className="mt-5 space-y-4">
               <div>
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-text-muted">
                   {t("orderDetails.deliveryAddress")}
                 </p>
 
-                <p className="mt-1 font-medium text-slate-900">
+                <p className="mt-1 font-medium text-text-primary">
                   {order.delivery_address || t("orderDetails.notProvided")}
                 </p>
               </div>
 
               <div>
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-text-muted">
                   {t("orderDetails.city")}
                 </p>
 
-                <p className="mt-1 font-medium text-slate-900">
+                <p className="mt-1 font-medium text-text-primary">
                   {order.delivery_city || t("orderDetails.notProvided")}
                 </p>
               </div>
@@ -187,14 +187,14 @@ const total = Number(order.total_price || 0);
 
         {/* Summary */}
 <aside>
-  <div className="sticky top-24 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-    <h2 className="text-xl font-semibold text-slate-900">
+  <div className="sticky top-24 rounded-2xl border border-border bg-surface-raised p-6 shadow-sm">
+    <h2 className="text-xl font-semibold text-text-primary">
       {t("orderDetails.orderSummary")}
     </h2>
 
     <div className="mt-6 space-y-4">
       <div className="flex justify-between">
-        <span className="text-slate-600">
+        <span className="text-text-secondary">
           {t("orderDetails.subtotal")}
         </span>
 
@@ -204,7 +204,7 @@ const total = Number(order.total_price || 0);
       </div>
 
       <div className="flex justify-between">
-        <span className="text-slate-600">
+        <span className="text-text-secondary">
           {t("orderDetails.deliveryFee")}
         </span>
 
@@ -214,7 +214,7 @@ const total = Number(order.total_price || 0);
       </div>
 
       {discount > 0 && (
-        <div className="flex justify-between text-emerald-700">
+        <div className="flex justify-between text-brand">
           <span>
             {t("orderDetails.discount")}{" "}
             <span dir="ltr" className="font-mono text-xs">
@@ -228,11 +228,11 @@ const total = Number(order.total_price || 0);
         </div>
       )}
 
-      <div className="border-t border-slate-200 pt-4">
+      <div className="border-t border-border pt-4">
         <div className="flex justify-between text-lg font-bold">
           <span>{t("orderDetails.total")}</span>
 
-          <span className="text-emerald-700" dir="ltr">
+          <span className="text-brand" dir="ltr">
             ${total.toFixed(2)}
           </span>
         </div>

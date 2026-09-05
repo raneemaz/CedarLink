@@ -54,13 +54,13 @@ function ForgotPassword() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-10">
+    <div className="min-h-screen bg-surface-sunken flex items-center justify-center px-4 py-10">
       <Card className="w-full max-w-lg">
-        <h1 className="text-3xl font-bold text-center text-green-700">
+        <h1 className="text-3xl font-bold text-center text-brand">
           {t("forgotPassword.title")}
         </h1>
 
-        <p className="text-center text-gray-500 mt-3 mb-8">
+        <p className="text-center text-text-muted mt-3 mb-8">
           {t("forgotPassword.subtitle")}
         </p>
 
@@ -82,11 +82,11 @@ function ForgotPassword() {
           {loading ? t("forgotPassword.sending") : t("forgotPassword.sendButton")}
         </Button>
 
-        <p className="text-center text-gray-600 mt-6">
+        <p className="text-center text-text-secondary mt-6">
           {t("forgotPassword.rememberedIt")}{" "}
           <Link
             to="/login"
-            className="text-green-700 cursor-pointer font-semibold hover:underline"
+            className="text-brand cursor-pointer font-semibold hover:underline"
           >
             {t("forgotPassword.backToLogin")}
           </Link>

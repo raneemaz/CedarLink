@@ -8,13 +8,13 @@ function Button({
 }) {
   const variants = {
     primary:
-      "bg-green-700 hover:bg-green-800 text-white",
+      "bg-brand hover:bg-brand-strong text-on-brand",
 
     secondary:
-      "bg-gray-200 hover:bg-gray-300 text-gray-800",
+      "bg-control hover:bg-control-hover text-text-emphasis",
 
     danger:
-      "bg-red-600 hover:bg-red-700 text-white",
+      "bg-danger hover:bg-danger-strong text-on-brand",
   };
 
   return (

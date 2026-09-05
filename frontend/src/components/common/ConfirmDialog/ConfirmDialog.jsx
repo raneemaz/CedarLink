@@ -24,12 +24,12 @@ function ConfirmDialog({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-      <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-        <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-scrim/40 px-4">
+      <div className="w-full max-w-md rounded-2xl bg-surface-raised p-6 shadow-xl">
+        <h2 className="text-lg font-semibold text-text-primary">{title}</h2>
 
         {message && (
-          <p className="mt-2 text-sm text-gray-600">{message}</p>
+          <p className="mt-2 text-sm text-text-secondary">{message}</p>
         )}
 
         {children && <div className="mt-4">{children}</div>}

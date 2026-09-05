@@ -12,13 +12,13 @@ function StoreStatusBadge({ store, className = "" }) {
     <span
       className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
         open
-          ? "bg-emerald-100 text-emerald-800"
-          : "bg-red-100 text-red-700"
+          ? "bg-success-subtle text-success-strong"
+          : "bg-danger-tint text-danger-strong"
       } ${className}`}
     >
       <span
         className={`h-1.5 w-1.5 rounded-full ${
-          open ? "bg-emerald-600" : "bg-red-500"
+          open ? "bg-brand-ring" : "bg-danger-accent"
         }`}
       />
       {open ? t("storeOpenBadge.open") : t("storeOpenBadge.closed")}

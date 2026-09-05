@@ -65,13 +65,13 @@ function Cart() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 px-6 py-10">
+      <div className="min-h-screen bg-surface px-6 py-10">
         <div className="mx-auto max-w-7xl">
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-3xl font-bold text-text-primary">
             {t("cart.title")}
           </h1>
 
-          <p className="mt-4 text-slate-600">
+          <p className="mt-4 text-text-secondary">
             {t("cart.loading")}
           </p>
         </div>
@@ -81,19 +81,19 @@ function Cart() {
 
   if (error && !cart) {
     return (
-      <div className="min-h-screen bg-gray-50 px-6 py-10">
+      <div className="min-h-screen bg-surface px-6 py-10">
         <div className="mx-auto max-w-7xl">
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-3xl font-bold text-text-primary">
             {t("cart.title")}
           </h1>
 
-          <p className="mt-4 text-red-600">
+          <p className="mt-4 text-danger">
             {error}
           </p>
 
           <button
             onClick={fetchCart}
-            className="mt-4 rounded-lg bg-emerald-700 px-5 py-2 text-white hover:bg-emerald-800"
+            className="mt-4 rounded-lg bg-brand px-5 py-2 text-on-brand hover:bg-brand-strong"
           >
             {t("cart.tryAgain")}
           </button>
@@ -110,24 +110,24 @@ function Cart() {
 
   if (isEmpty) {
     return (
-      <div className="min-h-screen bg-gray-50 px-6 py-10">
+      <div className="min-h-screen bg-surface px-6 py-10">
         <div className="mx-auto max-w-7xl">
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-3xl font-bold text-text-primary">
             {t("cart.title")}
           </h1>
 
-          <div className="mt-10 rounded-xl bg-white p-10 text-center shadow-sm">
-            <h2 className="text-xl font-semibold text-gray-900">
+          <div className="mt-10 rounded-xl bg-surface-raised p-10 text-center shadow-sm">
+            <h2 className="text-xl font-semibold text-text-primary">
               {t("cart.emptyTitle")}
             </h2>
 
-            <p className="mt-2 text-slate-600">
+            <p className="mt-2 text-text-secondary">
               {t("cart.emptyBody")}
             </p>
 
             <Link
               to="/products"
-              className="mt-6 inline-block rounded-lg bg-emerald-700 px-6 py-3 font-medium text-white transition hover:bg-emerald-800"
+              className="mt-6 inline-block rounded-lg bg-brand px-6 py-3 font-medium text-on-brand transition hover:bg-brand-strong"
             >
               {t("cart.browseProducts")}
             </Link>
@@ -138,22 +138,22 @@ function Cart() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 px-6 py-10">
+    <div className="min-h-screen bg-surface px-6 py-10">
       <div className="mx-auto max-w-7xl">
 
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-3xl font-bold text-text-primary">
             {t("cart.title")}
           </h1>
 
-          <p className="mt-2 text-slate-600">
+          <p className="mt-2 text-text-secondary">
             {t("cart.subtitle")}
           </p>
         </div>
 
         {error && (
-          <div className="mt-6 rounded-lg bg-red-50 px-4 py-3 text-red-700">
+          <div className="mt-6 rounded-lg bg-danger-subtle px-4 py-3 text-danger-strong">
             {error}
           </div>
         )}
@@ -166,18 +166,18 @@ function Cart() {
             {stores.map((store) => (
               <div
                 key={store.store_id}
-                className="overflow-hidden rounded-xl bg-white shadow-sm"
+                className="overflow-hidden rounded-xl bg-surface-raised shadow-sm"
               >
                 {/* Store Header */}
-                <div className="border-b border-slate-200 px-6 py-4">
-                  <h2 className="text-lg font-semibold text-gray-900">
+                <div className="border-b border-border px-6 py-4">
+                  <h2 className="text-lg font-semibold text-text-primary">
                     {store.store_name ||
                       t("cart.storeHeading", { id: store.store_id })}
                   </h2>
                 </div>
 
                 {store.is_open_now === false && (
-                  <div className="border-b border-slate-200 px-6 py-3">
+                  <div className="border-b border-border px-6 py-3">
                     <ClosedStoreNotice
                       isOpen={store.is_open_now}
                       acceptsOrders={store.accepts_orders}
@@ -187,7 +187,7 @@ function Cart() {
                 )}
 
                 {/* Store Items */}
-                <div className="divide-y divide-slate-200">
+                <div className="divide-y divide-border">
                   {store.items.map((item) => (
                     <div
                       key={item.id}
@@ -195,11 +195,11 @@ function Cart() {
                     >
                       {/* Product Info */}
                       <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900">
+                        <h3 className="font-semibold text-text-primary">
                           {localizedField(item, "product_name", i18n.language)}
                         </h3>
 
-                        <p className="mt-1 text-sm text-slate-500">
+                        <p className="mt-1 text-sm text-text-muted">
                           {t("cart.priceEach", {
                             price: `$${Number(item.price).toFixed(2)}`,
                           })}
@@ -216,7 +216,7 @@ function Cart() {
                             )
                           }
                           disabled={item.quantity <= 1}
-                          className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-300 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+                          className="flex h-9 w-9 items-center justify-center rounded-lg border border-border-strong transition hover:bg-surface-sunken disabled:cursor-not-allowed disabled:opacity-40"
                         >
                           <Minus size={16} />
                         </button>
@@ -232,21 +232,21 @@ function Cart() {
                               item.quantity + 1
                             )
                           }
-                          className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-300 transition hover:bg-slate-100"
+                          className="flex h-9 w-9 items-center justify-center rounded-lg border border-border-strong transition hover:bg-surface-sunken"
                         >
                           <Plus size={16} />
                         </button>
                       </div>
 
                       {/* Subtotal */}
-                      <div className="w-24 text-end font-semibold text-gray-900">
+                      <div className="w-24 text-end font-semibold text-text-primary">
                         ${Number(item.subtotal).toFixed(2)}
                       </div>
 
                       {/* Remove */}
                       <button
                         onClick={() => removeItem(item.id)}
-                        className="flex h-9 w-9 items-center justify-center rounded-lg text-red-500 transition hover:bg-red-50"
+                        className="flex h-9 w-9 items-center justify-center rounded-lg text-danger-accent transition hover:bg-danger-subtle"
                         title={t("cart.removeItem")}
                       >
                         <Trash2 size={18} />
@@ -256,12 +256,12 @@ function Cart() {
                 </div>
 
                 {/* Store Subtotal */}
-                <div className="flex justify-between border-t border-slate-200 bg-slate-50 px-6 py-4">
-                  <span className="font-medium text-slate-700">
+                <div className="flex justify-between border-t border-border bg-surface px-6 py-4">
+                  <span className="font-medium text-text-body">
                     {t("cart.storeSubtotal")}
                   </span>
 
-                  <span className="font-bold text-gray-900">
+                  <span className="font-bold text-text-primary">
                     ${Number(store.store_subtotal).toFixed(2)}
                   </span>
                 </div>
@@ -270,13 +270,13 @@ function Cart() {
           </div>
 
           {/* Order Summary */}
-          <div className="h-fit rounded-xl bg-white p-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-gray-900">
+          <div className="h-fit rounded-xl bg-surface-raised p-6 shadow-sm">
+            <h2 className="text-xl font-semibold text-text-primary">
               {t("cart.orderSummary")}
             </h2>
 
             <div className="mt-6 space-y-4">
-              <div className="flex justify-between text-slate-600">
+              <div className="flex justify-between text-text-secondary">
                 <span>{t("cart.subtotal")}</span>
 
                 <span dir="ltr">
@@ -285,7 +285,7 @@ function Cart() {
               </div>
 
               {Number(cart.discount) > 0 && (
-                <div className="flex justify-between text-emerald-700">
+                <div className="flex justify-between text-brand">
                   <span>
                     {t("cart.discount")}{" "}
                     <span dir="ltr" className="font-mono text-xs">
@@ -301,20 +301,20 @@ function Cart() {
                 </div>
               )}
 
-              <div className="border-t border-slate-200 pt-4">
+              <div className="border-t border-border pt-4">
                 <CouponField
                   appliedCode={cart.coupon_code}
                   onChanged={fetchCart}
                 />
               </div>
 
-              <div className="border-t border-slate-200 pt-4">
+              <div className="border-t border-border pt-4">
                 <div className="flex justify-between">
-                  <span className="text-lg font-semibold text-gray-900">
+                  <span className="text-lg font-semibold text-text-primary">
                     {t("cart.total")}
                   </span>
 
-                  <span dir="ltr" className="text-lg font-bold text-emerald-700">
+                  <span dir="ltr" className="text-lg font-bold text-brand">
                     ${(
                       Number(cart.total) - Number(cart.discount || 0)
                     ).toFixed(2)}
@@ -324,14 +324,14 @@ function Cart() {
 
               <Link
                 to="/checkout"
-                className="mt-4 block w-full rounded-lg bg-emerald-700 px-5 py-3 text-center font-medium text-white transition hover:bg-emerald-800"
+                className="mt-4 block w-full rounded-lg bg-brand px-5 py-3 text-center font-medium text-on-brand transition hover:bg-brand-strong"
               >
                 {t("cart.proceedToCheckout")}
               </Link>
 
               <Link
                 to="/products"
-                className="block text-center text-sm font-medium text-emerald-700 hover:underline"
+                className="block text-center text-sm font-medium text-brand hover:underline"
               >
                 {t("cart.continueShopping")}
               </Link>

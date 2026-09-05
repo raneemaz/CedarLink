@@ -74,21 +74,21 @@ function NotificationBell() {
         aria-haspopup="true"
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
-        className="relative cursor-pointer text-slate-700 transition hover:text-emerald-700"
+        className="relative cursor-pointer text-text-body transition hover:text-brand"
       >
         <Bell size={24} />
 
         {badge && (
-          <span className="absolute -end-2 -top-2 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-emerald-700 px-1 text-xs text-white">
+          <span className="absolute -end-2 -top-2 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-brand px-1 text-xs text-on-brand">
             {badge}
           </span>
         )}
       </button>
 
       {open && (
-        <div className="absolute end-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg">
-          <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
-            <span className="text-sm font-semibold text-slate-900">
+        <div className="absolute end-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-lg">
+          <div className="flex items-center justify-between border-b border-border-subtle px-4 py-3">
+            <span className="text-sm font-semibold text-text-primary">
               {t("notificationsFeed.title")}
             </span>
 
@@ -96,7 +96,7 @@ function NotificationBell() {
               type="button"
               onClick={markAllRead}
               disabled={unreadCount === 0}
-              className="text-xs font-medium text-emerald-700 transition hover:underline disabled:cursor-not-allowed disabled:text-slate-300"
+              className="text-xs font-medium text-brand transition hover:underline disabled:cursor-not-allowed disabled:text-text-disabled"
             >
               {t("notificationsFeed.markAllRead")}
             </button>
@@ -104,7 +104,7 @@ function NotificationBell() {
 
           <div className="max-h-96 overflow-y-auto">
             {notifications.length === 0 ? (
-              <p className="px-4 py-6 text-center text-sm text-slate-500">
+              <p className="px-4 py-6 text-center text-sm text-text-muted">
                 {t("notificationsFeed.empty")}
               </p>
             ) : (
@@ -116,22 +116,22 @@ function NotificationBell() {
                     type="button"
                     key={notification.id}
                     onClick={() => handleRowClick(notification)}
-                    className={`flex w-full items-start gap-3 border-b border-slate-50 px-4 py-3 text-start transition hover:bg-slate-50 ${
-                      notification.is_read ? "" : "bg-emerald-50/50"
+                    className={`flex w-full items-start gap-3 border-b border-border-subtle px-4 py-3 text-start transition hover:bg-surface ${
+                      notification.is_read ? "" : "bg-brand-subtle/50"
                     }`}
                   >
-                    <span className="mt-0.5 shrink-0 text-emerald-700">
+                    <span className="mt-0.5 shrink-0 text-brand">
                       <Icon size={18} />
                     </span>
 
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm font-medium text-slate-900">
+                      <span className="block truncate text-sm font-medium text-text-primary">
                         {notification.title}
                       </span>
-                      <span className="mt-0.5 block truncate text-xs text-slate-500">
+                      <span className="mt-0.5 block truncate text-xs text-text-muted">
                         {notification.message}
                       </span>
-                      <span className="mt-1 block text-[11px] text-slate-400">
+                      <span className="mt-1 block text-[11px] text-text-faint">
                         {formatRelativeTime(
                           notification.created_at,
                           i18n.language,
@@ -140,7 +140,7 @@ function NotificationBell() {
                     </span>
 
                     {!notification.is_read && (
-                      <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-emerald-600" />
+                      <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-brand-ring" />
                     )}
                   </button>
                 );
@@ -151,7 +151,7 @@ function NotificationBell() {
           <Link
             to="/notifications"
             onClick={() => setOpen(false)}
-            className="block border-t border-slate-100 px-4 py-3 text-center text-sm font-medium text-emerald-700 transition hover:bg-slate-50"
+            className="block border-t border-border-subtle px-4 py-3 text-center text-sm font-medium text-brand transition hover:bg-surface"
           >
             {t("notificationsFeed.seeAll")}
           </Link>

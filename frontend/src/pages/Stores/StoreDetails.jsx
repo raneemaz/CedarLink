@@ -86,7 +86,7 @@ function StoreDetails() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 px-6 py-12 text-center text-gray-500">
+      <div className="min-h-screen bg-surface px-6 py-12 text-center text-text-muted">
         {t("storeDetails.loading")}
       </div>
     );
@@ -94,11 +94,11 @@ function StoreDetails() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 px-6 py-12">
+      <div className="min-h-screen bg-surface px-6 py-12">
         <div className="mx-auto max-w-5xl">
           <BackLink to="/stores">{t("backLink.stores")}</BackLink>
-          <div className="mt-8 rounded-xl bg-white p-12 text-center shadow-sm">
-            <h1 className="text-xl font-semibold text-gray-900">{error}</h1>
+          <div className="mt-8 rounded-xl bg-surface-raised p-12 text-center shadow-sm">
+            <h1 className="text-xl font-semibold text-text-primary">{error}</h1>
           </div>
         </div>
       </div>
@@ -115,16 +115,16 @@ function StoreDetails() {
     : null;
 
   return (
-    <div className="min-h-screen bg-gray-50 px-6 py-10 lg:px-10">
+    <div className="min-h-screen bg-surface px-6 py-10 lg:px-10">
       <div className="mx-auto max-w-6xl">
         <BackLink to="/stores">{t("backLink.stores")}</BackLink>
 
-        <div className="mt-6 rounded-xl border border-gray-200 bg-white p-6">
+        <div className="mt-6 rounded-xl border border-border bg-surface-raised p-6">
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-3xl font-bold text-gray-900">{store.name}</h1>
+            <h1 className="text-3xl font-bold text-text-primary">{store.name}</h1>
             <StoreStatusBadge store={store} />
           </div>
-          <p className="mt-1 text-gray-500">
+          <p className="mt-1 text-text-muted">
             {store.location || t("storeDetails.locationNotSet")}
           </p>
 
@@ -147,7 +147,7 @@ function StoreDetails() {
           )}
 
           {overrideOn && store.override_status === "closed" && (
-            <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+            <p className="mt-3 rounded-lg bg-danger-subtle px-3 py-2 text-sm text-danger-strong">
               {store.override_reason
                 ? t("storeDetails.overrideClosedReason", {
                     reason: store.override_reason,
@@ -157,16 +157,16 @@ function StoreDetails() {
             </p>
           )}
           {overrideOn && store.override_status === "open" && (
-            <p className="mt-3 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+            <p className="mt-3 rounded-lg bg-brand-subtle px-3 py-2 text-sm text-brand-strong">
               {t("storeDetails.overrideOpen", { until: overrideUntil })}
             </p>
           )}
 
           <div className="mt-4 text-sm">
-            <p className="text-gray-400">{t("storeDetails.todaysHours")}</p>
-            <p className="font-medium text-gray-800" dir="ltr">
+            <p className="text-text-faint">{t("storeDetails.todaysHours")}</p>
+            <p className="font-medium text-text-emphasis" dir="ltr">
               {todayIdx >= 0 && (
-                <span className="text-gray-400">
+                <span className="text-text-faint">
                   {t(`storeHours.days.${DAY_KEYS[todayIdx]}`)} ·{" "}
                 </span>
               )}
@@ -179,17 +179,17 @@ function StoreDetails() {
           </div>
 
           {store.description && (
-            <p className="mt-3 leading-7 text-gray-600">{store.description}</p>
+            <p className="mt-3 leading-7 text-text-secondary">{store.description}</p>
           )}
 
-          <div className="mt-5 grid gap-4 border-t border-gray-100 pt-4 text-sm sm:grid-cols-3">
+          <div className="mt-5 grid gap-4 border-t border-border-subtle pt-4 text-sm sm:grid-cols-3">
             <div>
-              <p className="text-gray-400">{t("storeDetails.delivery")}</p>
+              <p className="text-text-faint">{t("storeDetails.delivery")}</p>
               <p
                 className={
                   store.delivery_available
-                    ? "font-medium text-emerald-700"
-                    : "font-medium text-gray-500"
+                    ? "font-medium text-brand"
+                    : "font-medium text-text-muted"
                 }
               >
                 {store.delivery_available
@@ -198,21 +198,21 @@ function StoreDetails() {
               </p>
             </div>
             <div>
-              <p className="text-gray-400">{t("storeDetails.insideCityFee")}</p>
-              <p className="font-medium text-gray-800">
+              <p className="text-text-faint">{t("storeDetails.insideCityFee")}</p>
+              <p className="font-medium text-text-emphasis">
                 ${Number(store.inside_city_delivery_fee).toFixed(2)}
               </p>
             </div>
             <div>
-              <p className="text-gray-400">{t("storeDetails.outsideCityFee")}</p>
-              <p className="font-medium text-gray-800">
+              <p className="text-text-faint">{t("storeDetails.outsideCityFee")}</p>
+              <p className="font-medium text-text-emphasis">
                 ${Number(store.outside_city_delivery_fee).toFixed(2)}
               </p>
             </div>
           </div>
 
           {store.contact_info && (
-            <p className="mt-4 text-sm text-gray-500">
+            <p className="mt-4 text-sm text-text-muted">
               {t("storeDetails.contact")}: {store.contact_info}
             </p>
           )}
@@ -220,11 +220,11 @@ function StoreDetails() {
           <StoreSocialLinks
             links={socialLinks}
             storeName={store.name}
-            className="mt-5 border-t border-gray-100 pt-4"
+            className="mt-5 border-t border-border-subtle pt-4"
           />
 
           {store.is_online_only ? (
-            <p className="mt-4 text-sm text-gray-600">
+            <p className="mt-4 text-sm text-text-secondary">
               {t("storeDetails.onlineOnly")}
             </p>
           ) : store.latitude != null && store.longitude != null ? (
@@ -242,24 +242,24 @@ function StoreDetails() {
             {announcements.map((a) => (
               <div
                 key={a.id}
-                className="flex gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4"
+                className="flex gap-3 rounded-xl border border-warning-border bg-warning-subtle p-4"
               >
-                <Megaphone className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
+                <Megaphone className="mt-0.5 h-5 w-5 shrink-0 text-warning-muted" />
                 <div>
-                  <p className="font-semibold text-amber-900">{a.title}</p>
-                  <p className="mt-1 text-sm text-amber-800">{a.body}</p>
+                  <p className="font-semibold text-warning">{a.title}</p>
+                  <p className="mt-1 text-sm text-warning">{a.body}</p>
                 </div>
               </div>
             ))}
           </div>
         )}
 
-        <h2 className="mt-10 text-xl font-bold text-gray-900">
+        <h2 className="mt-10 text-xl font-bold text-text-primary">
           {t("storeDetails.productsHeading", { count: products.length })}
         </h2>
 
         {products.length === 0 ? (
-          <p className="mt-4 text-gray-500">{t("storeDetails.noProducts")}</p>
+          <p className="mt-4 text-text-muted">{t("storeDetails.noProducts")}</p>
         ) : (
           <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {products.map((product) => (
@@ -268,9 +268,9 @@ function StoreDetails() {
           </div>
         )}
 
-        <section className="mt-10 rounded-xl border border-gray-200 bg-white p-6">
+        <section className="mt-10 rounded-xl border border-border bg-surface-raised p-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-xl font-bold text-gray-900">
+            <h2 className="text-xl font-bold text-text-primary">
               {t("reviews.storeHeading")}
             </h2>
             <RatingSummary

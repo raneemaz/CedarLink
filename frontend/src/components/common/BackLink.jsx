@@ -9,7 +9,7 @@ import { ArrowLeft } from "lucide-react";
 export default function BackLink({ to, onClick, children, className = "" }) {
   const classes = [
     "inline-flex items-center gap-1.5 text-sm font-medium",
-    "text-emerald-700 hover:underline",
+    "text-brand hover:underline",
     className,
   ]
     .filter(Boolean)

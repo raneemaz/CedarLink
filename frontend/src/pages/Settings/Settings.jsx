@@ -100,15 +100,15 @@ function Settings() {
   ];
 
   return (
-    <div className="min-h-[70vh] bg-gray-50 px-6 py-10">
+    <div className="min-h-[70vh] bg-surface px-6 py-10">
       <div className="mx-auto max-w-4xl">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-3xl font-bold text-text-primary">
             {t("settings.title")}
           </h1>
 
-          <p className="mt-2 text-gray-600">
+          <p className="mt-2 text-text-secondary">
             {t("settings.subtitle")}
           </p>
         </div>
@@ -118,15 +118,15 @@ function Settings() {
           {settingSections.map((section) => (
             <section
               key={section.title}
-              className="overflow-hidden rounded-2xl bg-white shadow-sm"
+              className="overflow-hidden rounded-2xl bg-surface-raised shadow-sm"
             >
               {/* Section Header */}
-              <div className="border-b border-gray-100 px-6 py-5">
-                <h2 className="text-xl font-semibold text-gray-900">
+              <div className="border-b border-border-subtle px-6 py-5">
+                <h2 className="text-xl font-semibold text-text-primary">
                   {section.title}
                 </h2>
 
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-text-muted">
                   {section.description}
                 </p>
               </div>
@@ -140,24 +140,24 @@ function Settings() {
                     <Link
                       key={item.title}
                       to={item.path}
-                      className={`group flex items-center gap-4 px-6 py-5 transition hover:bg-gray-50 ${
+                      className={`group flex items-center gap-4 px-6 py-5 transition hover:bg-surface ${
                         index !== section.items.length - 1
-                          ? "border-b border-gray-100"
+                          ? "border-b border-border-subtle"
                           : ""
                       }`}
                     >
                       {/* Icon */}
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-subtle text-brand">
                         <Icon size={21} />
                       </div>
 
                       {/* Text */}
                       <div className="min-w-0 flex-1">
-                        <h3 className="font-medium text-gray-900 group-hover:text-emerald-700">
+                        <h3 className="font-medium text-text-primary group-hover:text-brand">
                           {item.title}
                         </h3>
 
-                        <p className="mt-1 text-sm text-gray-500">
+                        <p className="mt-1 text-sm text-text-muted">
                           {item.description}
                         </p>
                       </div>
@@ -165,7 +165,7 @@ function Settings() {
                       {/* Arrow — points toward the row's trailing edge */}
                       <ChevronRight
                         size={20}
-                        className="shrink-0 text-gray-400 transition group-hover:translate-x-1 group-hover:text-emerald-700 rtl:rotate-180"
+                        className="shrink-0 text-text-faint transition group-hover:translate-x-1 group-hover:text-brand rtl:rotate-180"
                       />
                     </Link>
                   );

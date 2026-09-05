@@ -6,11 +6,11 @@ import api from "../../services/api";
 
 function StatCard({ label, value }) {
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-5">
-      <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+    <div className="rounded-xl border border-border bg-surface-raised p-5">
+      <p className="text-xs font-semibold uppercase tracking-wide text-text-faint">
         {label}
       </p>
-      <p className="mt-2 text-2xl font-bold text-gray-900">{value}</p>
+      <p className="mt-2 text-2xl font-bold text-text-primary">{value}</p>
     </div>
   );
 }
@@ -18,7 +18,7 @@ function StatCard({ label, value }) {
 function Section({ title, children }) {
   return (
     <section className="mt-8">
-      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-400">
+      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-text-faint">
         {title}
       </h2>
       {children}
@@ -51,11 +51,11 @@ function AdminOverview() {
   }, [t]);
 
   if (loading) {
-    return <p className="text-sm text-gray-500">{t("adminOverview.loading")}</p>;
+    return <p className="text-sm text-text-muted">{t("adminOverview.loading")}</p>;
   }
 
   if (!reports) {
-    return <p className="text-sm text-gray-500">{t("adminOverview.noData")}</p>;
+    return <p className="text-sm text-text-muted">{t("adminOverview.noData")}</p>;
   }
 
   const usersByRole = reports.users_by_role || {};
@@ -63,7 +63,7 @@ function AdminOverview() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-gray-900">{t("adminOverview.title")}</h1>
+      <h1 className="text-3xl font-bold text-text-primary">{t("adminOverview.title")}</h1>
 
       <Section title={t("adminOverview.sectionUsers")}>
         <div className="grid gap-4 sm:grid-cols-3">
@@ -108,18 +108,18 @@ function AdminOverview() {
 
       <Section title={t("adminOverview.sectionTopStores")}>
         {reports.top_stores_by_orders.length === 0 ? (
-          <p className="text-sm text-gray-500">{t("adminOverview.noOrders")}</p>
+          <p className="text-sm text-text-muted">{t("adminOverview.noOrders")}</p>
         ) : (
-          <ol className="divide-y divide-gray-100 overflow-hidden rounded-xl border border-gray-200 bg-white">
+          <ol className="divide-y divide-border-subtle overflow-hidden rounded-xl border border-border bg-surface-raised">
             {reports.top_stores_by_orders.map((row, index) => (
               <li
                 key={row.store}
                 className="flex items-center justify-between px-5 py-3 text-sm"
               >
-                <span className="text-gray-800">
+                <span className="text-text-emphasis">
                   {index + 1}. {row.store}
                 </span>
-                <span className="font-medium text-gray-900">
+                <span className="font-medium text-text-primary">
                   {t("adminOverview.orderCount", { count: row.order_count })}
                 </span>
               </li>

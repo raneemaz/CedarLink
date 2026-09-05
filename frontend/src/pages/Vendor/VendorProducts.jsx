@@ -122,21 +122,21 @@ function VendorProducts() {
   };
 
   if (loading) {
-    return <p className="text-sm text-gray-500">{t("vendorProducts.loading")}</p>;
+    return <p className="text-sm text-text-muted">{t("vendorProducts.loading")}</p>;
   }
 
   if (noStore) {
     return (
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">{t("vendorProducts.title")}</h1>
+        <h1 className="text-3xl font-bold text-text-primary">{t("vendorProducts.title")}</h1>
 
-        <div className="mt-6 rounded-xl border border-dashed border-gray-300 bg-white p-12 text-center">
-          <p className="text-gray-600">
+        <div className="mt-6 rounded-xl border border-dashed border-border-strong bg-surface-raised p-12 text-center">
+          <p className="text-text-secondary">
             {t("vendorProducts.noStoreBody")}
           </p>
           <Link
             to="/vendor/store"
-            className="mt-4 inline-block font-semibold text-emerald-700 hover:underline"
+            className="mt-4 inline-block font-semibold text-brand hover:underline"
           >
             {t("vendorProducts.createStore")}
           </Link>
@@ -149,8 +149,8 @@ function VendorProducts() {
     <div>
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">{t("vendorProducts.title")}</h1>
-          <p className="mt-2 text-gray-600">
+          <h1 className="text-3xl font-bold text-text-primary">{t("vendorProducts.title")}</h1>
+          <p className="mt-2 text-text-secondary">
             {t("vendorProducts.countInStore", {
               count: total,
               store: store.name,
@@ -164,21 +164,21 @@ function VendorProducts() {
       </div>
 
       {total === 0 ? (
-        <div className="rounded-xl border border-dashed border-gray-300 bg-white p-12 text-center">
-          <p className="text-gray-600">{t("vendorProducts.emptyBody")}</p>
+        <div className="rounded-xl border border-dashed border-border-strong bg-surface-raised p-12 text-center">
+          <p className="text-text-secondary">{t("vendorProducts.emptyBody")}</p>
           <Link
             to="/vendor/products/new"
-            className="mt-4 inline-block font-semibold text-emerald-700 hover:underline"
+            className="mt-4 inline-block font-semibold text-brand hover:underline"
           >
             {t("vendorProducts.addFirst")}
           </Link>
         </div>
       ) : (
         <>
-          <div className="overflow-x-auto rounded-2xl bg-white shadow-sm">
+          <div className="overflow-x-auto rounded-2xl bg-surface-raised shadow-sm">
             <table className="min-w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-100 text-start text-xs uppercase tracking-wide text-gray-400">
+                <tr className="border-b border-border-subtle text-start text-xs uppercase tracking-wide text-text-faint">
                   <th className="px-4 py-3 font-medium">{t("vendorProducts.colProduct")}</th>
                   <th className="px-4 py-3 font-medium">{t("vendorProducts.colCategory")}</th>
                   <th className="px-4 py-3 font-medium">{t("vendorProducts.colPrice")}</th>
@@ -188,18 +188,18 @@ function VendorProducts() {
                 </tr>
               </thead>
 
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-border-subtle">
                 {products.map((product) => {
                   const outOfStock = product.stock <= 0;
 
                   return (
                     <tr
                       key={product.id}
-                      className={outOfStock ? "bg-red-50/60" : ""}
+                      className={outOfStock ? "bg-danger-subtle/60" : ""}
                     >
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 shrink-0 overflow-hidden rounded-md bg-gray-100">
+                          <div className="h-10 w-10 shrink-0 overflow-hidden rounded-md bg-surface-sunken">
                             {product.image && (
                               <img
                                 src={product.image}
@@ -208,26 +208,26 @@ function VendorProducts() {
                               />
                             )}
                           </div>
-                          <span className="font-medium text-gray-900">
+                          <span className="font-medium text-text-primary">
                             {localizedName(product, i18n.language)}
                           </span>
                         </div>
                       </td>
 
-                      <td className="px-4 py-3 text-gray-600">
+                      <td className="px-4 py-3 text-text-secondary">
                         {localizedName(
                           categories[product.category_id],
                           i18n.language,
                         ) || "—"}
                       </td>
 
-                      <td className="px-4 py-3 text-gray-900">
+                      <td className="px-4 py-3 text-text-primary">
                         ${Number(product.price).toFixed(2)}
                       </td>
 
                       <td
                         className={`px-4 py-3 font-medium ${
-                          outOfStock ? "text-red-600" : "text-gray-900"
+                          outOfStock ? "text-danger" : "text-text-primary"
                         }`}
                       >
                         {product.stock}
@@ -237,8 +237,8 @@ function VendorProducts() {
                         <span
                           className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
                             outOfStock
-                              ? "bg-red-100 text-red-700"
-                              : "bg-emerald-100 text-emerald-700"
+                              ? "bg-danger-tint text-danger-strong"
+                              : "bg-success-subtle text-success"
                           }`}
                         >
                           {outOfStock ? t("vendorProducts.outOfStock") : t("vendorProducts.inStock")}
@@ -249,14 +249,14 @@ function VendorProducts() {
                         <div className="flex justify-end gap-4">
                           <Link
                             to={`/vendor/products/${product.id}/edit`}
-                            className="font-medium text-emerald-700 hover:underline"
+                            className="font-medium text-brand hover:underline"
                           >
                             {t("vendorProducts.edit")}
                           </Link>
                           <button
                             type="button"
                             onClick={() => setDeleteTarget(product)}
-                            className="font-medium text-red-600 hover:underline"
+                            className="font-medium text-danger hover:underline"
                           >
                             {t("vendorProducts.delete")}
                           </button>
@@ -275,12 +275,12 @@ function VendorProducts() {
                 type="button"
                 onClick={() => goToPage(page - 1)}
                 disabled={page <= 1}
-                className="rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-lg border border-border-strong px-4 py-2 font-medium text-text-body hover:bg-surface disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {t("common.previous")}
               </button>
 
-              <span className="text-gray-500">
+              <span className="text-text-muted">
                 {t("common.pageOf", { page, pages })}
               </span>
 
@@ -288,7 +288,7 @@ function VendorProducts() {
                 type="button"
                 onClick={() => goToPage(page + 1)}
                 disabled={page >= pages}
-                className="rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-lg border border-border-strong px-4 py-2 font-medium text-text-body hover:bg-surface disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {t("common.next")}
               </button>

@@ -21,7 +21,7 @@ function RatingSummary({
   if (n === 0) {
     if (compact) return null;
     return (
-      <span className={`text-sm text-gray-400 ${className}`}>
+      <span className={`text-sm text-text-faint ${className}`}>
         {t("reviews.none")}
       </span>
     );
@@ -38,10 +38,10 @@ function RatingSummary({
     return (
       <span
         dir="ltr"
-        className={`inline-flex items-center gap-1 text-xs text-gray-500 ${className}`}
+        className={`inline-flex items-center gap-1 text-xs text-text-muted ${className}`}
       >
         <StarRating value={avg} size="sm" />
-        <span className="font-semibold text-gray-700">{avgText}</span>
+        <span className="font-semibold text-text-body">{avgText}</span>
         <span>({countText})</span>
       </span>
     );
@@ -51,9 +51,9 @@ function RatingSummary({
     <div className={`flex flex-wrap items-center gap-x-2 gap-y-1 ${className}`}>
       <span dir="ltr" className="inline-flex items-center gap-1.5">
         <StarRating value={avg} size={size} />
-        <span className="font-semibold text-gray-900">{avgText}</span>
+        <span className="font-semibold text-text-primary">{avgText}</span>
       </span>
-      <span className="text-sm text-gray-500">
+      <span className="text-sm text-text-muted">
         {t("reviews.count", { count: n })}
       </span>
     </div>

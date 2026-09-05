@@ -100,7 +100,7 @@ function Currency() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 px-6 py-10">
+    <div className="min-h-screen bg-surface px-6 py-10">
       <div className="mx-auto max-w-4xl">
         {/* Header */}
         <div className="mb-8">
@@ -109,16 +109,16 @@ function Currency() {
           </BackLink>
 
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-subtle text-brand">
               <Coins size={24} />
             </div>
 
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-3xl font-bold text-text-primary">
                 {t("currency.title")}
               </h1>
 
-              <p className="mt-1 text-sm text-gray-600">
+              <p className="mt-1 text-sm text-text-secondary">
                 {t("currency.subtitle")}
               </p>
             </div>
@@ -126,20 +126,20 @@ function Currency() {
         </div>
 
         {/* Currency Settings */}
-        <section className="overflow-hidden rounded-2xl bg-white shadow-sm">
-          <div className="border-b border-gray-100 px-6 py-5">
-            <h2 className="text-xl font-semibold text-gray-900">
+        <section className="overflow-hidden rounded-2xl bg-surface-raised shadow-sm">
+          <div className="border-b border-border-subtle px-6 py-5">
+            <h2 className="text-xl font-semibold text-text-primary">
               {t("currency.preferredCurrency")}
             </h2>
 
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-text-muted">
               {t("currency.description")}
             </p>
           </div>
 
           <div className="space-y-3 px-6 py-6">
             {loading ? (
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-text-muted">
                 {t("currency.loading")}
               </p>
             ) : (
@@ -154,22 +154,22 @@ function Currency() {
                       onClick={() => setSelectedCurrency(option.code)}
                       className={`flex w-full cursor-pointer items-center justify-between rounded-xl border p-4 text-start transition ${
                         isSelected
-                          ? "border-green-600 bg-green-50"
-                          : "border-gray-200 hover:bg-gray-50"
+                          ? "border-brand-ring bg-brand-subtle"
+                          : "border-border hover:bg-surface"
                       }`}
                     >
                       <div>
-                        <p className="font-medium text-gray-900">
+                        <p className="font-medium text-text-primary">
                           {t(`currency.${option.labelKey}`)}
                         </p>
 
-                        <p className="mt-1 text-sm text-gray-500">
+                        <p className="mt-1 text-sm text-text-muted">
                           {option.code} · {option.sample}
                         </p>
                       </div>
 
                       {isSelected && (
-                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-green-700 text-white">
+                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-brand text-on-brand">
                           <Check size={17} />
                         </div>
                       )}
@@ -177,16 +177,16 @@ function Currency() {
                   );
                 })}
 
-                <p className="pt-2 text-xs text-gray-400">
+                <p className="pt-2 text-xs text-text-faint">
                   {t("currency.approxNote")}
                 </p>
 
-                <div className="flex justify-end border-t border-gray-100 pt-6">
+                <div className="flex justify-end border-t border-border-subtle pt-6">
                   <button
                     type="button"
                     onClick={handleSaveCurrency}
                     disabled={saving}
-                    className="cursor-pointer rounded-lg bg-green-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="cursor-pointer rounded-lg bg-brand px-6 py-3 text-sm font-semibold text-on-brand transition hover:bg-brand-strong disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {saving
                       ? t("currency.saving")

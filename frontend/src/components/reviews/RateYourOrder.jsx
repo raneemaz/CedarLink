@@ -115,15 +115,15 @@ function RateYourOrder({ orderId }) {
 
   if (loading && !data) {
     return (
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <p className="text-sm text-slate-500">{t("rateOrder.loading")}</p>
+      <div className="rounded-2xl border border-border bg-surface-raised p-6 shadow-sm">
+        <p className="text-sm text-text-muted">{t("rateOrder.loading")}</p>
       </div>
     );
   }
   if (error) {
     return (
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <p className="text-sm text-red-600">{error}</p>
+      <div className="rounded-2xl border border-border bg-surface-raised p-6 shadow-sm">
+        <p className="text-sm text-danger">{error}</p>
       </div>
     );
   }
@@ -147,20 +147,20 @@ function RateYourOrder({ orderId }) {
   ];
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-      <div className="border-b border-slate-200 p-6">
-        <h2 className="text-xl font-semibold text-slate-900">
+    <div className="rounded-2xl border border-border bg-surface-raised shadow-sm">
+      <div className="border-b border-border p-6">
+        <h2 className="text-xl font-semibold text-text-primary">
           {t("rateOrder.heading")}
         </h2>
-        <p className="mt-1 text-sm text-slate-500">{t("rateOrder.subtitle")}</p>
+        <p className="mt-1 text-sm text-text-muted">{t("rateOrder.subtitle")}</p>
       </div>
 
-      <ul className="divide-y divide-slate-100">
+      <ul className="divide-y divide-border-subtle">
         {rows.map((row) => {
           const isOpen = openKey === row.key;
           return (
             <li key={row.key} className="p-6">
-              <p className="font-medium text-slate-900">{row.label}</p>
+              <p className="font-medium text-text-primary">{row.label}</p>
 
               {isOpen ? (
                 <div className="mt-3">
@@ -177,7 +177,7 @@ function RateYourOrder({ orderId }) {
                   />
                 </div>
               ) : row.review?.status === "removed" ? (
-                <p className="mt-2 text-sm text-slate-500">
+                <p className="mt-2 text-sm text-text-muted">
                   {t("rateOrder.removed")}
                 </p>
               ) : row.review ? (
@@ -185,13 +185,13 @@ function RateYourOrder({ orderId }) {
                   <div className="flex flex-wrap items-center gap-2">
                     <StarRating value={row.review.rating} size="sm" />
                     {row.review.title && (
-                      <span className="text-sm font-medium text-slate-800">
+                      <span className="text-sm font-medium text-text-emphasis">
                         {row.review.title}
                       </span>
                     )}
                   </div>
                   {row.review.body && (
-                    <p className="mt-1 whitespace-pre-line text-sm text-slate-600">
+                    <p className="mt-1 whitespace-pre-line text-sm text-text-secondary">
                       {row.review.body}
                     </p>
                   )}
@@ -202,7 +202,7 @@ function RateYourOrder({ orderId }) {
                         setFormError("");
                         setOpenKey(row.key);
                       }}
-                      className="inline-flex items-center gap-1 font-medium text-emerald-700 hover:underline"
+                      className="inline-flex items-center gap-1 font-medium text-brand hover:underline"
                     >
                       <Pencil className="h-3.5 w-3.5" />
                       {t("rateOrder.edit")}
@@ -210,7 +210,7 @@ function RateYourOrder({ orderId }) {
                     <button
                       type="button"
                       onClick={() => deleteReview(row.review.id)}
-                      className="inline-flex items-center gap-1 font-medium text-red-600 hover:underline"
+                      className="inline-flex items-center gap-1 font-medium text-danger hover:underline"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                       {t("rateOrder.delete")}
@@ -224,7 +224,7 @@ function RateYourOrder({ orderId }) {
                     setFormError("");
                     setOpenKey(row.key);
                   }}
-                  className="mt-2 rounded-lg border border-emerald-700 px-3 py-1.5 text-sm font-medium text-emerald-700 transition hover:bg-emerald-700 hover:text-white"
+                  className="mt-2 rounded-lg border border-brand px-3 py-1.5 text-sm font-medium text-brand transition hover:bg-brand hover:text-on-brand"
                 >
                   {t("rateOrder.write")}
                 </button>

@@ -93,19 +93,19 @@ function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-10">
+    <div className="min-h-screen bg-surface-sunken flex items-center justify-center px-4 py-10">
       <Card className="w-full max-w-lg">
-        <h1 className="text-4xl font-bold text-center text-green-700">
+        <h1 className="text-4xl font-bold text-center text-brand">
           CedarLink
         </h1>
 
-        <p className="text-center text-gray-500 mt-2 mb-8">
+        <p className="text-center text-text-muted mt-2 mb-8">
           {t("register.createAccount")}
         </p>
 
         {/* Account type — the first decision a new user makes */}
         <div className="mb-6">
-          <p className="mb-3 block text-sm font-medium text-gray-700">
+          <p className="mb-3 block text-sm font-medium text-text-body">
             {t("register.whatBrings")}
           </p>
 
@@ -115,14 +115,14 @@ function Register() {
               onClick={() => setRole("customer")}
               className={`rounded-xl border-2 p-4 text-start transition ${
                 role === "customer"
-                  ? "border-green-600 bg-green-50"
-                  : "border-gray-200 hover:border-gray-300"
+                  ? "border-brand-ring bg-brand-subtle"
+                  : "border-border hover:border-border-strong"
               }`}
             >
-              <span className="block font-semibold text-gray-900">
+              <span className="block font-semibold text-text-primary">
                 {t("register.iWantToShop")}
               </span>
-              <span className="mt-1 block text-xs text-gray-500">
+              <span className="mt-1 block text-xs text-text-muted">
                 {t("register.iWantToShopDesc")}
               </span>
             </button>
@@ -132,21 +132,21 @@ function Register() {
               onClick={() => setRole("vendor")}
               className={`rounded-xl border-2 p-4 text-start transition ${
                 role === "vendor"
-                  ? "border-green-600 bg-green-50"
-                  : "border-gray-200 hover:border-gray-300"
+                  ? "border-brand-ring bg-brand-subtle"
+                  : "border-border hover:border-border-strong"
               }`}
             >
-              <span className="block font-semibold text-gray-900">
+              <span className="block font-semibold text-text-primary">
                 {t("register.iWantToSell")}
               </span>
-              <span className="mt-1 block text-xs text-gray-500">
+              <span className="mt-1 block text-xs text-text-muted">
                 {t("register.iWantToSellDesc")}
               </span>
             </button>
           </div>
 
           {role === "vendor" && (
-            <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
+            <p className="mt-3 rounded-lg bg-warning-subtle px-3 py-2 text-xs text-warning">
               {t("register.vendorApprovalNote")}
             </p>
           )}
@@ -201,7 +201,7 @@ function Register() {
         />
 
         <div className="mb-5">
-          <label className="mb-2 block text-sm font-medium text-gray-700">
+          <label className="mb-2 block text-sm font-medium text-text-body">
             {t("register.verificationMethod")}
           </label>
 
@@ -210,7 +210,7 @@ function Register() {
             onChange={(e) =>
               setVerificationMethod(e.target.value)
             }
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-green-600 focus:ring-2 focus:ring-green-100"
+            className="w-full rounded-lg border border-border-strong px-4 py-3 outline-none transition focus:border-brand-ring focus:ring-2 focus:ring-brand-tint"
           >
             <option value="email">{t("auth.method_email")}</option>
             <option value="sms">{t("auth.method_sms")}</option>
@@ -250,11 +250,11 @@ function Register() {
           {loading ? t("register.creating") : t("register.submit")}
         </Button>
 
-        <p className="text-center text-gray-600 mt-6">
+        <p className="text-center text-text-secondary mt-6">
           {t("register.alreadyHaveAccount")}{" "}
           <Link
             to="/login"
-            className="text-green-700 cursor-pointer font-semibold hover:underline"
+            className="text-brand cursor-pointer font-semibold hover:underline"
           >
             {t("register.login")}
           </Link>

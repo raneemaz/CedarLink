@@ -11,7 +11,7 @@ function Input({
   return (
     <div className="flex flex-col gap-2 mb-5">
       {label && (
-        <label className="font-medium text-gray-700">
+        <label className="font-medium text-text-body">
           {label}
         </label>
       )}
@@ -28,12 +28,12 @@ function Input({
           w-full
           rounded-xl
           border
-          border-gray-300
+          border-border-strong
           px-4
           py-3
-          focus:border-green-600
+          focus:border-brand-ring
           focus:ring-2
-          focus:ring-green-200
+          focus:ring-brand-tint
           outline-none
           transition
         "

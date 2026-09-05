@@ -11,8 +11,8 @@ import ProductImageManager from "./ProductImageManager";
 import { localizedName } from "../../utils/localize";
 
 const fieldClass =
-  "w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none " +
-  "focus:border-green-600 focus:ring-1 focus:ring-green-600";
+  "w-full rounded-lg border border-border-strong px-4 py-3 text-sm outline-none " +
+  "focus:border-brand-ring focus:ring-1 focus:ring-brand-ring";
 
 const LANG_LABEL = {
   en: "language.english",
@@ -196,20 +196,20 @@ function VendorProductForm() {
   };
 
   if (loading) {
-    return <p className="text-sm text-gray-500">{t("vendorProductForm.loading")}</p>;
+    return <p className="text-sm text-text-muted">{t("vendorProductForm.loading")}</p>;
   }
 
   if (noStore) {
     return (
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">{t("vendorProductForm.noStoreTitle")}</h1>
-        <div className="mt-6 rounded-xl border border-dashed border-gray-300 bg-white p-12 text-center">
-          <p className="text-gray-600">
+        <h1 className="text-3xl font-bold text-text-primary">{t("vendorProductForm.noStoreTitle")}</h1>
+        <div className="mt-6 rounded-xl border border-dashed border-border-strong bg-surface-raised p-12 text-center">
+          <p className="text-text-secondary">
             {t("vendorProductForm.noStoreBody")}
           </p>
           <Link
             to="/vendor/store"
-            className="mt-4 inline-block font-semibold text-emerald-700 hover:underline"
+            className="mt-4 inline-block font-semibold text-brand hover:underline"
           >
             {t("vendorProductForm.createStore")}
           </Link>
@@ -229,14 +229,14 @@ function VendorProductForm() {
     <div>
       <div className="mb-8">
         <BackLink to="/vendor/products">{t("backLink.vendorProducts")}</BackLink>
-        <h1 className="mt-2 text-3xl font-bold text-gray-900">
+        <h1 className="mt-2 text-3xl font-bold text-text-primary">
           {isEdit ? t("vendorProductForm.editTitle") : t("vendorProductForm.addTitle")}
         </h1>
       </div>
 
       <form
         onSubmit={handleSubmit}
-        className="overflow-hidden rounded-2xl bg-white shadow-sm"
+        className="overflow-hidden rounded-2xl bg-surface-raised shadow-sm"
       >
         <div className="space-y-6 px-6 py-6">
           {/* Name + description, one language at a time */}
@@ -251,7 +251,7 @@ function VendorProductForm() {
               <div>
                 <label
                   htmlFor={`name_${activeLang}`}
-                  className="mb-2 block text-sm font-medium text-gray-700"
+                  className="mb-2 block text-sm font-medium text-text-body"
                 >
                   {t("vendorProductForm.nameLangLabel", { lang: langName })}
                 </label>
@@ -264,14 +264,14 @@ function VendorProductForm() {
                   className={fieldClass}
                 />
                 {activeLang === "en" && errors.name_en && (
-                  <p className="mt-1 text-xs text-red-600">{errors.name_en}</p>
+                  <p className="mt-1 text-xs text-danger">{errors.name_en}</p>
                 )}
               </div>
 
               <div>
                 <label
                   htmlFor={`description_${activeLang}`}
-                  className="mb-2 block text-sm font-medium text-gray-700"
+                  className="mb-2 block text-sm font-medium text-text-body"
                 >
                   {t("vendorProductForm.descriptionLangLabel", {
                     lang: langName,
@@ -288,7 +288,7 @@ function VendorProductForm() {
               </div>
             </div>
 
-            <p className="mt-2 text-xs text-gray-500">
+            <p className="mt-2 text-xs text-text-muted">
               {t("translationTabs.fallbackHint")}
             </p>
           </div>
@@ -297,7 +297,7 @@ function VendorProductForm() {
             <div>
               <label
                 htmlFor="price"
-                className="mb-2 block text-sm font-medium text-gray-700"
+                className="mb-2 block text-sm font-medium text-text-body"
               >
                 {t("vendorProductForm.price")}
               </label>
@@ -312,14 +312,14 @@ function VendorProductForm() {
                 className={fieldClass}
               />
               {errors.price && (
-                <p className="mt-1 text-xs text-red-600">{errors.price}</p>
+                <p className="mt-1 text-xs text-danger">{errors.price}</p>
               )}
             </div>
 
             <div>
               <label
                 htmlFor="stock"
-                className="mb-2 block text-sm font-medium text-gray-700"
+                className="mb-2 block text-sm font-medium text-text-body"
               >
                 {t("vendorProductForm.stock")}
               </label>
@@ -334,7 +334,7 @@ function VendorProductForm() {
                 className={fieldClass}
               />
               {errors.stock && (
-                <p className="mt-1 text-xs text-red-600">{errors.stock}</p>
+                <p className="mt-1 text-xs text-danger">{errors.stock}</p>
               )}
             </div>
           </div>
@@ -342,7 +342,7 @@ function VendorProductForm() {
           <div>
             <label
               htmlFor="category_id"
-              className="mb-2 block text-sm font-medium text-gray-700"
+              className="mb-2 block text-sm font-medium text-text-body"
             >
               {t("vendorProductForm.category")}
             </label>
@@ -361,7 +361,7 @@ function VendorProductForm() {
               ))}
             </select>
             {errors.category_id && (
-              <p className="mt-1 text-xs text-red-600">
+              <p className="mt-1 text-xs text-danger">
                 {errors.category_id}
               </p>
             )}
@@ -369,7 +369,7 @@ function VendorProductForm() {
 
         </div>
 
-        <div className="flex justify-end gap-3 border-t border-gray-100 px-6 py-4">
+        <div className="flex justify-end gap-3 border-t border-border-subtle px-6 py-4">
           <Button
             variant="secondary"
             onClick={() => navigate("/vendor/products")}

@@ -7,8 +7,8 @@ import ReviewItem from "./ReviewItem";
 const PER_PAGE = 5;
 
 const pagerClass =
-  "rounded-lg border border-gray-300 px-3 py-1.5 font-medium text-gray-700 " +
-  "hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50";
+  "rounded-lg border border-border-strong px-3 py-1.5 font-medium text-text-body " +
+  "hover:bg-surface disabled:cursor-not-allowed disabled:opacity-50";
 
 /**
  * Paginated published-review list for a product or store. `endpoint` is
@@ -49,20 +49,20 @@ function ReviewList({ endpoint }) {
   }, [endpoint, page, t]);
 
   if (loading && !data) {
-    return <p className="text-sm text-gray-400">{t("reviews.loading")}</p>;
+    return <p className="text-sm text-text-faint">{t("reviews.loading")}</p>;
   }
   if (error) {
-    return <p className="text-sm text-red-600">{error}</p>;
+    return <p className="text-sm text-danger">{error}</p>;
   }
 
   const reviews = data?.reviews ?? [];
   if (reviews.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-gray-200 px-6 py-10 text-center">
-        <p className="text-sm font-medium text-gray-600">
+      <div className="rounded-xl border border-dashed border-border px-6 py-10 text-center">
+        <p className="text-sm font-medium text-text-secondary">
           {t("reviews.emptyTitle")}
         </p>
-        <p className="mt-1 text-xs text-gray-400">{t("reviews.emptyBody")}</p>
+        <p className="mt-1 text-xs text-text-faint">{t("reviews.emptyBody")}</p>
       </div>
     );
   }
@@ -87,7 +87,7 @@ function ReviewList({ endpoint }) {
           >
             {t("common.previous")}
           </button>
-          <span className="text-gray-500">
+          <span className="text-text-muted">
             {t("common.pageOf", { page, pages })}
           </span>
           <button

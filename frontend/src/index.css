@@ -1,1 +1,97 @@
 @import "tailwindcss";
+
+/*
+ * CedarLink design tokens.
+ *
+ * Named by role, never by colour: `--color-surface`, not `--color-white`.
+ * A role survives a theme change and a colour does not — the day this app
+ * grows a dark theme, `surface` becomes dark and every call site is
+ * already correct, whereas every `bg-white` would have to be found and
+ * argued about one at a time.
+ *
+ * Two ramps, chosen in docs/decisions/0028-design-tokens.md:
+ *   neutral = gray     (was split gray 854 / slate 242)
+ *   brand   = emerald  (was split emerald 222 / green 210)
+ * Warning resolved amber over yellow, info resolved sky over blue.
+ *
+ * Values are the literal Tailwind v4 palette values rather than
+ * `var(--color-gray-50)`, because Tailwind tree-shakes theme variables
+ * that no utility references — and after this migration nothing
+ * references the raw ramp, so the indirection would resolve to nothing.
+ * The ramp and shade each value came from is in the comment, so the
+ * provenance is still readable.
+ *
+ * Several tokens deliberately share a value (`border` and `control` are
+ * both gray-200). That is the point: they are different roles that happen
+ * to agree today, and they are free to diverge.
+ *
+ * 39 roles is more than a healthy system needs. The frontend genuinely
+ * used seven neutral text weights and three neutral border weights before
+ * this change; the token layer's first payoff is that the redundancy is
+ * now countable. Collapsing it is a design decision, and this session was
+ * explicitly not allowed to make one.
+ */
+@theme {
+  /* ---- Surfaces ------------------------------------------------- */
+  --color-surface: oklch(98.5% 0.002 247.839); /* gray-50  — the page */
+  --color-surface-raised: #fff; /* white    — cards */
+  --color-surface-sunken: oklch(96.7% 0.003 264.542); /* gray-100 — insets */
+
+  /* ---- Borders --------------------------------------------------- */
+  --color-border-subtle: oklch(96.7% 0.003 264.542); /* gray-100 — dividers */
+  --color-border: oklch(92.8% 0.006 264.531); /* gray-200 — card edges */
+  --color-border-strong: oklch(87.2% 0.01 258.338); /* gray-300 — inputs */
+
+  /* ---- Text ------------------------------------------------------ */
+  --color-text-primary: oklch(21% 0.034 264.665); /* gray-900 */
+  --color-text-emphasis: oklch(27.8% 0.033 256.848); /* gray-800 */
+  --color-text-body: oklch(37.3% 0.034 259.733); /* gray-700 */
+  --color-text-secondary: oklch(44.6% 0.03 256.802); /* gray-600 */
+  --color-text-muted: oklch(55.1% 0.027 264.364); /* gray-500 */
+  --color-text-faint: oklch(70.7% 0.022 261.325); /* gray-400 */
+  --color-text-disabled: oklch(87.2% 0.01 258.338); /* gray-300 */
+
+  /* ---- Controls -------------------------------------------------- */
+  --color-control: oklch(92.8% 0.006 264.531); /* gray-200 */
+  --color-control-hover: oklch(87.2% 0.01 258.338); /* gray-300 */
+
+  /* On a brand or status fill: the foreground that sits on top of it. */
+  --color-on-brand: #fff; /* white */
+
+  /* ---- Brand ----------------------------------------------------- */
+  --color-brand-subtle: oklch(97.9% 0.021 166.113); /* emerald-50 */
+  --color-brand-tint: oklch(95% 0.052 163.051); /* emerald-100 */
+  --color-brand-ring: oklch(59.6% 0.145 163.225); /* emerald-600 — focus */
+  --color-brand: oklch(50.8% 0.118 165.612); /* emerald-700 */
+  --color-brand-strong: oklch(43.2% 0.095 166.913); /* emerald-800 */
+
+  /* ---- Status: success ------------------------------------------- */
+  /* Currently the brand ramp — CedarLink's brand is green, so "good" and
+     "ours" look the same today. Separate roles so they can stop. */
+  --color-success-subtle: oklch(95% 0.052 163.051); /* emerald-100 */
+  --color-success: oklch(50.8% 0.118 165.612); /* emerald-700 */
+  --color-success-strong: oklch(43.2% 0.095 166.913); /* emerald-800 */
+
+  /* ---- Status: danger -------------------------------------------- */
+  --color-danger-subtle: oklch(97.1% 0.013 17.38); /* red-50 */
+  --color-danger-tint: oklch(93.6% 0.032 17.717); /* red-100 */
+  --color-danger-border: oklch(88.5% 0.062 18.334); /* red-200 */
+  --color-danger-accent: oklch(63.7% 0.237 25.331); /* red-500 */
+  --color-danger: oklch(57.7% 0.245 27.325); /* red-600 */
+  --color-danger-strong: oklch(50.5% 0.213 27.518); /* red-700 */
+
+  /* ---- Status: warning ------------------------------------------- */
+  --color-warning-subtle: oklch(98.7% 0.022 95.277); /* amber-50 */
+  --color-warning-tint: oklch(96.2% 0.059 95.617); /* amber-100 */
+  --color-warning-border: oklch(92.4% 0.12 95.746); /* amber-200 */
+  --color-warning-accent: oklch(82.8% 0.189 84.429); /* amber-400 — stars */
+  --color-warning-muted: oklch(55.5% 0.163 48.998); /* amber-700 */
+  --color-warning: oklch(47.3% 0.137 46.201); /* amber-800 */
+
+  /* ---- Status: info ---------------------------------------------- */
+  --color-info-subtle: oklch(97.7% 0.013 236.62); /* sky-50 */
+  --color-info: oklch(44.3% 0.11 240.79); /* sky-800 */
+
+  /* ---- Chrome ---------------------------------------------------- */
+  --color-scrim: #000; /* black — modal backdrop, used at /40 */
+}

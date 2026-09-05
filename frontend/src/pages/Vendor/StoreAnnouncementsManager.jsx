@@ -37,10 +37,10 @@ function statusKey(item, nowMs) {
 }
 
 const STATUS_STYLE = {
-  live: "bg-emerald-100 text-emerald-800",
-  scheduled: "bg-amber-100 text-amber-800",
-  ended: "bg-gray-100 text-gray-500",
-  inactive: "bg-gray-100 text-gray-500",
+  live: "bg-success-subtle text-success-strong",
+  scheduled: "bg-warning-tint text-warning",
+  ended: "bg-surface-sunken text-text-muted",
+  inactive: "bg-surface-sunken text-text-muted",
 };
 
 function StoreAnnouncementsManager({ storeId }) {
@@ -193,29 +193,29 @@ function StoreAnnouncementsManager({ storeId }) {
       }
     >
       {loading ? (
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-text-muted">
           {t("storeAnnouncements.loading")}
         </p>
       ) : (
         <div className="space-y-4">
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-text-muted">
             {t("storeAnnouncements.activeCount", { count: activeCount })}
           </p>
 
           {items.length === 0 && editing === null && (
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-text-faint">
               {t("storeAnnouncements.empty")}
             </p>
           )}
 
-          <ul className="divide-y divide-gray-100">
+          <ul className="divide-y divide-border-subtle">
             {items.map((item) => {
               const key = statusKey(item, nowMs);
               return (
                 <li key={item.id} className="py-4 first:pt-0">
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div className="min-w-0">
-                      <p className="flex items-center gap-2 font-semibold text-gray-900">
+                      <p className="flex items-center gap-2 font-semibold text-text-primary">
                         {item.title}
                         <span
                           className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLE[key]}`}
@@ -223,7 +223,7 @@ function StoreAnnouncementsManager({ storeId }) {
                           {t(`storeAnnouncements.status.${key}`)}
                         </span>
                       </p>
-                      <p className="mt-1 text-sm text-gray-600">
+                      <p className="mt-1 text-sm text-text-secondary">
                         {item.body}
                       </p>
                     </div>
@@ -233,7 +233,7 @@ function StoreAnnouncementsManager({ storeId }) {
                         type="button"
                         onClick={() => startEdit(item)}
                         aria-label={t("storeAnnouncements.edit")}
-                        className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-700"
+                        className="rounded-lg p-2 text-text-faint hover:bg-surface-sunken hover:text-text-body"
                       >
                         <Pencil className="h-4 w-4" />
                       </button>
@@ -241,7 +241,7 @@ function StoreAnnouncementsManager({ storeId }) {
                         type="button"
                         onClick={() => remove(item)}
                         aria-label={t("storeAnnouncements.delete")}
-                        className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-red-600"
+                        className="rounded-lg p-2 text-text-faint hover:bg-surface-sunken hover:text-danger"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -251,7 +251,7 @@ function StoreAnnouncementsManager({ storeId }) {
                   <button
                     type="button"
                     onClick={() => toggleActive(item)}
-                    className="mt-2 text-xs font-medium text-green-700 hover:underline"
+                    className="mt-2 text-xs font-medium text-brand hover:underline"
                   >
                     {item.is_active
                       ? t("storeAnnouncements.deactivate")
@@ -265,9 +265,9 @@ function StoreAnnouncementsManager({ storeId }) {
           {editing !== null && (
             <form
               onSubmit={submit}
-              className="space-y-4 rounded-xl border border-gray-200 p-4"
+              className="space-y-4 rounded-xl border border-border p-4"
             >
-              <p className="text-sm font-semibold text-gray-900">
+              <p className="text-sm font-semibold text-text-primary">
                 {editing === "new"
                   ? t("storeAnnouncements.newHeading")
                   : t("storeAnnouncements.editHeading")}
@@ -276,7 +276,7 @@ function StoreAnnouncementsManager({ storeId }) {
               <div>
                 <label
                   htmlFor="ann-title"
-                  className="mb-1 block text-sm font-medium text-gray-700"
+                  className="mb-1 block text-sm font-medium text-text-body"
                 >
                   {t("storeAnnouncements.fieldTitle")}
                 </label>
@@ -295,7 +295,7 @@ function StoreAnnouncementsManager({ storeId }) {
               <div>
                 <label
                   htmlFor="ann-body"
-                  className="mb-1 block text-sm font-medium text-gray-700"
+                  className="mb-1 block text-sm font-medium text-text-body"
                 >
                   {t("storeAnnouncements.fieldBody")}
                 </label>
@@ -315,7 +315,7 @@ function StoreAnnouncementsManager({ storeId }) {
                 <div>
                   <label
                     htmlFor="ann-start"
-                    className="mb-1 block text-sm font-medium text-gray-700"
+                    className="mb-1 block text-sm font-medium text-text-body"
                   >
                     {t("storeAnnouncements.fieldStart")}
                   </label>
@@ -327,13 +327,13 @@ function StoreAnnouncementsManager({ storeId }) {
                     onChange={(e) =>
                       setForm((p) => ({ ...p, starts_at: e.target.value }))
                     }
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
+                    className="w-full rounded-lg border border-border-strong px-3 py-2 text-sm outline-none focus:border-brand-ring focus:ring-1 focus:ring-brand-ring"
                   />
                 </div>
                 <div>
                   <label
                     htmlFor="ann-end"
-                    className="mb-1 block text-sm font-medium text-gray-700"
+                    className="mb-1 block text-sm font-medium text-text-body"
                   >
                     {t("storeAnnouncements.fieldEnd")}
                   </label>
@@ -345,12 +345,12 @@ function StoreAnnouncementsManager({ storeId }) {
                     onChange={(e) =>
                       setForm((p) => ({ ...p, ends_at: e.target.value }))
                     }
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
+                    className="w-full rounded-lg border border-border-strong px-3 py-2 text-sm outline-none focus:border-brand-ring focus:ring-1 focus:ring-brand-ring"
                   />
                 </div>
               </div>
 
-              <label className="flex items-center gap-2 text-sm text-gray-700">
+              <label className="flex items-center gap-2 text-sm text-text-body">
                 <input
                   type="checkbox"
                   checked={form.is_active}
@@ -362,7 +362,7 @@ function StoreAnnouncementsManager({ storeId }) {
               </label>
 
               {formError && (
-                <p className="text-xs text-red-600">{formError}</p>
+                <p className="text-xs text-danger">{formError}</p>
               )}
 
               <div className="flex gap-3">

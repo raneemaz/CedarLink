@@ -22,7 +22,7 @@ function PasswordInput({
 
   return (
     <div>
-      <label className="mb-2 block text-sm font-medium text-gray-700">
+      <label className="mb-2 block text-sm font-medium text-text-body">
         {label}
       </label>
 
@@ -33,13 +33,13 @@ function PasswordInput({
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           autoComplete={autoComplete}
-          className="w-full rounded-lg border border-gray-300 px-4 py-3 pe-12 text-sm outline-none transition focus:border-green-600 focus:ring-2 focus:ring-green-100"
+          className="w-full rounded-lg border border-border-strong px-4 py-3 pe-12 text-sm outline-none transition focus:border-brand-ring focus:ring-2 focus:ring-brand-tint"
         />
 
         <button
           type="button"
           onClick={() => setShow(!show)}
-          className="absolute end-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-700"
+          className="absolute end-3 top-1/2 -translate-y-1/2 cursor-pointer text-text-muted hover:text-text-body"
           aria-label={
             show ? t("common.hidePassword") : t("common.showPassword")
           }
@@ -561,7 +561,7 @@ function Security() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 px-6 py-10">
+    <div className="min-h-screen bg-surface px-6 py-10">
       <div className="mx-auto max-w-4xl">
         {}
         <div className="mb-8">
@@ -570,16 +570,16 @@ function Security() {
           </BackLink>
 
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-subtle text-brand">
               <LockKeyhole size={23} />
             </div>
 
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-3xl font-bold text-text-primary">
                 {t("security.title")}
               </h1>
 
-              <p className="mt-1 text-sm text-gray-600">
+              <p className="mt-1 text-sm text-text-secondary">
                 {t("security.subtitle")}
               </p>
             </div>
@@ -587,13 +587,13 @@ function Security() {
         </div>
 
         {}
-        <section className="rounded-2xl bg-white shadow-sm">
-          <div className="border-b border-gray-100 px-6 py-5">
-            <h2 className="text-xl font-semibold text-gray-900">
+        <section className="rounded-2xl bg-surface-raised shadow-sm">
+          <div className="border-b border-border-subtle px-6 py-5">
+            <h2 className="text-xl font-semibold text-text-primary">
               {t("security.changePasswordSection")}
             </h2>
 
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-text-muted">
               {t("security.changePasswordDesc")}
             </p>
           </div>
@@ -631,7 +631,7 @@ function Security() {
               <button
                 type="submit"
                 disabled={loading}
-                className="cursor-pointer rounded-lg bg-green-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60"
+                className="cursor-pointer rounded-lg bg-brand px-6 py-3 text-sm font-semibold text-on-brand transition hover:bg-brand-strong disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {loading ? t("security.changingPassword") : t("security.changePassword")}
               </button>
@@ -640,19 +640,19 @@ function Security() {
         </section>
 
         {}
-        <section className="mt-6 rounded-2xl bg-white shadow-sm">
-          <div className="border-b border-gray-100 px-6 py-5">
+        <section className="mt-6 rounded-2xl bg-surface-raised shadow-sm">
+          <div className="border-b border-border-subtle px-6 py-5">
             <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-subtle text-brand">
                 <ShieldCheck size={22} />
               </div>
 
               <div>
-                <h2 className="text-xl font-semibold text-gray-900">
+                <h2 className="text-xl font-semibold text-text-primary">
                   {t("security.twoFactorTitle")}
                 </h2>
 
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-text-muted">
                   {t("security.twoFactorDesc")}
                 </p>
               </div>
@@ -662,7 +662,7 @@ function Security() {
           <div className="px-6 py-6">
             {}
             {twoFactorLoading ? (
-              <div className="py-4 text-sm text-gray-500">
+              <div className="py-4 text-sm text-text-muted">
                 {t("security.loading")}
               </div>
             ) : (
@@ -670,16 +670,16 @@ function Security() {
                 {}
                 {!twoFactorEnabled && !showSetup && (
                   <div>
-                    <div className="mb-5 rounded-xl border border-gray-200 bg-gray-50 p-4">
+                    <div className="mb-5 rounded-xl border border-border bg-surface p-4">
                       <div className="flex items-center gap-3">
-                        <ShieldOff size={21} className="text-gray-500" />
+                        <ShieldOff size={21} className="text-text-muted" />
 
                         <div>
-                          <p className="font-medium text-gray-900">
+                          <p className="font-medium text-text-primary">
                             {t("security.notEnabled")}
                           </p>
 
-                          <p className="mt-1 text-sm text-gray-500">
+                          <p className="mt-1 text-sm text-text-muted">
                             {t("security.notEnabledDesc")}
                           </p>
                         </div>
@@ -690,7 +690,7 @@ function Security() {
                       type="button"
                       onClick={handleStartTwoFactorSetup}
                       disabled={setupLoading}
-                      className="cursor-pointer rounded-lg bg-green-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60"
+                      className="cursor-pointer rounded-lg bg-brand px-6 py-3 text-sm font-semibold text-on-brand transition hover:bg-brand-strong disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       {setupLoading
                         ? t("security.startingSetup")
@@ -703,25 +703,25 @@ function Security() {
                 {!twoFactorEnabled && showSetup && (
                   <div className="space-y-6">
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900">
+                      <h3 className="text-lg font-semibold text-text-primary">
                         {t("security.setUp")}
                       </h3>
 
-                      <p className="mt-1 text-sm text-gray-500">
+                      <p className="mt-1 text-sm text-text-muted">
                         {t("security.setupEmailNote")}
                       </p>
                     </div>
 
                     {}
                     {setupData && (
-                      <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
+                      <div className="rounded-xl border border-border bg-surface p-5">
                         {}
                         {setupData.qr_code_data_url && (
                           <div className="mb-5 flex justify-center">
                             <img
                               src={setupData.qr_code_data_url}
                               alt={t("security.qrAlt")}
-                              className="h-52 w-52 rounded-lg border bg-white p-2"
+                              className="h-52 w-52 rounded-lg border bg-surface-raised p-2"
                             />
                           </div>
                         )}
@@ -729,11 +729,11 @@ function Security() {
                         {}
                         {setupData.manual_key && (
                           <div className="mb-5">
-                            <p className="text-sm font-medium text-gray-700">
+                            <p className="text-sm font-medium text-text-body">
                               {t("security.setupKey")}
                             </p>
 
-                            <p className="mt-1 break-all rounded-lg bg-white p-3 font-mono text-sm text-gray-800">
+                            <p className="mt-1 break-all rounded-lg bg-surface-raised p-3 font-mono text-sm text-text-emphasis">
                               {setupData.manual_key}
                             </p>
                           </div>
@@ -742,28 +742,28 @@ function Security() {
                         {}
                         {setupData.method === "email" && (
                           <div>
-                            <p className="font-medium text-gray-900">
+                            <p className="font-medium text-text-primary">
                               {t("security.codeSent")}
                             </p>
 
-                            <p className="mt-1 text-sm text-gray-600">
+                            <p className="mt-1 text-sm text-text-secondary">
                               {t("security.codeSentTo")}
                             </p>
 
                             {setupData.email && (
-                              <p className="mt-2 font-medium text-gray-800">
+                              <p className="mt-2 font-medium text-text-emphasis">
                                 {setupData.email}
                               </p>
                             )}
 
-                            <p className="mt-3 text-sm text-gray-500">
+                            <p className="mt-3 text-sm text-text-muted">
                               {t("security.devNote")}
                             </p>
                           </div>
                         )}
 
                         {setupData.message && (
-                          <p className="mt-3 text-sm text-gray-600">
+                          <p className="mt-3 text-sm text-text-secondary">
                             {setupData.message}
                           </p>
                         )}
@@ -771,7 +771,7 @@ function Security() {
                     )}
 
                     <div>
-                      <label className="mb-2 block text-sm font-medium text-gray-700">
+                      <label className="mb-2 block text-sm font-medium text-text-body">
                         {t("security.verificationCode")}
                       </label>
 
@@ -782,7 +782,7 @@ function Security() {
                         value={verificationCode}
                         onChange={(e) => setVerificationCode(e.target.value)}
                         placeholder={t("security.enterVerificationCode")}
-                        className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none transition focus:border-green-600 focus:ring-2 focus:ring-green-100"
+                        className="w-full rounded-lg border border-border-strong px-4 py-3 text-sm outline-none transition focus:border-brand-ring focus:ring-2 focus:ring-brand-tint"
                       />
                     </div>
 
@@ -791,7 +791,7 @@ function Security() {
                         type="button"
                         onClick={handleConfirmTwoFactorSetup}
                         disabled={confirmLoading}
-                        className="cursor-pointer rounded-lg bg-green-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60"
+                        className="cursor-pointer rounded-lg bg-brand px-6 py-3 text-sm font-semibold text-on-brand transition hover:bg-brand-strong disabled:cursor-not-allowed disabled:opacity-60"
                       >
                         {confirmLoading ? t("security.confirming") : t("security.confirmEnable")}
                       </button>
@@ -800,7 +800,7 @@ function Security() {
                         type="button"
                         onClick={handleCancelSetup}
                         disabled={confirmLoading}
-                        className="cursor-pointer rounded-lg border border-gray-300 px-6 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
+                        className="cursor-pointer rounded-lg border border-border-strong px-6 py-3 text-sm font-semibold text-text-body transition hover:bg-surface disabled:cursor-not-allowed disabled:opacity-60"
                       >
                         {t("security.cancel")}
                       </button>
@@ -811,16 +811,16 @@ function Security() {
                 {}
                 {twoFactorEnabled && (
                   <div className="space-y-5">
-                    <div className="rounded-xl border border-green-200 bg-green-50 p-4">
+                    <div className="rounded-xl border border-brand-tint bg-brand-subtle p-4">
                       <div className="flex items-center gap-3">
-                        <ShieldCheck size={22} className="text-green-700" />
+                        <ShieldCheck size={22} className="text-brand" />
 
                         <div>
-                          <p className="font-semibold text-green-900">
+                          <p className="font-semibold text-brand-strong">
                             {t("security.enabled")}
                           </p>
 
-                          <p className="mt-1 text-sm text-green-800">
+                          <p className="mt-1 text-sm text-brand-strong">
                             {t("security.enabledDesc")}
                           </p>
                         </div>
@@ -828,12 +828,12 @@ function Security() {
                     </div>
 
                     {twoFactorMethod && (
-                      <div className="rounded-lg border border-gray-200 p-4">
-                        <p className="text-sm text-gray-500">
+                      <div className="rounded-lg border border-border p-4">
+                        <p className="text-sm text-text-muted">
                           {t("security.authMethod")}
                         </p>
 
-                        <p className="mt-1 font-medium capitalize text-gray-900">
+                        <p className="mt-1 font-medium capitalize text-text-primary">
                           {twoFactorMethod}
                         </p>
                       </div>
@@ -841,12 +841,12 @@ function Security() {
 
                     {}
                     {showRecoveryCodes && recoveryCodes.length > 0 && (
-                      <div className="rounded-xl border border-yellow-200 bg-yellow-50 p-5">
-                        <h3 className="font-semibold text-gray-900">
+                      <div className="rounded-xl border border-warning-border bg-warning-subtle p-5">
+                        <h3 className="font-semibold text-text-primary">
                           {t("security.recoveryCodesTitle")}
                         </h3>
 
-                        <p className="mt-1 text-sm text-gray-600">
+                        <p className="mt-1 text-sm text-text-secondary">
                           {t("security.recoveryCodesNote")}
                         </p>
 
@@ -854,7 +854,7 @@ function Security() {
                           {recoveryCodes.map((code, index) => (
                             <div
                               key={`${code}-${index}`}
-                              className="rounded-lg bg-white px-4 py-3 font-mono text-sm text-gray-800 shadow-sm"
+                              className="rounded-lg bg-surface-raised px-4 py-3 font-mono text-sm text-text-emphasis shadow-sm"
                             >
                               {code}
                             </div>
@@ -864,7 +864,7 @@ function Security() {
                         <button
                           type="button"
                           onClick={() => setShowRecoveryCodes(false)}
-                          className="mt-4 text-sm font-medium text-gray-600 hover:underline"
+                          className="mt-4 text-sm font-medium text-text-secondary hover:underline"
                         >
                           {t("security.hideRecoveryCodes")}
                         </button>
@@ -873,16 +873,16 @@ function Security() {
 
                     {}
                     {!showRegenerateCodes && (
-                      <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
-                        <h3 className="font-semibold text-gray-900">
+                      <div className="rounded-xl border border-border bg-surface p-5">
+                        <h3 className="font-semibold text-text-primary">
                           {t("security.recoveryCodesHeading")}
                         </h3>
 
-                        <p className="mt-1 text-sm text-gray-600">
+                        <p className="mt-1 text-sm text-text-secondary">
                           {t("security.regenerateDesc")}
                         </p>
 
-                        <p className="mt-2 text-sm font-medium text-red-600">
+                        <p className="mt-2 text-sm font-medium text-danger">
                           {t("security.regenerateWarn")}
                         </p>
 
@@ -897,7 +897,7 @@ function Security() {
                             setRegenerateChallengeToken("");
                             setRegenerateChallengeStarted(false);
                           }}
-                          className="mt-4 cursor-pointer rounded-lg border border-green-700 px-5 py-3 text-sm font-semibold text-green-700 transition hover:bg-green-50"
+                          className="mt-4 cursor-pointer rounded-lg border border-brand px-5 py-3 text-sm font-semibold text-brand transition hover:bg-brand-subtle"
                         >
                           {t("security.regenerateTitle")}
                         </button>
@@ -905,14 +905,14 @@ function Security() {
                     )}
 
                     {showRegenerateCodes && (
-                      <div className="rounded-xl border border-yellow-300 bg-yellow-50 p-5">
-                        <h3 className="font-semibold text-gray-900">
+                      <div className="rounded-xl border border-warning-border bg-warning-subtle p-5">
+                        <h3 className="font-semibold text-text-primary">
                           {t("security.regenerateTitle")}
                         </h3>
 
                         {!regenerateChallengeStarted ? (
                           <>
-                            <p className="mt-1 text-sm text-gray-600">
+                            <p className="mt-1 text-sm text-text-secondary">
                               For security, enter your current password. We will
                               then send you a verification code.
                             </p>
@@ -928,7 +928,7 @@ function Security() {
                                 }
                                 placeholder={t("security.currentPasswordPlaceholder")}
                                 autoComplete="current-password"
-                                className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 pe-12 text-sm outline-none transition focus:border-green-600 focus:ring-2 focus:ring-green-100"
+                                className="w-full rounded-lg border border-border-strong bg-surface-raised px-4 py-3 pe-12 text-sm outline-none transition focus:border-brand-ring focus:ring-2 focus:ring-brand-tint"
                               />
 
                               <button
@@ -938,7 +938,7 @@ function Security() {
                                     !showRegeneratePassword,
                                   )
                                 }
-                                className="absolute end-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-700"
+                                className="absolute end-3 top-1/2 -translate-y-1/2 cursor-pointer text-text-muted hover:text-text-body"
                               >
                                 {showRegeneratePassword ? (
                                   <EyeOff size={19} />
@@ -953,7 +953,7 @@ function Security() {
                                 type="button"
                                 onClick={handleStartRecoveryCodeRegeneration}
                                 disabled={regenerateLoading}
-                                className="cursor-pointer rounded-lg bg-green-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60"
+                                className="cursor-pointer rounded-lg bg-brand px-5 py-3 text-sm font-semibold text-on-brand transition hover:bg-brand-strong disabled:cursor-not-allowed disabled:opacity-60"
                               >
                                 {regenerateLoading
                                   ? t("security.sending")
@@ -964,7 +964,7 @@ function Security() {
                                 type="button"
                                 onClick={handleCancelRecoveryCodeRegeneration}
                                 disabled={regenerateLoading}
-                                className="cursor-pointer rounded-lg border border-gray-300 bg-white px-5 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
+                                className="cursor-pointer rounded-lg border border-border-strong bg-surface-raised px-5 py-3 text-sm font-semibold text-text-body transition hover:bg-surface"
                               >
                                 {t("security.cancel")}
                               </button>
@@ -972,12 +972,12 @@ function Security() {
                           </>
                         ) : (
                           <>
-                            <p className="mt-1 text-sm text-gray-600">
+                            <p className="mt-1 text-sm text-text-secondary">
                               Enter the verification code to generate your new
                               recovery codes.
                             </p>
 
-                            <p className="mt-2 text-sm font-medium text-red-600">
+                            <p className="mt-2 text-sm font-medium text-danger">
                               {t("security.regeneratePrevWarn")}
                             </p>
 
@@ -990,7 +990,7 @@ function Security() {
                                 setRegenerateCode(e.target.value)
                               }
                               placeholder={t("security.enterVerificationCode")}
-                              className="mt-4 w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-green-600 focus:ring-2 focus:ring-green-100"
+                              className="mt-4 w-full rounded-lg border border-border-strong bg-surface-raised px-4 py-3 text-sm outline-none transition focus:border-brand-ring focus:ring-2 focus:ring-brand-tint"
                             />
 
                             <div className="mt-4 flex flex-wrap gap-3">
@@ -998,7 +998,7 @@ function Security() {
                                 type="button"
                                 onClick={handleRegenerateRecoveryCodes}
                                 disabled={regenerateVerifyLoading}
-                                className="cursor-pointer rounded-lg bg-green-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60"
+                                className="cursor-pointer rounded-lg bg-brand px-5 py-3 text-sm font-semibold text-on-brand transition hover:bg-brand-strong disabled:cursor-not-allowed disabled:opacity-60"
                               >
                                 {regenerateVerifyLoading
                                   ? t("security.generating")
@@ -1009,7 +1009,7 @@ function Security() {
                                 type="button"
                                 onClick={handleCancelRecoveryCodeRegeneration}
                                 disabled={regenerateVerifyLoading}
-                                className="cursor-pointer rounded-lg border border-gray-300 bg-white px-5 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
+                                className="cursor-pointer rounded-lg border border-border-strong bg-surface-raised px-5 py-3 text-sm font-semibold text-text-body transition hover:bg-surface"
                               >
                                 {t("security.cancel")}
                               </button>
@@ -1032,7 +1032,7 @@ function Security() {
                           setSecurityChallengeToken("");
                           setSecurityChallengeStarted(false);
                         }}
-                        className="cursor-pointer rounded-lg border border-red-300 px-5 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-50"
+                        className="cursor-pointer rounded-lg border border-danger-border px-5 py-3 text-sm font-semibold text-danger transition hover:bg-danger-subtle"
                       >
                         {t("security.disableTitle")}
                       </button>
@@ -1040,14 +1040,14 @@ function Security() {
 
                     {}
                     {showDisable && (
-                      <div className="rounded-xl border border-red-200 bg-red-50 p-5">
-                        <h3 className="font-semibold text-gray-900">
+                      <div className="rounded-xl border border-danger-border bg-danger-subtle p-5">
+                        <h3 className="font-semibold text-text-primary">
                           {t("security.disableTitle")}
                         </h3>
 
                         {!securityChallengeStarted ? (
                           <>
-                            <p className="mt-1 text-sm text-gray-600">
+                            <p className="mt-1 text-sm text-text-secondary">
                               For security, enter your current password. We will
                               then send you a verification code.
                             </p>
@@ -1063,7 +1063,7 @@ function Security() {
                                 }
                                 placeholder={t("security.currentPasswordPlaceholder")}
                                 autoComplete="current-password"
-                                className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 pe-12 text-sm outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-100"
+                                className="w-full rounded-lg border border-border-strong bg-surface-raised px-4 py-3 pe-12 text-sm outline-none transition focus:border-danger-accent focus:ring-2 focus:ring-danger-tint"
                               />
 
                               <button
@@ -1071,7 +1071,7 @@ function Security() {
                                 onClick={() =>
                                   setShowSecurityPassword(!showSecurityPassword)
                                 }
-                                className="absolute end-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                                className="absolute end-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-body"
                               >
                                 {showSecurityPassword ? (
                                   <EyeOff size={19} />
@@ -1086,7 +1086,7 @@ function Security() {
                                 type="button"
                                 onClick={handleCreateSecurityChallenge}
                                 disabled={challengeLoading}
-                                className="cursor-pointer rounded-lg bg-red-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+                                className="cursor-pointer rounded-lg bg-danger px-5 py-3 text-sm font-semibold text-on-brand transition hover:bg-danger-strong disabled:cursor-not-allowed disabled:opacity-60"
                               >
                                 {challengeLoading
                                   ? t("security.startingVerification")
@@ -1097,7 +1097,7 @@ function Security() {
                                 type="button"
                                 onClick={handleCancelDisable}
                                 disabled={challengeLoading}
-                                className="cursor-pointer rounded-lg border border-gray-300 bg-white px-5 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
+                                className="cursor-pointer rounded-lg border border-border-strong bg-surface-raised px-5 py-3 text-sm font-semibold text-text-body transition hover:bg-surface"
                               >
                                 {t("security.cancel")}
                               </button>
@@ -1105,7 +1105,7 @@ function Security() {
                           </>
                         ) : (
                           <>
-                            <p className="mt-1 text-sm text-gray-600">
+                            <p className="mt-1 text-sm text-text-secondary">
                               Enter the verification code to confirm that you
                               want to disable two-factor authentication.
                             </p>
@@ -1117,7 +1117,7 @@ function Security() {
                               value={disableCode}
                               onChange={(e) => setDisableCode(e.target.value)}
                               placeholder={t("security.enterVerificationCode")}
-                              className="mt-4 w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-100"
+                              className="mt-4 w-full rounded-lg border border-border-strong bg-surface-raised px-4 py-3 text-sm outline-none transition focus:border-danger-accent focus:ring-2 focus:ring-danger-tint"
                             />
 
                             <div className="mt-4 flex flex-wrap gap-3">
@@ -1125,7 +1125,7 @@ function Security() {
                                 type="button"
                                 onClick={handleDisableTwoFactor}
                                 disabled={disableLoading}
-                                className="cursor-pointer rounded-lg bg-red-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+                                className="cursor-pointer rounded-lg bg-danger px-5 py-3 text-sm font-semibold text-on-brand transition hover:bg-danger-strong disabled:cursor-not-allowed disabled:opacity-60"
                               >
                                 {disableLoading
                                   ? t("security.disabling")
@@ -1136,7 +1136,7 @@ function Security() {
                                 type="button"
                                 onClick={handleCancelDisable}
                                 disabled={disableLoading}
-                                className="cursor-pointer rounded-lg border border-gray-300 bg-white px-5 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
+                                className="cursor-pointer rounded-lg border border-border-strong bg-surface-raised px-5 py-3 text-sm font-semibold text-text-body transition hover:bg-surface"
                               >
                                 {t("security.cancel")}
                               </button>

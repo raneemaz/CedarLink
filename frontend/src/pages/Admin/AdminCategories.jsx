@@ -9,8 +9,8 @@ import LanguageTabs from "../../components/common/LanguageTabs/LanguageTabs";
 import { localizedName } from "../../utils/localize";
 
 const fieldClass =
-  "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none " +
-  "focus:border-green-600 focus:ring-1 focus:ring-green-600";
+  "w-full rounded-lg border border-border-strong px-3 py-2 text-sm outline-none " +
+  "focus:border-brand-ring focus:ring-1 focus:ring-brand-ring";
 
 const LANG_LABEL = {
   en: "language.english",
@@ -163,18 +163,18 @@ function AdminCategories() {
   };
 
   if (loading) {
-    return <p className="text-sm text-gray-500">{t("adminCategories.loading")}</p>;
+    return <p className="text-sm text-text-muted">{t("adminCategories.loading")}</p>;
   }
 
   return (
     <div>
-      <h1 className="mb-6 text-3xl font-bold text-gray-900">{t("adminCategories.title")}</h1>
+      <h1 className="mb-6 text-3xl font-bold text-text-primary">{t("adminCategories.title")}</h1>
 
       <form
         onSubmit={handleCreate}
-        className="mb-6 rounded-2xl bg-white p-5 shadow-sm"
+        className="mb-6 rounded-2xl bg-surface-raised p-5 shadow-sm"
       >
-        <p className="mb-3 text-sm font-semibold text-gray-700">
+        <p className="mb-3 text-sm font-semibold text-text-body">
           {t("adminCategories.addHeading")}
         </p>
 
@@ -208,24 +208,24 @@ function AdminCategories() {
           </Button>
         </div>
 
-        <p className="mt-2 text-xs text-gray-500">
+        <p className="mt-2 text-xs text-text-muted">
           {t("translationTabs.fallbackHint")}
         </p>
       </form>
 
-      <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
+      <div className="overflow-hidden rounded-2xl bg-surface-raised shadow-sm">
         <table className="min-w-full text-sm">
           <thead>
-            <tr className="border-b border-gray-100 text-start text-xs uppercase tracking-wide text-gray-400">
+            <tr className="border-b border-border-subtle text-start text-xs uppercase tracking-wide text-text-faint">
               <th className="px-4 py-3 font-medium">{t("adminCategories.colName")}</th>
               <th className="px-4 py-3 font-medium">{t("adminCategories.colDescription")}</th>
               <th className="px-4 py-3 font-medium text-end">{t("adminCategories.colActions")}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-border-subtle">
             {categories.map((category) =>
               editId === category.id ? (
-                <tr key={category.id} className="bg-emerald-50/40">
+                <tr key={category.id} className="bg-brand-subtle/40">
                   <td className="px-4 py-3">
                     <LanguageTabs
                       active={editLang}
@@ -263,14 +263,14 @@ function AdminCategories() {
                         type="button"
                         onClick={saveEdit}
                         disabled={savingEdit}
-                        className="font-medium text-emerald-700 hover:underline disabled:opacity-50"
+                        className="font-medium text-brand hover:underline disabled:opacity-50"
                       >
                         {savingEdit ? t("adminCategories.saving") : t("common.save")}
                       </button>
                       <button
                         type="button"
                         onClick={() => setEditId(null)}
-                        className="font-medium text-gray-500 hover:underline"
+                        className="font-medium text-text-muted hover:underline"
                       >
                         {t("common.cancel")}
                       </button>
@@ -279,10 +279,10 @@ function AdminCategories() {
                 </tr>
               ) : (
                 <tr key={category.id}>
-                  <td className="px-4 py-3 font-medium text-gray-900">
+                  <td className="px-4 py-3 font-medium text-text-primary">
                     {localizedName(category, i18n.language)}
                   </td>
-                  <td className="px-4 py-3 text-gray-600">
+                  <td className="px-4 py-3 text-text-secondary">
                     {category.description || "—"}
                   </td>
                   <td className="px-4 py-3">
@@ -290,14 +290,14 @@ function AdminCategories() {
                       <button
                         type="button"
                         onClick={() => startEdit(category)}
-                        className="font-medium text-emerald-700 hover:underline"
+                        className="font-medium text-brand hover:underline"
                       >
                         {t("common.edit")}
                       </button>
                       <button
                         type="button"
                         onClick={() => setDeleteTarget(category)}
-                        className="font-medium text-red-600 hover:underline"
+                        className="font-medium text-danger hover:underline"
                       >
                         {t("common.delete")}
                       </button>

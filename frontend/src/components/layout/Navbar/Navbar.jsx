@@ -83,7 +83,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-slate-200 bg-white shadow-sm">
+    <nav className="sticky top-0 z-50 border-b border-border bg-surface-raised shadow-sm">
       <div className="mx-auto flex h-20 max-w-screen-2xl items-center justify-between px-4 lg:px-8">
         {/* Logo */}
         <div className="mb-1 flex items-center justify-center gap-2">
@@ -93,7 +93,7 @@ const Navbar = () => {
             className="h-10 w-auto object-contain"
           />
 
-          <Link to="/" className="text-xl font-bold text-emerald-700">
+          <Link to="/" className="text-xl font-bold text-brand">
             CedarLink
           </Link>
         </div>
@@ -104,8 +104,8 @@ const Navbar = () => {
             to="/"
             className={({ isActive }) =>
               isActive
-                ? "text-emerald-700"
-                : "text-slate-700 hover:text-emerald-700"
+                ? "text-brand"
+                : "text-text-body hover:text-brand"
             }
           >
             {t("navbar.home")}
@@ -115,8 +115,8 @@ const Navbar = () => {
             to="/products"
             className={({ isActive }) =>
               isActive
-                ? "text-emerald-700"
-                : "text-slate-700 hover:text-emerald-700"
+                ? "text-brand"
+                : "text-text-body hover:text-brand"
             }
           >
             {t("navbar.products")}
@@ -124,14 +124,14 @@ const Navbar = () => {
 
           <NavLink
             to="/categories"
-            className="text-slate-700 hover:text-emerald-700"
+            className="text-text-body hover:text-brand"
           >
             {t("navbar.categories")}
           </NavLink>
 
           <NavLink
             to="/stores"
-            className="text-slate-700 hover:text-emerald-700"
+            className="text-text-body hover:text-brand"
           >
             {t("navbar.stores")}
           </NavLink>
@@ -142,8 +142,8 @@ const Navbar = () => {
           onSubmit={handleSearchSubmit}
           className="mx-8 hidden w-full max-w-md xl:flex"
         >
-          <div className="flex w-full items-center rounded-full border border-slate-300 bg-slate-50 px-4">
-            <Search size={18} className="text-slate-400" />
+          <div className="flex w-full items-center rounded-full border border-border-strong bg-surface px-4">
+            <Search size={18} className="text-text-faint" />
 
             <input
               type="text"
@@ -160,11 +160,11 @@ const Navbar = () => {
           <Link
             to="/cart"
             aria-label={t("navbar.cart")}
-            className="relative cursor-pointer hover:text-emerald-700"
+            className="relative cursor-pointer hover:text-brand"
           >
             <ShoppingCart size={24} />
 
-            <span className="absolute -end-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-700 text-xs text-white">
+            <span className="absolute -end-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-brand text-xs text-on-brand">
               {cartCount}
             </span>
           </Link>
@@ -173,14 +173,14 @@ const Navbar = () => {
             <div className="hidden items-center gap-3 lg:flex">
               <Link
                 to="/login"
-                className="rounded-lg border border-emerald-700 px-4 py-2 font-medium text-emerald-700 transition hover:bg-emerald-50"
+                className="rounded-lg border border-brand px-4 py-2 font-medium text-brand transition hover:bg-brand-subtle"
               >
                 {t("navbar.login")}
               </Link>
 
               <Link
                 to="/register"
-                className="rounded-lg bg-emerald-700 px-4 py-2 font-medium text-white transition hover:bg-emerald-800"
+                className="rounded-lg bg-brand px-4 py-2 font-medium text-on-brand transition hover:bg-brand-strong"
               >
                 {t("navbar.register")}
               </Link>
@@ -193,7 +193,7 @@ const Navbar = () => {
               <div className="group relative hidden lg:block">
                 <button
                   type="button"
-                  className="flex items-center gap-2 rounded-lg px-3 py-2 transition hover:bg-slate-100"
+                  className="flex items-center gap-2 rounded-lg px-3 py-2 transition hover:bg-surface-sunken"
                 >
                   <User size={20} />
 
@@ -205,12 +205,12 @@ const Navbar = () => {
                 </button>
 
                 {/* Profile Dropdown */}
-                <div className="absolute end-0 top-full mt-1 hidden w-48 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg group-hover:block">
+                <div className="absolute end-0 top-full mt-1 hidden w-48 overflow-hidden rounded-lg border border-border bg-surface-raised shadow-lg group-hover:block">
                   {roleLinks.map((link) => (
                     <Link
                       key={link.to}
                       to={link.to}
-                      className="block cursor-pointer px-4 py-3 text-sm font-medium text-emerald-700 transition hover:bg-slate-100"
+                      className="block cursor-pointer px-4 py-3 text-sm font-medium text-brand transition hover:bg-surface-sunken"
                     >
                       {link.label}
                     </Link>
@@ -218,14 +218,14 @@ const Navbar = () => {
 
                   <Link
                     to="/profile"
-                    className="block cursor-pointer px-4 py-3 text-sm text-slate-700 transition hover:bg-slate-100 hover:text-emerald-700"
+                    className="block cursor-pointer px-4 py-3 text-sm text-text-body transition hover:bg-surface-sunken hover:text-brand"
                   >
                     {t("navbar.myProfile")}
                   </Link>
 
                   <Link
                     to="/settings"
-                    className="block cursor-pointer px-4 py-3 text-sm text-slate-700 transition hover:bg-slate-100 hover:text-emerald-700"
+                    className="block cursor-pointer px-4 py-3 text-sm text-text-body transition hover:bg-surface-sunken hover:text-brand"
                   >
                     {t("navbar.settings")}
                   </Link>
@@ -235,7 +235,7 @@ const Navbar = () => {
               <button
                 type="button"
                 onClick={handleLogout}
-                className="hidden cursor-pointer rounded-lg bg-red-500 px-4 py-2 text-white transition hover:bg-red-600 lg:block"
+                className="hidden cursor-pointer rounded-lg bg-danger-accent px-4 py-2 text-on-brand transition hover:bg-danger lg:block"
               >
                 {t("navbar.logout")}
               </button>
@@ -256,7 +256,7 @@ const Navbar = () => {
 
       {/* Mobile drawer */}
       {mobileOpen && (
-        <div className="border-t border-slate-200 bg-white px-4 py-3 lg:hidden">
+        <div className="border-t border-border bg-surface-raised px-4 py-3 lg:hidden">
           <nav className="flex flex-col">
             {NAV_LINKS.map((link) => (
               <NavLink
@@ -267,8 +267,8 @@ const Navbar = () => {
                 className={({ isActive }) =>
                   `rounded-lg px-3 py-2.5 text-sm font-medium ${
                     isActive
-                      ? "bg-emerald-50 text-emerald-700"
-                      : "text-slate-700 hover:bg-slate-100"
+                      ? "bg-brand-subtle text-brand"
+                      : "text-text-body hover:bg-surface-sunken"
                   }`
                 }
               >
@@ -276,7 +276,7 @@ const Navbar = () => {
               </NavLink>
             ))}
 
-            <div className="my-2 border-t border-slate-100" />
+            <div className="my-2 border-t border-border-subtle" />
 
             {isAuthenticated ? (
               <>
@@ -285,7 +285,7 @@ const Navbar = () => {
                     key={link.to}
                     to={link.to}
                     onClick={() => setMobileOpen(false)}
-                    className="rounded-lg px-3 py-2.5 text-sm font-medium text-emerald-700 hover:bg-slate-100"
+                    className="rounded-lg px-3 py-2.5 text-sm font-medium text-brand hover:bg-surface-sunken"
                   >
                     {link.label}
                   </Link>
@@ -293,21 +293,21 @@ const Navbar = () => {
                 <Link
                   to="/profile"
                   onClick={() => setMobileOpen(false)}
-                  className="rounded-lg px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-100"
+                  className="rounded-lg px-3 py-2.5 text-sm text-text-body hover:bg-surface-sunken"
                 >
                   {t("navbar.myProfile")}
                 </Link>
                 <Link
                   to="/settings"
                   onClick={() => setMobileOpen(false)}
-                  className="rounded-lg px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-100"
+                  className="rounded-lg px-3 py-2.5 text-sm text-text-body hover:bg-surface-sunken"
                 >
                   {t("navbar.settings")}
                 </Link>
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="mt-1 rounded-lg px-3 py-2.5 text-start text-sm font-medium text-red-600 hover:bg-red-50"
+                  className="mt-1 rounded-lg px-3 py-2.5 text-start text-sm font-medium text-danger hover:bg-danger-subtle"
                 >
                   {t("navbar.logout")}
                 </button>
@@ -317,14 +317,14 @@ const Navbar = () => {
                 <Link
                   to="/login"
                   onClick={() => setMobileOpen(false)}
-                  className="flex-1 rounded-lg border border-emerald-700 px-4 py-2 text-center font-medium text-emerald-700"
+                  className="flex-1 rounded-lg border border-brand px-4 py-2 text-center font-medium text-brand"
                 >
                   {t("navbar.login")}
                 </Link>
                 <Link
                   to="/register"
                   onClick={() => setMobileOpen(false)}
-                  className="flex-1 rounded-lg bg-emerald-700 px-4 py-2 text-center font-medium text-white"
+                  className="flex-1 rounded-lg bg-brand px-4 py-2 text-center font-medium text-on-brand"
                 >
                   {t("navbar.register")}
                 </Link>

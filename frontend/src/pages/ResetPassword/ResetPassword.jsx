@@ -71,13 +71,13 @@ function ResetPassword() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-10">
+    <div className="min-h-screen bg-surface-sunken flex items-center justify-center px-4 py-10">
       <Card className="w-full max-w-lg">
-        <h1 className="text-3xl font-bold text-center text-green-700">
+        <h1 className="text-3xl font-bold text-center text-brand">
           {t("resetPassword.title")}
         </h1>
 
-        <p className="text-center text-gray-500 mt-3 mb-8">
+        <p className="text-center text-text-muted mt-3 mb-8">
           {t("resetPassword.subtitle", {
             email: resetData?.email || t("auth.genericEmail"),
           })}
@@ -122,11 +122,11 @@ function ResetPassword() {
           {loading ? t("resetPassword.resetting") : t("resetPassword.submit")}
         </Button>
 
-        <p className="text-center text-gray-600 mt-6">
+        <p className="text-center text-text-secondary mt-6">
           {t("resetPassword.didntGetCode")}{" "}
           <Link
             to="/forgot-password"
-            className="text-green-700 cursor-pointer font-semibold hover:underline"
+            className="text-brand cursor-pointer font-semibold hover:underline"
           >
             {t("resetPassword.requestNew")}
           </Link>
