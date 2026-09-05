@@ -10,10 +10,10 @@ function ProductCard({ product }) {
   const description = localizedDescription(product, i18n.language);
 
   return (
-    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white transition duration-200 hover:-translate-y-1 hover:shadow-md">
+    <div className="overflow-hidden rounded-xl border border-border bg-surface-raised transition duration-200 hover:-translate-y-1 hover:shadow-md">
 
       {/* Product Image */}
-      <div className="flex h-44 items-center justify-center bg-gray-100">
+      <div className="flex h-44 items-center justify-center bg-surface-sunken">
         {product.image ? (
           <img
             src={product.image}
@@ -21,7 +21,7 @@ function ProductCard({ product }) {
             className="h-full w-full object-cover"
           />
         ) : (
-          <div className="flex flex-col items-center gap-2 text-gray-400">
+          <div className="flex flex-col items-center gap-2 text-text-faint">
             <span className="text-xs">{t("productCard.noImage")}</span>
           </div>
         )}
@@ -30,11 +30,11 @@ function ProductCard({ product }) {
       {/* Product Info */}
       <div className="p-4">
 
-        <h3 className="truncate text-base font-semibold text-gray-900">
+        <h3 className="truncate text-base font-semibold text-text-primary">
           {name}
         </h3>
 
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-text-muted">
           {product.store_name || t("productCard.localStore")}
         </p>
 
@@ -46,7 +46,7 @@ function ProductCard({ product }) {
         />
 
         {description && (
-          <p className="mt-1 line-clamp-2 text-sm text-gray-500">
+          <p className="mt-1 line-clamp-2 text-sm text-text-muted">
             {description}
           </p>
         )}
@@ -55,12 +55,12 @@ function ProductCard({ product }) {
 
           <Price
             amount={product.price}
-            className="text-base font-bold text-emerald-700"
+            className="text-base font-bold text-brand"
           />
 
           <Link
             to={`/products/${product.id}`}
-            className="rounded-md border border-emerald-700 px-3 py-1.5 text-sm font-medium text-emerald-700 transition hover:bg-emerald-700 hover:text-white"
+            className="rounded-md border border-brand px-3 py-1.5 text-sm font-medium text-brand transition hover:bg-brand hover:text-on-brand"
           >
             {t("productCard.view")}
           </Link>
@@ -68,7 +68,7 @@ function ProductCard({ product }) {
         </div>
 
         {typeof product.stock === "number" && (
-          <p className="mt-2 text-xs text-gray-400">
+          <p className="mt-2 text-xs text-text-faint">
             {t("productCard.inStock", { count: product.stock })}
           </p>
         )}

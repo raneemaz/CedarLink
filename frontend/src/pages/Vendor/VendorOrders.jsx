@@ -31,20 +31,20 @@ const DELIVERY_NEXT_LABEL = {
 };
 
 function badgeClass(map, status) {
-  return map[status] || "bg-gray-100 text-gray-700";
+  return map[status] || "bg-surface-sunken text-text-body";
 }
 
 const ORDER_BADGE = {
-  pending: "bg-amber-100 text-amber-700",
-  processing: "bg-blue-100 text-blue-700",
-  delivered: "bg-emerald-100 text-emerald-700",
-  canceled: "bg-red-100 text-red-700",
+  pending: "bg-warning-tint text-warning-muted",
+  processing: "bg-info-subtle text-info",
+  delivered: "bg-success-subtle text-success",
+  canceled: "bg-danger-tint text-danger-strong",
 };
 
 const DELIVERY_BADGE = {
-  assigned: "bg-amber-100 text-amber-700",
-  picked_up: "bg-blue-100 text-blue-700",
-  delivered: "bg-emerald-100 text-emerald-700",
+  assigned: "bg-warning-tint text-warning-muted",
+  picked_up: "bg-info-subtle text-info",
+  delivered: "bg-success-subtle text-success",
 };
 
 function apiError(error, fallback) {
@@ -155,46 +155,46 @@ function OrderCard({ order, onChanged }) {
   };
 
   return (
-    <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
+    <div className="overflow-hidden rounded-2xl bg-surface-raised shadow-sm">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 px-6 py-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border-subtle px-6 py-4">
         <div className="flex items-center gap-3">
-          <h3 className="text-lg font-bold text-gray-900">
+          <h3 className="text-lg font-bold text-text-primary">
             {t("orders.orderNumber", { id: order.id })}
           </h3>
           <StatusBadge map={ORDER_BADGE} status={order.status} ns="orderStatus" />
         </div>
-        <span className="text-sm text-gray-500">
+        <span className="text-sm text-text-muted">
           {formatDateTime(order.created_at, i18n.language)}
         </span>
       </div>
 
       {/* Customer + delivery target */}
-      <div className="grid gap-6 border-b border-gray-100 px-6 py-5 sm:grid-cols-2">
+      <div className="grid gap-6 border-b border-border-subtle px-6 py-5 sm:grid-cols-2">
         <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-text-faint">
             {t("vendorOrders.customer")}
           </p>
-          <p className="text-gray-800">
+          <p className="text-text-emphasis">
             {order.customer.first_name} {order.customer.last_name}
           </p>
-          <p className="text-sm text-gray-500">{order.customer.email}</p>
+          <p className="text-sm text-text-muted">{order.customer.email}</p>
           {order.customer.phone && (
-            <p className="text-sm text-gray-500">{order.customer.phone}</p>
+            <p className="text-sm text-text-muted">{order.customer.phone}</p>
           )}
         </div>
         <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-text-faint">
             {t("vendorOrders.deliverTo")}
           </p>
-          <p className="text-gray-800">{order.delivery_address}</p>
-          <p className="text-sm text-gray-500">{order.delivery_city}</p>
+          <p className="text-text-emphasis">{order.delivery_address}</p>
+          <p className="text-sm text-text-muted">{order.delivery_city}</p>
         </div>
       </div>
 
       {/* Items */}
-      <div className="border-b border-gray-100 px-6 py-5">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-400">
+      <div className="border-b border-border-subtle px-6 py-5">
+        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-text-faint">
           {t("vendorOrders.items")}
         </p>
         <div className="space-y-2">
@@ -203,19 +203,19 @@ function OrderCard({ order, onChanged }) {
               key={item.id}
               className="flex items-center justify-between text-sm"
             >
-              <span className="text-gray-800">
+              <span className="text-text-emphasis">
                 {localizedField(item, "product_name", i18n.language)}{" "}
-                <span className="text-gray-400">x{item.quantity}</span>
+                <span className="text-text-faint">x{item.quantity}</span>
               </span>
-              <span className="text-gray-800">
+              <span className="text-text-emphasis">
                 ${item.subtotal.toFixed(2)}
               </span>
             </div>
           ))}
         </div>
-        <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-3">
-          <span className="font-semibold text-gray-900">{t("orders.total")}</span>
-          <span className="text-lg font-bold text-emerald-700">
+        <div className="mt-4 flex items-center justify-between border-t border-border-subtle pt-3">
+          <span className="font-semibold text-text-primary">{t("orders.total")}</span>
+          <span className="text-lg font-bold text-brand">
             ${order.total_price.toFixed(2)}
           </span>
         </div>
@@ -223,7 +223,7 @@ function OrderCard({ order, onChanged }) {
 
       {/* Order status action */}
       {nextOrderStatus && (
-        <div className="flex justify-end border-b border-gray-100 px-6 py-4">
+        <div className="flex justify-end border-b border-border-subtle px-6 py-4">
           <Button
             onClick={() =>
               setConfirm({
@@ -244,17 +244,17 @@ function OrderCard({ order, onChanged }) {
 
       {/* Delivery */}
       <div className="px-6 py-5">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-400">
+        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-text-faint">
           {t("vendorOrders.deliverySection")}
         </p>
 
         {/* Both state machines, side by side — they are not coupled. */}
-        <div className="mb-4 flex flex-wrap items-center gap-x-6 gap-y-2 rounded-lg bg-gray-50 px-4 py-3 text-sm">
-          <span className="flex items-center gap-2 text-gray-600">
+        <div className="mb-4 flex flex-wrap items-center gap-x-6 gap-y-2 rounded-lg bg-surface px-4 py-3 text-sm">
+          <span className="flex items-center gap-2 text-text-secondary">
             {t("vendorOrders.orderStatusLabel")}
             <StatusBadge map={ORDER_BADGE} status={order.status} ns="orderStatus" />
           </span>
-          <span className="flex items-center gap-2 text-gray-600">
+          <span className="flex items-center gap-2 text-text-secondary">
             {t("vendorOrders.deliveryStatusLabel")}
             {assignment ? (
               <StatusBadge
@@ -263,7 +263,7 @@ function OrderCard({ order, onChanged }) {
                 ns="deliveryStatus"
               />
             ) : (
-              <span className="text-gray-400">{t("vendorOrders.noDriverAssigned")}</span>
+              <span className="text-text-faint">{t("vendorOrders.noDriverAssigned")}</span>
             )}
           </span>
         </div>
@@ -271,8 +271,8 @@ function OrderCard({ order, onChanged }) {
         {assignment ? (
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="text-sm">
-              <p className="text-gray-800">{assignment.driver_name}</p>
-              <p className="text-gray-500">{assignment.driver_phone}</p>
+              <p className="text-text-emphasis">{assignment.driver_name}</p>
+              <p className="text-text-muted">{assignment.driver_phone}</p>
             </div>
             {nextDeliveryStatus && (
               <Button
@@ -299,7 +299,7 @@ function OrderCard({ order, onChanged }) {
             <div>
               <label
                 htmlFor={`driver-name-${order.id}`}
-                className="mb-1 block text-xs font-medium text-gray-600"
+                className="mb-1 block text-xs font-medium text-text-secondary"
               >
                 {t("vendorOrders.driverName")}
               </label>
@@ -308,13 +308,13 @@ function OrderCard({ order, onChanged }) {
                 type="text"
                 value={driverName}
                 onChange={(event) => setDriverName(event.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
+                className="w-full rounded-lg border border-border-strong px-3 py-2 text-sm outline-none focus:border-brand-ring focus:ring-1 focus:ring-brand-ring"
               />
             </div>
             <div>
               <label
                 htmlFor={`driver-phone-${order.id}`}
-                className="mb-1 block text-xs font-medium text-gray-600"
+                className="mb-1 block text-xs font-medium text-text-secondary"
               >
                 {t("vendorOrders.driverPhone")}
               </label>
@@ -323,7 +323,7 @@ function OrderCard({ order, onChanged }) {
                 type="tel"
                 value={driverPhone}
                 onChange={(event) => setDriverPhone(event.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
+                className="w-full rounded-lg border border-border-strong px-3 py-2 text-sm outline-none focus:border-brand-ring focus:ring-1 focus:ring-brand-ring"
               />
             </div>
             <Button type="submit" disabled={assigning}>
@@ -400,20 +400,20 @@ function VendorOrders() {
   };
 
   if (loading) {
-    return <p className="text-sm text-gray-500">{t("vendorOrders.loading")}</p>;
+    return <p className="text-sm text-text-muted">{t("vendorOrders.loading")}</p>;
   }
 
   if (noStore) {
     return (
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">{t("vendorOrders.title")}</h1>
-        <div className="mt-6 rounded-xl border border-dashed border-gray-300 bg-white p-12 text-center">
-          <p className="text-gray-600">
+        <h1 className="text-3xl font-bold text-text-primary">{t("vendorOrders.title")}</h1>
+        <div className="mt-6 rounded-xl border border-dashed border-border-strong bg-surface-raised p-12 text-center">
+          <p className="text-text-secondary">
             {t("vendorOrders.noStoreBody")}
           </p>
           <Link
             to="/vendor/store"
-            className="mt-4 inline-block font-semibold text-emerald-700 hover:underline"
+            className="mt-4 inline-block font-semibold text-brand hover:underline"
           >
             {t("vendorOrders.createStore")}
           </Link>
@@ -425,12 +425,12 @@ function VendorOrders() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">{t("vendorOrders.title")}</h1>
+        <h1 className="text-3xl font-bold text-text-primary">{t("vendorOrders.title")}</h1>
         <button
           type="button"
           onClick={refresh}
           disabled={refreshing}
-          className="text-sm font-medium text-emerald-700 hover:underline disabled:opacity-50"
+          className="text-sm font-medium text-brand hover:underline disabled:opacity-50"
         >
           {refreshing ? t("vendorOrders.refreshing") : t("vendorOrders.refresh")}
         </button>
@@ -444,8 +444,8 @@ function VendorOrders() {
             onClick={() => setFilter(key)}
             className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
               filter === key
-                ? "bg-emerald-700 text-white"
-                : "bg-white text-gray-600 shadow-sm hover:bg-gray-50"
+                ? "bg-brand text-on-brand"
+                : "bg-surface-raised text-text-secondary shadow-sm hover:bg-surface"
             }`}
           >
             {t(labelKey)}
@@ -454,8 +454,8 @@ function VendorOrders() {
       </div>
 
       {orders.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-gray-300 bg-white p-12 text-center">
-          <p className="text-gray-600">
+        <div className="rounded-xl border border-dashed border-border-strong bg-surface-raised p-12 text-center">
+          <p className="text-text-secondary">
             {filter === "all"
               ? t("vendorOrders.emptyAll")
               : t("vendorOrders.emptyFiltered", {

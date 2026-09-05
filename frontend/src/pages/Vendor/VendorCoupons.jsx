@@ -115,15 +115,15 @@ function VendorCoupons() {
 
   if (loading) {
     return (
-      <p className="py-20 text-center text-slate-500">{t("common.loading")}</p>
+      <p className="py-20 text-center text-text-muted">{t("common.loading")}</p>
     );
   }
 
   if (!store) {
     return (
-      <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center">
-        <TicketPercent size={28} className="mx-auto text-slate-400" />
-        <p className="mt-3 text-slate-600">{t("coupon.noStore")}</p>
+      <div className="rounded-2xl border border-border bg-surface-raised p-10 text-center">
+        <TicketPercent size={28} className="mx-auto text-text-faint" />
+        <p className="mt-3 text-text-secondary">{t("coupon.noStore")}</p>
       </div>
     );
   }
@@ -132,10 +132,10 @@ function VendorCoupons() {
     <div>
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">
+          <h1 className="text-2xl font-bold text-text-primary">
             {t("coupon.vendorTitle")}
           </h1>
-          <p className="mt-1 text-sm text-slate-600">
+          <p className="mt-1 text-sm text-text-secondary">
             {t("coupon.vendorSubtitle", { store: store.name })}
           </p>
         </div>
@@ -144,7 +144,7 @@ function VendorCoupons() {
           <button
             type="button"
             onClick={startCreate}
-            className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-800"
+            className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-on-brand transition hover:bg-brand-strong"
           >
             <Plus size={16} />
             {t("coupon.newCoupon")}
@@ -153,8 +153,8 @@ function VendorCoupons() {
       </div>
 
       {editing && (
-        <div className="mb-8 rounded-2xl border border-slate-200 bg-white p-6">
-          <h2 className="mb-5 text-lg font-semibold text-slate-900">
+        <div className="mb-8 rounded-2xl border border-border bg-surface-raised p-6">
+          <h2 className="mb-5 text-lg font-semibold text-text-primary">
             {editing === "new"
               ? t("coupon.form.createTitle")
               : t("coupon.form.editTitle", { code: editing.code })}
@@ -172,12 +172,12 @@ function VendorCoupons() {
       )}
 
       {coupons.length === 0 ? (
-        <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center">
-          <TicketPercent size={28} className="mx-auto text-slate-400" />
-          <p className="mt-3 font-medium text-slate-700">
+        <div className="rounded-2xl border border-border bg-surface-raised p-10 text-center">
+          <TicketPercent size={28} className="mx-auto text-text-faint" />
+          <p className="mt-3 font-medium text-text-body">
             {t("coupon.emptyTitle")}
           </p>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-text-muted">
             {t("coupon.emptyBody")}
           </p>
         </div>

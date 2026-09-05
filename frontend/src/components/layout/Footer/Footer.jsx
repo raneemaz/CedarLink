@@ -1,7 +1,7 @@
 export default function Footer() {
   return (
-    <footer className="border-t border-slate-200 bg-white">
-      <div className="mx-auto max-w-7xl px-4 py-6 text-sm text-slate-500">
+    <footer className="border-t border-border bg-surface-raised">
+      <div className="mx-auto max-w-7xl px-4 py-6 text-sm text-text-muted">
         © {new Date().getFullYear()} CedarLink
       </div>
     </footer>

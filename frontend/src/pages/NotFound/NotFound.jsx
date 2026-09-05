@@ -6,14 +6,14 @@ function NotFound() {
 
   return (
     <div className="flex min-h-[70vh] flex-col items-center justify-center px-6 text-center">
-      <p className="text-5xl font-bold text-emerald-700">404</p>
-      <h1 className="mt-4 text-2xl font-semibold text-gray-900">
+      <p className="text-5xl font-bold text-brand">404</p>
+      <h1 className="mt-4 text-2xl font-semibold text-text-primary">
         {t("notFound.title")}
       </h1>
-      <p className="mt-2 text-gray-500">{t("notFound.body")}</p>
+      <p className="mt-2 text-text-muted">{t("notFound.body")}</p>
       <Link
         to="/"
-        className="mt-6 rounded-lg bg-emerald-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-800"
+        className="mt-6 rounded-lg bg-brand px-5 py-2.5 text-sm font-semibold text-on-brand transition hover:bg-brand-strong"
       >
         {t("notFound.backHome")}
       </Link>

@@ -72,7 +72,7 @@ function AddPaymentMethod() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 px-6 py-10">
+    <div className="min-h-screen bg-surface px-6 py-10">
       <div className="mx-auto max-w-3xl">
         <BackLink
           onClick={() => navigate("/settings/payment-methods")}
@@ -81,31 +81,31 @@ function AddPaymentMethod() {
           {t("backLink.savedCards")}
         </BackLink>
 
-        <h1 className="text-3xl font-bold text-gray-900">{t("paymentMethods.formAddTitle")}</h1>
+        <h1 className="text-3xl font-bold text-text-primary">{t("paymentMethods.formAddTitle")}</h1>
 
-        <p className="mt-2 text-sm text-gray-600">
+        <p className="mt-2 text-sm text-text-secondary">
           {t("paymentMethods.formAddSubtitle")}
         </p>
 
         <form
           onSubmit={handleSubmit}
-          className="mt-6 rounded-xl bg-white p-6 shadow-sm"
+          className="mt-6 rounded-xl bg-surface-raised p-6 shadow-sm"
         >
-          <div className="mb-6 flex items-center gap-4 rounded-xl border border-green-600 bg-green-50 p-4">
-            <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-white text-green-700">
+          <div className="mb-6 flex items-center gap-4 rounded-xl border border-brand-ring bg-brand-subtle p-4">
+            <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-surface-raised text-brand">
               <CreditCard size={22} />
             </div>
 
             <div>
-              <p className="font-semibold text-gray-900">{t("paymentMethods.cardBadge")}</p>
-              <p className="text-xs text-gray-500">
+              <p className="font-semibold text-text-primary">{t("paymentMethods.cardBadge")}</p>
+              <p className="text-xs text-text-muted">
                 {t("paymentMethods.cardBadgeDesc")}
               </p>
             </div>
           </div>
 
           <div className="space-y-6">
-            <p className="rounded-lg bg-gray-50 px-4 py-3 text-sm text-gray-600">
+            <p className="rounded-lg bg-surface px-4 py-3 text-sm text-text-secondary">
               {t("paymentMethods.noNumberNotice")}
             </p>
 
@@ -113,7 +113,7 @@ function AddPaymentMethod() {
               <div>
                 <label
                   htmlFor="brand"
-                  className="mb-2 block text-sm font-medium text-gray-700"
+                  className="mb-2 block text-sm font-medium text-text-body"
                 >
                   {t("paymentMethods.brand")}
                 </label>
@@ -127,7 +127,7 @@ function AddPaymentMethod() {
                       brand: event.target.value,
                     }))
                   }
-                  className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-green-600 focus:ring-2 focus:ring-green-100"
+                  className="w-full rounded-lg border border-border-strong px-4 py-3 outline-none focus:border-brand-ring focus:ring-2 focus:ring-brand-tint"
                 >
                   <option value="">{t("paymentMethods.brandNone")}</option>
                   <option value="Visa">Visa</option>
@@ -139,7 +139,7 @@ function AddPaymentMethod() {
               <div>
                 <label
                   htmlFor="last4"
-                  className="mb-2 block text-sm font-medium text-gray-700"
+                  className="mb-2 block text-sm font-medium text-text-body"
                 >
                   {t("paymentMethods.lastFour")}
                 </label>
@@ -163,14 +163,14 @@ function AddPaymentMethod() {
                   }
                   placeholder="4242"
                   required
-                  className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-green-600 focus:ring-2 focus:ring-green-100"
+                  className="w-full rounded-lg border border-border-strong px-4 py-3 outline-none focus:border-brand-ring focus:ring-2 focus:ring-brand-tint"
                 />
               </div>
 
               <div>
                 <label
                   htmlFor="expMonth"
-                  className="mb-2 block text-sm font-medium text-gray-700"
+                  className="mb-2 block text-sm font-medium text-text-body"
                 >
                   {t("paymentMethods.expiryMonth")}
                 </label>
@@ -185,7 +185,7 @@ function AddPaymentMethod() {
                     }))
                   }
                   required
-                  className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-green-600 focus:ring-2 focus:ring-green-100"
+                  className="w-full rounded-lg border border-border-strong px-4 py-3 outline-none focus:border-brand-ring focus:ring-2 focus:ring-brand-tint"
                 >
                   <option value="">--</option>
                   {months.map((month) => (
@@ -199,7 +199,7 @@ function AddPaymentMethod() {
               <div>
                 <label
                   htmlFor="expYear"
-                  className="mb-2 block text-sm font-medium text-gray-700"
+                  className="mb-2 block text-sm font-medium text-text-body"
                 >
                   {t("paymentMethods.expiryYear")}
                 </label>
@@ -214,7 +214,7 @@ function AddPaymentMethod() {
                     }))
                   }
                   required
-                  className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-green-600 focus:ring-2 focus:ring-green-100"
+                  className="w-full rounded-lg border border-border-strong px-4 py-3 outline-none focus:border-brand-ring focus:ring-2 focus:ring-brand-tint"
                 >
                   <option value="">----</option>
                   {years.map((year) => (
@@ -229,7 +229,7 @@ function AddPaymentMethod() {
             <div>
               <label
                 htmlFor="cardholderName"
-                className="mb-2 block text-sm font-medium text-gray-700"
+                className="mb-2 block text-sm font-medium text-text-body"
               >
                 {t("paymentMethods.cardholderName")}
               </label>
@@ -247,11 +247,11 @@ function AddPaymentMethod() {
                 }
                 placeholder={t("paymentMethods.cardholderNamePlaceholder")}
                 required
-                className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-green-600 focus:ring-2 focus:ring-green-100"
+                className="w-full rounded-lg border border-border-strong px-4 py-3 outline-none focus:border-brand-ring focus:ring-2 focus:ring-brand-tint"
               />
             </div>
 
-            <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-gray-200 p-4">
+            <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-border p-4">
               <input
                 type="checkbox"
                 checked={formData.is_default}
@@ -261,25 +261,25 @@ function AddPaymentMethod() {
                     is_default: event.target.checked,
                   }))
                 }
-                className="mt-1 h-4 w-4 rounded border-gray-300 text-green-700 focus:ring-green-600"
+                className="mt-1 h-4 w-4 rounded border-border-strong text-brand focus:ring-brand-ring"
               />
 
               <span>
-                <span className="block text-sm font-medium text-gray-800">
+                <span className="block text-sm font-medium text-text-emphasis">
                   {t("paymentMethods.setDefaultCard")}
                 </span>
-                <span className="mt-1 block text-xs text-gray-600">
+                <span className="mt-1 block text-xs text-text-secondary">
                   {t("paymentMethods.setDefaultCardDesc")}
                 </span>
               </span>
             </label>
 
-            <div className="flex justify-end gap-3 border-t border-gray-100 pt-6">
+            <div className="flex justify-end gap-3 border-t border-border-subtle pt-6">
               <button
                 type="button"
                 onClick={() => navigate("/settings/payment-methods")}
                 disabled={saving}
-                className="rounded-lg border border-gray-300 px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                className="rounded-lg border border-border-strong px-5 py-3 text-sm font-medium text-text-body hover:bg-surface disabled:opacity-50"
               >
                 {t("paymentMethods.cancel")}
               </button>
@@ -287,7 +287,7 @@ function AddPaymentMethod() {
               <button
                 type="submit"
                 disabled={saving}
-                className="cursor-pointer rounded-lg bg-green-700 px-5 py-3 text-sm font-semibold text-white hover:bg-green-800 disabled:opacity-50"
+                className="cursor-pointer rounded-lg bg-brand px-5 py-3 text-sm font-semibold text-on-brand hover:bg-brand-strong disabled:opacity-50"
               >
                 {saving ? t("common.working") : t("paymentMethods.saveAdd")}
               </button>

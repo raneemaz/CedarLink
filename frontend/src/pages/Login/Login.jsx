@@ -208,13 +208,13 @@ function Login() {
 
   if (twoFactorRequired) {
     return (
-      <main className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-8">
+      <main className="min-h-screen bg-surface-sunken flex items-center justify-center px-4 py-8">
         <Card className="w-full max-w-md p-6 sm:p-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-center text-green-700">
+          <h1 className="text-2xl sm:text-3xl font-bold text-center text-brand">
             {t("auth.twoFactorTitle")}
           </h1>
 
-          <p className="text-center text-sm text-gray-500 mt-2 mb-6">
+          <p className="text-center text-sm text-text-muted mt-2 mb-6">
             {useRecoveryCode
               ? t("login.promptRecovery")
               : isAuthenticatorChallenge
@@ -253,7 +253,7 @@ function Login() {
               type="button"
               onClick={handleResendCode}
               disabled={resending}
-              className="w-full mt-4 text-sm text-green-700 font-semibold hover:underline disabled:opacity-50"
+              className="w-full mt-4 text-sm text-brand font-semibold hover:underline disabled:opacity-50"
             >
               {resending ? t("auth.sending") : t("auth.resendCode")}
             </button>
@@ -265,7 +265,7 @@ function Login() {
               setVerificationCode("");
               setUseRecoveryCode(!useRecoveryCode);
             }}
-            className="w-full mt-3 text-sm text-gray-600 hover:underline"
+            className="w-full mt-3 text-sm text-text-secondary hover:underline"
           >
             {useRecoveryCode
               ? t("login.useCodeInstead")
@@ -275,7 +275,7 @@ function Login() {
           <button
             type="button"
             onClick={handleBackToLogin}
-            className="w-full mt-5 text-sm text-gray-500 hover:underline"
+            className="w-full mt-5 text-sm text-text-muted hover:underline"
           >
             {t("auth.backToLogin")}
           </button>
@@ -285,13 +285,13 @@ function Login() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-8">
+    <main className="min-h-screen bg-surface-sunken flex items-center justify-center px-4 py-8">
       <Card className="w-full max-w-md p-6 sm:p-8">
-        <h1 className="text-3xl sm:text-4xl font-bold text-center text-green-700">
+        <h1 className="text-3xl sm:text-4xl font-bold text-center text-brand">
           CedarLink
         </h1>
 
-        <p className="text-center text-sm text-gray-500 mt-1 mb-6">
+        <p className="text-center text-sm text-text-muted mt-1 mb-6">
           {t("auth.appTagline")}
         </p>
 
@@ -326,25 +326,25 @@ function Login() {
         <p className="text-center text-sm mt-3">
           <Link
             to="/forgot-password"
-            className="text-green-700 cursor-pointer font-semibold hover:underline"
+            className="text-brand cursor-pointer font-semibold hover:underline"
           >
             {t("login.forgotPassword")}
           </Link>
         </p>
 
         {deactivated && (
-          <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm">
-            <p className="font-medium text-amber-800">
+          <div className="mt-4 rounded-lg border border-warning-border bg-warning-subtle p-4 text-sm">
+            <p className="font-medium text-warning">
               {t("login.deactivatedTitle")}
             </p>
-            <p className="mt-1 text-amber-700">
+            <p className="mt-1 text-warning-muted">
               {t("login.deactivatedBody")}
             </p>
             <button
               type="button"
               onClick={handleReactivate}
               disabled={reactivating}
-              className="mt-3 cursor-pointer rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-amber-700 disabled:opacity-60"
+              className="mt-3 cursor-pointer rounded-lg bg-warning-muted px-4 py-2 text-sm font-semibold text-on-brand transition hover:bg-warning-muted disabled:opacity-60"
             >
               {reactivating
                 ? t("login.reactivating")
@@ -353,11 +353,11 @@ function Login() {
           </div>
         )}
 
-        <p className="text-center text-sm text-gray-600 mt-5">
+        <p className="text-center text-sm text-text-secondary mt-5">
           {t("login.noAccount")}{" "}
           <Link
             to="/register"
-            className="text-green-700 cursor-pointer font-semibold hover:underline"
+            className="text-brand cursor-pointer font-semibold hover:underline"
           >
             {t("login.register")}
           </Link>

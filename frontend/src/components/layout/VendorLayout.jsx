@@ -54,10 +54,10 @@ function VendorLayout() {
     store && !store.deleted_at && store.approval_status === "rejected";
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-surface">
       <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-10 lg:flex-row">
         <aside className="w-full shrink-0 lg:w-56">
-          <p className="mb-4 px-3 text-xs font-semibold uppercase tracking-wide text-gray-400">
+          <p className="mb-4 px-3 text-xs font-semibold uppercase tracking-wide text-text-faint">
             {t("vendorLayout.console")}
           </p>
 
@@ -69,8 +69,8 @@ function VendorLayout() {
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition ${
                     isActive
-                      ? "bg-emerald-50 font-medium text-emerald-700"
-                      : "text-gray-700 hover:bg-gray-100"
+                      ? "bg-brand-subtle font-medium text-brand"
+                      : "text-text-body hover:bg-surface-sunken"
                   }`
                 }
               >
@@ -82,7 +82,7 @@ function VendorLayout() {
 
           <Link
             to="/"
-            className="mt-6 flex items-center gap-2 px-3 text-sm text-gray-500 hover:text-emerald-700"
+            className="mt-6 flex items-center gap-2 px-3 text-sm text-text-muted hover:text-brand"
           >
             <ArrowLeft size={16} className="rtl:rotate-180" />
             {t("common.backToCedarLink")}
@@ -91,27 +91,27 @@ function VendorLayout() {
 
         <main className="min-w-0 flex-1">
           {storeRemoved ? (
-            <div className="rounded-2xl border border-red-200 bg-red-50 p-8 text-center">
+            <div className="rounded-2xl border border-danger-border bg-danger-subtle p-8 text-center">
               <AlertTriangle
                 size={28}
-                className="mx-auto text-red-500"
+                className="mx-auto text-danger-accent"
               />
-              <h1 className="mt-3 text-xl font-semibold text-gray-900">
+              <h1 className="mt-3 text-xl font-semibold text-text-primary">
                 {t("vendorLayout.removedTitle")}
               </h1>
-              <p className="mt-2 text-sm text-gray-600">
+              <p className="mt-2 text-sm text-text-secondary">
                 {t("vendorLayout.removedBody")}
               </p>
             </div>
           ) : (
             <>
               {pendingApproval && (
-                <div className="mb-6 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4">
+                <div className="mb-6 flex items-start gap-3 rounded-xl border border-warning-border bg-warning-subtle p-4">
                   <AlertTriangle
                     size={20}
-                    className="mt-0.5 shrink-0 text-amber-500"
+                    className="mt-0.5 shrink-0 text-warning-accent"
                   />
-                  <p className="text-sm text-amber-800">
+                  <p className="text-sm text-warning">
                     <span className="font-semibold">
                       {t("vendorLayout.pendingTitle")}
                     </span>{" "}
@@ -121,12 +121,12 @@ function VendorLayout() {
               )}
 
               {rejected && (
-                <div className="mb-6 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4">
+                <div className="mb-6 flex items-start gap-3 rounded-xl border border-danger-border bg-danger-subtle p-4">
                   <AlertTriangle
                     size={20}
-                    className="mt-0.5 shrink-0 text-red-500"
+                    className="mt-0.5 shrink-0 text-danger-accent"
                   />
-                  <p className="text-sm text-red-800">
+                  <p className="text-sm text-danger-strong">
                     <span className="font-semibold">
                       {t("vendorLayout.rejectedTitle")}
                     </span>{" "}

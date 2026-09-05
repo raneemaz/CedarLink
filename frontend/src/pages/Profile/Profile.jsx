@@ -147,33 +147,33 @@ function Profile() {
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <p className="text-gray-600">{t("profile.loading")}</p>
+        <p className="text-text-secondary">{t("profile.loading")}</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-[70vh] bg-gray-50 px-6 py-10">
+    <div className="min-h-[70vh] bg-surface px-6 py-10">
       <div className="mx-auto max-w-3xl">
-        <div className="rounded-2xl bg-white p-8 shadow-md">
+        <div className="rounded-2xl bg-surface-raised p-8 shadow-md">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-3xl font-bold text-text-primary">
               {t("profile.title")}
             </h1>
 
-            <p className="mt-2 text-gray-600">
+            <p className="mt-2 text-text-secondary">
               {t("profile.subtitle")}
             </p>
           </div>
 
           {error && (
-            <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <div className="mb-6 rounded-lg border border-danger-border bg-danger-subtle px-4 py-3 text-sm text-danger-strong">
               {error}
             </div>
           )}
 
           {success && (
-            <div className="mb-6 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+            <div className="mb-6 rounded-lg border border-brand-tint bg-brand-subtle px-4 py-3 text-sm text-brand">
               {success}
             </div>
           )}
@@ -183,7 +183,7 @@ function Profile() {
               <div>
                 <label
                   htmlFor="first_name"
-                  className="mb-2 block text-sm font-medium text-gray-700"
+                  className="mb-2 block text-sm font-medium text-text-body"
                 >
                   {t("profile.firstName")}
                 </label>
@@ -195,14 +195,14 @@ function Profile() {
                   value={profile.first_name}
                   onChange={handleChange}
                   required
-                  className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-green-600 focus:ring-2 focus:ring-green-100"
+                  className="w-full rounded-lg border border-border-strong px-4 py-3 outline-none transition focus:border-brand-ring focus:ring-2 focus:ring-brand-tint"
                 />
               </div>
 
               <div>
                 <label
                   htmlFor="last_name"
-                  className="mb-2 block text-sm font-medium text-gray-700"
+                  className="mb-2 block text-sm font-medium text-text-body"
                 >
                   {t("profile.lastName")}
                 </label>
@@ -214,7 +214,7 @@ function Profile() {
                   value={profile.last_name}
                   onChange={handleChange}
                   required
-                  className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-green-600 focus:ring-2 focus:ring-green-100"
+                  className="w-full rounded-lg border border-border-strong px-4 py-3 outline-none transition focus:border-brand-ring focus:ring-2 focus:ring-brand-tint"
                 />
               </div>
             </div>
@@ -222,7 +222,7 @@ function Profile() {
             <div>
               <label
                 htmlFor="email"
-                className="mb-2 block text-sm font-medium text-gray-700"
+                className="mb-2 block text-sm font-medium text-text-body"
               >
                 {t("profile.email")}
               </label>
@@ -234,14 +234,14 @@ function Profile() {
                 value={profile.email}
                 onChange={handleChange}
                 required
-                className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-green-600 focus:ring-2 focus:ring-green-100"
+                className="w-full rounded-lg border border-border-strong px-4 py-3 outline-none transition focus:border-brand-ring focus:ring-2 focus:ring-brand-tint"
               />
             </div>
 
             <div>
               <label
                 htmlFor="phone"
-                className="mb-2 block text-sm font-medium text-gray-700"
+                className="mb-2 block text-sm font-medium text-text-body"
               >
                 {t("profile.phone")}
               </label>
@@ -252,7 +252,7 @@ function Profile() {
                 type="tel"
                 value={profile.phone}
                 onChange={handleChange}
-                className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-green-600 focus:ring-2 focus:ring-green-100"
+                className="w-full rounded-lg border border-border-strong px-4 py-3 outline-none transition focus:border-brand-ring focus:ring-2 focus:ring-brand-tint"
               />
             </div>
 
@@ -260,7 +260,7 @@ function Profile() {
               <button
                 type="submit"
                 disabled={saving}
-                className="cursor-pointer rounded-lg bg-green-700 px-6 py-3 font-semibold text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60"
+                className="cursor-pointer rounded-lg bg-brand px-6 py-3 font-semibold text-on-brand transition hover:bg-brand-strong disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {saving ? t("profile.saving") : t("profile.save")}
               </button>

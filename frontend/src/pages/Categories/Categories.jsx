@@ -34,22 +34,22 @@ function Categories() {
   }, [t]);
 
   return (
-    <div className="min-h-screen bg-gray-50 px-6 py-10 lg:px-10">
+    <div className="min-h-screen bg-surface px-6 py-10 lg:px-10">
       <div className="mx-auto max-w-5xl">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">{t("categoriesPage.title")}</h1>
-          <p className="mt-2 text-gray-500">
+          <h1 className="text-2xl font-bold text-text-primary">{t("categoriesPage.title")}</h1>
+          <p className="mt-2 text-text-muted">
             {t("categoriesPage.subtitle")}
           </p>
         </div>
 
         {loading ? (
-          <div className="py-20 text-center text-gray-500">
+          <div className="py-20 text-center text-text-muted">
             {t("categoriesPage.loading")}
           </div>
         ) : categories.length === 0 ? (
-          <div className="rounded-2xl bg-white py-20 text-center shadow-sm">
-            <p className="text-gray-500">{t("categoriesPage.empty")}</p>
+          <div className="rounded-2xl bg-surface-raised py-20 text-center shadow-sm">
+            <p className="text-text-muted">{t("categoriesPage.empty")}</p>
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -57,13 +57,13 @@ function Categories() {
               <Link
                 key={category.id}
                 to={`/products?category_id=${category.id}`}
-                className="rounded-xl border border-gray-200 bg-white p-5 transition duration-200 hover:-translate-y-1 hover:shadow-md"
+                className="rounded-xl border border-border bg-surface-raised p-5 transition duration-200 hover:-translate-y-1 hover:shadow-md"
               >
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-lg font-semibold text-text-primary">
                   {localizedName(category, i18n.language)}
                 </h3>
                 {category.description && (
-                  <p className="mt-1 line-clamp-2 text-sm text-gray-500">
+                  <p className="mt-1 line-clamp-2 text-sm text-text-muted">
                     {category.description}
                   </p>
                 )}

@@ -113,13 +113,13 @@ function RegisterVerify() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-10">
+    <div className="min-h-screen bg-surface-sunken flex items-center justify-center px-4 py-10">
       <Card className="w-full max-w-lg">
-        <h1 className="text-3xl font-bold text-center text-green-700">
+        <h1 className="text-3xl font-bold text-center text-brand">
           {t("registerVerify.title")}
         </h1>
 
-        <p className="text-center text-gray-500 mt-3 mb-8">
+        <p className="text-center text-text-muted mt-3 mb-8">
           {t("registerVerify.subtitle", {
             method: t(
               METHOD_KEYS[verificationData?.method] || "auth.method_selected",
@@ -150,7 +150,7 @@ function RegisterVerify() {
           type="button"
           onClick={handleResend}
           disabled={resending}
-          className="w-full mt-4 text-green-700 font-semibold hover:underline disabled:opacity-50"
+          className="w-full mt-4 text-brand font-semibold hover:underline disabled:opacity-50"
         >
           {resending
             ? t("auth.sending")

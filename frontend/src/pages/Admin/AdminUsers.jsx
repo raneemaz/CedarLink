@@ -6,10 +6,10 @@ import api from "../../services/api";
 import ConfirmDialog from "../../components/common/ConfirmDialog/ConfirmDialog";
 
 const STATUS_BADGE = {
-  active: "bg-emerald-100 text-emerald-700",
-  suspended: "bg-red-100 text-red-700",
-  deactivated: "bg-amber-100 text-amber-700",
-  deleted: "bg-gray-200 text-gray-600",
+  active: "bg-success-subtle text-success",
+  suspended: "bg-danger-tint text-danger-strong",
+  deactivated: "bg-warning-tint text-warning-muted",
+  deleted: "bg-control text-text-secondary",
 };
 
 function currentUserId() {
@@ -104,33 +104,33 @@ function AdminUsers() {
   };
 
   if (loading) {
-    return <p className="text-sm text-gray-500">{t("adminUsers.loading")}</p>;
+    return <p className="text-sm text-text-muted">{t("adminUsers.loading")}</p>;
   }
 
   return (
     <div>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-3xl font-bold text-gray-900">{t("adminUsers.title")}</h1>
+        <h1 className="text-3xl font-bold text-text-primary">{t("adminUsers.title")}</h1>
         <input
           type="text"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           placeholder={t("adminUsers.searchPlaceholder")}
-          className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-emerald-600"
+          className="rounded-md border border-border-strong px-3 py-2 text-sm outline-none focus:border-brand-ring"
         />
       </div>
 
-      <div className="overflow-x-auto rounded-2xl bg-white shadow-sm">
+      <div className="overflow-x-auto rounded-2xl bg-surface-raised shadow-sm">
         <table className="min-w-full text-sm">
           <thead>
-            <tr className="border-b border-gray-100 text-start text-xs uppercase tracking-wide text-gray-400">
+            <tr className="border-b border-border-subtle text-start text-xs uppercase tracking-wide text-text-faint">
               <th className="px-4 py-3 font-medium">{t("adminUsers.colUser")}</th>
               <th className="px-4 py-3 font-medium">{t("adminUsers.colRole")}</th>
               <th className="px-4 py-3 font-medium">{t("adminUsers.colStatus")}</th>
               <th className="px-4 py-3 font-medium text-end">{t("adminUsers.colActions")}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-border-subtle">
             {filtered.map((user) => {
               const isSelf = user.id === meId;
               const isAdmin = user.role === "admin";
@@ -138,18 +138,18 @@ function AdminUsers() {
               return (
                 <tr key={user.id}>
                   <td className="px-4 py-3">
-                    <p className="font-medium text-gray-900">
+                    <p className="font-medium text-text-primary">
                       {user.first_name} {user.last_name}
                     </p>
-                    <p className="text-gray-500">{user.email}</p>
+                    <p className="text-text-muted">{user.email}</p>
                     {user.status === "suspended" &&
                       user.suspension_reason && (
-                        <p className="mt-1 text-xs text-red-600">
+                        <p className="mt-1 text-xs text-danger">
                           {t("adminUsers.reasonPrefix", { reason: user.suspension_reason })}
                         </p>
                       )}
                   </td>
-                  <td className="px-4 py-3 text-gray-600">
+                  <td className="px-4 py-3 text-text-secondary">
                     {t(`role.${user.role}`)}
                   </td>
                   <td className="px-4 py-3">
@@ -163,12 +163,12 @@ function AdminUsers() {
                   </td>
                   <td className="px-4 py-3 text-end">
                     {isAdmin || isSelf ? (
-                      <span className="text-xs text-gray-400">—</span>
+                      <span className="text-xs text-text-faint">—</span>
                     ) : user.status === "suspended" ? (
                       <button
                         type="button"
                         onClick={() => openUnsuspend(user)}
-                        className="font-medium text-emerald-700 hover:underline"
+                        className="font-medium text-brand hover:underline"
                       >
                         {t("adminUsers.unsuspend")}
                       </button>
@@ -176,7 +176,7 @@ function AdminUsers() {
                       <button
                         type="button"
                         onClick={() => openSuspend(user)}
-                        className="font-medium text-red-600 hover:underline"
+                        className="font-medium text-danger hover:underline"
                       >
                         {t("adminUsers.suspend")}
                       </button>
@@ -215,14 +215,14 @@ function AdminUsers() {
       >
         {target?.type === "suspend" && (
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600">
+            <label className="mb-1 block text-xs font-medium text-text-secondary">
               {t("adminUsers.reasonLabel")}
             </label>
             <textarea
               value={reason}
               onChange={(event) => setReason(event.target.value)}
               rows="2"
-              className="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
+              className="w-full resize-none rounded-lg border border-border-strong px-3 py-2 text-sm outline-none focus:border-brand-ring focus:ring-1 focus:ring-brand-ring"
             />
           </div>
         )}

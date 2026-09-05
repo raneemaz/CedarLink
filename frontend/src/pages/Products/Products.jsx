@@ -25,8 +25,8 @@ const LIMIT_OPTIONS = [12, 24, 48];
 const DEFAULT_LIMIT = 12;
 
 const inputClass =
-  "rounded-md border border-gray-300 px-3 py-2 text-sm outline-none " +
-  "focus:border-emerald-600";
+  "rounded-md border border-border-strong px-3 py-2 text-sm outline-none " +
+  "focus:border-brand-ring";
 
 function Products() {
   const { t, i18n } = useTranslation();
@@ -230,19 +230,19 @@ function Products() {
   const hasActiveFilters = activeFilters.length > 0 || sort !== "";
 
   return (
-    <div className="min-h-screen bg-gray-50 px-2 py-2 lg:px-10">
+    <div className="min-h-screen bg-surface px-2 py-2 lg:px-10">
       <div className="mx-auto max-w-screen-2xl">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-text-primary">
             {t("products.title")}
           </h1>
-          <p className="mt-2 text-gray-500">
+          <p className="mt-2 text-text-muted">
             {t("products.subtitle")}
           </p>
         </div>
 
         {/* Filters */}
-        <div className="mb-4 rounded-xl bg-white p-4 shadow-sm">
+        <div className="mb-4 rounded-xl bg-surface-raised p-4 shadow-sm">
           <div className="grid gap-3 md:grid-cols-3 lg:grid-cols-4">
             <input
               type="text"
@@ -314,7 +314,7 @@ function Products() {
               ))}
             </select>
 
-            <label className="flex items-center gap-2 px-1 text-sm text-gray-700">
+            <label className="flex items-center gap-2 px-1 text-sm text-text-body">
               <input
                 type="checkbox"
                 checked={inStock}
@@ -324,22 +324,22 @@ function Products() {
                     event.target.checked ? "true" : "false",
                   )
                 }
-                className="h-4 w-4 rounded border-gray-300 text-emerald-700 focus:ring-emerald-600"
+                className="h-4 w-4 rounded border-border-strong text-brand focus:ring-brand-ring"
               />
               {t("products.inStockOnly")}
             </label>
           </div>
 
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-3 text-sm">
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-border-subtle pt-3 text-sm">
             <div className="flex items-center gap-3">
-              <label className="text-gray-500">
+              <label className="text-text-muted">
                 {t("products.perPage")}{" "}
                 <select
                   value={limit}
                   onChange={(event) =>
                     setFilter("limit", event.target.value)
                   }
-                  className="ms-1 rounded border border-gray-300 px-2 py-1"
+                  className="ms-1 rounded border border-border-strong px-2 py-1"
                 >
                   {LIMIT_OPTIONS.map((option) => (
                     <option key={option} value={option}>
@@ -354,7 +354,7 @@ function Products() {
               type="button"
               onClick={clearFilters}
               disabled={!hasActiveFilters}
-              className="rounded-md border border-gray-300 px-3 py-1.5 font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+              className="rounded-md border border-border-strong px-3 py-1.5 font-medium text-text-body hover:bg-surface disabled:cursor-not-allowed disabled:opacity-40"
             >
               {t("products.clearFilters")}
             </button>
@@ -363,21 +363,21 @@ function Products() {
 
         {/* Results */}
         {loading ? (
-          <div className="py-20 text-center text-gray-500">
+          <div className="py-20 text-center text-text-muted">
             {t("products.loading")}
           </div>
         ) : products.length === 0 ? (
-          <div className="rounded-2xl bg-white py-16 text-center shadow-sm">
-            <h2 className="text-xl font-semibold text-gray-800">
+          <div className="rounded-2xl bg-surface-raised py-16 text-center shadow-sm">
+            <h2 className="text-xl font-semibold text-text-emphasis">
               {t("products.noneFound")}
             </h2>
             {activeFilters.length > 0 ? (
-              <p className="mt-2 text-gray-500">
+              <p className="mt-2 text-text-muted">
                 {t("products.activeFiltersLabel")}{" "}
                 {activeFilters.join("، ")}
               </p>
             ) : (
-              <p className="mt-2 text-gray-500">
+              <p className="mt-2 text-text-muted">
                 {t("products.nothingToShow")}
               </p>
             )}
@@ -385,7 +385,7 @@ function Products() {
               <button
                 type="button"
                 onClick={clearFilters}
-                className="mt-4 rounded-md bg-emerald-700 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-800"
+                className="mt-4 rounded-md bg-brand px-4 py-2 text-sm font-medium text-on-brand hover:bg-brand-strong"
               >
                 {t("products.clearFilters")}
               </button>
@@ -393,7 +393,7 @@ function Products() {
           </div>
         ) : (
           <>
-            <p className="mb-3 text-sm text-gray-500">
+            <p className="mb-3 text-sm text-text-muted">
               {t("products.count", { count: total })}
               {activeFilters.length > 0 && (
                 <> · {activeFilters.join("، ")}</>
@@ -412,18 +412,18 @@ function Products() {
                   type="button"
                   onClick={() => setFilter("page", page - 1)}
                   disabled={page <= 1}
-                  className="rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-lg border border-border-strong px-4 py-2 font-medium text-text-body hover:bg-surface disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {t("common.previous")}
                 </button>
-                <span className="text-gray-500">
+                <span className="text-text-muted">
                   {t("common.pageOf", { page, pages })}
                 </span>
                 <button
                   type="button"
                   onClick={() => setFilter("page", page + 1)}
                   disabled={page >= pages}
-                  className="rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-lg border border-border-strong px-4 py-2 font-medium text-text-body hover:bg-surface disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {t("common.next")}
                 </button>

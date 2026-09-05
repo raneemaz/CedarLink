@@ -8,8 +8,8 @@ const TITLE_MAX = 120;
 const BODY_MAX = 2000;
 
 const fieldClass =
-  "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none " +
-  "focus:border-green-600 focus:ring-1 focus:ring-green-600";
+  "w-full rounded-lg border border-border-strong px-3 py-2 text-sm outline-none " +
+  "focus:border-brand-ring focus:ring-1 focus:ring-brand-ring";
 
 /**
  * Create / edit form for one review. `initial` pre-fills it for an edit.
@@ -42,7 +42,7 @@ function ReviewForm({ initial, onSubmit, onCancel, submitting, error }) {
   return (
     <form onSubmit={submit} className="space-y-4">
       <div>
-        <p className="mb-1 text-sm font-medium text-gray-700">
+        <p className="mb-1 text-sm font-medium text-text-body">
           {t("reviewForm.ratingLabel")}
         </p>
         <StarRatingInput
@@ -54,7 +54,7 @@ function ReviewForm({ initial, onSubmit, onCancel, submitting, error }) {
           disabled={submitting}
         />
         {showRatingError && (
-          <p className="mt-1 text-xs text-red-600">
+          <p className="mt-1 text-xs text-danger">
             {t("reviewForm.ratingRequired")}
           </p>
         )}
@@ -63,7 +63,7 @@ function ReviewForm({ initial, onSubmit, onCancel, submitting, error }) {
       <div>
         <label
           htmlFor="review-title"
-          className="mb-1 block text-sm font-medium text-gray-700"
+          className="mb-1 block text-sm font-medium text-text-body"
         >
           {t("reviewForm.titleLabel")}
         </label>
@@ -76,7 +76,7 @@ function ReviewForm({ initial, onSubmit, onCancel, submitting, error }) {
           disabled={submitting}
           className={fieldClass}
         />
-        <p className="mt-1 text-xs text-gray-400 text-end">
+        <p className="mt-1 text-xs text-text-faint text-end">
           {counter(title.length, TITLE_MAX)}
         </p>
       </div>
@@ -84,7 +84,7 @@ function ReviewForm({ initial, onSubmit, onCancel, submitting, error }) {
       <div>
         <label
           htmlFor="review-body"
-          className="mb-1 block text-sm font-medium text-gray-700"
+          className="mb-1 block text-sm font-medium text-text-body"
         >
           {t("reviewForm.bodyLabel")}
         </label>
@@ -97,12 +97,12 @@ function ReviewForm({ initial, onSubmit, onCancel, submitting, error }) {
           disabled={submitting}
           className={`resize-none ${fieldClass}`}
         />
-        <p className="mt-1 text-xs text-gray-400 text-end">
+        <p className="mt-1 text-xs text-text-faint text-end">
           {counter(body.length, BODY_MAX)}
         </p>
       </div>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-danger">{error}</p>}
 
       <div className="flex gap-2">
         <Button type="submit" disabled={submitting}>
