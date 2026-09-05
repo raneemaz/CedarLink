@@ -232,8 +232,14 @@ _RESET_ORDER = (
     "coupon_redemptions",
     "review_reports",
     "reviews",
+    # Children of orders, so they go before it: delivery_assignments and
+    # payments both hold an orders.id, and payments also holds a
+    # payment_methods.id.
+    "delivery_assignments",
+    "payments",
     "order_items",
     "orders",
+    "payment_methods",
     "cart_items",
     "carts",
     "shopping_interests",
@@ -247,9 +253,6 @@ _RESET_ORDER = (
     "coupons",
     "stores",
     "addresses",
-    "payment_methods",
-    "payments",
-    "delivery_assignments",
     "two_factor_recovery_codes",
     "two_factor_challenges",
     "categories",
@@ -280,13 +283,18 @@ def _reset_demo_data():
     db.session.commit()
 
 
-def _backdate(order, days_ago):
-    """Put an order in the past. Checkout can only create it now."""
+def _days_ago(days):
+    """Naive UTC, ``days`` in the past — what the timestamp columns hold."""
     from datetime import datetime, timedelta, timezone
 
-    placed = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(
-        days=days_ago
+    return datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(
+        days=days
     )
+
+
+def _backdate(order, days_ago):
+    """Put an order in the past. Checkout can only create it now."""
+    placed = _days_ago(days_ago)
     order.created_at = placed
     order.updated_at = placed
 
@@ -592,7 +600,13 @@ def _seed_orders(customers, stores, products):
     the shelves. The coupon order and the multi-store order *do* go through
     checkout, because their point is the redemption row and the two-order
     split, which only the real path produces.
+
+    Returns the history orders keyed by ``(customer index, store name)``, so
+    the delivery seeding can attach a driver to a named one rather than
+    guessing at a query.
     """
+    history = {}
+
     for (
         customer_index,
         store_name,
@@ -605,7 +619,9 @@ def _seed_orders(customers, stores, products):
         line_items = [
             (products[name], quantity) for name, quantity in line_item_specs
         ]
-        _seed_history_order(customer, store, status, line_items, days_ago)
+        history[(customer_index, store_name)] = _seed_history_order(
+            customer, store, status, line_items, days_ago
+        )
 
     db.session.commit()
 
@@ -645,7 +661,66 @@ def _seed_orders(customers, stores, products):
         _backdate(order, 4)
     db.session.commit()
 
-    return coupon_orders, multi
+    return history
+
+
+def _seed_delivery_assignments(history):
+    """Drivers on a handful of orders, through delivery_service.
+
+    Every assignment walks the real ``assigned → picked_up → delivered``
+    path one step at a time, so the notifications, the delivered timestamp
+    and the refusal to skip a step are all exercised exactly as they are
+    when a vendor clicks through the console. The rows are then backdated,
+    which the service has no reason to allow.
+
+    The point of the set is ADR 0019: one customer with a delivery still
+    out — she sees the driver's name and his phone number — and a finished
+    one where the number has been withdrawn and only the name remains.
+    """
+    from app.services import delivery_service
+
+    created = []
+
+    for (
+        customer_index,
+        store_name,
+        driver_name,
+        driver_phone,
+        final_status,
+        assigned_days_ago,
+        delivered_days_ago,
+    ) in seed_data.DELIVERY_SPECS:
+        order = history.get((customer_index, store_name))
+
+        if order is None:
+            raise click.ClickException(
+                f"seed: no order for delivery spec "
+                f"({customer_index}, {store_name!r}) — DELIVERY_SPECS must "
+                f"name a customer and store pair that ORDER_SPECS creates.")
+
+        if order.delivery_assignment is not None:
+            created.append(order.delivery_assignment)
+            continue
+
+        assignment = delivery_service.assign_driver(
+            order, driver_name, driver_phone
+        )
+
+        step = assignment.status
+        while step != final_status:
+            step = delivery_service.DELIVERY_STATUS_TRANSITIONS[step]
+            delivery_service.advance_status(assignment, order, step)
+
+        assignment.assigned_at = _days_ago(assigned_days_ago)
+
+        if delivered_days_ago is not None:
+            assignment.delivered_at = _days_ago(delivered_days_ago)
+
+        created.append(assignment)
+
+    db.session.commit()
+
+    return created
 
 
 def _seed_history_order(customer, store, status, line_items, days_ago):
@@ -852,7 +927,8 @@ def seed(reset):
     stores, products = _seed_stores(categories)
     customers = _seed_customers(categories)
     coupons = _seed_coupons(stores)
-    _seed_orders(customers, stores, products)
+    history = _seed_orders(customers, stores, products)
+    _seed_delivery_assignments(history)
     _apply_schedules(stores)
     _seed_reviews(customers, products, stores)
     _seed_notifications(customers)
@@ -864,6 +940,7 @@ def _report(stores, products, customers, coupons):
     """What was created, and how to log in as each role."""
     from app.models.coupon import Coupon
     from app.models.coupon_redemption import CouponRedemption
+    from app.models.delivery_assignment import DeliveryAssignment
     from app.models.review import Review
     from app.models.shopping_interest import ShoppingInterest
 
@@ -874,6 +951,7 @@ def _report(stores, products, customers, coupons):
         ("Store hours rows", StoreHours.query.count()),
         ("Announcements", StoreAnnouncement.query.count()),
         ("Orders", Order.query.count()),
+        ("Delivery assignments", DeliveryAssignment.query.count()),
         ("Reviews", Review.query.count()),
         ("Coupons", Coupon.query.count()),
         ("Coupon redemptions", CouponRedemption.query.count()),

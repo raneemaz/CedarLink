@@ -795,6 +795,30 @@ MULTI_STORE_ORDER = {
 }
 
 
+# Drivers, on their own invented number band: vendors are +961 3 100 00x,
+# customers +961 3 200 00x, drivers +961 3 300 00x. No real person's
+# number is anywhere in this file.
+#
+# (customer index, store, driver, phone, status, assigned days ago,
+#  delivered days ago)
+#
+# The first two are the pair that shows ADR 0019 on one account: Rania's
+# Cedar Loom delivery is out with the driver, so she is given his name and
+# his number; her Hamra Grocery delivery is finished, so the number is
+# withdrawn and only the name stays. A third status, `assigned`, sits on
+# Omar's order so all three states are on screen somewhere.
+DELIVERY_SPECS = (
+    (0, "Cedar Loom", "Ziad Ayoub", "+961 3 300 001",
+     "picked_up", 1, None),
+    (0, "Hamra Grocery", "Elias Nassar", "+961 3 300 002",
+     "delivered", 24, 23),
+    (0, "Mar Mikhael Books", "Hadi Mroueh", "+961 3 300 003",
+     "delivered", 17, 16),
+    (3, "Achrafieh Pantry", "Nabil Sarkis", "+961 3 300 004",
+     "assigned", 0, None),
+)
+
+
 # (customer index, (kind, name), rating, title, body)
 # Ratings are deliberately spread: a demo where everything is 5.0 shows
 # nothing about how ratings render.

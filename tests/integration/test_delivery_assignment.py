@@ -1,7 +1,10 @@
 """Delivery assignments — the driver's phone is a scoped disclosure, not a
 field in the dump (docs/decisions/0019)."""
 
+import pytest
+
 from app.models.delivery_assignment import DeliveryAssignment
+from app.services import delivery_service
 
 
 def _assign(client, auth, order):
@@ -104,3 +107,53 @@ def test_a_stranger_still_cannot_see_the_assignment_at_all(
         f"/api/delivery/assignments/{aid}", headers=auth(stranger)
     )
     assert resp.status_code == 403
+
+
+# --------------------------------------------------------------------------- #
+# The service, called directly — the path `flask seed` takes. The routes are
+# covered above; these guard the rules a non-HTTP caller relies on.
+# --------------------------------------------------------------------------- #
+
+def test_service_walks_the_statuses_and_refuses_to_skip_one(db, make_order):
+    order = make_order(status="processing")
+
+    a = delivery_service.assign_driver(order, "Ziad Ayoub", "+961 3 300 001")
+    assert a.status == "assigned"
+    assert a.delivered_at is None
+
+    with pytest.raises(delivery_service.DeliveryError) as exc:
+        delivery_service.advance_status(a, order, "delivered")
+    assert exc.value.payload["allowed_next_status"] == "picked_up"
+
+    delivery_service.advance_status(a, order, "picked_up")
+    delivery_service.advance_status(a, order, "delivered")
+    assert a.delivered_at is not None
+
+    # Delivered is terminal.
+    with pytest.raises(delivery_service.DeliveryError):
+        delivery_service.advance_status(a, order, "picked_up")
+
+
+def test_service_refuses_a_second_driver_on_the_same_order(db, make_order):
+    order = make_order(status="processing")
+    delivery_service.assign_driver(order, "Ziad Ayoub", "+961 3 300 001")
+
+    with pytest.raises(delivery_service.DeliveryError) as exc:
+        delivery_service.assign_driver(order, "Hadi Mroueh", "+961 3 300 003")
+    assert exc.value.status_code == 409
+
+
+def test_disclosure_rule_is_the_service_answering_not_the_route(
+    db, make_order
+):
+    order = make_order(status="processing")
+    a = delivery_service.assign_driver(order, "Ziad Ayoub", "+961 3 300 001")
+
+    for status in ("assigned", "picked_up"):
+        a.status = status
+        assert delivery_service.may_disclose_phone(a, is_vendor=False)
+        assert delivery_service.may_disclose_phone(a, is_vendor=True)
+
+    a.status = "delivered"
+    assert not delivery_service.may_disclose_phone(a, is_vendor=False)
+    assert delivery_service.may_disclose_phone(a, is_vendor=True)
