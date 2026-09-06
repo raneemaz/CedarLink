@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
+import { useTranslation, Trans } from "react-i18next";
 import { toast } from "react-toastify";
 
 import Card from "../../components/common/Card/Card";
@@ -242,8 +242,28 @@ function Register() {
           }
         />
 
+        <p className="mt-6 text-center text-small text-ink-secondary">
+          <Trans
+            i18nKey="register.agreeToTerms"
+            components={{
+              terms: (
+                <Link
+                  to="/terms"
+                  className="font-semibold text-cedar hover:underline"
+                />
+              ),
+              privacy: (
+                <Link
+                  to="/privacy-policy"
+                  className="font-semibold text-cedar hover:underline"
+                />
+              ),
+            }}
+          />
+        </p>
+
         <Button
-          className="w-full cursor-pointer"
+          className="mt-3 w-full cursor-pointer"
           onClick={handleRegister}
           disabled={loading}
         >

@@ -375,7 +375,8 @@
     "errFillAll": "Please fill in all fields.",
     "errPasswordsMatch": "Passwords do not match.",
     "errCantStart": "Unable to start account verification.",
-    "fallbackCodeSent": "Verification code sent."
+    "fallbackCodeSent": "Verification code sent.",
+    "agreeToTerms": "By creating an account, you agree to CedarLink's <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>."
   },
   "registerVerify": {
     "title": "Verify Your Account",
@@ -1617,6 +1618,158 @@
     "describe": {
       "light": "Always light, whatever your device is set to.",
       "dark": "Always dark, whatever your device is set to."
+    }
+  },
+  "footer": {
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "tagline": "A university project — not a commercial service."
+  },
+  "privacyPolicy": {
+    "title": "Privacy Policy",
+    "academicNoticeTitle": "Academic document",
+    "academicNotice": "CedarLink is a student marketplace built for a university project. This policy describes what the software actually does with personal data. It is written to be accurate, not to serve as legal advice, and any contact address in it is illustrative.",
+    "lastUpdated": "Last updated {{date}}",
+    "intro": "This policy explains what personal data CedarLink holds, why it holds it, who can see it and how long it is kept. It is written from the database itself: every item below maps to a field the software stores.",
+    "controlsIntro": "The controls below are the working tools for the rights described above:",
+    "sections": {
+      "law": {
+        "title": "The law this policy follows",
+        "body": "Lebanon's Law No. 81 of 2018 on Electronic Transactions and Personal Data requires an organisation that processes personal data to publish a transparent privacy policy and to honour the rights of access, correction, deletion and portability.\n\nCedarLink implements three of these today. Access and correction are available in your account settings; deletion is available on the Privacy & data page. Portability — a downloadable copy of your data in a standard format — is not built yet; until it is, you can ask the project team for a copy. The controls that do exist are linked at the end of this policy."
+      },
+      "identity": {
+        "title": "Identity and contact details",
+        "body": "When you register, CedarLink stores your first name, last name, email address and, optionally, a phone number.\n\n- Purpose: to create and sign you into your account, to show a vendor who an order is for, and to send account and order notices.\n- Who can see it: you; a vendor sees your name and phone only for orders placed with their store; an administrator can see it for support and moderation.\n- Retention: for as long as your account exists. After deletion the name becomes \"Deleted User\", the email is replaced with a non-routable address and the phone number is erased."
+      },
+      "addresses": {
+        "title": "Delivery addresses",
+        "body": "A saved address holds a label, the recipient's name and phone, the street address, the city, optional delivery instructions and — only if you drop a pin on the map — approximate coordinates.\n\n- Purpose: to deliver your orders and to pre-fill checkout.\n- Who can see it: you, and the vendor and driver for an order sent to that address.\n- Retention: until you delete the address or your account. Deleting your account removes every saved address."
+      },
+      "orders": {
+        "title": "Orders and their history",
+        "body": "Each order records the items and quantities, the price charged, any discount applied, the delivery fee, the delivery address and city as they were at checkout, and the order's status over time.\n\n- Purpose: to fulfil the order, to show you your order history, and to serve as the vendor's and the platform's sales record.\n- Who can see it: you; the vendor for the order; an administrator.\n- Retention: orders are kept as financial and audit records even after you delete your account. At that point the stored delivery address is scrubbed and the order is no longer linked to a named person."
+      },
+      "payment": {
+        "title": "Payment method details",
+        "body": "CedarLink settles every order in cash on delivery. No card is ever charged.\n\nIf you save a card for convenience, CedarLink stores only its brand, the last four digits, the expiry month and year, and a label you choose. It never receives or stores the full card number or the security code, and a request that contains either is rejected (decision record 0024).\n\n- Who can see it: you only.\n- Retention: until you remove the card or delete your account."
+      },
+      "reviews": {
+        "title": "Reviews you write",
+        "body": "A review has a rating, an optional title and text, and is tied to the delivered order that entitles you to write it.\n\nBecause a review implies a completed purchase, the public review never shows your account identifier — only your first name is shown as the author (decision record 0019). An administrator can see the full author identity for moderation.\n\n- Retention: a review outlives the product and the store it is about, and remains after you delete your account, shown then as written by \"Deleted\"."
+      },
+      "preferences": {
+        "title": "Preferences and interests",
+        "body": "CedarLink stores your language, currency and light or dark theme choice, your notification toggles, a few checkout preferences such as a default city, and any category you have explicitly marked as an interest.\n\nInterests are chosen by you, never inferred. CedarLink does not track what you browse or buy and keeps no behavioural profile (decision record 0022).\n\n- Retention: until you change them or delete your account."
+      },
+      "security": {
+        "title": "Account security data",
+        "body": "CedarLink stores your password as a salted hash, never in readable form. If you turn on two-factor authentication it also stores your two-factor method, an encrypted authenticator secret, and one-time recovery codes as hashes.\n\nShort-lived verification challenges — for sign-in, email or phone confirmation, and sensitive actions — are stored as hashes with an expiry and are not readable.\n\n- Who can see it: no one; these values are not shown to anyone, including administrators.\n- Retention: your password and two-factor settings last for the life of the account; challenge records expire quickly."
+      },
+      "technical": {
+        "title": "Technical data",
+        "body": "Your device's IP address is used momentarily to rate-limit requests and to slow down repeated failed sign-ins. It is not written to the database and is not used to identify or profile you.\n\nCedarLink sets no advertising or analytics cookies and embeds no third-party trackers. The only things kept in your browser's storage are your sign-in token and lightweight display preferences such as language and theme."
+      },
+      "sharing": {
+        "title": "Who your data is shared with",
+        "body": "CedarLink does not sell personal data and does not share it for advertising.\n\nData is shared only as the service requires: a vendor receives the name, phone, delivery address and items for orders placed with their store; a driver receives the delivery address and, while a delivery is in progress, a contact number; an administrator can see account and order data for support and moderation.\n\nTwo external services may process data on CedarLink's behalf: an email provider delivers verification messages, and — only if you choose phone verification — an SMS provider delivers codes to your number. The currency exchange-rate source receives no personal data."
+      },
+      "deletion": {
+        "title": "What deleting your account does",
+        "body": "Deletion is on the Privacy & data page and takes effect immediately once you re-enter your password, plus a two-factor code if you have one.\n\nIt erases your saved addresses, saved cards, notifications, notification and shopping preferences, two-factor secrets and recovery codes, and your cart. Your user record is anonymised in place: name, email and phone are replaced or removed.\n\nOrders and reviews are kept, with your identity removed, because they are the vendor's and the platform's records. Deletion is blocked while you have an order in progress — cancel it or wait for delivery first."
+      },
+      "childrens": {
+        "title": "Children",
+        "body": "CedarLink is not directed at children and does not knowingly hold data about anyone under 18."
+      },
+      "changes": {
+        "title": "Changes to this policy",
+        "body": "If this policy changes, the \"last updated\" date at the top changes with it. Significant changes will be announced in the app."
+      },
+      "contact": {
+        "title": "Contact and your controls",
+        "body": "For questions about this policy, or to request a copy of your data, contact the project team at privacy@cedarlink.example."
+      }
+    },
+    "controls": {
+      "profile": "See and correct your name, email and phone",
+      "addresses": "Add, edit or remove saved delivery addresses",
+      "payment": "See or remove saved card details",
+      "notifications": "Change what CedarLink notifies you about",
+      "security": "Manage your password and two-factor authentication",
+      "privacy": "Deactivate or permanently delete your account"
+    }
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "academicNoticeTitle": "Academic document",
+    "academicNotice": "CedarLink is a student marketplace built for a university project. These terms describe how the software is meant to be used. They are written in plain language for that purpose and are not legal advice.",
+    "lastUpdated": "Last updated {{date}}",
+    "intro": "These terms apply to everyone who uses CedarLink, whether to shop or to sell. Using the service means accepting them.",
+    "sections": {
+      "marketplace": {
+        "title": "CedarLink is a marketplace, not the seller",
+        "body": "CedarLink connects customers with independent local stores in Lebanon. When you buy something, your contract of sale is with the vendor, not with CedarLink. CedarLink provides the platform: listings, checkout, order tracking and support tools. It does not own the stock, set the prices or carry out the deliveries."
+      },
+      "accounts": {
+        "title": "Your account",
+        "body": "You must give accurate registration details and keep your password secure. An account is for one person, and you are responsible for what happens under it.\n\nPublic registration creates a customer or a vendor account only. Administrator accounts are created internally."
+      },
+      "customer": {
+        "title": "If you are a customer",
+        "body": "- Give a correct delivery address and phone number, and be reachable for the delivery.\n- Pay the driver the order total in cash when the order arrives.\n- Only review a product or store after an order containing it has been delivered to you, and keep the review honest.\n- Do not use the platform to harass vendors or other users, or for any unlawful purpose."
+      },
+      "vendor": {
+        "title": "If you are a vendor",
+        "body": "- Describe your products, prices, stock and translations accurately, and honour the price shown at checkout.\n- Keep your store hours and availability current, and fulfil the orders you accept.\n- List only goods you may lawfully sell.\n- Your store is visible to customers only after an administrator approves it, and it can be removed if these terms are broken (decision record 0005)."
+      },
+      "orders": {
+        "title": "Orders and pricing",
+        "body": "A cart that contains items from more than one store becomes one order per store, each with its own delivery fee and lifecycle.\n\nThe price shown at checkout is the price you pay — the same calculation produces the quote and the charge. Placing an order is a request the vendor then fulfils. If an item runs out before the order is placed, the order is refused rather than back-ordered."
+      },
+      "payment": {
+        "title": "Cash on delivery",
+        "body": "Cash on delivery is the only way to pay. You pay the driver in cash when the order is delivered, and no card is charged at any point. Choosing a saved card at checkout records a preference only and moves no money (decision record 0024)."
+      },
+      "cancellation": {
+        "title": "Cancellation and stock",
+        "body": "You can cancel an order while it is still pending or being prepared. Cancelling returns the items to the store's stock and reverses any coupon used on the order. Once an order is delivered it is final.\n\nA vendor or an administrator may also cancel an order — for example if the store cannot fulfil it — and the stock is returned in the same way."
+      },
+      "coupons": {
+        "title": "Coupons",
+        "body": "A coupon works only within its own limits: its validity dates, any minimum order value, and its total and per-customer usage caps. A platform-wide fixed-amount coupon cannot be applied to a cart that spans several stores (decision record 0021).\n\nThe discount recorded on an order is fixed when the order is placed. Coupons have no cash value and can be withdrawn or changed at any time."
+      },
+      "delivery": {
+        "title": "Delivery fees",
+        "body": "Each store sets its own delivery fee for inside and outside its city. The fee is collected with the order in cash and passed to the driver. It is not the store's revenue and is not refunded separately once the order has been delivered."
+      },
+      "reviews": {
+        "title": "Reviews and moderation",
+        "body": "Reviews come only from delivered orders, one per order for the product or the store.\n\nAny user can report a review. An administrator can then flag it or remove it. A review may be removed if it is not from a genuine purchase, contains abuse or harassment, exposes personal data, is spam or advertising, is unlawful, or is unrelated to the product or store. Reporting a review does not by itself hide it or change a rating; only removal does (decision record 0017)."
+      },
+      "suspension": {
+        "title": "Account suspension",
+        "body": "An administrator may suspend an account for breaking these terms, for fraud or abuse, or for unlawful use of the platform. A suspended account cannot lift its own suspension, and the reason is recorded. This is separate from deactivating your own account, which you can undo by signing back in."
+      },
+      "availability": {
+        "title": "Availability",
+        "body": "CedarLink is a student project and is provided \"as is\". There is no guarantee that it will be available without interruption, and project data may be reset during development."
+      },
+      "liability": {
+        "title": "Limitation of liability",
+        "body": "To the extent the law allows, CedarLink and the project team are not liable for disputes between customers and vendors, for the quality or safety of goods sold, for the outcome of a delivery, or for any indirect or consequential loss. Because CedarLink is not the seller, claims about a purchase are between the customer and the vendor."
+      },
+      "governing": {
+        "title": "Governing context",
+        "body": "CedarLink is operated from Lebanon and these terms are read in that context. A dispute about a specific purchase is a matter between the customer and the vendor involved."
+      },
+      "changes": {
+        "title": "Changes to these terms",
+        "body": "If these terms change, the \"last updated\" date changes with them, and continuing to use CedarLink means accepting the new version."
+      },
+      "contact": {
+        "title": "Contact",
+        "body": "Questions about these terms can be sent to the project team at support@cedarlink.example."
+      }
     }
   }
 }

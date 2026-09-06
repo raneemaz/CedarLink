@@ -375,7 +375,8 @@
     "errFillAll": "Veuillez remplir tous les champs.",
     "errPasswordsMatch": "Les mots de passe ne correspondent pas.",
     "errCantStart": "Impossible de démarrer la vérification du compte.",
-    "fallbackCodeSent": "Code de vérification envoyé."
+    "fallbackCodeSent": "Code de vérification envoyé.",
+    "agreeToTerms": "En créant un compte, vous acceptez les <terms>conditions d'utilisation</terms> et la <privacy>politique de confidentialité</privacy> de CedarLink."
   },
   "registerVerify": {
     "title": "Vérifiez votre compte",
@@ -1617,6 +1618,158 @@
     "describe": {
       "light": "Toujours clair, quel que soit votre appareil.",
       "dark": "Toujours sombre, quel que soit votre appareil."
+    }
+  },
+  "footer": {
+    "privacy": "Politique de confidentialité",
+    "terms": "Conditions d'utilisation",
+    "tagline": "Un projet universitaire — pas un service commercial."
+  },
+  "privacyPolicy": {
+    "title": "Politique de confidentialité",
+    "academicNoticeTitle": "Document académique",
+    "academicNotice": "CedarLink est une place de marché étudiante créée pour un projet universitaire. Cette politique décrit ce que le logiciel fait réellement des données personnelles. Elle se veut exacte et ne constitue pas un avis juridique ; toute adresse de contact qu'elle contient est donnée à titre d'exemple.",
+    "lastUpdated": "Dernière mise à jour : {{date}}",
+    "intro": "Cette politique explique quelles données personnelles CedarLink conserve, pourquoi, qui peut les consulter et pendant combien de temps elles sont conservées. Elle est établie à partir de la base de données elle-même : chaque élément ci-dessous correspond à un champ que le logiciel stocke.",
+    "controlsIntro": "Les commandes ci-dessous sont les outils concrets pour exercer les droits décrits plus haut :",
+    "sections": {
+      "law": {
+        "title": "La loi appliquée par cette politique",
+        "body": "La loi libanaise n° 81 de 2018 sur les transactions électroniques et les données personnelles impose à un organisme qui traite des données personnelles de publier une politique de confidentialité transparente et de respecter les droits d'accès, de rectification, de suppression et de portabilité.\n\nCedarLink en met trois en œuvre aujourd'hui. L'accès et la rectification se font dans les paramètres de votre compte ; la suppression se fait sur la page Confidentialité et données. La portabilité — une copie téléchargeable de vos données dans un format standard — n'est pas encore développée ; en attendant, vous pouvez demander une copie à l'équipe du projet. Les commandes qui existent sont regroupées à la fin de cette politique."
+      },
+      "identity": {
+        "title": "Identité et coordonnées",
+        "body": "Lors de votre inscription, CedarLink enregistre votre prénom, votre nom, votre adresse e-mail et, facultativement, un numéro de téléphone.\n\n- Finalité : créer votre compte et vous y connecter, indiquer à un vendeur à qui une commande est destinée, et envoyer les avis liés au compte et aux commandes.\n- Qui peut les voir : vous ; un vendeur voit votre nom et votre téléphone uniquement pour les commandes passées dans sa boutique ; un administrateur peut les voir pour l'assistance et la modération.\n- Conservation : tant que votre compte existe. Après la suppression, le nom devient « Deleted User », l'e-mail est remplacé par une adresse non routable et le numéro de téléphone est effacé."
+      },
+      "addresses": {
+        "title": "Adresses de livraison",
+        "body": "Une adresse enregistrée contient un libellé, le nom et le téléphone du destinataire, l'adresse, la ville, des instructions de livraison facultatives et — seulement si vous placez un point sur la carte — des coordonnées approximatives.\n\n- Finalité : livrer vos commandes et préremplir le paiement.\n- Qui peut les voir : vous, ainsi que le vendeur et le livreur d'une commande envoyée à cette adresse.\n- Conservation : jusqu'à ce que vous supprimiez l'adresse ou votre compte. La suppression du compte supprime toutes les adresses enregistrées."
+      },
+      "orders": {
+        "title": "Commandes et leur historique",
+        "body": "Chaque commande enregistre les articles et les quantités, le prix facturé, toute remise appliquée, les frais de livraison, l'adresse et la ville de livraison telles qu'elles étaient au paiement, ainsi que l'évolution du statut de la commande.\n\n- Finalité : traiter la commande, vous montrer votre historique d'achats et servir de registre des ventes au vendeur et à la plateforme.\n- Qui peut les voir : vous ; le vendeur concerné ; un administrateur.\n- Conservation : les commandes sont conservées comme documents comptables et de traçabilité même après la suppression de votre compte. À ce moment, l'adresse de livraison enregistrée est effacée et la commande n'est plus rattachée à une personne nommée."
+      },
+      "payment": {
+        "title": "Détails du moyen de paiement",
+        "body": "CedarLink règle chaque commande en espèces à la livraison. Aucune carte n'est jamais débitée.\n\nSi vous enregistrez une carte par commodité, CedarLink ne conserve que sa marque, les quatre derniers chiffres, le mois et l'année d'expiration, et un libellé que vous choisissez. Le numéro complet de la carte et le code de sécurité ne sont jamais reçus ni conservés, et toute requête qui en contient un est rejetée (décision 0024).\n\n- Qui peut les voir : vous uniquement.\n- Conservation : jusqu'à ce que vous supprimiez la carte ou votre compte."
+      },
+      "reviews": {
+        "title": "Les avis que vous rédigez",
+        "body": "Un avis comporte une note, un titre et un texte facultatifs, et il est lié à la commande livrée qui vous donne le droit de le rédiger.\n\nComme un avis suppose un achat effectué, l'avis public n'affiche jamais votre identifiant de compte — seul votre prénom est indiqué comme auteur (décision 0019). Un administrateur peut voir l'identité complète de l'auteur à des fins de modération.\n\n- Conservation : un avis survit au produit et à la boutique qu'il concerne, et subsiste après la suppression de votre compte, affiché alors comme rédigé par « Deleted »."
+      },
+      "preferences": {
+        "title": "Préférences et centres d'intérêt",
+        "body": "CedarLink enregistre votre langue, votre devise et votre choix de thème clair ou sombre, vos réglages de notification, quelques préférences de paiement telles qu'une ville par défaut, et toute catégorie que vous avez explicitement marquée comme centre d'intérêt.\n\nLes centres d'intérêt sont choisis par vous, jamais déduits. CedarLink ne suit pas ce que vous consultez ou achetez et ne conserve aucun profil comportemental (décision 0022).\n\n- Conservation : jusqu'à ce que vous les modifiiez ou supprimiez votre compte."
+      },
+      "security": {
+        "title": "Données de sécurité du compte",
+        "body": "CedarLink enregistre votre mot de passe sous forme d'empreinte salée, jamais en clair. Si vous activez l'authentification à deux facteurs, sont aussi enregistrés votre méthode à deux facteurs, un secret d'authentification chiffré et des codes de récupération à usage unique sous forme d'empreintes.\n\nLes défis de vérification de courte durée — connexion, confirmation d'e-mail ou de téléphone, et actions sensibles — sont stockés sous forme d'empreintes assorties d'une expiration et ne sont pas lisibles.\n\n- Qui peut les voir : personne ; ces valeurs ne sont montrées à personne, y compris aux administrateurs.\n- Conservation : votre mot de passe et vos réglages à deux facteurs durent toute la vie du compte ; les défis expirent rapidement."
+      },
+      "technical": {
+        "title": "Données techniques",
+        "body": "L'adresse IP de votre appareil est utilisée momentanément pour limiter le débit des requêtes et ralentir les tentatives de connexion échouées répétées. Elle n'est pas écrite dans la base de données et ne sert pas à vous identifier ni à vous profiler.\n\nCedarLink ne dépose aucun cookie publicitaire ou de mesure d'audience et n'intègre aucun traceur tiers. Les seules choses conservées dans le stockage de votre navigateur sont votre jeton de connexion et des préférences d'affichage légères comme la langue et le thème."
+      },
+      "sharing": {
+        "title": "Avec qui vos données sont partagées",
+        "body": "CedarLink ne vend pas de données personnelles et ne les partage pas à des fins publicitaires.\n\nLes données ne sont partagées que dans la mesure où le service l'exige : un vendeur reçoit le nom, le téléphone, l'adresse de livraison et les articles des commandes passées dans sa boutique ; un livreur reçoit l'adresse de livraison et, pendant qu'une livraison est en cours, un numéro de contact ; un administrateur peut voir les données de compte et de commande pour l'assistance et la modération.\n\nDeux services externes peuvent traiter des données pour le compte de CedarLink : un fournisseur d'e-mail achemine les messages de vérification et — seulement si vous choisissez la vérification par téléphone — un fournisseur de SMS achemine les codes vers votre numéro. La source des taux de change ne reçoit aucune donnée personnelle."
+      },
+      "deletion": {
+        "title": "Ce que fait la suppression de votre compte",
+        "body": "La suppression se trouve sur la page Confidentialité et données et prend effet immédiatement après que vous avez ressaisi votre mot de passe, plus un code à deux facteurs si vous en avez un.\n\nElle efface vos adresses enregistrées, vos cartes enregistrées, vos notifications, vos préférences de notification et d'achat, vos secrets et codes de récupération à deux facteurs, et votre panier. Votre fiche utilisateur est anonymisée sur place : nom, e-mail et téléphone sont remplacés ou supprimés.\n\nLes commandes et les avis sont conservés, sans votre identité, car ce sont les registres du vendeur et de la plateforme. La suppression est bloquée tant que vous avez une commande en cours — annulez-la ou attendez la livraison d'abord."
+      },
+      "childrens": {
+        "title": "Enfants",
+        "body": "CedarLink ne s'adresse pas aux enfants et ne conserve pas sciemment de données sur une personne de moins de 18 ans."
+      },
+      "changes": {
+        "title": "Modifications de cette politique",
+        "body": "Si cette politique change, la date de « dernière mise à jour » en haut change avec elle. Les modifications importantes seront annoncées dans l'application."
+      },
+      "contact": {
+        "title": "Contact et vos commandes",
+        "body": "Pour toute question sur cette politique, ou pour demander une copie de vos données, contactez l'équipe du projet à privacy@cedarlink.example."
+      }
+    },
+    "controls": {
+      "profile": "Voir et corriger votre nom, votre e-mail et votre téléphone",
+      "addresses": "Ajouter, modifier ou supprimer des adresses de livraison enregistrées",
+      "payment": "Voir ou supprimer les détails des cartes enregistrées",
+      "notifications": "Modifier ce dont CedarLink vous informe",
+      "security": "Gérer votre mot de passe et l'authentification à deux facteurs",
+      "privacy": "Désactiver ou supprimer définitivement votre compte"
+    }
+  },
+  "terms": {
+    "title": "Conditions d'utilisation",
+    "academicNoticeTitle": "Document académique",
+    "academicNotice": "CedarLink est une place de marché étudiante créée pour un projet universitaire. Ces conditions décrivent l'usage prévu du logiciel. Elles sont rédigées en langage clair à cette fin et ne constituent pas un avis juridique.",
+    "lastUpdated": "Dernière mise à jour : {{date}}",
+    "intro": "Ces conditions s'appliquent à toute personne qui utilise CedarLink, pour acheter ou pour vendre. Utiliser le service, c'est les accepter.",
+    "sections": {
+      "marketplace": {
+        "title": "CedarLink est une place de marché, pas le vendeur",
+        "body": "CedarLink met en relation des clients et des boutiques locales indépendantes au Liban. Lorsque vous achetez un article, votre contrat de vente est conclu avec le vendeur, pas avec CedarLink. CedarLink fournit la plateforme : les annonces, le paiement, le suivi des commandes et les outils d'assistance. Elle ne détient pas le stock, ne fixe pas les prix et n'effectue pas les livraisons."
+      },
+      "accounts": {
+        "title": "Votre compte",
+        "body": "Vous devez fournir des informations d'inscription exactes et garder votre mot de passe en sécurité. Un compte est destiné à une seule personne, et vous êtes responsable de ce qui se passe sous ce compte.\n\nL'inscription publique ne crée qu'un compte client ou vendeur. Les comptes administrateur sont créés en interne."
+      },
+      "customer": {
+        "title": "Si vous êtes client",
+        "body": "- Indiquez une adresse de livraison et un numéro de téléphone corrects, et soyez joignable pour la livraison.\n- Payez au livreur le total de la commande en espèces à son arrivée.\n- N'évaluez un produit ou une boutique qu'après qu'une commande le contenant vous a été livrée, et gardez l'avis honnête.\n- N'utilisez pas la plateforme pour harceler des vendeurs ou d'autres utilisateurs, ni à des fins illicites."
+      },
+      "vendor": {
+        "title": "Si vous êtes vendeur",
+        "body": "- Décrivez vos produits, prix, stocks et traductions avec exactitude, et respectez le prix affiché au paiement.\n- Tenez à jour vos horaires et votre disponibilité, et honorez les commandes que vous acceptez.\n- Ne proposez que des biens que vous pouvez vendre légalement.\n- Votre boutique n'est visible des clients qu'après l'approbation d'un administrateur, et elle peut être retirée en cas de non-respect de ces conditions (décision 0005)."
+      },
+      "orders": {
+        "title": "Commandes et prix",
+        "body": "Un panier qui contient des articles de plusieurs boutiques devient une commande par boutique, chacune avec ses propres frais de livraison et son propre cycle de vie.\n\nLe prix affiché au paiement est le prix que vous payez — le même calcul produit le devis et le montant facturé. Passer une commande est une demande que le vendeur traite ensuite. Si un article vient à manquer avant que la commande soit passée, celle-ci est refusée plutôt que mise en attente."
+      },
+      "payment": {
+        "title": "Paiement à la livraison",
+        "body": "Le paiement en espèces à la livraison est le seul moyen de payer. Vous payez le livreur en espèces au moment de la livraison, et aucune carte n'est débitée à aucun moment. Choisir une carte enregistrée au paiement n'enregistre qu'une préférence et ne déplace aucun argent (décision 0024)."
+      },
+      "cancellation": {
+        "title": "Annulation et stock",
+        "body": "Vous pouvez annuler une commande tant qu'elle est en attente ou en préparation. L'annulation remet les articles dans le stock de la boutique et annule tout coupon utilisé sur la commande. Une fois livrée, une commande est définitive.\n\nUn vendeur ou un administrateur peut aussi annuler une commande — par exemple si la boutique ne peut pas l'honorer — et le stock est remis de la même manière."
+      },
+      "coupons": {
+        "title": "Coupons",
+        "body": "Un coupon ne fonctionne que dans ses propres limites : ses dates de validité, un éventuel montant minimum de commande, et ses plafonds d'utilisation total et par client. Un coupon à montant fixe valable sur toute la plateforme ne peut pas être appliqué à un panier réparti sur plusieurs boutiques (décision 0021).\n\nLa remise enregistrée sur une commande est figée au moment où la commande est passée. Les coupons n'ont aucune valeur monétaire et peuvent être retirés ou modifiés à tout moment."
+      },
+      "delivery": {
+        "title": "Frais de livraison",
+        "body": "Chaque boutique fixe ses propres frais de livraison à l'intérieur et à l'extérieur de sa ville. Les frais sont perçus avec la commande en espèces et reversés au livreur. Ils ne constituent pas le revenu de la boutique et ne sont pas remboursés séparément une fois la commande livrée."
+      },
+      "reviews": {
+        "title": "Avis et modération",
+        "body": "Les avis proviennent uniquement de commandes livrées, un par commande pour le produit ou pour la boutique.\n\nTout utilisateur peut signaler un avis. Un administrateur peut alors le marquer ou le retirer. Un avis peut être retiré s'il ne provient pas d'un achat réel, s'il contient des insultes ou du harcèlement, s'il expose des données personnelles, s'il s'agit de spam ou de publicité, s'il est illicite, ou s'il est sans rapport avec le produit ou la boutique. Signaler un avis ne le masque pas en soi et ne modifie pas une note ; seul le retrait le fait (décision 0017)."
+      },
+      "suspension": {
+        "title": "Suspension de compte",
+        "body": "Un administrateur peut suspendre un compte en cas de non-respect de ces conditions, de fraude ou d'abus, ou d'usage illicite de la plateforme. Un compte suspendu ne peut pas lever lui-même sa suspension, et le motif est consigné. C'est distinct de la désactivation de votre propre compte, que vous pouvez annuler en vous reconnectant."
+      },
+      "availability": {
+        "title": "Disponibilité",
+        "body": "CedarLink est un projet étudiant et est fourni « en l'état ». Rien ne garantit qu'il sera disponible sans interruption, et les données du projet peuvent être réinitialisées pendant le développement."
+      },
+      "liability": {
+        "title": "Limitation de responsabilité",
+        "body": "Dans la mesure où la loi le permet, CedarLink et l'équipe du projet ne sont pas responsables des litiges entre clients et vendeurs, de la qualité ou de la sécurité des biens vendus, du résultat d'une livraison, ni d'aucun dommage indirect ou consécutif. CedarLink n'étant pas le vendeur, les réclamations relatives à un achat opposent le client et le vendeur."
+      },
+      "governing": {
+        "title": "Contexte applicable",
+        "body": "CedarLink est exploité depuis le Liban et ces conditions se lisent dans ce contexte. Un litige portant sur un achat précis est une affaire entre le client et le vendeur concernés."
+      },
+      "changes": {
+        "title": "Modifications de ces conditions",
+        "body": "Si ces conditions changent, la date de « dernière mise à jour » change avec elles, et continuer à utiliser CedarLink vaut acceptation de la nouvelle version."
+      },
+      "contact": {
+        "title": "Contact",
+        "body": "Les questions sur ces conditions peuvent être envoyées à l'équipe du projet à support@cedarlink.example."
+      }
     }
   }
 }

@@ -47,6 +47,8 @@ import Currency from "./pages/Settings/Currency";
 import NotificationPreferences from "./pages/Settings/NotificationPreferences";
 import ShoppingPreferences from "./pages/Settings/ShoppingPreferences";
 import PrivacyData from "./pages/Settings/PrivacyData";
+import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
+import Terms from "./pages/legal/Terms";
 import NotificationsFeed from "./pages/Notifications/NotificationsFeed";
 import NotFound from "./pages/NotFound/NotFound";
 
@@ -113,6 +115,9 @@ function App() {
           path="/settings/language"
           element={<Language />}
         />
+
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<Terms />} />
 
         <Route path="*" element={<NotFound />} />
       </Route>
