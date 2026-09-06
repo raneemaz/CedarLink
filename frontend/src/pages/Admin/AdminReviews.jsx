@@ -14,7 +14,7 @@ const PER_PAGE = 10;
 const STATUS_BADGE = {
   published: "bg-success-subtle text-success",
   flagged: "bg-warning-tint text-warning-muted",
-  removed: "bg-control text-text-secondary",
+  removed: "bg-control text-ink-secondary",
 };
 
 // which actions each status allows
@@ -92,7 +92,7 @@ function AdminReviews() {
 
   return (
     <div>
-      <h1 className="mb-6 text-3xl font-bold text-text-primary">
+      <h1 className="mb-6 text-3xl font-bold text-ink">
         {t("adminReviews.title")}
       </h1>
 
@@ -107,8 +107,8 @@ function AdminReviews() {
             }}
             className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
               filter === key
-                ? "bg-brand text-on-brand"
-                : "bg-surface-raised text-text-secondary shadow-sm hover:bg-surface"
+                ? "bg-cedar text-on-cedar"
+                : "bg-paper-raised text-ink-secondary shadow-sm hover:bg-paper"
             }`}
           >
             {t(`adminReviews.filter.${key}`)}
@@ -117,17 +117,17 @@ function AdminReviews() {
       </div>
 
       {loading && !data ? (
-        <p className="text-sm text-text-muted">{t("adminReviews.loading")}</p>
+        <p className="text-sm text-ink-muted">{t("adminReviews.loading")}</p>
       ) : reviews.length === 0 ? (
-        <div className="rounded-2xl bg-surface-raised py-16 text-center shadow-sm">
-          <p className="text-text-secondary">{t("adminReviews.empty")}</p>
+        <div className="rounded-2xl bg-paper-raised py-16 text-center shadow-sm">
+          <p className="text-ink-secondary">{t("adminReviews.empty")}</p>
         </div>
       ) : (
         <div className="space-y-4">
           {reviews.map((review) => (
             <article
               key={review.id}
-              className="rounded-2xl bg-surface-raised p-5 shadow-sm"
+              className="rounded-2xl bg-paper-raised p-5 shadow-sm"
             >
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex flex-wrap items-center gap-2">
@@ -139,7 +139,7 @@ function AdminReviews() {
                   >
                     {t(`reviewStatus.${review.status}`)}
                   </span>
-                  <span className="text-sm text-text-muted">
+                  <span className="text-sm text-ink-muted">
                     {review.target.type === "product"
                       ? t("adminReviews.onProduct")
                       : t("adminReviews.onStore")}{" "}
@@ -149,27 +149,27 @@ function AdminReviews() {
                           ? `/products/${review.target.id}`
                           : `/stores/${review.target.id}`
                       }
-                      className="font-medium text-brand hover:underline"
+                      className="font-medium text-cedar hover:underline"
                     >
                       {review.target.name || `#${review.target.id}`}
                     </Link>
                   </span>
                 </div>
-                <span className="text-xs text-text-faint">
+                <span className="text-xs text-ink-faint">
                   {formatDate(review.created_at, i18n.language)}
                 </span>
               </div>
 
               {review.title && (
-                <p className="mt-3 font-medium text-text-primary">{review.title}</p>
+                <p className="mt-3 font-medium text-ink">{review.title}</p>
               )}
               {review.body && (
-                <p className="mt-1 whitespace-pre-line text-sm text-text-secondary">
+                <p className="mt-1 whitespace-pre-line text-sm text-ink-secondary">
                   {review.body}
                 </p>
               )}
 
-              <p className="mt-3 text-xs text-text-muted">
+              <p className="mt-3 text-xs text-ink-muted">
                 {t("adminReviews.byAuthor", {
                   name: review.author.name || t("reviews.anonymous"),
                   email: review.author.email || "—",
@@ -198,7 +198,7 @@ function AdminReviews() {
               )}
 
               {review.moderation_note && (
-                <p className="mt-2 text-xs text-text-faint">
+                <p className="mt-2 text-xs text-ink-faint">
                   {t("adminReviews.lastNote", {
                     note: review.moderation_note,
                   })}
@@ -213,7 +213,7 @@ function AdminReviews() {
                     onClick={() => openAction(review, action)}
                     className={`font-medium hover:underline ${
                       action === "restore"
-                        ? "text-brand"
+                        ? "text-cedar"
                         : "text-danger"
                     }`}
                   >
@@ -230,18 +230,18 @@ function AdminReviews() {
                 type="button"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page <= 1}
-                className="rounded-lg border border-border-strong px-4 py-2 font-medium text-text-body hover:bg-surface disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-lg border border-line-strong px-4 py-2 font-medium text-ink-body hover:bg-paper disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {t("common.previous")}
               </button>
-              <span className="text-text-muted">
+              <span className="text-ink-muted">
                 {t("common.pageOf", { page, pages })}
               </span>
               <button
                 type="button"
                 onClick={() => setPage((p) => Math.min(pages, p + 1))}
                 disabled={page >= pages}
-                className="rounded-lg border border-border-strong px-4 py-2 font-medium text-text-body hover:bg-surface disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-lg border border-line-strong px-4 py-2 font-medium text-ink-body hover:bg-paper disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {t("common.next")}
               </button>
@@ -260,7 +260,7 @@ function AdminReviews() {
         onConfirm={runAction}
         onCancel={() => (working ? null : setPending(null))}
       >
-        <label className="mb-1 block text-xs font-medium text-text-secondary">
+        <label className="mb-1 block text-xs font-medium text-ink-secondary">
           {t("adminReviews.noteLabel")}
         </label>
         <textarea
@@ -268,7 +268,7 @@ function AdminReviews() {
           onChange={(e) => setReason(e.target.value)}
           rows="2"
           maxLength={500}
-          className="w-full resize-none rounded-lg border border-border-strong px-3 py-2 text-sm outline-none focus:border-brand-ring focus:ring-1 focus:ring-brand-ring"
+          className="w-full resize-none rounded-lg border border-line-strong px-3 py-2 text-sm outline-none focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring"
         />
       </ConfirmDialog>
     </div>

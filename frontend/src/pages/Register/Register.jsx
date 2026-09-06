@@ -93,19 +93,19 @@ function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-surface-sunken flex items-center justify-center px-4 py-10">
+    <div className="min-h-screen bg-paper-sunken flex items-center justify-center px-4 py-10">
       <Card className="w-full max-w-lg">
-        <h1 className="text-4xl font-bold text-center text-brand">
+        <h1 className="text-4xl font-bold text-center text-cedar">
           CedarLink
         </h1>
 
-        <p className="text-center text-text-muted mt-2 mb-8">
+        <p className="text-center text-ink-muted mt-2 mb-8">
           {t("register.createAccount")}
         </p>
 
         {/* Account type — the first decision a new user makes */}
         <div className="mb-6">
-          <p className="mb-3 block text-sm font-medium text-text-body">
+          <p className="mb-3 block text-sm font-medium text-ink-body">
             {t("register.whatBrings")}
           </p>
 
@@ -115,14 +115,14 @@ function Register() {
               onClick={() => setRole("customer")}
               className={`rounded-xl border-2 p-4 text-start transition ${
                 role === "customer"
-                  ? "border-brand-ring bg-brand-subtle"
-                  : "border-border hover:border-border-strong"
+                  ? "border-cedar-ring bg-cedar-subtle"
+                  : "border-line hover:border-line-strong"
               }`}
             >
-              <span className="block font-semibold text-text-primary">
+              <span className="block font-semibold text-ink">
                 {t("register.iWantToShop")}
               </span>
-              <span className="mt-1 block text-xs text-text-muted">
+              <span className="mt-1 block text-xs text-ink-muted">
                 {t("register.iWantToShopDesc")}
               </span>
             </button>
@@ -132,14 +132,14 @@ function Register() {
               onClick={() => setRole("vendor")}
               className={`rounded-xl border-2 p-4 text-start transition ${
                 role === "vendor"
-                  ? "border-brand-ring bg-brand-subtle"
-                  : "border-border hover:border-border-strong"
+                  ? "border-cedar-ring bg-cedar-subtle"
+                  : "border-line hover:border-line-strong"
               }`}
             >
-              <span className="block font-semibold text-text-primary">
+              <span className="block font-semibold text-ink">
                 {t("register.iWantToSell")}
               </span>
-              <span className="mt-1 block text-xs text-text-muted">
+              <span className="mt-1 block text-xs text-ink-muted">
                 {t("register.iWantToSellDesc")}
               </span>
             </button>
@@ -201,7 +201,7 @@ function Register() {
         />
 
         <div className="mb-5">
-          <label className="mb-2 block text-sm font-medium text-text-body">
+          <label className="mb-2 block text-sm font-medium text-ink-body">
             {t("register.verificationMethod")}
           </label>
 
@@ -210,7 +210,7 @@ function Register() {
             onChange={(e) =>
               setVerificationMethod(e.target.value)
             }
-            className="w-full rounded-lg border border-border-strong px-4 py-3 outline-none transition focus:border-brand-ring focus:ring-2 focus:ring-brand-tint"
+            className="w-full rounded-lg border border-line-strong px-4 py-3 outline-none transition focus:border-cedar-ring focus:ring-2 focus:ring-cedar-tint"
           >
             <option value="email">{t("auth.method_email")}</option>
             <option value="sms">{t("auth.method_sms")}</option>
@@ -250,11 +250,11 @@ function Register() {
           {loading ? t("register.creating") : t("register.submit")}
         </Button>
 
-        <p className="text-center text-text-secondary mt-6">
+        <p className="text-center text-ink-secondary mt-6">
           {t("register.alreadyHaveAccount")}{" "}
           <Link
             to="/login"
-            className="text-brand cursor-pointer font-semibold hover:underline"
+            className="text-cedar cursor-pointer font-semibold hover:underline"
           >
             {t("register.login")}
           </Link>

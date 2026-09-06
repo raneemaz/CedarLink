@@ -95,24 +95,24 @@ function NearbySearch({
   };
 
   return (
-    <div className="mb-4 rounded-xl bg-surface-raised p-3 shadow-sm">
+    <div className="mb-4 rounded-xl bg-paper-raised p-3 shadow-sm">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
         <button
           type="button"
           onClick={nearMe}
           disabled={geoBusy}
-          className="inline-flex items-center gap-1.5 rounded-md border border-border-strong px-3 py-2 text-sm font-medium text-text-body hover:bg-surface disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 rounded-md border border-line-strong px-3 py-2 text-sm font-medium text-ink-body hover:bg-paper disabled:cursor-not-allowed disabled:opacity-50"
         >
           <LocateFixed className="h-4 w-4" />
           {geoBusy ? t("nearbySearch.locating") : t("nearbySearch.nearMe")}
         </button>
 
-        <span className="text-sm text-text-faint">{t("nearbySearch.or")}</span>
+        <span className="text-sm text-ink-faint">{t("nearbySearch.or")}</span>
 
         <select
           value={placeKey}
           onChange={(e) => pickPlace(e.target.value)}
-          className="rounded-md border border-border-strong px-3 py-2 text-sm outline-none focus:border-brand-ring"
+          className="rounded-md border border-line-strong px-3 py-2 text-sm outline-none focus:border-cedar-ring"
         >
           <option value="">{t("nearbySearch.pickPlace")}</option>
           {LEBANON_PLACES.map((place) => (
@@ -123,7 +123,7 @@ function NearbySearch({
         </select>
 
         <div className="flex items-center gap-1.5">
-          <span className="text-sm text-text-muted">
+          <span className="text-sm text-ink-muted">
             {t("nearbySearch.radius")}
           </span>
           {RADII.map((km) => (
@@ -134,8 +134,8 @@ function NearbySearch({
               aria-pressed={radiusKm === km}
               className={`rounded-md px-2.5 py-1.5 text-sm font-medium transition ${
                 radiusKm === km
-                  ? "bg-brand text-on-brand"
-                  : "bg-surface-sunken text-text-secondary hover:bg-control"
+                  ? "bg-cedar text-on-cedar"
+                  : "bg-paper-sunken text-ink-secondary hover:bg-control"
               }`}
             >
               {t("nearbySearch.km", { count: km })}
@@ -147,7 +147,7 @@ function NearbySearch({
           <button
             type="button"
             onClick={clear}
-            className="inline-flex items-center gap-1 rounded-md px-2 py-1.5 text-sm font-medium text-brand hover:underline"
+            className="inline-flex items-center gap-1 rounded-md px-2 py-1.5 text-sm font-medium text-cedar hover:underline"
           >
             <X className="h-4 w-4" />
             {t("nearbySearch.showAll")}
@@ -157,7 +157,7 @@ function NearbySearch({
 
       {pinned.length > 0 && (
         <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-2">
-          <span className="text-sm text-text-muted">
+          <span className="text-sm text-ink-muted">
             {t("nearbySearch.savedAddresses")}
           </span>
           {pinned.map((address) => (
@@ -168,8 +168,8 @@ function NearbySearch({
               aria-pressed={addressId === address.id}
               className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium transition ${
                 addressId === address.id
-                  ? "bg-brand text-on-brand"
-                  : "bg-surface-sunken text-text-secondary hover:bg-control"
+                  ? "bg-cedar text-on-cedar"
+                  : "bg-paper-sunken text-ink-secondary hover:bg-control"
               }`}
             >
               <Home className="h-4 w-4" />
@@ -180,7 +180,7 @@ function NearbySearch({
       )}
 
       {center && (
-        <p className="mt-2 text-sm text-text-secondary">
+        <p className="mt-2 text-sm text-ink-secondary">
           {t("nearbySearch.centeredOn", { place: center.label })}
         </p>
       )}

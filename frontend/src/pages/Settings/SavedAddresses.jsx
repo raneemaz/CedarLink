@@ -80,16 +80,16 @@ function SavedAddresses() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-surface px-6 py-10">
+      <div className="min-h-screen bg-paper px-6 py-10">
         <div className="mx-auto max-w-4xl">
-          <p className="text-text-muted">{t("addresses.loading")}</p>
+          <p className="text-ink-muted">{t("addresses.loading")}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-surface px-6 py-10">
+    <div className="min-h-screen bg-paper px-6 py-10">
       <div className="mx-auto max-w-4xl">
         {/* Header */}
         <div className="mb-8">
@@ -97,11 +97,11 @@ function SavedAddresses() {
             {t("backLink.settings")}
           </BackLink>
 
-          <h1 className="text-3xl font-bold text-text-primary">
+          <h1 className="text-3xl font-bold text-ink">
             {t("addresses.title")}
           </h1>
 
-          <p className="mt-2 text-sm text-text-secondary">
+          <p className="mt-2 text-sm text-ink-secondary">
             {t("addresses.subtitle")}
           </p>
         </div>
@@ -111,7 +111,7 @@ function SavedAddresses() {
           <button
             onClick={() => navigate("/settings/addresses/new")}
             style={{ cursor: "pointer" }}
-            className="rounded-lg bg-brand px-5 py-3 text-sm font-semibold text-on-brand transition hover:bg-brand-strong"
+            className="rounded-lg bg-cedar px-5 py-3 text-sm font-semibold text-on-cedar transition hover:bg-cedar-strong"
           >
             + {t("addresses.addNew")}
           </button>
@@ -119,20 +119,20 @@ function SavedAddresses() {
 
         {/* Empty State */}
         {addresses.length === 0 ? (
-          <div className="rounded-xl bg-surface-raised p-10 text-center shadow-sm">
+          <div className="rounded-xl bg-paper-raised p-10 text-center shadow-sm">
             <div className="mb-4 text-4xl">📍</div>
 
-            <h2 className="text-lg font-semibold text-text-primary">
+            <h2 className="text-lg font-semibold text-ink">
               {t("addresses.emptyTitle")}
             </h2>
 
-            <p className="mt-2 text-sm text-text-muted">
+            <p className="mt-2 text-sm text-ink-muted">
               {t("addresses.emptyBody")}
             </p>
 
             <button
               onClick={() => navigate("/settings/addresses/new")}
-              className="mt-6 rounded-lg bg-brand px-5 py-3 text-sm font-semibold text-on-brand hover:bg-brand-strong"
+              className="mt-6 rounded-lg bg-cedar px-5 py-3 text-sm font-semibold text-on-cedar hover:bg-cedar-strong"
             >
               {t("addresses.addFirst")}
             </button>
@@ -143,46 +143,46 @@ function SavedAddresses() {
             {addresses.map((address) => (
               <div
                 key={address.id}
-                className="rounded-xl bg-surface-raised p-6 shadow-sm"
+                className="rounded-xl bg-paper-raised p-6 shadow-sm"
               >
                 {/* Top Row */}
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <div className="flex items-center gap-3">
-                      <h2 className="text-lg font-semibold text-text-primary">
+                      <h2 className="text-lg font-semibold text-ink">
                         {addressLabel(t, address.label)}
                       </h2>
 
                       {address.is_default && (
-                        <span className="rounded-full bg-brand-tint px-3 py-1 text-xs font-semibold text-brand">
+                        <span className="rounded-full bg-cedar-tint px-3 py-1 text-xs font-semibold text-cedar">
                           {t("common.default")}
                         </span>
                       )}
                     </div>
 
-                    <p className="mt-3 font-medium text-text-emphasis">
+                    <p className="mt-3 font-medium text-ink-emphasis">
                       {address.recipient_name}
                     </p>
 
-                    <p className="mt-1 text-sm text-text-secondary">
+                    <p className="mt-1 text-sm text-ink-secondary">
                       {address.phone}
                     </p>
                   </div>
                 </div>
 
                 {/* Address */}
-                <div className="mt-4 border-t border-border-subtle pt-4">
-                  <p className="text-sm text-text-body">
+                <div className="mt-4 border-t border-line-subtle pt-4">
+                  <p className="text-sm text-ink-body">
                     {address.address_line}
                   </p>
 
-                  <p className="mt-1 text-sm text-text-body">
+                  <p className="mt-1 text-sm text-ink-body">
                     {address.city}
                   </p>
 
                   {address.delivery_instructions && (
-                    <p className="mt-3 text-sm text-text-muted">
-                      <span className="font-medium text-text-body">
+                    <p className="mt-3 text-sm text-ink-muted">
+                      <span className="font-medium text-ink-body">
                         {t("addresses.deliveryInstructionsLabel")}
                       </span>{" "}
                       {address.delivery_instructions}
@@ -195,7 +195,7 @@ function SavedAddresses() {
                   {!address.is_default && (
                     <button
                       onClick={() => handleSetDefault(address.id)}
-                      className="rounded-lg border border-brand px-4 py-2 text-sm font-medium text-brand hover:bg-brand-subtle"
+                      className="rounded-lg border border-cedar px-4 py-2 text-sm font-medium text-cedar hover:bg-cedar-subtle"
                     >
                       {t("addresses.setAsDefault")}
                     </button>
@@ -205,7 +205,7 @@ function SavedAddresses() {
                     onClick={() =>
                       navigate(`/settings/addresses/${address.id}/edit`)
                     }
-                    className="cursor-pointer rounded-lg border border-border-strong px-4 py-2 text-sm font-medium text-text-body hover:bg-surface"
+                    className="cursor-pointer rounded-lg border border-line-strong px-4 py-2 text-sm font-medium text-ink-body hover:bg-paper"
                   >
                     {t("addresses.edit")}
                   </button>

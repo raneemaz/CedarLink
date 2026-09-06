@@ -124,19 +124,19 @@ function ProductImageManager({ productId, onImagesChange }) {
   };
 
   return (
-    <section className="overflow-hidden rounded-2xl bg-surface-raised shadow-sm">
-      <div className="border-b border-border-subtle px-6 py-5">
-        <h2 className="text-xl font-semibold text-text-primary">
+    <section className="overflow-hidden rounded-2xl bg-paper-raised shadow-sm">
+      <div className="border-b border-line-subtle px-6 py-5">
+        <h2 className="text-xl font-semibold text-ink">
           {t("productImages.sectionTitle")}
         </h2>
-        <p className="mt-1 text-sm text-text-muted">
+        <p className="mt-1 text-sm text-ink-muted">
           {t("productImages.usage", { count: images.length, max: MAX_IMAGES })}
         </p>
       </div>
 
       <div className="px-6 py-6">
         {loading ? (
-          <p className="text-sm text-text-muted">{t("productImages.loading")}</p>
+          <p className="text-sm text-ink-muted">{t("productImages.loading")}</p>
         ) : (
           <>
             {images.length > 0 && (
@@ -144,7 +144,7 @@ function ProductImageManager({ productId, onImagesChange }) {
                 {images.map((image) => (
                   <div
                     key={image.id}
-                    className="group relative aspect-square overflow-hidden rounded-lg border border-border bg-surface"
+                    className="group relative aspect-square overflow-hidden rounded-lg border border-line bg-paper"
                   >
                     <img
                       src={image.url}
@@ -156,7 +156,7 @@ function ProductImageManager({ productId, onImagesChange }) {
                       onClick={() => setDeleteTarget(image)}
                       disabled={uploading || deleting}
                       aria-label={t("productImages.removeImage")}
-                      className="absolute end-2 top-2 rounded-md bg-surface-raised/90 p-1.5 text-danger shadow-sm transition hover:bg-surface-raised disabled:opacity-50"
+                      className="absolute end-2 top-2 rounded-md bg-paper-raised/90 p-1.5 text-danger shadow-sm transition hover:bg-paper-raised disabled:opacity-50"
                     >
                       <Trash2 size={16} />
                     </button>
@@ -174,17 +174,17 @@ function ProductImageManager({ productId, onImagesChange }) {
             />
 
             {atMax ? (
-              <p className="rounded-lg bg-surface px-4 py-3 text-sm text-text-muted">
+              <p className="rounded-lg bg-paper px-4 py-3 text-sm text-ink-muted">
                 {t("productImages.atMax", { max: MAX_IMAGES })}
               </p>
             ) : uploading ? (
-              <div className="rounded-lg border border-border px-4 py-3">
-                <p className="text-sm text-text-secondary">
+              <div className="rounded-lg border border-line px-4 py-3">
+                <p className="text-sm text-ink-secondary">
                   {t("productImages.uploading", { progress })}
                 </p>
-                <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-surface-sunken">
+                <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-paper-sunken">
                   <div
-                    className="h-full rounded-full bg-brand-ring transition-all"
+                    className="h-full rounded-full bg-cedar-ring transition-all"
                     style={{ width: `${progress}%` }}
                   />
                 </div>
@@ -194,14 +194,14 @@ function ProductImageManager({ productId, onImagesChange }) {
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={deleting}
-                className="flex items-center gap-2 rounded-lg border border-dashed border-border-strong px-4 py-3 text-sm font-medium text-text-body transition hover:border-brand-ring hover:text-brand disabled:opacity-50"
+                className="flex items-center gap-2 rounded-lg border border-dashed border-line-strong px-4 py-3 text-sm font-medium text-ink-body transition hover:border-cedar-ring hover:text-cedar disabled:opacity-50"
               >
                 <Upload size={16} />
                 {t("productImages.uploadImage")}
               </button>
             )}
 
-            <p className="mt-2 text-xs text-text-faint">
+            <p className="mt-2 text-xs text-ink-faint">
               {t("productImages.formats")}
             </p>
           </>

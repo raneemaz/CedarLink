@@ -22,7 +22,7 @@ function LanguageTabs({ active, onSelect, filled = {} }) {
   return (
     <div
       role="tablist"
-      className="flex gap-1 border-b border-border"
+      className="flex gap-1 border-b border-line"
     >
       {SUPPORTED_LANGUAGES.map((lang) => {
         const isActive = lang === active;
@@ -38,8 +38,8 @@ function LanguageTabs({ active, onSelect, filled = {} }) {
             onClick={() => onSelect(lang)}
             className={`-mb-px flex items-center gap-1.5 border-b-2 px-3 py-2 text-xs font-medium transition ${
               isActive
-                ? "border-brand-ring text-brand"
-                : "border-transparent text-text-muted hover:text-text-body"
+                ? "border-cedar-ring text-cedar"
+                : "border-transparent text-ink-muted hover:text-ink-body"
             }`}
           >
             {t(LABEL_KEY[lang])}
@@ -54,7 +54,7 @@ function LanguageTabs({ active, onSelect, filled = {} }) {
             ) : (
               <span
                 className={`h-1.5 w-1.5 rounded-full ${
-                  isFilled ? "bg-brand-ring" : "bg-control-hover"
+                  isFilled ? "bg-cedar-ring" : "bg-control-hover"
                 }`}
                 title={
                   isFilled

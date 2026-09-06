@@ -25,8 +25,8 @@ const CITY_OPTIONS = Array.from(
 ).sort((a, b) => a.localeCompare(b));
 
 export const fieldClass =
-  "w-full rounded-lg border border-border-strong px-4 py-3 text-sm outline-none " +
-  "focus:border-brand-ring focus:ring-1 focus:ring-brand-ring";
+  "w-full rounded-lg border border-line-strong px-4 py-3 text-sm outline-none " +
+  "focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring";
 
 const EMPTY_DETAILS = {
   name: "",
@@ -68,19 +68,19 @@ export function Section({ title, description, children, onSubmit, footer }) {
   return (
     <Wrapper
       onSubmit={onSubmit}
-      className="overflow-hidden rounded-2xl bg-surface-raised shadow-sm"
+      className="overflow-hidden rounded-2xl bg-paper-raised shadow-sm"
     >
-      <div className="border-b border-border-subtle px-6 py-5">
-        <h2 className="text-xl font-semibold text-text-primary">{title}</h2>
+      <div className="border-b border-line-subtle px-6 py-5">
+        <h2 className="text-xl font-semibold text-ink">{title}</h2>
         {description && (
-          <p className="mt-1 text-sm text-text-muted">{description}</p>
+          <p className="mt-1 text-sm text-ink-muted">{description}</p>
         )}
       </div>
 
       <div className="px-6 py-6">{children}</div>
 
       {footer && (
-        <div className="flex justify-end border-t border-border-subtle px-6 py-4">
+        <div className="flex justify-end border-t border-line-subtle px-6 py-4">
           {footer}
         </div>
       )}
@@ -93,7 +93,7 @@ function TextField({ label, name, value, onChange, hint, ...rest }) {
     <div>
       <label
         htmlFor={name}
-        className="mb-2 block text-sm font-medium text-text-body"
+        className="mb-2 block text-sm font-medium text-ink-body"
       >
         {label}
       </label>
@@ -107,7 +107,7 @@ function TextField({ label, name, value, onChange, hint, ...rest }) {
         {...rest}
       />
 
-      {hint && <p className="mt-1 text-xs text-text-muted">{hint}</p>}
+      {hint && <p className="mt-1 text-xs text-ink-muted">{hint}</p>}
     </div>
   );
 }
@@ -130,7 +130,7 @@ function StoreDetailFields({ values, onChange }) {
       <div>
         <label
           htmlFor="description"
-          className="mb-2 block text-sm font-medium text-text-body"
+          className="mb-2 block text-sm font-medium text-ink-body"
         >
           {t("vendorStore.description")}
         </label>
@@ -150,7 +150,7 @@ function StoreDetailFields({ values, onChange }) {
       <div>
         <label
           htmlFor="location"
-          className="mb-2 block text-sm font-medium text-text-body"
+          className="mb-2 block text-sm font-medium text-ink-body"
         >
           {t("vendorStore.locationCity")}
         </label>
@@ -171,7 +171,7 @@ function StoreDetailFields({ values, onChange }) {
           ))}
         </select>
 
-        <p className="mt-1 text-xs text-text-muted">
+        <p className="mt-1 text-xs text-ink-muted">
           {t("vendorStore.locationHint")}
         </p>
       </div>
@@ -329,7 +329,7 @@ function VendorStore() {
   };
 
   if (loading) {
-    return <p className="text-sm text-text-muted">{t("vendorStore.loading")}</p>;
+    return <p className="text-sm text-ink-muted">{t("vendorStore.loading")}</p>;
   }
 
   // ---- No store yet: creation form ----------------------------------------
@@ -337,8 +337,8 @@ function VendorStore() {
     return (
       <div>
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-text-primary">{t("vendorStore.headingNoStore")}</h1>
-          <p className="mt-2 text-text-secondary">
+          <h1 className="text-3xl font-bold text-ink">{t("vendorStore.headingNoStore")}</h1>
+          <p className="mt-2 text-ink-secondary">
             {t("vendorStore.subtitleNoStore")}
           </p>
         </div>
@@ -394,8 +394,8 @@ function VendorStore() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-text-primary">{t("vendorStore.headingStore")}</h1>
-        <p className="mt-2 text-text-secondary">
+        <h1 className="text-3xl font-bold text-ink">{t("vendorStore.headingStore")}</h1>
+        <p className="mt-2 text-ink-secondary">
           {store.name}
           {!store.is_active && (
             <span className="ms-2 rounded-full bg-danger-tint px-2 py-0.5 text-xs font-semibold text-danger-strong">
@@ -453,7 +453,7 @@ function VendorStore() {
               />
             </div>
 
-            <div className="border-t border-border-subtle">
+            <div className="border-t border-line-subtle">
               <Toggle
                 checked={delivery.delivery_available}
                 onChange={(next) =>
@@ -490,10 +490,10 @@ function VendorStore() {
         >
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="font-medium text-text-primary">
+              <p className="font-medium text-ink">
                 {store.is_active ? t("vendorStore.active") : t("vendorStore.deactivated")}
               </p>
-              <p className="mt-1 text-sm text-text-muted">
+              <p className="mt-1 text-sm text-ink-muted">
                 {store.is_active
                   ? t("vendorStore.activeDesc")
                   : t("vendorStore.deactivatedDesc")}

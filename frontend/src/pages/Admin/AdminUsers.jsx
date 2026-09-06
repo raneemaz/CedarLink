@@ -9,7 +9,7 @@ const STATUS_BADGE = {
   active: "bg-success-subtle text-success",
   suspended: "bg-danger-tint text-danger-strong",
   deactivated: "bg-warning-tint text-warning-muted",
-  deleted: "bg-control text-text-secondary",
+  deleted: "bg-control text-ink-secondary",
 };
 
 function currentUserId() {
@@ -104,33 +104,33 @@ function AdminUsers() {
   };
 
   if (loading) {
-    return <p className="text-sm text-text-muted">{t("adminUsers.loading")}</p>;
+    return <p className="text-sm text-ink-muted">{t("adminUsers.loading")}</p>;
   }
 
   return (
     <div>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-3xl font-bold text-text-primary">{t("adminUsers.title")}</h1>
+        <h1 className="text-3xl font-bold text-ink">{t("adminUsers.title")}</h1>
         <input
           type="text"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           placeholder={t("adminUsers.searchPlaceholder")}
-          className="rounded-md border border-border-strong px-3 py-2 text-sm outline-none focus:border-brand-ring"
+          className="rounded-md border border-line-strong px-3 py-2 text-sm outline-none focus:border-cedar-ring"
         />
       </div>
 
-      <div className="overflow-x-auto rounded-2xl bg-surface-raised shadow-sm">
+      <div className="overflow-x-auto rounded-2xl bg-paper-raised shadow-sm">
         <table className="min-w-full text-sm">
           <thead>
-            <tr className="border-b border-border-subtle text-start text-xs uppercase tracking-wide text-text-faint">
+            <tr className="border-b border-line-subtle text-start text-xs uppercase tracking-wide text-ink-faint">
               <th className="px-4 py-3 font-medium">{t("adminUsers.colUser")}</th>
               <th className="px-4 py-3 font-medium">{t("adminUsers.colRole")}</th>
               <th className="px-4 py-3 font-medium">{t("adminUsers.colStatus")}</th>
               <th className="px-4 py-3 font-medium text-end">{t("adminUsers.colActions")}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-border-subtle">
+          <tbody className="divide-y divide-line-subtle">
             {filtered.map((user) => {
               const isSelf = user.id === meId;
               const isAdmin = user.role === "admin";
@@ -138,10 +138,10 @@ function AdminUsers() {
               return (
                 <tr key={user.id}>
                   <td className="px-4 py-3">
-                    <p className="font-medium text-text-primary">
+                    <p className="font-medium text-ink">
                       {user.first_name} {user.last_name}
                     </p>
-                    <p className="text-text-muted">{user.email}</p>
+                    <p className="text-ink-muted">{user.email}</p>
                     {user.status === "suspended" &&
                       user.suspension_reason && (
                         <p className="mt-1 text-xs text-danger">
@@ -149,7 +149,7 @@ function AdminUsers() {
                         </p>
                       )}
                   </td>
-                  <td className="px-4 py-3 text-text-secondary">
+                  <td className="px-4 py-3 text-ink-secondary">
                     {t(`role.${user.role}`)}
                   </td>
                   <td className="px-4 py-3">
@@ -163,12 +163,12 @@ function AdminUsers() {
                   </td>
                   <td className="px-4 py-3 text-end">
                     {isAdmin || isSelf ? (
-                      <span className="text-xs text-text-faint">—</span>
+                      <span className="text-xs text-ink-faint">—</span>
                     ) : user.status === "suspended" ? (
                       <button
                         type="button"
                         onClick={() => openUnsuspend(user)}
-                        className="font-medium text-brand hover:underline"
+                        className="font-medium text-cedar hover:underline"
                       >
                         {t("adminUsers.unsuspend")}
                       </button>
@@ -215,14 +215,14 @@ function AdminUsers() {
       >
         {target?.type === "suspend" && (
           <div>
-            <label className="mb-1 block text-xs font-medium text-text-secondary">
+            <label className="mb-1 block text-xs font-medium text-ink-secondary">
               {t("adminUsers.reasonLabel")}
             </label>
             <textarea
               value={reason}
               onChange={(event) => setReason(event.target.value)}
               rows="2"
-              className="w-full resize-none rounded-lg border border-border-strong px-3 py-2 text-sm outline-none focus:border-brand-ring focus:ring-1 focus:ring-brand-ring"
+              className="w-full resize-none rounded-lg border border-line-strong px-3 py-2 text-sm outline-none focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring"
             />
           </div>
         )}

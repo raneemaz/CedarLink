@@ -46,7 +46,7 @@ function Language() {
   };
 
   return (
-    <div className="min-h-screen bg-surface px-6 py-10">
+    <div className="min-h-screen bg-paper px-6 py-10">
       <div className="mx-auto max-w-4xl">
         {/* Header */}
         <div className="mb-8">
@@ -55,16 +55,16 @@ function Language() {
           </BackLink>
 
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-subtle text-brand">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-cedar-subtle text-cedar">
               <Languages size={24} />
             </div>
 
             <div>
-              <h1 className="text-3xl font-bold text-text-primary">
+              <h1 className="text-3xl font-bold text-ink">
                 {t("language.title")}
               </h1>
 
-              <p className="mt-1 text-sm text-text-secondary">
+              <p className="mt-1 text-sm text-ink-secondary">
                 {t("language.subtitle")}
               </p>
             </div>
@@ -72,13 +72,13 @@ function Language() {
         </div>
 
         {/* Language Settings */}
-        <section className="overflow-hidden rounded-2xl bg-surface-raised shadow-sm">
-          <div className="border-b border-border-subtle px-6 py-5">
-            <h2 className="text-xl font-semibold text-text-primary">
+        <section className="overflow-hidden rounded-2xl bg-paper-raised shadow-sm">
+          <div className="border-b border-line-subtle px-6 py-5">
+            <h2 className="text-xl font-semibold text-ink">
               {t("language.preferredLanguage")}
             </h2>
 
-            <p className="mt-1 text-sm text-text-muted">
+            <p className="mt-1 text-sm text-ink-muted">
               {t("language.description")}
             </p>
           </div>
@@ -94,12 +94,12 @@ function Language() {
                   onClick={() => setSelectedLanguage(language.code)}
                   className={`flex w-full cursor-pointer items-center justify-between rounded-xl border p-4 text-start transition ${
                     isSelected
-                      ? "border-brand-ring bg-brand-subtle"
-                      : "border-border hover:bg-surface"
+                      ? "border-cedar-ring bg-cedar-subtle"
+                      : "border-line hover:bg-paper"
                   }`}
                 >
                   <div>
-                    <p className="font-medium text-text-primary">
+                    <p className="font-medium text-ink">
                       {t(`language.${language.code === "en"
                         ? "english"
                         : language.code === "ar"
@@ -107,13 +107,13 @@ function Language() {
                           : "french"}`)}
                     </p>
 
-                    <p className="mt-1 text-sm text-text-muted">
+                    <p className="mt-1 text-sm text-ink-muted">
                       {language.nativeName}
                     </p>
                   </div>
 
                   {isSelected && (
-                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-brand text-on-brand">
+                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-cedar text-on-cedar">
                       <Check size={17} />
                     </div>
                   )}
@@ -121,11 +121,11 @@ function Language() {
               );
             })}
 
-            <div className="flex justify-end border-t border-border-subtle pt-6">
+            <div className="flex justify-end border-t border-line-subtle pt-6">
               <button
                 type="button"
                 onClick={handleSaveLanguage}
-                className="cursor-pointer rounded-lg bg-brand px-6 py-3 text-sm font-semibold text-on-brand transition hover:bg-brand-strong"
+                className="cursor-pointer rounded-lg bg-cedar px-6 py-3 text-sm font-semibold text-on-cedar transition hover:bg-cedar-strong"
               >
                 {t("language.saveLanguage")}
               </button>

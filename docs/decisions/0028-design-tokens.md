@@ -8,7 +8,9 @@
 `frontend/src/index.css` was one line: `@import "tailwindcss";`. No
 config file, no `@theme` block, no custom properties. Every colour in the
 application was a literal utility written into a `className` — **1,948
-of them across 83 files**, in 1,776 `className` attributes.
+of them across 83 files**, in 1,776 `className` attributes. (The figure
+circulated beforehand was 1,933; 1,948 is the measured count and is the
+one every number below is derived from.)
 
 That is not merely untidy. It has three consequences:
 
@@ -201,3 +203,115 @@ the values would not be real CSS custom properties, and a future dark
 theme would have to be built out of `dark:` variants at every call site
 instead of redefining the tokens once inside a media query or a
 `[data-theme]` block.
+
+
+---
+
+# Addendum, 2026-09-06 — CedarLink's own vocabulary
+
+## The rename
+
+The first pass named the families after what Tailwind calls them, which
+produced two stutters that were noted as a known cost and then got worse
+every time anyone read them: `text-text-muted` (181 occurrences) and
+`border-border` (87).
+
+More importantly, the redesign mockup is written in CedarLink's own
+vocabulary, not Tailwind's. Renaming now makes the redesign a
+**values-only change** — the mockup's role names and the codebase's role
+names are the same words, so transcribing it means editing `@theme` and
+nothing else. Renaming afterwards would mean touching every call site a
+second time, during the one change where the diff most needs to be
+readable.
+
+| was | is | why |
+|---|---|---|
+| `text-*` | `ink-*` | kills `text-text-muted`; `text-ink-muted` reads |
+| `surface*` | `paper*` | kills nothing, but pairs with ink |
+| `border*` | `line*` | kills `border-border` |
+| `brand*` | `cedar*` | the brand has a name, and it is not "brand" |
+
+`on-brand` became `on-cedar` — the same rule, applied to the compound.
+Status roles keep their names: "danger" and "warning" are already the
+words a designer and a developer both use, and there was nothing to fix.
+
+**1,686 renames across 81 files.** The masked-diff proof was rerun with
+both vocabularies masked: 80 of the 81 files are byte-identical to the
+previous revision. The one that is not is the role fix described below,
+and its diff was read line by line.
+
+## Two role errors, corrected
+
+The first pass mapped literals onto roles by what they *looked like*.
+Two places wanted a role by what they *meant*, and got the wrong one.
+
+**A star is not a warning.** Star ratings were `warning-accent`, because
+a filled star and a caution triangle are both amber-400. They are not the
+same thing, and the binding is a trap: retuning the warning colour would
+silently retune every star on the site, and nobody changing a warning
+colour would think to check a rating. `--color-rating` now exists with
+the same value and a different reason. Two of the four `warning-accent`
+sites moved; the other two — the rejected-store alert triangle and a
+caution border on the data-deletion screen — were genuinely warnings and
+stayed.
+
+**A white foreground on a red fill is not `on-brand`.** Checking the 60
+`text-white → on-brand` substitutions found **five** sitting on a danger
+fill (the `Button` danger variant, the navbar sign-out, a notifications
+action, and two on the security screen), plus one on an amber fill in the
+account-reactivation button. All were white, so all were invisible — and
+all would be wrong the moment a theme wanted a different foreground on
+red than on green. `--color-on-danger` and `--color-on-warning` now
+exist. Three roles, three values, all `#fff` today, three separate
+questions.
+
+A seventh case was worse than the other six. `PrivacyData.jsx` set its
+button's background from a prop:
+
+```js
+const btnClass = danger
+  ? "bg-danger hover:bg-danger-strong"
+  : "bg-cedar hover:bg-cedar-strong";
+```
+
+while the foreground sat fixed in the `className` as `text-on-brand`. The
+fill switched and the foreground did not. The fix moves the foreground
+into the same conditional, so the pair travels together. This is the one
+file the masked-diff proof reports as changed, and deliberately so.
+
+The token count went 39 → 42: `rating`, `on-danger`, `on-warning`. The
+rename itself changed no values and no counts.
+
+## The guard, widened before it is needed
+
+The check now also fails on:
+
+- `style="…"` attributes containing a colour literal,
+- `style={{ … }}` objects containing one,
+- any colour literal in a `.css` file other than `index.css`,
+- and it scans `frontend/index.html` as well as `frontend/src`.
+
+The reason is timing. The redesign will transcribe a mockup exported from
+a design tool, and design tools export inline styles. A colour hidden in
+`style={{ color: "#1f2937" }}` is exactly as untouchable by a theme
+switch as `bg-white` — worse, because no linter reads it. Adding the rule
+after the transcription would mean auditing the transcription; adding it
+before means the transcription cannot introduce the problem in the first
+place.
+
+### Verified again, on the new shapes
+
+Four raw colours of four shapes were reintroduced — a Tailwind keyword, a
+`style={{}}` object, an arbitrary utility value, and a `style=""`
+attribute in `index.html`:
+
+```
+Design tokens: 4 raw colours found.
+
+  src/pages/Cart/Cart.jsx:68   bg-white                      (bare white/black)
+  src/pages/Cart/Cart.jsx:69   style={{ color: "#1f2937" }}  (inline style object)
+  src/pages/Cart/Cart.jsx:202  text-[rgb(120,120,120)]       (arbitrary utility value)
+  index.html:28                style="background: hsl(0 0% 100%)"  (inline style attribute)
+```
+
+exit code 1, all four named with file and line. Reverted, back to exit 0.

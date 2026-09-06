@@ -8,8 +8,8 @@ const TITLE_MAX = 120;
 const BODY_MAX = 2000;
 
 const fieldClass =
-  "w-full rounded-lg border border-border-strong px-3 py-2 text-sm outline-none " +
-  "focus:border-brand-ring focus:ring-1 focus:ring-brand-ring";
+  "w-full rounded-lg border border-line-strong px-3 py-2 text-sm outline-none " +
+  "focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring";
 
 /**
  * Create / edit form for one review. `initial` pre-fills it for an edit.
@@ -42,7 +42,7 @@ function ReviewForm({ initial, onSubmit, onCancel, submitting, error }) {
   return (
     <form onSubmit={submit} className="space-y-4">
       <div>
-        <p className="mb-1 text-sm font-medium text-text-body">
+        <p className="mb-1 text-sm font-medium text-ink-body">
           {t("reviewForm.ratingLabel")}
         </p>
         <StarRatingInput
@@ -63,7 +63,7 @@ function ReviewForm({ initial, onSubmit, onCancel, submitting, error }) {
       <div>
         <label
           htmlFor="review-title"
-          className="mb-1 block text-sm font-medium text-text-body"
+          className="mb-1 block text-sm font-medium text-ink-body"
         >
           {t("reviewForm.titleLabel")}
         </label>
@@ -76,7 +76,7 @@ function ReviewForm({ initial, onSubmit, onCancel, submitting, error }) {
           disabled={submitting}
           className={fieldClass}
         />
-        <p className="mt-1 text-xs text-text-faint text-end">
+        <p className="mt-1 text-xs text-ink-faint text-end">
           {counter(title.length, TITLE_MAX)}
         </p>
       </div>
@@ -84,7 +84,7 @@ function ReviewForm({ initial, onSubmit, onCancel, submitting, error }) {
       <div>
         <label
           htmlFor="review-body"
-          className="mb-1 block text-sm font-medium text-text-body"
+          className="mb-1 block text-sm font-medium text-ink-body"
         >
           {t("reviewForm.bodyLabel")}
         </label>
@@ -97,7 +97,7 @@ function ReviewForm({ initial, onSubmit, onCancel, submitting, error }) {
           disabled={submitting}
           className={`resize-none ${fieldClass}`}
         />
-        <p className="mt-1 text-xs text-text-faint text-end">
+        <p className="mt-1 text-xs text-ink-faint text-end">
           {counter(body.length, BODY_MAX)}
         </p>
       </div>

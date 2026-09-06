@@ -157,7 +157,7 @@ function StoreSocialLinksSection({ storeId }) {
       }
     >
       {loading ? (
-        <p className="text-sm text-text-muted">
+        <p className="text-sm text-ink-muted">
           {t("vendorStore.social.loading")}
         </p>
       ) : (
@@ -171,9 +171,9 @@ function StoreSocialLinksSection({ storeId }) {
               <div key={id}>
                 <label
                   htmlFor={inputId}
-                  className="mb-2 flex items-center gap-2 text-sm font-medium text-text-body"
+                  className="mb-2 flex items-center gap-2 text-sm font-medium text-ink-body"
                 >
-                  <Icon size={16} className="shrink-0 text-text-faint" />
+                  <Icon size={16} className="shrink-0 text-ink-faint" />
                   {t(`social.platform.${id}`)}
                 </label>
 
@@ -195,7 +195,7 @@ function StoreSocialLinksSection({ storeId }) {
                 )}
 
                 {typed && !row?.error && row?.value && (
-                  <p className="mt-1 flex items-start gap-1.5 text-xs text-text-muted">
+                  <p className="mt-1 flex items-start gap-1.5 text-xs text-ink-muted">
                     <ArrowRight size={13} className="mt-0.5 shrink-0" />
                     <span>
                       {t("vendorStore.social.willSaveAs")}{" "}
@@ -209,7 +209,7 @@ function StoreSocialLinksSection({ storeId }) {
             );
           })}
 
-          <p className="text-xs text-text-muted">
+          <p className="text-xs text-ink-muted">
             {t("vendorStore.social.clearHint")}
           </p>
         </div>

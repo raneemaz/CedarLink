@@ -28,11 +28,11 @@ export function couponStatus(coupon, now = new Date()) {
 }
 
 export const STATUS_CLASSES = {
-  active: "bg-brand-tint text-brand-strong",
+  active: "bg-cedar-tint text-cedar-strong",
   scheduled: "bg-info-subtle text-info",
-  expired: "bg-control text-text-body",
+  expired: "bg-control text-ink-body",
   limitReached: "bg-warning-tint text-warning",
-  inactive: "bg-control text-text-secondary",
+  inactive: "bg-control text-ink-secondary",
 };
 
 // Every rejection the backend can return (coupon_service), mapped to its

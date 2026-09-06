@@ -116,7 +116,7 @@ function NotificationPreferences() {
   };
 
   return (
-    <div className="min-h-screen bg-surface px-6 py-10">
+    <div className="min-h-screen bg-paper px-6 py-10">
       <div className="mx-auto max-w-4xl">
         {/* Header */}
         <div className="mb-8">
@@ -125,16 +125,16 @@ function NotificationPreferences() {
           </BackLink>
 
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-subtle text-brand">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-cedar-subtle text-cedar">
               <Bell size={24} />
             </div>
 
             <div>
-              <h1 className="text-3xl font-bold text-text-primary">
+              <h1 className="text-3xl font-bold text-ink">
                 {t("notifications.title")}
               </h1>
 
-              <p className="mt-1 text-sm text-text-secondary">
+              <p className="mt-1 text-sm text-ink-secondary">
                 {t("notifications.subtitle")}
               </p>
             </div>
@@ -142,24 +142,24 @@ function NotificationPreferences() {
         </div>
 
         {loading ? (
-          <p className="text-sm text-text-muted">
+          <p className="text-sm text-ink-muted">
             {t("notifications.loading")}
           </p>
         ) : (
           <div className="space-y-6">
             {/* What to notify me about */}
-            <section className="overflow-hidden rounded-2xl bg-surface-raised shadow-sm">
-              <div className="border-b border-border-subtle px-6 py-5">
-                <h2 className="text-xl font-semibold text-text-primary">
+            <section className="overflow-hidden rounded-2xl bg-paper-raised shadow-sm">
+              <div className="border-b border-line-subtle px-6 py-5">
+                <h2 className="text-xl font-semibold text-ink">
                   {t("notifications.whatSection")}
                 </h2>
 
-                <p className="mt-1 text-sm text-text-muted">
+                <p className="mt-1 text-sm text-ink-muted">
                   {t("notifications.whatSectionDesc")}
                 </p>
               </div>
 
-              <div className="divide-y divide-border-subtle px-6">
+              <div className="divide-y divide-line-subtle px-6">
                 {CATEGORY_KEYS.map((key) => (
                   <Toggle
                     key={key}
@@ -173,18 +173,18 @@ function NotificationPreferences() {
             </section>
 
             {/* How to reach me */}
-            <section className="overflow-hidden rounded-2xl bg-surface-raised shadow-sm">
-              <div className="border-b border-border-subtle px-6 py-5">
-                <h2 className="text-xl font-semibold text-text-primary">
+            <section className="overflow-hidden rounded-2xl bg-paper-raised shadow-sm">
+              <div className="border-b border-line-subtle px-6 py-5">
+                <h2 className="text-xl font-semibold text-ink">
                   {t("notifications.howSection")}
                 </h2>
 
-                <p className="mt-1 text-sm text-text-muted">
+                <p className="mt-1 text-sm text-ink-muted">
                   {t("notifications.howSectionDesc")}
                 </p>
               </div>
 
-              <div className="divide-y divide-border-subtle px-6">
+              <div className="divide-y divide-line-subtle px-6">
                 {CHANNEL_KEYS.map((key) => (
                   <Toggle
                     key={key}
@@ -202,7 +202,7 @@ function NotificationPreferences() {
                 type="button"
                 onClick={handleSave}
                 disabled={saving}
-                className="cursor-pointer rounded-lg bg-brand px-6 py-3 text-sm font-semibold text-on-brand transition hover:bg-brand-strong disabled:cursor-not-allowed disabled:opacity-60"
+                className="cursor-pointer rounded-lg bg-cedar px-6 py-3 text-sm font-semibold text-on-cedar transition hover:bg-cedar-strong disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {saving
                   ? t("notifications.saving")

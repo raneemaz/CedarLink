@@ -26,7 +26,7 @@ function Price({ amount, from = "USD", className = "", approxClassName = "" }) {
       {converted && (
         <span
           dir="ltr"
-          className={`text-xs font-normal text-text-faint ${approxClassName}`}
+          className={`text-xs font-normal text-ink-faint ${approxClassName}`}
           title={t("currency.approxTooltip")}
         >
           ≈ {converted}

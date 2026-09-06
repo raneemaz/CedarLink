@@ -36,67 +36,67 @@ function CouponTable({ coupons, onEdit, onDelete, showStore = false }) {
   };
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-border bg-surface-raised">
+    <div className="overflow-x-auto rounded-2xl border border-line bg-paper-raised">
       <table className="w-full min-w-[46rem] text-sm">
-        <thead className="border-b border-border bg-surface text-start">
+        <thead className="border-b border-line bg-paper text-start">
           <tr>
-            <th className="px-4 py-3 text-start font-semibold text-text-secondary">
+            <th className="px-4 py-3 text-start font-semibold text-ink-secondary">
               {t("coupon.table.code")}
             </th>
             {showStore && (
-              <th className="px-4 py-3 text-start font-semibold text-text-secondary">
+              <th className="px-4 py-3 text-start font-semibold text-ink-secondary">
                 {t("coupon.table.store")}
               </th>
             )}
-            <th className="px-4 py-3 text-start font-semibold text-text-secondary">
+            <th className="px-4 py-3 text-start font-semibold text-ink-secondary">
               {t("coupon.table.discount")}
             </th>
-            <th className="px-4 py-3 text-start font-semibold text-text-secondary">
+            <th className="px-4 py-3 text-start font-semibold text-ink-secondary">
               {t("coupon.table.minimum")}
             </th>
-            <th className="px-4 py-3 text-start font-semibold text-text-secondary">
+            <th className="px-4 py-3 text-start font-semibold text-ink-secondary">
               {t("coupon.table.window")}
             </th>
-            <th className="px-4 py-3 text-start font-semibold text-text-secondary">
+            <th className="px-4 py-3 text-start font-semibold text-ink-secondary">
               {t("coupon.table.used")}
             </th>
-            <th className="px-4 py-3 text-start font-semibold text-text-secondary">
+            <th className="px-4 py-3 text-start font-semibold text-ink-secondary">
               {t("coupon.table.status")}
             </th>
             {!readOnly && <th className="px-4 py-3" />}
           </tr>
         </thead>
 
-        <tbody className="divide-y divide-border-subtle">
+        <tbody className="divide-y divide-line-subtle">
           {coupons.map((coupon) => (
-            <tr key={coupon.id} className="hover:bg-surface">
-              <td className="px-4 py-3 font-mono font-medium text-text-primary">
+            <tr key={coupon.id} className="hover:bg-paper">
+              <td className="px-4 py-3 font-mono font-medium text-ink">
                 <span dir="ltr">{coupon.code}</span>
               </td>
 
               {showStore && (
-                <td className="px-4 py-3 text-text-secondary">
+                <td className="px-4 py-3 text-ink-secondary">
                   {coupon.store_name || t("coupon.platformWide")}
                 </td>
               )}
 
-              <td className="px-4 py-3 font-medium text-text-emphasis">
+              <td className="px-4 py-3 font-medium text-ink-emphasis">
                 <CouponValue coupon={coupon} />
               </td>
 
-              <td className="px-4 py-3 text-text-secondary">
+              <td className="px-4 py-3 text-ink-secondary">
                 {coupon.min_order_total == null ? (
-                  <span className="text-text-faint">—</span>
+                  <span className="text-ink-faint">—</span>
                 ) : (
                   <span dir="ltr">{formatMoney(coupon.min_order_total)}</span>
                 )}
               </td>
 
-              <td className="px-4 py-3 text-text-secondary">
+              <td className="px-4 py-3 text-ink-secondary">
                 {windowText(coupon)}
               </td>
 
-              <td className="px-4 py-3 text-text-secondary">
+              <td className="px-4 py-3 text-ink-secondary">
                 {coupon.usage_limit == null
                   ? t("coupon.usedUnlimited", {
                       count: Number(coupon.used_count),
@@ -122,7 +122,7 @@ function CouponTable({ coupons, onEdit, onDelete, showStore = false }) {
                         aria-label={t("coupon.editAria", {
                           code: coupon.code,
                         })}
-                        className="cursor-pointer rounded-lg p-2 text-text-muted transition hover:bg-surface-sunken hover:text-brand"
+                        className="cursor-pointer rounded-lg p-2 text-ink-muted transition hover:bg-paper-sunken hover:text-cedar"
                       >
                         <Pencil size={16} />
                       </button>
@@ -134,7 +134,7 @@ function CouponTable({ coupons, onEdit, onDelete, showStore = false }) {
                         aria-label={t("coupon.deleteAria", {
                           code: coupon.code,
                         })}
-                        className="cursor-pointer rounded-lg p-2 text-text-muted transition hover:bg-danger-subtle hover:text-danger"
+                        className="cursor-pointer rounded-lg p-2 text-ink-muted transition hover:bg-danger-subtle hover:text-danger"
                       >
                         <Trash2 size={16} />
                       </button>

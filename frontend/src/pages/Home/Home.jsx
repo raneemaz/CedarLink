@@ -45,9 +45,9 @@ export default function Home() {
   return (
     <div className="space-y-12">
       {/* Hero */}
-      <section className="grid gap-8 rounded-3xl bg-gradient-to-r from-brand to-brand-ring px-6 py-12 text-on-brand md:grid-cols-2 md:px-10">
+      <section className="grid gap-8 rounded-3xl bg-gradient-to-r from-cedar to-cedar-ring px-6 py-12 text-on-cedar md:grid-cols-2 md:px-10">
         <div className="space-y-5">
-          <span className="inline-flex rounded-full bg-on-brand/15 px-4 py-1 text-sm font-medium">
+          <span className="inline-flex rounded-full bg-on-cedar/15 px-4 py-1 text-sm font-medium">
             {t("home.hero.badge")}
           </span>
 
@@ -55,21 +55,21 @@ export default function Home() {
             {t("home.hero.title")}
           </h1>
 
-          <p className="max-w-xl text-on-brand/90">
+          <p className="max-w-xl text-on-cedar/90">
             {t("home.hero.description")}
           </p>
 
           <div className="flex flex-wrap gap-3">
             <Link
               to="/products"
-              className="rounded-full bg-surface-raised px-5 py-3 font-semibold text-brand transition hover:bg-brand-subtle"
+              className="rounded-full bg-paper-raised px-5 py-3 font-semibold text-cedar transition hover:bg-cedar-subtle"
             >
               {t("home.hero.browseProducts")}
             </Link>
 
             <Link
               to="/stores"
-              className="rounded-full border border-on-brand/30 px-5 py-3 font-semibold text-on-brand transition hover:bg-on-brand/10"
+              className="rounded-full border border-on-cedar/30 px-5 py-3 font-semibold text-on-cedar transition hover:bg-on-cedar/10"
             >
               {t("home.hero.browseStores")}
             </Link>
@@ -78,8 +78,8 @@ export default function Home() {
 
         {/* The categories actually on the page, in the order they appear —
             not a fixed decorative list. */}
-        <div className="rounded-3xl bg-on-brand/10 p-6 backdrop-blur">
-          <p className="text-sm uppercase tracking-widest text-on-brand/70">
+        <div className="rounded-3xl bg-on-cedar/10 p-6 backdrop-blur">
+          <p className="text-sm uppercase tracking-widest text-on-cedar/70">
             {t("home.categories.title")}
           </p>
 
@@ -88,7 +88,7 @@ export default function Home() {
               <Link
                 key={section.category.id}
                 to={`/products?category_id=${section.category.id}`}
-                className="rounded-2xl bg-on-brand/15 px-4 py-6 text-center font-medium transition hover:bg-on-brand/25"
+                className="rounded-2xl bg-on-cedar/15 px-4 py-6 text-center font-medium transition hover:bg-on-cedar/25"
               >
                 {localizedField(section.category, "name", i18n.language)}
               </Link>
@@ -99,8 +99,8 @@ export default function Home() {
 
       {/* Why the page is in this order — and how to change it. */}
       {!loading && sections.length > 0 && (
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-surface-raised px-5 py-4">
-          <p className="text-sm text-text-secondary">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-line bg-paper-raised px-5 py-4">
+          <p className="text-sm text-ink-secondary">
             {personalized
               ? t("home.order.personalized")
               : t("home.order.default")}
@@ -109,7 +109,7 @@ export default function Home() {
           {isAuthenticated && (
             <Link
               to="/settings/shopping"
-              className="inline-flex items-center gap-2 text-sm font-medium text-brand hover:underline"
+              className="inline-flex items-center gap-2 text-sm font-medium text-cedar hover:underline"
             >
               <SlidersHorizontal size={16} />
               {personalized
@@ -121,7 +121,7 @@ export default function Home() {
       )}
 
       {loading ? (
-        <div className="text-text-muted">{t("home.loadingProducts")}</div>
+        <div className="text-ink-muted">{t("home.loadingProducts")}</div>
       ) : (
         sections.map((section) => (
           <section key={section.category.id} className="space-y-5">
@@ -132,7 +132,7 @@ export default function Home() {
                 </h2>
 
                 {section.category.description && (
-                  <p className="text-text-muted">
+                  <p className="text-ink-muted">
                     {section.category.description}
                   </p>
                 )}
@@ -140,7 +140,7 @@ export default function Home() {
 
               <Link
                 to={`/products?category_id=${section.category.id}`}
-                className="shrink-0 font-medium text-brand"
+                className="shrink-0 font-medium text-cedar"
               >
                 {t("home.featuredProducts.viewAll")}
               </Link>
@@ -156,9 +156,9 @@ export default function Home() {
       )}
 
       {!loading && sections.length === 0 && (
-        <section className="rounded-3xl border border-border bg-surface-raised p-6 shadow-sm">
+        <section className="rounded-3xl border border-line bg-paper-raised p-6 shadow-sm">
           <h2 className="text-2xl font-bold">{t("home.empty.title")}</h2>
-          <p className="mt-2 text-text-muted">{t("home.empty.description")}</p>
+          <p className="mt-2 text-ink-muted">{t("home.empty.description")}</p>
         </section>
       )}
     </div>
