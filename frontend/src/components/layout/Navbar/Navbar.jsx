@@ -3,7 +3,6 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../../context/AuthContext";
 import api from "../../../services/api";
-import logo from "../../../assets/Logoo.png";
 
 import { Search, ShoppingCart, User, Menu, X } from "lucide-react";
 import NotificationBell from "../../notifications/NotificationBell";
@@ -87,13 +86,23 @@ const Navbar = () => {
       <div className="mx-auto flex h-20 max-w-screen-2xl items-center justify-between px-4 lg:px-8">
         {/* Logo */}
         <div className="mb-1 flex items-center justify-center gap-2">
+          {/* alt="" on purpose: the wordmark is right there, and a
+              screen reader announcing "CedarLink CedarLink" is worse
+              than silence. The link's accessible name is its text.
+              Explicit width/height so the header does not shift while
+              the mark loads — the source is 158x176, portrait. */}
           <img
-            src={logo}
-            alt={t("navbar.logoAlt")}
-            className="h-10 w-auto object-contain"
+            src="/cedarlink-logo.png"
+            alt=""
+            width={32}
+            height={36}
+            className="h-9 w-auto object-contain"
           />
 
-          <Link to="/" className="text-title font-bold text-cedar">
+          <Link
+            to="/"
+            className="font-display text-wordmark font-semibold text-cedar-strong"
+          >
             CedarLink
           </Link>
         </div>
