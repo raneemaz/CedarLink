@@ -22,6 +22,22 @@
         } catch (e) {
           /* storage blocked — default LTR stands */
         }
+
+        // Same trick for the theme. Without this a dark-theme user gets a
+        // full white frame before React mounts, which is the one thing a
+        // dark theme is supposed to prevent. "system" deliberately sets
+        // no attribute, so the prefers-color-scheme block in index.css
+        // decides and keeps deciding.
+        try {
+          var theme = localStorage.getItem("cedarlink_theme");
+          if (theme === "light" || theme === "dark") {
+            document.documentElement.setAttribute("data-theme", theme);
+          } else {
+            document.documentElement.removeAttribute("data-theme");
+          }
+        } catch (e) {
+          /* storage blocked — the system preference stands */
+        }
       })();
     </script>
   </head>

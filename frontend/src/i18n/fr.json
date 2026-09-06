@@ -226,7 +226,11 @@
       "title": "Compte",
       "description": "Gérez votre compte CedarLink."
     },
-    "deleteAccount": "Supprimer le compte"
+    "deleteAccount": "Supprimer le compte",
+    "theme": {
+      "title": "Apparence",
+      "description": "Clair, sombre, ou selon votre appareil."
+    }
   },
   "home": {
     "hero": {
@@ -1597,6 +1601,23 @@
     "empty": {
       "title": "Aucune commande pour l'instant",
       "body": "Dès que vos clients commanderont, votre revenu, vos meilleures ventes et vos jours les plus chargés apparaîtront ici. D'ici là, il n'y a rien à mesurer."
+    }
+  },
+  "theme": {
+    "title": "Apparence",
+    "subtitle": "Choisissez l'apparence de CedarLink pour ce compte.",
+    "saved": "Apparence mise à jour",
+    "errSave": "Impossible d'enregistrer votre choix. Veuillez réessayer.",
+    "showing": "Thème {{current}} affiché actuellement.",
+    "systemNow": "Suit votre appareil, réglé sur {{current}}.",
+    "option": {
+      "light": "Clair",
+      "dark": "Sombre",
+      "system": "Système"
+    },
+    "describe": {
+      "light": "Toujours clair, quel que soit votre appareil.",
+      "dark": "Toujours sombre, quel que soit votre appareil."
     }
   }
 }

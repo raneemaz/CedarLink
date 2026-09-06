@@ -8,6 +8,7 @@
     "build": "vite build",
     "lint": "eslint . --max-warnings 18",
     "lint:tokens": "node scripts/check-design-tokens.mjs",
+    "test": "node --test src/**/*.test.js",
     "preview": "vite preview"
   },
   "dependencies": {

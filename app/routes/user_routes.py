@@ -81,6 +81,7 @@ def get_user(user_id):
                     "phone": user.phone,
                     "language": user.language,
                     "currency": user.currency,
+                    "theme": user.theme,
                     "is_active": user.is_active,
                     "notification_preferences":
                         _serialize_notification_preferences(user),
@@ -154,6 +155,7 @@ def update_user(user_id):
                     "phone": user.phone,
                     "language": user.language,
                     "currency": user.currency,
+                    "theme": user.theme,
                     "is_active": user.is_active,
                     "notification_preferences":
                         _serialize_notification_preferences(user),
@@ -261,6 +263,45 @@ def update_currency(user_id):
         ),
         200,
     )
+
+
+THEME_PREFERENCES = ("light", "dark", "system")
+
+
+@user_bp.route("/<int:user_id>/theme", methods=["PUT"])
+@jwt_required()
+def update_theme(user_id):
+    """Light, dark or system, stored on the account.
+
+    Same shape as the language and currency preferences beside it: the
+    caller may only set their own, and the value is checked against a
+    server-side list rather than trusted.
+    """
+    if int(get_jwt_identity()) != user_id:
+        return jsonify({"message": "Access denied"}), 403
+
+    user = db.session.get(User, user_id)
+
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+
+    theme = (request.get_json() or {}).get("theme")
+
+    if theme not in THEME_PREFERENCES:
+        return jsonify({
+            "message": (
+                "Unsupported theme. Supported themes are: "
+                + ", ".join(THEME_PREFERENCES)
+            )
+        }), 400
+
+    user.theme = theme
+    db.session.commit()
+
+    return jsonify({
+        "message": "Theme preference updated successfully",
+        "user": {"id": user.id, "theme": user.theme},
+    }), 200
 
 
 @user_bp.route(

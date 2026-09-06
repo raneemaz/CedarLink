@@ -226,7 +226,11 @@
       "title": "Account",
       "description": "Manage your CedarLink account."
     },
-    "deleteAccount": "Delete Account"
+    "deleteAccount": "Delete Account",
+    "theme": {
+      "title": "Appearance",
+      "description": "Light, dark, or follow your device."
+    }
   },
   "home": {
     "hero": {
@@ -1597,6 +1601,23 @@
     "empty": {
       "title": "No orders yet",
       "body": "Once customers start ordering, your revenue, best sellers and busiest days appear here. Until then there is nothing to measure."
+    }
+  },
+  "theme": {
+    "title": "Appearance",
+    "subtitle": "Choose how CedarLink looks on this account.",
+    "saved": "Appearance updated",
+    "errSave": "Could not save your choice. Please try again.",
+    "showing": "Showing the {{current}} theme now.",
+    "systemNow": "Follows your device, which is set to {{current}}.",
+    "option": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "describe": {
+      "light": "Always light, whatever your device is set to.",
+      "dark": "Always dark, whatever your device is set to."
     }
   }
 }

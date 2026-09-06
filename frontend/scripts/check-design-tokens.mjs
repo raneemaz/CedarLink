@@ -106,6 +106,17 @@ const RULES = [
     re: new RegExp(`style\\s*=\\s*\\{\\{[^}]*(?:${COLOUR_LITERAL})[^}]*\\}\\}`, "g"),
   },
   {
+    name: "dark: variant",
+    // A theme difference belongs in index.css, as a second value for a
+    // role. A `dark:` variant in a className is the same mistake as a raw
+    // colour: it puts the theme back into the components, where it has to
+    // be maintained one call site at a time and cannot be reviewed as a
+    // palette. Zero of them is what makes "no component renders
+    // differently between themes except in colour" true by construction.
+    re: /(?<![\w-])dark:[a-z0-9[\]/.-]+/g,
+    onlyIn: (rel) => !rel.endsWith(".css"),
+  },
+  {
     name: "css colour literal",
     // A raw colour in a stylesheet other than index.css.
     re: new RegExp(`(?:${COLOUR_LITERAL})`, "g"),
@@ -190,7 +201,9 @@ console.error(
   "\nColour belongs to a role, not to a call site. Use a token from " +
     "src/index.css\n(bg-paper, text-ink-muted, border-line-strong, " +
     "text-cedar, bg-danger-subtle, fill-rating, ...).\nAn inline style " +
-    "cannot be themed at all — move it to a class.\nIf no role fits, add " +
+    "cannot be themed at all — move it to a class.\nA `dark:` variant " +
+    "belongs in index.css as a second value for a role, not in a " +
+    "className.\nIf no role fits, add " +
     "one to @theme and record why in docs/decisions/0028-design-tokens.md" +
     " —\ndo not widen this check.",
 );
