@@ -1,0 +1,42 @@
+# Line endings.
+#
+# The repository stores text as LF. Without this file the answer depends
+# on each developer's local `core.autocrlf`, which is a per-machine
+# setting that does not travel with a clone — so one Windows checkout can
+# turn every tracked file into a 60,000-line whitespace diff and nobody
+# can see a real change in `git status` any more.
+#
+# `text=auto` lets git decide what is text by inspecting content, and
+# `eol=lf` fixes what it writes into the repository. Working trees still
+# get whatever the platform wants on checkout.
+
+* text=auto eol=lf
+
+# Binaries: never touched, never diffed as text. Without these a stray
+# byte sequence can make git guess "text" and corrupt the file on
+# checkout.
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.ico    binary
+*.svg    text eol=lf
+*.pdf    binary
+*.woff   binary
+*.woff2  binary
+*.ttf    binary
+*.otf    binary
+*.eot    binary
+*.zip    binary
+*.db     binary
+*.sqlite binary
+*.drawio binary
+*.xlsx   binary
+*.docx   binary
+
+# Windows shells genuinely need CRLF: cmd.exe mis-parses a LF-only batch
+# file that ends mid-token. None exist today; the rule is here so adding
+# one later does not need this file revisited.
+*.bat    text eol=crlf
+*.cmd    text eol=crlf
+*.ps1    text eol=crlf
