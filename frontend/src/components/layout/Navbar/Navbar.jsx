@@ -83,7 +83,10 @@ const Navbar = () => {
 
   return (
     <nav className="sticky top-0 z-50 border-b border-line bg-paper-raised shadow-card">
-      <div className="mx-auto flex h-20 max-w-screen-2xl items-center justify-between px-4 lg:px-8">
+      {/* gap on the row, not a margin on one child: justify-between
+          only spaces the outer edges, so at 1280px the wordmark and
+          the first nav link were 4px apart. */}
+      <div className="mx-auto flex h-20 max-w-screen-2xl items-center justify-between gap-8 px-4 lg:px-8">
         {/* Logo */}
         <div className="mb-1 flex items-center justify-center gap-2">
           {/* alt="" on purpose: the wordmark is right there, and a
@@ -182,7 +185,7 @@ const Navbar = () => {
             <div className="hidden items-center gap-3 lg:flex">
               <Link
                 to="/login"
-                className="rounded-control border border-cedar px-4 py-2 font-medium text-cedar transition hover:bg-cedar-subtle"
+                className="rounded-control border border-cedar px-4 py-2 font-medium text-cedar transition hover:bg-paper-sunken"
               >
                 {t("navbar.login")}
               </Link>
@@ -276,7 +279,7 @@ const Navbar = () => {
                 className={({ isActive }) =>
                   `rounded-control px-3 py-2.5 text-small font-medium ${
                     isActive
-                      ? "bg-cedar-subtle text-cedar"
+                      ? "font-semibold text-cedar"
                       : "text-ink-body hover:bg-paper-sunken"
                   }`
                 }

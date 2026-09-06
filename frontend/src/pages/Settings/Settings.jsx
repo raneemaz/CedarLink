@@ -154,7 +154,7 @@ function Settings() {
                       }`}
                     >
                       {/* Icon */}
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-card bg-cedar-subtle text-cedar">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-card bg-paper-sunken text-cedar">
                         <Icon size={21} />
                       </div>
 

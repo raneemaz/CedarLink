@@ -233,13 +233,11 @@
   },
   "home": {
     "hero": {
-      "badge": "Tout ce dont vous avez besoin en un seul endroit",
-      "title": "Achetez facilement et découvrez d'excellents produits",
-      "description": "Découvrez des produits de différents magasins et profitez d'une expérience d'achat simple et pratique avec CedarLink.",
-      "browseProducts": "Parcourir les produits",
-      "browseStores": "Parcourir les magasins",
-      "storeCount_one": "boutique locale sur CedarLink",
-      "storeCount_other": "boutiques locales sur CedarLink"
+      "title": "Que cherchez-vous aujourd'hui ?",
+      "searchLabel": "Rechercher produits et boutiques",
+      "searchPlaceholder": "Huile d'olive, zaatar, une librairie proche…",
+      "search": "Rechercher",
+      "openNearMe": "Ouvert près de moi"
     },
     "categories": {
       "title": "Explorer les catégories"

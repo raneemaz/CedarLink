@@ -428,7 +428,7 @@ function Checkout() {
                           key={method.id}
                           className={`flex cursor-pointer items-center justify-between rounded-card border p-4 transition ${
                             selectedPaymentMethod === String(method.id)
-                              ? "border-cedar-ring bg-cedar-subtle"
+                              ? "border-cedar-ring bg-paper-sunken"
                               : "border-line hover:border-line-strong"
                           }`}
                         >
@@ -468,7 +468,7 @@ function Checkout() {
                   <label
                     className={`flex cursor-pointer items-center justify-between rounded-card border p-4 transition ${
                       selectedPaymentMethod === "cash_on_delivery"
-                        ? "border-cedar-ring bg-cedar-subtle"
+                        ? "border-cedar-ring bg-paper-sunken"
                         : "border-line hover:border-line-strong"
                     }`}
                   >

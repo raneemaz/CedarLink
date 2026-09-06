@@ -195,7 +195,7 @@ function SavedAddresses() {
                   {!address.is_default && (
                     <button
                       onClick={() => handleSetDefault(address.id)}
-                      className="rounded-control border border-cedar px-4 py-2 text-small font-medium text-cedar hover:bg-cedar-subtle"
+                      className="rounded-control border border-cedar px-4 py-2 text-small font-medium text-cedar hover:bg-paper-sunken"
                     >
                       {t("addresses.setAsDefault")}
                     </button>

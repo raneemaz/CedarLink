@@ -54,7 +54,7 @@ function Theme() {
                   aria-pressed={isSelected}
                   className={`flex w-full cursor-pointer items-center justify-between rounded-card border p-4 text-start transition disabled:cursor-not-allowed ${
                     isSelected
-                      ? "border-cedar-ring bg-cedar-subtle"
+                      ? "border-cedar-ring bg-paper-sunken"
                       : "border-line hover:bg-paper"
                   }`}
                 >

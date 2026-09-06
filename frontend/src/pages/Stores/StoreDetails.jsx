@@ -157,7 +157,7 @@ function StoreDetails() {
             </p>
           )}
           {overrideOn && store.override_status === "open" && (
-            <p className="mt-3 rounded-control bg-cedar-subtle px-3 py-2 text-small text-cedar-strong">
+            <p className="mt-3 rounded-control bg-paper-sunken px-3 py-2 text-small text-cedar-strong">
               {t("storeDetails.overrideOpen", { until: overrideUntil })}
             </p>
           )}

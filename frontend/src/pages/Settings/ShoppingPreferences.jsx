@@ -165,7 +165,7 @@ function ShoppingPreferences() {
           </BackLink>
 
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-card bg-cedar-subtle text-cedar">
+            <div className="flex h-12 w-12 items-center justify-center rounded-card bg-paper-sunken text-cedar">
               <ShoppingBag size={24} />
             </div>
 
@@ -218,7 +218,7 @@ function ShoppingPreferences() {
                         key={method}
                         className={`flex cursor-pointer items-center gap-3 rounded-control border p-3 text-small transition ${
                           preferences.preferred_payment_method === method
-                            ? "border-cedar-ring bg-cedar-subtle"
+                            ? "border-cedar-ring bg-paper-sunken"
                             : "border-line hover:bg-paper"
                         }`}
                       >

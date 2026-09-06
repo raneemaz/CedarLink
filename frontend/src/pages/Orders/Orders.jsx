@@ -180,7 +180,7 @@ function Orders() {
 
                 <Link
                   to={`/orders/${order.id}`}
-                  className="rounded-control border border-cedar px-4 py-2 font-medium text-cedar transition hover:bg-cedar-subtle"
+                  className="rounded-control border border-cedar px-4 py-2 font-medium text-cedar transition hover:bg-paper-sunken"
                 >
                   {t("orders.viewDetails")}
                 </Link>

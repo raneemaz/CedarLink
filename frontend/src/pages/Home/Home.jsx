@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { SlidersHorizontal } from "lucide-react";
+import { Search, SlidersHorizontal } from "lucide-react";
 
 import api from "../../services/api";
 import ProductCard from "../../components/product/ProductCard";
@@ -11,15 +11,17 @@ import { localizedField } from "../../utils/localize";
 export default function Home() {
   const { t, i18n } = useTranslation();
   const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
   const [sections, setSections] = useState([]);
   const [personalized, setPersonalized] = useState(false);
   const [loading, setLoading] = useState(true);
-  // The mockup's hero reads "120+ local stores". The seed produces eight.
-  // A fabricated figure on the home page is the first image in the
-  // report, so this is the real total from the stores endpoint and the
-  // stat renders only once it has one.
-  const [storeCount, setStoreCount] = useState(null);
+  // The chips are the distinct places CedarLink actually has stores in,
+  // read from the stores endpoint. Not a fixed list, and not a number:
+  // the hero makes no factual claim at all now, which retires the "120+"
+  // problem rather than binding it to a real count of six.
+  const [places, setPlaces] = useState([]);
+  const [query, setQuery] = useState("");
 
   // One request for the whole page. The order is decided on the server —
   // stated interests first, then the busiest categories — so a signed-out
@@ -36,12 +38,14 @@ export default function Home() {
         setSections(response.data.sections || []);
         setPersonalized(Boolean(response.data.personalized));
 
-        // Cheapest possible ask: one row, for the pagination total.
-        const stores = await api.get("/stores", {
-          params: { per_page: 1 },
-        });
+        const stores = await api.get("/stores", { params: { limit: 100 } });
         if (!cancelled) {
-          setStoreCount(stores.data?.total ?? null);
+          const seen = [];
+          for (const store of stores.data?.stores || []) {
+            const place = (store.location || "").trim();
+            if (place && !seen.includes(place)) seen.push(place);
+          }
+          setPlaces(seen.slice(0, 6));
         }
       } catch (error) {
         console.error("Failed to load home sections:", error);
@@ -57,65 +61,63 @@ export default function Home() {
 
   return (
     <div className="space-y-12">
-      {/* Hero */}
-      <section className="grid gap-8 rounded-card bg-gradient-to-r from-cedar to-cedar-ring px-6 py-12 text-on-cedar md:grid-cols-2 md:px-10">
-        <div className="space-y-5">
-          <span className="inline-flex rounded-pill bg-on-cedar/15 px-4 py-1 text-small font-medium">
-            {t("home.hero.badge")}
-          </span>
+      {/*
+        Search-first. The utility is the hero: it demonstrates search,
+        the places CedarLink covers and open-now in one frame, and
+        asserts nothing. Everything here is real — the chips are the
+        distinct store locations the API returns, and there is no
+        statistic, no decoration and no invented number.
+      */}
+      <section className="rounded-card border border-line bg-paper-raised px-6 py-14 text-center md:px-10">
+        <h1 className="mx-auto max-w-3xl text-display font-semibold text-cedar-strong">
+          {t("home.hero.title")}
+        </h1>
 
-          <h1 className="text-display font-bold leading-tight md:text-display">
-            {t("home.hero.title")}
-          </h1>
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            const term = query.trim();
+            navigate(term ? `/products?keyword=${encodeURIComponent(term)}` : "/products");
+          }}
+          className="mx-auto mt-8 flex w-full max-w-xl items-center gap-3 rounded-pill border-[1.5px] border-line bg-paper ps-5 pe-2 py-2 shadow-card focus-within:border-cedar-ring"
+        >
+          <Search size={18} className="shrink-0 text-ink-muted" aria-hidden="true" />
 
-          <p className="max-w-xl text-on-cedar/90">
-            {t("home.hero.description")}
-          </p>
+          <input
+            type="search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            aria-label={t("home.hero.searchLabel")}
+            placeholder={t("home.hero.searchPlaceholder")}
+            className="min-w-0 flex-1 bg-transparent py-2 text-body text-ink outline-none placeholder:text-ink-muted"
+          />
 
-          {storeCount !== null && (
-            <p className="text-small text-on-cedar/80">
-              <span className="font-display text-title font-semibold">
-                {storeCount}
-              </span>{" "}
-              {t("home.hero.storeCount", { count: storeCount })}
-            </p>
-          )}
+          <button
+            type="submit"
+            className="shrink-0 rounded-pill bg-cedar px-5 py-2.5 text-small font-semibold text-on-cedar transition hover:bg-cedar-strong"
+          >
+            {t("home.hero.search")}
+          </button>
+        </form>
 
-          <div className="flex flex-wrap gap-3">
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+          <Link
+            to="/stores"
+            className="inline-flex items-center gap-2 rounded-pill border border-cedar-ring bg-cedar-tint px-4 py-1.5 text-small font-semibold text-cedar-strong transition hover:bg-cedar-subtle"
+          >
+            <span className="h-1.5 w-1.5 rounded-pill bg-cedar" aria-hidden="true" />
+            {t("home.hero.openNearMe")}
+          </Link>
+
+          {places.map((place) => (
             <Link
-              to="/products"
-              className="rounded-pill bg-paper-raised px-5 py-3 font-semibold text-cedar transition hover:bg-cedar-subtle"
+              key={place}
+              to={`/stores?location=${encodeURIComponent(place)}`}
+              className="rounded-pill border border-line bg-paper px-4 py-1.5 text-small font-semibold text-ink-body transition hover:border-cedar-ring hover:text-cedar"
             >
-              {t("home.hero.browseProducts")}
+              {place}
             </Link>
-
-            <Link
-              to="/stores"
-              className="rounded-pill border border-on-cedar/30 px-5 py-3 font-semibold text-on-cedar transition hover:bg-on-cedar/10"
-            >
-              {t("home.hero.browseStores")}
-            </Link>
-          </div>
-        </div>
-
-        {/* The categories actually on the page, in the order they appear —
-            not a fixed decorative list. */}
-        <div className="rounded-card bg-on-cedar/10 p-6 backdrop-blur">
-          <p className="text-small uppercase tracking-widest text-on-cedar/70">
-            {t("home.categories.title")}
-          </p>
-
-          <div className="mt-4 grid grid-cols-2 gap-3">
-            {sections.slice(0, 4).map((section) => (
-              <Link
-                key={section.category.id}
-                to={`/products?category_id=${section.category.id}`}
-                className="rounded-card bg-on-cedar/15 px-4 py-6 text-center font-medium transition hover:bg-on-cedar/25"
-              >
-                {localizedField(section.category, "name", i18n.language)}
-              </Link>
-            ))}
-          </div>
+          ))}
         </div>
       </section>
 

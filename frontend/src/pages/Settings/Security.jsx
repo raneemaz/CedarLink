@@ -570,7 +570,7 @@ function Security() {
           </BackLink>
 
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-card bg-cedar-subtle text-cedar">
+            <div className="flex h-12 w-12 items-center justify-center rounded-card bg-paper-sunken text-cedar">
               <LockKeyhole size={23} />
             </div>
 
@@ -643,7 +643,7 @@ function Security() {
         <section className="mt-6 rounded-card bg-paper-raised shadow-card">
           <div className="border-b border-line-subtle px-6 py-5">
             <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-card bg-cedar-subtle text-cedar">
+              <div className="flex h-11 w-11 items-center justify-center rounded-card bg-paper-sunken text-cedar">
                 <ShieldCheck size={22} />
               </div>
 
@@ -811,7 +811,7 @@ function Security() {
                 {}
                 {twoFactorEnabled && (
                   <div className="space-y-5">
-                    <div className="rounded-card border border-cedar-tint bg-cedar-subtle p-4">
+                    <div className="rounded-card border border-cedar-tint bg-paper-sunken p-4">
                       <div className="flex items-center gap-3">
                         <ShieldCheck size={22} className="text-cedar" />
 
@@ -897,7 +897,7 @@ function Security() {
                             setRegenerateChallengeToken("");
                             setRegenerateChallengeStarted(false);
                           }}
-                          className="mt-4 cursor-pointer rounded-control border border-cedar px-5 py-3 text-small font-semibold text-cedar transition hover:bg-cedar-subtle"
+                          className="mt-4 cursor-pointer rounded-control border border-cedar px-5 py-3 text-small font-semibold text-cedar transition hover:bg-paper-sunken"
                         >
                           {t("security.regenerateTitle")}
                         </button>

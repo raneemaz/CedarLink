@@ -237,17 +237,11 @@
   },
   "home": {
     "hero": {
-      "badge": "كل ما تحتاجه في مكان واحد",
-      "title": "تسوق بسهولة واكتشف منتجات رائعة",
-      "description": "اكتشف منتجات من متاجر مختلفة واستمتع بتجربة تسوق بسيطة ومريحة مع CedarLink.",
-      "browseProducts": "تصفح المنتجات",
-      "browseStores": "تصفح المتاجر",
-      "storeCount_zero": "متجر محلي على CedarLink",
-      "storeCount_one": "متجر محلي على CedarLink",
-      "storeCount_two": "متجران محليان على CedarLink",
-      "storeCount_few": "متاجر محلية على CedarLink",
-      "storeCount_many": "متجرًا محليًا على CedarLink",
-      "storeCount_other": "متجر محلي على CedarLink"
+      "title": "عمّ تبحث اليوم؟",
+      "searchLabel": "ابحث في المنتجات والمتاجر",
+      "searchPlaceholder": "زيت زيتون، زعتر، مكتبة قريبة…",
+      "search": "بحث",
+      "openNearMe": "مفتوح بالقرب مني"
     },
     "categories": {
       "title": "استكشف الفئات"
