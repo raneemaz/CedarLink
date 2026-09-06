@@ -247,65 +247,92 @@
  * on-* foregrounds go dark, because the fills they sit on are now light.
  */
 :root[data-theme="dark"] {
-  --color-paper: oklch(16% 0.012 80);
-  --color-paper-raised: oklch(21% 0.014 80);
-  --color-paper-sunken: oklch(27% 0.016 80);
+  /* ---- Surfaces --------------------------------------------------- */
+  /* A ladder, not a floor. Depth in a dark theme comes from lightening a
+     surface as it rises — shadows are invisible on dark — so the page is
+     the darkest thing on screen and never the card. The previous set put
+     paper at 16% with cards 5 points above it, which read as a flat hole.
+     Sunken is the lightest of the three: an inset reads as an inset by
+     differing from the card, and going darker merges it into the page. */
+  --color-paper: oklch(21% 0.01 90);
+  --color-paper-raised: oklch(25.5% 0.012 90);
+  --color-paper-sunken: oklch(28.5% 0.012 90);
 
-  --color-line-subtle: oklch(27% 0.016 80);
-  --color-line: oklch(33% 0.018 80);
-  --color-line-strong: oklch(42% 0.02 80);
+  /* ---- Lines ------------------------------------------------------ */
+  --color-line-subtle: oklch(30% 0.012 90);
+  --color-line: oklch(34% 0.012 90);
+  --color-line-strong: oklch(42% 0.014 90);
 
-  --color-ink: oklch(97% 0.012 85);
-  --color-ink-emphasis: oklch(94% 0.012 85);
-  --color-ink-body: oklch(89% 0.014 85);
-  --color-ink-secondary: oklch(83% 0.016 85);
-  --color-ink-muted: oklch(74% 0.018 85);
-  --color-ink-faint: oklch(60% 0.02 82);
-  --color-ink-disabled: oklch(46% 0.02 80);
+  /* ---- Ink -------------------------------------------------------- */
+  /* Off-white, not #fff. Pure white on a dark ground glares and makes
+     the halation worse at small sizes. */
+  --color-ink: oklch(93% 0.008 90);
+  --color-ink-emphasis: oklch(89% 0.008 90);
+  --color-ink-body: oklch(84% 0.008 90);
+  --color-ink-secondary: oklch(77% 0.009 90);
+  --color-ink-muted: oklch(70% 0.01 90);
+  --color-ink-faint: oklch(60% 0.01 90);
+  --color-ink-disabled: oklch(48% 0.01 90);
 
-  --color-control: oklch(33% 0.018 80);
-  --color-control-hover: oklch(42% 0.02 80);
+  /* ---- Controls --------------------------------------------------- */
+  --color-control: oklch(34% 0.012 90);
+  --color-control-hover: oklch(42% 0.014 90);
 
-  --color-on-cedar: oklch(16% 0.012 80);
-  --color-on-danger: oklch(16% 0.012 80);
-  --color-on-warning: oklch(16% 0.012 80);
-  --color-on-copper: oklch(16% 0.012 80);
+  /* ---- Foregrounds on a filled block ------------------------------ */
+  /* Dark text on a light fill: cedar is now an ink, not a fill colour,
+     so anything sitting on it has to go the other way. */
+  --color-on-cedar: oklch(18% 0.015 90);
+  --color-on-danger: oklch(18% 0.015 90);
+  --color-on-warning: oklch(18% 0.015 90);
+  --color-on-copper: oklch(20% 0.02 60);
 
-  --color-cedar-subtle: oklch(25% 0.035 155);
-  --color-cedar-tint: oklch(33% 0.055 155);
-  --color-cedar-ring: oklch(68% 0.14 155);
-  --color-cedar: oklch(80% 0.13 155);
-  --color-cedar-strong: oklch(88% 0.1 155);
+  /* ---- Brand: cedar ----------------------------------------------- */
+  /* Lifted up the ramp and drained of about a third of its chroma. A
+     saturated mid-green that works on white vibrates on dark and fails
+     contrast; the fix is to move the accent into the light tones. */
+  --color-cedar-subtle: oklch(26% 0.028 155);
+  --color-cedar-tint: oklch(30% 0.035 155);
+  --color-cedar-ring: oklch(72% 0.09 155);
+  --color-cedar: oklch(78% 0.075 155);
+  --color-cedar-strong: oklch(85% 0.07 155);
 
-  --color-copper-tint: oklch(32% 0.06 45);
-  --color-copper: oklch(78% 0.13 55);
-  --color-copper-strong: oklch(85% 0.1 55);
+  /* ---- Accent: copper --------------------------------------------- */
+  /* The warm counterweight, so the page is never only green. */
+  --color-copper-tint: oklch(32% 0.045 55);
+  --color-copper: oklch(76% 0.095 55);
+  --color-copper-strong: oklch(84% 0.08 55);
 
-  --color-success-subtle: oklch(25% 0.035 155);
-  --color-success: oklch(80% 0.13 155);
-  --color-success-strong: oklch(88% 0.1 155);
+  /* ---- Status: success -------------------------------------------- */
+  --color-success-subtle: oklch(30% 0.035 155);
+  --color-success: oklch(78% 0.075 155);
+  --color-success-strong: oklch(85% 0.07 155);
 
-  --color-danger-subtle: oklch(25% 0.05 25);
-  --color-danger-tint: oklch(32% 0.08 25);
-  --color-danger-border: oklch(40% 0.11 25);
-  --color-danger-accent: oklch(68% 0.17 25);
-  --color-danger: oklch(75% 0.14 25);
-  --color-danger-strong: oklch(84% 0.1 25);
+  /* ---- Status: danger --------------------------------------------- */
+  --color-danger-subtle: oklch(28% 0.045 25);
+  --color-danger-tint: oklch(33% 0.06 25);
+  --color-danger-border: oklch(42% 0.09 25);
+  --color-danger-accent: oklch(70% 0.13 25);
+  --color-danger: oklch(75% 0.11 25);
+  --color-danger-strong: oklch(83% 0.085 25);
 
-  --color-warning-subtle: oklch(26% 0.04 70);
-  --color-warning-tint: oklch(33% 0.06 70);
-  --color-warning-border: oklch(42% 0.08 70);
-  --color-warning-accent: oklch(80% 0.15 70);
-  --color-warning-muted: oklch(84% 0.13 70);
-  --color-warning: oklch(90% 0.1 75);
+  /* ---- Status: warning -------------------------------------------- */
+  --color-warning-subtle: oklch(29% 0.04 75);
+  --color-warning-tint: oklch(34% 0.055 75);
+  --color-warning-border: oklch(43% 0.075 75);
+  --color-warning-accent: oklch(80% 0.11 75);
+  --color-warning-muted: oklch(82% 0.1 70);
+  --color-warning: oklch(88% 0.085 78);
 
-  --color-rating: oklch(80% 0.15 70);
-  --color-rating-empty: oklch(55% 0.03 80);
+  /* ---- Rating ------------------------------------------------------ */
+  --color-rating: oklch(80% 0.11 75);
+  --color-rating-empty: oklch(58% 0.02 90);
 
-  --color-info-subtle: oklch(26% 0.045 240);
-  --color-info: oklch(85% 0.09 240);
+  /* ---- Status: info ------------------------------------------------ */
+  --color-info-subtle: oklch(29% 0.04 240);
+  --color-info: oklch(83% 0.08 240);
 
-  --color-scrim: oklch(8% 0.01 80);
+  /* ---- Chrome ------------------------------------------------------ */
+  --color-scrim: oklch(10% 0.008 90);
 }
 
 /*
@@ -315,65 +342,92 @@
  */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --color-paper: oklch(16% 0.012 80);
-    --color-paper-raised: oklch(21% 0.014 80);
-    --color-paper-sunken: oklch(27% 0.016 80);
+    /* ---- Surfaces --------------------------------------------------- */
+    /* A ladder, not a floor. Depth in a dark theme comes from lightening a
+       surface as it rises — shadows are invisible on dark — so the page is
+       the darkest thing on screen and never the card. The previous set put
+       paper at 16% with cards 5 points above it, which read as a flat hole.
+       Sunken is the lightest of the three: an inset reads as an inset by
+       differing from the card, and going darker merges it into the page. */
+    --color-paper: oklch(21% 0.01 90);
+    --color-paper-raised: oklch(25.5% 0.012 90);
+    --color-paper-sunken: oklch(28.5% 0.012 90);
 
-    --color-line-subtle: oklch(27% 0.016 80);
-    --color-line: oklch(33% 0.018 80);
-    --color-line-strong: oklch(42% 0.02 80);
+    /* ---- Lines ------------------------------------------------------ */
+    --color-line-subtle: oklch(30% 0.012 90);
+    --color-line: oklch(34% 0.012 90);
+    --color-line-strong: oklch(42% 0.014 90);
 
-    --color-ink: oklch(97% 0.012 85);
-    --color-ink-emphasis: oklch(94% 0.012 85);
-    --color-ink-body: oklch(89% 0.014 85);
-    --color-ink-secondary: oklch(83% 0.016 85);
-    --color-ink-muted: oklch(74% 0.018 85);
-    --color-ink-faint: oklch(60% 0.02 82);
-    --color-ink-disabled: oklch(46% 0.02 80);
+    /* ---- Ink -------------------------------------------------------- */
+    /* Off-white, not #fff. Pure white on a dark ground glares and makes
+       the halation worse at small sizes. */
+    --color-ink: oklch(93% 0.008 90);
+    --color-ink-emphasis: oklch(89% 0.008 90);
+    --color-ink-body: oklch(84% 0.008 90);
+    --color-ink-secondary: oklch(77% 0.009 90);
+    --color-ink-muted: oklch(70% 0.01 90);
+    --color-ink-faint: oklch(60% 0.01 90);
+    --color-ink-disabled: oklch(48% 0.01 90);
 
-    --color-control: oklch(33% 0.018 80);
-    --color-control-hover: oklch(42% 0.02 80);
+    /* ---- Controls --------------------------------------------------- */
+    --color-control: oklch(34% 0.012 90);
+    --color-control-hover: oklch(42% 0.014 90);
 
-    --color-on-cedar: oklch(16% 0.012 80);
-    --color-on-danger: oklch(16% 0.012 80);
-    --color-on-warning: oklch(16% 0.012 80);
-    --color-on-copper: oklch(16% 0.012 80);
+    /* ---- Foregrounds on a filled block ------------------------------ */
+    /* Dark text on a light fill: cedar is now an ink, not a fill colour,
+       so anything sitting on it has to go the other way. */
+    --color-on-cedar: oklch(18% 0.015 90);
+    --color-on-danger: oklch(18% 0.015 90);
+    --color-on-warning: oklch(18% 0.015 90);
+    --color-on-copper: oklch(20% 0.02 60);
 
-    --color-cedar-subtle: oklch(25% 0.035 155);
-    --color-cedar-tint: oklch(33% 0.055 155);
-    --color-cedar-ring: oklch(68% 0.14 155);
-    --color-cedar: oklch(80% 0.13 155);
-    --color-cedar-strong: oklch(88% 0.1 155);
+    /* ---- Brand: cedar ----------------------------------------------- */
+    /* Lifted up the ramp and drained of about a third of its chroma. A
+       saturated mid-green that works on white vibrates on dark and fails
+       contrast; the fix is to move the accent into the light tones. */
+    --color-cedar-subtle: oklch(26% 0.028 155);
+    --color-cedar-tint: oklch(30% 0.035 155);
+    --color-cedar-ring: oklch(72% 0.09 155);
+    --color-cedar: oklch(78% 0.075 155);
+    --color-cedar-strong: oklch(85% 0.07 155);
 
-    --color-copper-tint: oklch(32% 0.06 45);
-    --color-copper: oklch(78% 0.13 55);
-    --color-copper-strong: oklch(85% 0.1 55);
+    /* ---- Accent: copper --------------------------------------------- */
+    /* The warm counterweight, so the page is never only green. */
+    --color-copper-tint: oklch(32% 0.045 55);
+    --color-copper: oklch(76% 0.095 55);
+    --color-copper-strong: oklch(84% 0.08 55);
 
-    --color-success-subtle: oklch(25% 0.035 155);
-    --color-success: oklch(80% 0.13 155);
-    --color-success-strong: oklch(88% 0.1 155);
+    /* ---- Status: success -------------------------------------------- */
+    --color-success-subtle: oklch(30% 0.035 155);
+    --color-success: oklch(78% 0.075 155);
+    --color-success-strong: oklch(85% 0.07 155);
 
-    --color-danger-subtle: oklch(25% 0.05 25);
-    --color-danger-tint: oklch(32% 0.08 25);
-    --color-danger-border: oklch(40% 0.11 25);
-    --color-danger-accent: oklch(68% 0.17 25);
-    --color-danger: oklch(75% 0.14 25);
-    --color-danger-strong: oklch(84% 0.1 25);
+    /* ---- Status: danger --------------------------------------------- */
+    --color-danger-subtle: oklch(28% 0.045 25);
+    --color-danger-tint: oklch(33% 0.06 25);
+    --color-danger-border: oklch(42% 0.09 25);
+    --color-danger-accent: oklch(70% 0.13 25);
+    --color-danger: oklch(75% 0.11 25);
+    --color-danger-strong: oklch(83% 0.085 25);
 
-    --color-warning-subtle: oklch(26% 0.04 70);
-    --color-warning-tint: oklch(33% 0.06 70);
-    --color-warning-border: oklch(42% 0.08 70);
-    --color-warning-accent: oklch(80% 0.15 70);
-    --color-warning-muted: oklch(84% 0.13 70);
-    --color-warning: oklch(90% 0.1 75);
+    /* ---- Status: warning -------------------------------------------- */
+    --color-warning-subtle: oklch(29% 0.04 75);
+    --color-warning-tint: oklch(34% 0.055 75);
+    --color-warning-border: oklch(43% 0.075 75);
+    --color-warning-accent: oklch(80% 0.11 75);
+    --color-warning-muted: oklch(82% 0.1 70);
+    --color-warning: oklch(88% 0.085 78);
 
-    --color-rating: oklch(80% 0.15 70);
-    --color-rating-empty: oklch(45% 0.03 80);
+    /* ---- Rating ------------------------------------------------------ */
+    --color-rating: oklch(80% 0.11 75);
+    --color-rating-empty: oklch(58% 0.02 90);
 
-    --color-info-subtle: oklch(26% 0.045 240);
-    --color-info: oklch(85% 0.09 240);
+    /* ---- Status: info ------------------------------------------------ */
+    --color-info-subtle: oklch(29% 0.04 240);
+    --color-info: oklch(83% 0.08 240);
 
-    --color-scrim: oklch(8% 0.01 80);
+    /* ---- Chrome ------------------------------------------------------ */
+    --color-scrim: oklch(10% 0.008 90);
   }
 }
 

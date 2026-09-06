@@ -14,7 +14,7 @@ const STATUSES = ["pending", "processing", "delivered", "canceled"];
 const STATUS_TONE = {
   pending: "bg-warning-subtle text-warning",
   processing: "bg-info-subtle text-info",
-  delivered: "bg-cedar-subtle text-cedar-strong",
+  delivered: "bg-paper-sunken text-cedar-strong",
   canceled: "bg-paper-sunken text-ink-secondary",
 };
 

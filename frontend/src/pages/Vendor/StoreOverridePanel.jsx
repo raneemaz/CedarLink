@@ -146,7 +146,7 @@ function StoreOverridePanel({ store, onStoreChange }) {
                   key={option}
                   className={`cursor-pointer rounded-control border px-4 py-2 text-small font-medium ${
                     status === option
-                      ? "border-cedar-ring bg-cedar-subtle text-cedar-strong"
+                      ? "border-cedar-ring bg-paper-sunken text-cedar-strong"
                       : "border-line-strong text-ink-secondary"
                   }`}
                 >
@@ -207,7 +207,7 @@ function StoreOverridePanel({ store, onStoreChange }) {
                   key={option}
                   className={`cursor-pointer rounded-control border px-3 py-2 text-small font-medium ${
                     duration === option
-                      ? "border-cedar-ring bg-cedar-subtle text-cedar-strong"
+                      ? "border-cedar-ring bg-paper-sunken text-cedar-strong"
                       : "border-line-strong text-ink-secondary"
                   }`}
                 >

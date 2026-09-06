@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
@@ -33,8 +34,17 @@ function Stores() {
 
   // Draft filter inputs vs. what is actually applied to the query.
   const [keywordInput, setKeywordInput] = useState("");
-  const [locationInput, setLocationInput] = useState("");
-  const [applied, setApplied] = useState({ keyword: "", location: "" });
+  // The home page's place chips link here with ?location=. Seeding the
+  // filter from the URL is what makes those chips real rather than
+  // decorative; the filter itself is unchanged.
+  const [searchParams] = useSearchParams();
+  const initialLocation = searchParams.get("location") || "";
+
+  const [locationInput, setLocationInput] = useState(initialLocation);
+  const [applied, setApplied] = useState({
+    keyword: "",
+    location: initialLocation,
+  });
 
   // Nearby search. `center` holds the customer's chosen point ONLY for the
   // lifetime of this view — it goes into the query string and nowhere

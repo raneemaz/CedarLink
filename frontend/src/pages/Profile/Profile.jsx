@@ -173,7 +173,7 @@ function Profile() {
           )}
 
           {success && (
-            <div className="mb-6 rounded-control border border-cedar-tint bg-cedar-subtle px-4 py-3 text-small text-cedar">
+            <div className="mb-6 rounded-control border border-cedar-tint bg-paper-sunken px-4 py-3 text-small text-cedar">
               {success}
             </div>
           )}

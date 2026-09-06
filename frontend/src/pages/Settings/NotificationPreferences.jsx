@@ -125,7 +125,7 @@ function NotificationPreferences() {
           </BackLink>
 
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-card bg-cedar-subtle text-cedar">
+            <div className="flex h-12 w-12 items-center justify-center rounded-card bg-paper-sunken text-cedar">
               <Bell size={24} />
             </div>
 

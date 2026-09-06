@@ -167,7 +167,7 @@ function PaymentMethods() {
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex items-start gap-4">
                       {/* Icon */}
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-card bg-cedar-subtle text-cedar">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-card bg-paper-sunken text-cedar">
                         <CreditCard size={24} />
                       </div>
 
@@ -203,7 +203,7 @@ function PaymentMethods() {
                         onClick={() =>
                           handleSetDefault(paymentMethod.id)
                         }
-                        className="cursor-pointer rounded-control border border-cedar px-4 py-2 text-small font-medium text-cedar hover:bg-cedar-subtle"
+                        className="cursor-pointer rounded-control border border-cedar px-4 py-2 text-small font-medium text-cedar hover:bg-paper-sunken"
                       >
                         {t("paymentMethods.setAsDefault")}
                       </button>

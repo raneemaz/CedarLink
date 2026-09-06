@@ -55,7 +55,7 @@ function Language() {
           </BackLink>
 
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-card bg-cedar-subtle text-cedar">
+            <div className="flex h-12 w-12 items-center justify-center rounded-card bg-paper-sunken text-cedar">
               <Languages size={24} />
             </div>
 
@@ -94,7 +94,7 @@ function Language() {
                   onClick={() => setSelectedLanguage(language.code)}
                   className={`flex w-full cursor-pointer items-center justify-between rounded-card border p-4 text-start transition ${
                     isSelected
-                      ? "border-cedar-ring bg-cedar-subtle"
+                      ? "border-cedar-ring bg-paper-sunken"
                       : "border-line hover:bg-paper"
                   }`}
                 >

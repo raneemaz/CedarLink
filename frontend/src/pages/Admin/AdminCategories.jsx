@@ -225,7 +225,7 @@ function AdminCategories() {
           <tbody className="divide-y divide-line-subtle">
             {categories.map((category) =>
               editId === category.id ? (
-                <tr key={category.id} className="bg-cedar-subtle/40">
+                <tr key={category.id} className="bg-paper-sunken/40">
                   <td className="px-4 py-3">
                     <LanguageTabs
                       active={editLang}

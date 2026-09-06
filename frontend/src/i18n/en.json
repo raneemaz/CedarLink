@@ -233,13 +233,11 @@
   },
   "home": {
     "hero": {
-      "badge": "Shop locally, support nearby stores",
-      "title": "Discover products and stores around you.",
-      "description": "Browse stores, search products, and explore CedarLink without logging in. Sign in only when you want to add items to cart or checkout.",
-      "browseProducts": "Browse Products",
-      "browseStores": "Browse Stores",
-      "storeCount_one": "local store on CedarLink",
-      "storeCount_other": "local stores on CedarLink"
+      "title": "What are you looking for today?",
+      "searchLabel": "Search products and stores",
+      "searchPlaceholder": "Olive oil, zaatar, a bookshop nearby…",
+      "search": "Search",
+      "openNearMe": "Open near me"
     },
     "categories": {
       "title": "Featured categories"

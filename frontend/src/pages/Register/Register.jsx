@@ -115,7 +115,7 @@ function Register() {
               onClick={() => setRole("customer")}
               className={`rounded-card border-2 p-4 text-start transition ${
                 role === "customer"
-                  ? "border-cedar-ring bg-cedar-subtle"
+                  ? "border-cedar-ring bg-paper-sunken"
                   : "border-line hover:border-line-strong"
               }`}
             >
@@ -132,7 +132,7 @@ function Register() {
               onClick={() => setRole("vendor")}
               className={`rounded-card border-2 p-4 text-start transition ${
                 role === "vendor"
-                  ? "border-cedar-ring bg-cedar-subtle"
+                  ? "border-cedar-ring bg-paper-sunken"
                   : "border-line hover:border-line-strong"
               }`}
             >

@@ -246,7 +246,7 @@ function AddAddress() {
             </div>
 
             {/* Default Address */}
-            <div className="flex items-start gap-3 rounded-control bg-cedar-subtle p-4">
+            <div className="flex items-start gap-3 rounded-control bg-paper-sunken p-4">
               <input
                 id="is_default"
                 name="is_default"

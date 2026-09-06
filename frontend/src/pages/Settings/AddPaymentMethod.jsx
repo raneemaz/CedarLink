@@ -91,7 +91,7 @@ function AddPaymentMethod() {
           onSubmit={handleSubmit}
           className="mt-6 rounded-card bg-paper-raised p-6 shadow-card"
         >
-          <div className="mb-6 flex items-center gap-4 rounded-card border border-cedar-ring bg-cedar-subtle p-4">
+          <div className="mb-6 flex items-center gap-4 rounded-card border border-cedar-ring bg-paper-sunken p-4">
             <div className="flex h-11 w-11 items-center justify-center rounded-control bg-paper-raised text-cedar">
               <CreditCard size={22} />
             </div>

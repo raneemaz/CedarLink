@@ -281,3 +281,115 @@ under `pages/` or `components/` was added or removed; the only export
 that appears in the diff is `Button`'s, unchanged. The raw-colour lint
 guard passes, which is the machine-checked half of the same claim: not
 one literal colour, inline style or `dark:` variant was written.
+
+
+---
+
+# Addendum, 2026-09-06 — dark rework and the search hero
+
+## The reported "theme inversion" was not one
+
+Diagnosed before changing anything. Computed values in the four states:
+
+| preference | OS | paper | ink | cedar | correct |
+|---|---|---|---|---|---|
+| system | light | 98% | 23% | 38% | yes |
+| system | **dark** | **16%** | **97%** | **80%** | yes |
+| explicit light | dark | 98% | 23% | 38% | yes — light wins |
+| explicit dark | either | 16% | 97% | 80% | yes |
+
+**None is wrong.** The hypothesis that R3 swapped the blocks does not
+hold: `@theme` carries the light values, `:root[data-theme="dark"]` the
+dark ones, and the media guard reads `:root:not([data-theme="light"])`,
+not `:not([data-theme="dark"])`. The settings row maps each option to its
+own value and already said "System — Follows your device, which is set to
+Dark" with "Showing the Dark theme now."
+
+So the benign case was the case: preference `system`, OS dark, opening
+dark. What was actually wrong was the *quality* of the dark palette, and
+that is what the rest of this addendum fixes.
+
+## The dark palette
+
+Replaced with the values from the "CedarLink Dark Rework" study. Three
+named faults in the old set:
+
+- **A floor, not a ladder.** `paper` sat at 16% with cards five points
+  above it, which reads as a flat hole. Depth in a dark theme comes from
+  lightening a surface as it rises — shadows are invisible on dark. Now
+  21% / 25.5% / 28.5%, and the page is the darkest thing on screen.
+- **Brand carried at light-theme saturation.** Cedar was
+  `oklch(80% 0.13 155)` — a saturated green that vibrates on dark. Now
+  `oklch(78% 0.075 155)`: lifted and drained of about a third of its
+  chroma, with dark text on cedar fills.
+- **Ink was pure white.** Now `oklch(93% 0.008 90)` — off-white, because
+  pure white on a dark ground glares and worsens halation at small sizes.
+
+Copper is kept as the warm counterweight so the page is never only green.
+
+**The gate agrees with the study exactly.** All 27 published ratios match
+the computed values to two decimal places. One value the study did not
+name had to move: `rating-empty` failed at 2.86:1 against the lifted
+`paper-raised`, because raising the surfaces closes the gap to a mid-grey
+outline. Lifted to `oklch(58% 0.02 90)`, which clears 3:1 on all three
+surfaces. `KNOWN_FAILURES` remains empty.
+
+## Green was doing the work of a neutral
+
+`bg-cedar-subtle` was a green **surface** at 33 call sites — nav actives,
+selected radio cards, unread notification rows, info panels. None of
+those is a primary action, an open/good badge or the add control, so
+under the 60/30/10 rule they are neutral now.
+
+| | before | after |
+|---|---|---|
+| `bg-cedar-subtle` | 33 | 1 |
+| `bg-cedar` | 49 | 49 |
+| `bg-cedar-ring` | 6 | 6 |
+| `bg-cedar-tint` | 3 | 3 |
+| `bg-success-subtle` | 9 | 9 |
+
+The one survivor is the "coupon applied" chip, which is a good-state
+badge and keeps its green. Nav actives lost the pill entirely and keep
+cedar text, which is the study's own treatment.
+
+Measured on the rendered dark home page afterwards: **5 of 56 elements
+with a background paint green — 9%.** They are the cart badge, the
+Register button, the Search button, the "Open near me" chip and its live
+dot. Every one is an action or the open-now affordance.
+
+## The hero
+
+Replaced with option B, search-first. A headline, one large search field
+routing to the existing `/products?keyword=`, and a row of place chips.
+Removed: the badge, the description paragraph, the two buttons, the
+category panel and the store-count statistic.
+
+**No invented numbers, and now no numbers at all.** The count added in
+R3 was real but it was still a claim; a search hero makes none, which
+retires the "120+" problem permanently rather than binding it to six.
+
+The chips are the distinct `location` values the stores endpoint returns
+— **Beirut, Saida, Tripoli** on the current seed. Note that CedarLink's
+data holds *cities*, not the neighbourhoods the study drew (Hamra,
+Gemmayze, Verdun are not in the schema), so the chips show what exists.
+They link to `/stores?location=<place>`, and `Stores.jsx` now seeds its
+existing filter from that parameter — five lines, no new route and no new
+page, which is what makes the chips real rather than decorative.
+Verified: `/stores?location=Beirut` selects "Beirut" in the filter and
+returns exactly the four Beirut stores.
+
+"Open near me" links to `/stores`, where the existing `NearbySearch`
+already lives.
+
+RTL verified: the search button sits at the inline end, the chips flow
+right-to-left, and the Arabic strings render in Amiri and IBM Plex Sans
+Arabic as before.
+
+## One collision fixed while photographing it
+
+At 1280px the wordmark and the first nav link were **4px** apart —
+`justify-between` spaces only the outer edges of a three-child row, so
+the brand and the nav collided. A `gap-8` on the row makes it 16px. It
+predates this session and appears in every screenshot, which is why it
+is fixed here rather than noted.

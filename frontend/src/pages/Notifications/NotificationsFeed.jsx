@@ -120,7 +120,7 @@ function NotificationsFeed() {
             type="button"
             onClick={markAllRead}
             disabled={unreadCount === 0}
-            className="cursor-pointer rounded-control border border-cedar px-4 py-2 text-small font-medium text-cedar transition hover:bg-cedar-subtle disabled:cursor-not-allowed disabled:border-line disabled:text-ink-disabled"
+            className="cursor-pointer rounded-control border border-cedar px-4 py-2 text-small font-medium text-cedar transition hover:bg-paper-sunken disabled:cursor-not-allowed disabled:border-line disabled:text-ink-disabled"
           >
             {t("notificationsFeed.markAllRead")}
           </button>
@@ -187,7 +187,7 @@ function NotificationsFeed() {
                   className={`flex w-full cursor-pointer items-start gap-4 rounded-card border p-4 text-start shadow-card transition hover:bg-paper ${
                     notification.is_read
                       ? "border-line bg-paper-raised"
-                      : "border-cedar-tint bg-cedar-subtle/50"
+                      : "border-cedar-tint bg-paper-sunken/50"
                   }`}
                 >
                   <span className="mt-0.5 shrink-0 text-cedar">

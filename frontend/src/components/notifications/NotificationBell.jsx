@@ -117,7 +117,7 @@ function NotificationBell() {
                     key={notification.id}
                     onClick={() => handleRowClick(notification)}
                     className={`flex w-full items-start gap-3 border-b border-line-subtle px-4 py-3 text-start transition hover:bg-paper ${
-                      notification.is_read ? "" : "bg-cedar-subtle/50"
+                      notification.is_read ? "" : "bg-paper-sunken/50"
                     }`}
                   >
                     <span className="mt-0.5 shrink-0 text-cedar">
