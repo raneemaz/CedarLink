@@ -210,11 +210,11 @@ function Login() {
     return (
       <main className="min-h-screen bg-paper-sunken flex items-center justify-center px-4 py-8">
         <Card className="w-full max-w-md p-6 sm:p-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-center text-cedar">
+          <h1 className="text-title sm:text-title font-bold text-center text-cedar">
             {t("auth.twoFactorTitle")}
           </h1>
 
-          <p className="text-center text-sm text-ink-muted mt-2 mb-6">
+          <p className="text-center text-small text-ink-muted mt-2 mb-6">
             {useRecoveryCode
               ? t("login.promptRecovery")
               : isAuthenticatorChallenge
@@ -253,7 +253,7 @@ function Login() {
               type="button"
               onClick={handleResendCode}
               disabled={resending}
-              className="w-full mt-4 text-sm text-cedar font-semibold hover:underline disabled:opacity-50"
+              className="w-full mt-4 text-small text-cedar font-semibold hover:underline disabled:opacity-50"
             >
               {resending ? t("auth.sending") : t("auth.resendCode")}
             </button>
@@ -265,7 +265,7 @@ function Login() {
               setVerificationCode("");
               setUseRecoveryCode(!useRecoveryCode);
             }}
-            className="w-full mt-3 text-sm text-ink-secondary hover:underline"
+            className="w-full mt-3 text-small text-ink-secondary hover:underline"
           >
             {useRecoveryCode
               ? t("login.useCodeInstead")
@@ -275,7 +275,7 @@ function Login() {
           <button
             type="button"
             onClick={handleBackToLogin}
-            className="w-full mt-5 text-sm text-ink-muted hover:underline"
+            className="w-full mt-5 text-small text-ink-muted hover:underline"
           >
             {t("auth.backToLogin")}
           </button>
@@ -287,11 +287,11 @@ function Login() {
   return (
     <main className="min-h-screen bg-paper-sunken flex items-center justify-center px-4 py-8">
       <Card className="w-full max-w-md p-6 sm:p-8">
-        <h1 className="text-3xl sm:text-4xl font-bold text-center text-cedar">
+        <h1 className="text-title sm:text-display font-bold text-center text-cedar">
           CedarLink
         </h1>
 
-        <p className="text-center text-sm text-ink-muted mt-1 mb-6">
+        <p className="text-center text-small text-ink-muted mt-1 mb-6">
           {t("auth.appTagline")}
         </p>
 
@@ -323,7 +323,7 @@ function Login() {
           {loading ? t("login.loggingIn") : t("login.button")}
         </Button>
 
-        <p className="text-center text-sm mt-3">
+        <p className="text-center text-small mt-3">
           <Link
             to="/forgot-password"
             className="text-cedar cursor-pointer font-semibold hover:underline"
@@ -333,7 +333,7 @@ function Login() {
         </p>
 
         {deactivated && (
-          <div className="mt-4 rounded-lg border border-warning-border bg-warning-subtle p-4 text-sm">
+          <div className="mt-4 rounded-control border border-warning-border bg-warning-subtle p-4 text-small">
             <p className="font-medium text-warning">
               {t("login.deactivatedTitle")}
             </p>
@@ -344,7 +344,7 @@ function Login() {
               type="button"
               onClick={handleReactivate}
               disabled={reactivating}
-              className="mt-3 cursor-pointer rounded-lg bg-warning-muted px-4 py-2 text-sm font-semibold text-on-warning transition hover:bg-warning-muted disabled:opacity-60"
+              className="mt-3 cursor-pointer rounded-control bg-warning-muted px-4 py-2 text-small font-semibold text-on-warning transition hover:bg-warning-muted disabled:opacity-60"
             >
               {reactivating
                 ? t("login.reactivating")
@@ -353,7 +353,7 @@ function Login() {
           </div>
         )}
 
-        <p className="text-center text-sm text-ink-secondary mt-5">
+        <p className="text-center text-small text-ink-secondary mt-5">
           {t("login.noAccount")}{" "}
           <Link
             to="/register"

@@ -106,11 +106,11 @@ function PaymentMethods() {
             {t("backLink.settings")}
           </BackLink>
 
-          <h1 className="text-3xl font-bold text-ink">
+          <h1 className="text-title font-bold text-ink">
             {t("paymentMethods.title")}
           </h1>
 
-          <p className="mt-2 text-sm text-ink-secondary">
+          <p className="mt-2 text-small text-ink-secondary">
             {t("paymentMethods.subtitle")}
           </p>
         </div>
@@ -122,7 +122,7 @@ function PaymentMethods() {
             onClick={() =>
               navigate("/settings/payment-methods/new")
             }
-            className="cursor-pointer rounded-lg bg-cedar px-5 py-3 text-sm font-semibold text-on-cedar transition hover:bg-cedar-strong"
+            className="cursor-pointer rounded-control bg-cedar px-5 py-3 text-small font-semibold text-on-cedar transition hover:bg-cedar-strong"
           >
             + {t("paymentMethods.addCard")}
           </button>
@@ -130,17 +130,17 @@ function PaymentMethods() {
 
         {/* Empty State */}
         {paymentMethods.length === 0 ? (
-          <div className="rounded-xl bg-paper-raised p-10 text-center shadow-sm">
+          <div className="rounded-card bg-paper-raised p-10 text-center shadow-card">
             <CreditCard
               size={42}
               className="mx-auto text-ink-faint"
             />
 
-            <h2 className="mt-4 text-lg font-semibold text-ink">
+            <h2 className="mt-4 text-body font-semibold text-ink">
               {t("paymentMethods.emptyTitle")}
             </h2>
 
-            <p className="mt-2 text-sm text-ink-muted">
+            <p className="mt-2 text-small text-ink-muted">
               {t("paymentMethods.emptyBody")}
             </p>
 
@@ -149,7 +149,7 @@ function PaymentMethods() {
               onClick={() =>
                 navigate("/settings/payment-methods/new")
               }
-              className="mt-6 cursor-pointer rounded-lg bg-cedar px-5 py-3 text-sm font-semibold text-on-cedar hover:bg-cedar-strong"
+              className="mt-6 cursor-pointer rounded-control bg-cedar px-5 py-3 text-small font-semibold text-on-cedar hover:bg-cedar-strong"
             >
               {t("paymentMethods.addFirst")}
             </button>
@@ -161,25 +161,25 @@ function PaymentMethods() {
               return (
                 <div
                   key={paymentMethod.id}
-                  className="rounded-xl bg-paper-raised p-6 shadow-sm"
+                  className="rounded-card bg-paper-raised p-6 shadow-card"
                 >
                   {/* Top Row */}
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex items-start gap-4">
                       {/* Icon */}
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-cedar-subtle text-cedar">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-card bg-cedar-subtle text-cedar">
                         <CreditCard size={24} />
                       </div>
 
                       {/* Details */}
                       <div>
                         <div className="flex flex-wrap items-center gap-3">
-                          <h2 className="text-lg font-semibold text-ink">
+                          <h2 className="text-body font-semibold text-ink">
                             {paymentMethod.label}
                           </h2>
 
                           {paymentMethod.is_default && (
-                            <span className="rounded-full bg-cedar-tint px-3 py-1 text-xs font-semibold text-cedar">
+                            <span className="rounded-pill bg-cedar-tint px-3 py-1 text-micro font-semibold text-cedar">
                               {t("common.default")}
                             </span>
                           )}
@@ -187,7 +187,7 @@ function PaymentMethods() {
 
                         {paymentMethod.type === "card" &&
                           paymentMethod.last4 && (
-                            <p className="mt-2 text-sm text-ink-secondary">
+                            <p className="mt-2 text-small text-ink-secondary">
                               •••• {paymentMethod.last4}
                             </p>
                           )}
@@ -203,7 +203,7 @@ function PaymentMethods() {
                         onClick={() =>
                           handleSetDefault(paymentMethod.id)
                         }
-                        className="cursor-pointer rounded-lg border border-cedar px-4 py-2 text-sm font-medium text-cedar hover:bg-cedar-subtle"
+                        className="cursor-pointer rounded-control border border-cedar px-4 py-2 text-small font-medium text-cedar hover:bg-cedar-subtle"
                       >
                         {t("paymentMethods.setAsDefault")}
                       </button>
@@ -216,7 +216,7 @@ function PaymentMethods() {
                           `/settings/payment-methods/${paymentMethod.id}/edit`
                         )
                       }
-                      className="cursor-pointer rounded-lg border border-line-strong px-4 py-2 text-sm font-medium text-ink-body hover:bg-paper"
+                      className="cursor-pointer rounded-control border border-line-strong px-4 py-2 text-small font-medium text-ink-body hover:bg-paper"
                     >
                       {t("paymentMethods.edit")}
                     </button>
@@ -226,7 +226,7 @@ function PaymentMethods() {
                       onClick={() =>
                         handleDelete(paymentMethod.id)
                       }
-                      className="cursor-pointer rounded-lg border border-danger-border px-4 py-2 text-sm font-medium text-danger hover:bg-danger-subtle"
+                      className="cursor-pointer rounded-control border border-danger-border px-4 py-2 text-small font-medium text-danger hover:bg-danger-subtle"
                     >
                       {t("paymentMethods.delete")}
                     </button>

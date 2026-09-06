@@ -31,7 +31,7 @@ function StoreSocialLinks({ links, storeName, className = "" }) {
 
   return (
     <div className={className}>
-      <h2 className="text-sm font-semibold text-ink">
+      <h2 className="text-small font-semibold text-ink">
         {t("social.heading")}
       </h2>
 
@@ -49,7 +49,7 @@ function StoreSocialLinks({ links, storeName, className = "" }) {
                 rel="noopener noreferrer"
                 aria-label={label}
                 title={label}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-line text-ink-secondary transition hover:border-cedar-ring hover:text-cedar"
+                className="flex h-10 w-10 items-center justify-center rounded-pill border border-line text-ink-secondary transition hover:border-cedar-ring hover:text-cedar"
               >
                 <Icon size={18} aria-hidden="true" />
               </a>

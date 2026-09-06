@@ -8,7 +8,7 @@ function Toggle({ checked, onChange, label, description, disabled = false }) {
         <p className="font-medium text-ink">{label}</p>
 
         {description && (
-          <p className="mt-1 text-sm text-ink-muted">{description}</p>
+          <p className="mt-1 text-small text-ink-muted">{description}</p>
         )}
       </div>
 
@@ -19,12 +19,12 @@ function Toggle({ checked, onChange, label, description, disabled = false }) {
         aria-label={label}
         disabled={disabled}
         onClick={() => onChange(!checked)}
-        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition disabled:cursor-not-allowed disabled:opacity-60 ${
+        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-pill transition disabled:cursor-not-allowed disabled:opacity-60 ${
           checked ? "bg-cedar" : "bg-control-hover"
         }`}
       >
         <span
-          className={`inline-block h-5 w-5 transform rounded-full bg-paper-raised shadow transition ${
+          className={`inline-block h-5 w-5 transform rounded-pill bg-paper-raised shadow transition ${
             checked ? "translate-x-5" : "translate-x-1"
           }`}
         />

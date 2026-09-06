@@ -66,12 +66,12 @@ function StoreClosedOrdersPanel({ store, onStoreChange }) {
           }
         />
 
-        <div className="flex items-start gap-3 rounded-lg border border-warning-border bg-warning-subtle p-4">
+        <div className="flex items-start gap-3 rounded-control border border-warning-border bg-warning-subtle p-4">
           <AlertTriangle
             size={18}
             className="mt-0.5 shrink-0 text-warning-muted"
           />
-          <p className="text-sm text-warning">
+          <p className="text-small text-warning">
             {t("vendorStore.closedOrders.overrideNote")}
           </p>
         </div>

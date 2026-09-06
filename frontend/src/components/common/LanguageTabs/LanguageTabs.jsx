@@ -36,7 +36,7 @@ function LanguageTabs({ active, onSelect, filled = {} }) {
             role="tab"
             aria-selected={isActive}
             onClick={() => onSelect(lang)}
-            className={`-mb-px flex items-center gap-1.5 border-b-2 px-3 py-2 text-xs font-medium transition ${
+            className={`-mb-px flex items-center gap-1.5 border-b-2 px-3 py-2 text-micro font-medium transition ${
               isActive
                 ? "border-cedar-ring text-cedar"
                 : "border-transparent text-ink-muted hover:text-ink-body"
@@ -53,7 +53,7 @@ function LanguageTabs({ active, onSelect, filled = {} }) {
               </span>
             ) : (
               <span
-                className={`h-1.5 w-1.5 rounded-full ${
+                className={`h-1.5 w-1.5 rounded-pill ${
                   isFilled ? "bg-cedar-ring" : "bg-control-hover"
                 }`}
                 title={

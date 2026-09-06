@@ -238,7 +238,9 @@
       "title": "Achetez facilement et découvrez d'excellents produits",
       "description": "Découvrez des produits de différents magasins et profitez d'une expérience d'achat simple et pratique avec CedarLink.",
       "browseProducts": "Parcourir les produits",
-      "browseStores": "Parcourir les magasins"
+      "browseStores": "Parcourir les magasins",
+      "storeCount_one": "boutique locale sur CedarLink",
+      "storeCount_other": "boutiques locales sur CedarLink"
     },
     "categories": {
       "title": "Explorer les catégories"

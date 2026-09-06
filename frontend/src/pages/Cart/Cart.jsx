@@ -67,7 +67,7 @@ function Cart() {
     return (
       <div className="min-h-screen bg-paper px-6 py-10">
         <div className="mx-auto max-w-7xl">
-          <h1 className="text-3xl font-bold text-ink">
+          <h1 className="text-title font-bold text-ink">
             {t("cart.title")}
           </h1>
 
@@ -83,7 +83,7 @@ function Cart() {
     return (
       <div className="min-h-screen bg-paper px-6 py-10">
         <div className="mx-auto max-w-7xl">
-          <h1 className="text-3xl font-bold text-ink">
+          <h1 className="text-title font-bold text-ink">
             {t("cart.title")}
           </h1>
 
@@ -93,7 +93,7 @@ function Cart() {
 
           <button
             onClick={fetchCart}
-            className="mt-4 rounded-lg bg-cedar px-5 py-2 text-on-cedar hover:bg-cedar-strong"
+            className="mt-4 rounded-control bg-cedar px-5 py-2 text-on-cedar hover:bg-cedar-strong"
           >
             {t("cart.tryAgain")}
           </button>
@@ -112,12 +112,12 @@ function Cart() {
     return (
       <div className="min-h-screen bg-paper px-6 py-10">
         <div className="mx-auto max-w-7xl">
-          <h1 className="text-3xl font-bold text-ink">
+          <h1 className="text-title font-bold text-ink">
             {t("cart.title")}
           </h1>
 
-          <div className="mt-10 rounded-xl bg-paper-raised p-10 text-center shadow-sm">
-            <h2 className="text-xl font-semibold text-ink">
+          <div className="mt-10 rounded-card bg-paper-raised p-10 text-center shadow-card">
+            <h2 className="text-title font-semibold text-ink">
               {t("cart.emptyTitle")}
             </h2>
 
@@ -127,7 +127,7 @@ function Cart() {
 
             <Link
               to="/products"
-              className="mt-6 inline-block rounded-lg bg-cedar px-6 py-3 font-medium text-on-cedar transition hover:bg-cedar-strong"
+              className="mt-6 inline-block rounded-control bg-cedar px-6 py-3 font-medium text-on-cedar transition hover:bg-cedar-strong"
             >
               {t("cart.browseProducts")}
             </Link>
@@ -143,7 +143,7 @@ function Cart() {
 
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold text-ink">
+          <h1 className="text-title font-bold text-ink">
             {t("cart.title")}
           </h1>
 
@@ -153,7 +153,7 @@ function Cart() {
         </div>
 
         {error && (
-          <div className="mt-6 rounded-lg bg-danger-subtle px-4 py-3 text-danger-strong">
+          <div className="mt-6 rounded-control bg-danger-subtle px-4 py-3 text-danger-strong">
             {error}
           </div>
         )}
@@ -166,11 +166,11 @@ function Cart() {
             {stores.map((store) => (
               <div
                 key={store.store_id}
-                className="overflow-hidden rounded-xl bg-paper-raised shadow-sm"
+                className="overflow-hidden rounded-card bg-paper-raised shadow-card"
               >
                 {/* Store Header */}
                 <div className="border-b border-line px-6 py-4">
-                  <h2 className="text-lg font-semibold text-ink">
+                  <h2 className="text-body font-semibold text-ink">
                     {store.store_name ||
                       t("cart.storeHeading", { id: store.store_id })}
                   </h2>
@@ -199,7 +199,7 @@ function Cart() {
                           {localizedField(item, "product_name", i18n.language)}
                         </h3>
 
-                        <p className="mt-1 text-sm text-ink-muted">
+                        <p className="mt-1 text-small text-ink-muted">
                           {t("cart.priceEach", {
                             price: `$${Number(item.price).toFixed(2)}`,
                           })}
@@ -216,7 +216,7 @@ function Cart() {
                             )
                           }
                           disabled={item.quantity <= 1}
-                          className="flex h-9 w-9 items-center justify-center rounded-lg border border-line-strong transition hover:bg-paper-sunken disabled:cursor-not-allowed disabled:opacity-40"
+                          className="flex h-9 w-9 items-center justify-center rounded-control border border-line-strong transition hover:bg-paper-sunken disabled:cursor-not-allowed disabled:opacity-40"
                         >
                           <Minus size={16} />
                         </button>
@@ -232,7 +232,7 @@ function Cart() {
                               item.quantity + 1
                             )
                           }
-                          className="flex h-9 w-9 items-center justify-center rounded-lg border border-line-strong transition hover:bg-paper-sunken"
+                          className="flex h-9 w-9 items-center justify-center rounded-control border border-line-strong transition hover:bg-paper-sunken"
                         >
                           <Plus size={16} />
                         </button>
@@ -246,7 +246,7 @@ function Cart() {
                       {/* Remove */}
                       <button
                         onClick={() => removeItem(item.id)}
-                        className="flex h-9 w-9 items-center justify-center rounded-lg text-danger-accent transition hover:bg-danger-subtle"
+                        className="flex h-9 w-9 items-center justify-center rounded-control text-danger-accent transition hover:bg-danger-subtle"
                         title={t("cart.removeItem")}
                       >
                         <Trash2 size={18} />
@@ -270,8 +270,8 @@ function Cart() {
           </div>
 
           {/* Order Summary */}
-          <div className="h-fit rounded-xl bg-paper-raised p-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-ink">
+          <div className="h-fit rounded-card bg-paper-raised p-6 shadow-card">
+            <h2 className="text-title font-semibold text-ink">
               {t("cart.orderSummary")}
             </h2>
 
@@ -285,10 +285,10 @@ function Cart() {
               </div>
 
               {Number(cart.discount) > 0 && (
-                <div className="flex justify-between text-cedar">
+                <div className="flex justify-between text-copper-strong">
                   <span>
                     {t("cart.discount")}{" "}
-                    <span dir="ltr" className="font-mono text-xs">
+                    <span dir="ltr" className="font-mono text-micro">
                       {cart.coupon_code}
                     </span>
                   </span>
@@ -310,11 +310,11 @@ function Cart() {
 
               <div className="border-t border-line pt-4">
                 <div className="flex justify-between">
-                  <span className="text-lg font-semibold text-ink">
+                  <span className="text-body font-semibold text-ink">
                     {t("cart.total")}
                   </span>
 
-                  <span dir="ltr" className="text-lg font-bold text-cedar">
+                  <span dir="ltr" className="text-body font-bold text-cedar">
                     ${(
                       Number(cart.total) - Number(cart.discount || 0)
                     ).toFixed(2)}
@@ -324,14 +324,14 @@ function Cart() {
 
               <Link
                 to="/checkout"
-                className="mt-4 block w-full rounded-lg bg-cedar px-5 py-3 text-center font-medium text-on-cedar transition hover:bg-cedar-strong"
+                className="mt-4 block w-full rounded-control bg-cedar px-5 py-3 text-center font-medium text-on-cedar transition hover:bg-cedar-strong"
               >
                 {t("cart.proceedToCheckout")}
               </Link>
 
               <Link
                 to="/products"
-                className="block text-center text-sm font-medium text-cedar hover:underline"
+                className="block text-center text-small font-medium text-cedar hover:underline"
               >
                 {t("cart.continueShopping")}
               </Link>

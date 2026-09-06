@@ -36,11 +36,11 @@ function Theme() {
         <BackLink to="/settings">{t("backLink.settings")}</BackLink>
 
         <div className="mt-6">
-          <h1 className="text-3xl font-bold text-ink">{t("theme.title")}</h1>
+          <h1 className="text-title font-bold text-ink">{t("theme.title")}</h1>
           <p className="mt-1 text-ink-secondary">{t("theme.subtitle")}</p>
         </div>
 
-        <section className="mt-8 rounded-2xl border border-line bg-paper-raised p-6 shadow-sm">
+        <section className="mt-8 rounded-card border border-line bg-paper-raised p-6 shadow-card">
           <div className="space-y-3">
             {OPTIONS.map(({ id, Icon }) => {
               const isSelected = theme === id;
@@ -52,7 +52,7 @@ function Theme() {
                   disabled={saving}
                   onClick={() => choose(id)}
                   aria-pressed={isSelected}
-                  className={`flex w-full cursor-pointer items-center justify-between rounded-xl border p-4 text-start transition disabled:cursor-not-allowed ${
+                  className={`flex w-full cursor-pointer items-center justify-between rounded-card border p-4 text-start transition disabled:cursor-not-allowed ${
                     isSelected
                       ? "border-cedar-ring bg-cedar-subtle"
                       : "border-line hover:bg-paper"
@@ -66,7 +66,7 @@ function Theme() {
                         {t(`theme.option.${id}`)}
                       </p>
 
-                      <p className="mt-1 text-sm text-ink-muted">
+                      <p className="mt-1 text-small text-ink-muted">
                         {id === "system"
                           ? t("theme.systemNow", {
                               current: systemIsDark
@@ -79,7 +79,7 @@ function Theme() {
                   </div>
 
                   {isSelected && (
-                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-cedar text-on-cedar">
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-pill bg-cedar text-on-cedar">
                       <Check size={17} />
                     </div>
                   )}
@@ -88,7 +88,7 @@ function Theme() {
             })}
           </div>
 
-          <p className="mt-6 border-t border-line-subtle pt-6 text-sm text-ink-muted">
+          <p className="mt-6 border-t border-line-subtle pt-6 text-small text-ink-muted">
             {t("theme.showing", { current: t(`theme.option.${resolved}`) })}
           </p>
         </section>

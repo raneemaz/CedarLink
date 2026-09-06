@@ -81,31 +81,31 @@ function AddPaymentMethod() {
           {t("backLink.savedCards")}
         </BackLink>
 
-        <h1 className="text-3xl font-bold text-ink">{t("paymentMethods.formAddTitle")}</h1>
+        <h1 className="text-title font-bold text-ink">{t("paymentMethods.formAddTitle")}</h1>
 
-        <p className="mt-2 text-sm text-ink-secondary">
+        <p className="mt-2 text-small text-ink-secondary">
           {t("paymentMethods.formAddSubtitle")}
         </p>
 
         <form
           onSubmit={handleSubmit}
-          className="mt-6 rounded-xl bg-paper-raised p-6 shadow-sm"
+          className="mt-6 rounded-card bg-paper-raised p-6 shadow-card"
         >
-          <div className="mb-6 flex items-center gap-4 rounded-xl border border-cedar-ring bg-cedar-subtle p-4">
-            <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-paper-raised text-cedar">
+          <div className="mb-6 flex items-center gap-4 rounded-card border border-cedar-ring bg-cedar-subtle p-4">
+            <div className="flex h-11 w-11 items-center justify-center rounded-control bg-paper-raised text-cedar">
               <CreditCard size={22} />
             </div>
 
             <div>
               <p className="font-semibold text-ink">{t("paymentMethods.cardBadge")}</p>
-              <p className="text-xs text-ink-muted">
+              <p className="text-micro text-ink-muted">
                 {t("paymentMethods.cardBadgeDesc")}
               </p>
             </div>
           </div>
 
           <div className="space-y-6">
-            <p className="rounded-lg bg-paper px-4 py-3 text-sm text-ink-secondary">
+            <p className="rounded-control bg-paper px-4 py-3 text-small text-ink-secondary">
               {t("paymentMethods.noNumberNotice")}
             </p>
 
@@ -113,7 +113,7 @@ function AddPaymentMethod() {
               <div>
                 <label
                   htmlFor="brand"
-                  className="mb-2 block text-sm font-medium text-ink-body"
+                  className="mb-2 block text-small font-medium text-ink-body"
                 >
                   {t("paymentMethods.brand")}
                 </label>
@@ -127,7 +127,7 @@ function AddPaymentMethod() {
                       brand: event.target.value,
                     }))
                   }
-                  className="w-full rounded-lg border border-line-strong px-4 py-3 outline-none focus:border-cedar-ring focus:ring-2 focus:ring-cedar-tint"
+                  className="w-full rounded-control border border-line-strong px-4 py-3 outline-none focus:border-cedar-ring focus:ring-2 focus:ring-cedar-tint"
                 >
                   <option value="">{t("paymentMethods.brandNone")}</option>
                   <option value="Visa">Visa</option>
@@ -139,7 +139,7 @@ function AddPaymentMethod() {
               <div>
                 <label
                   htmlFor="last4"
-                  className="mb-2 block text-sm font-medium text-ink-body"
+                  className="mb-2 block text-small font-medium text-ink-body"
                 >
                   {t("paymentMethods.lastFour")}
                 </label>
@@ -163,14 +163,14 @@ function AddPaymentMethod() {
                   }
                   placeholder="4242"
                   required
-                  className="w-full rounded-lg border border-line-strong px-4 py-3 outline-none focus:border-cedar-ring focus:ring-2 focus:ring-cedar-tint"
+                  className="w-full rounded-control border border-line-strong px-4 py-3 outline-none focus:border-cedar-ring focus:ring-2 focus:ring-cedar-tint"
                 />
               </div>
 
               <div>
                 <label
                   htmlFor="expMonth"
-                  className="mb-2 block text-sm font-medium text-ink-body"
+                  className="mb-2 block text-small font-medium text-ink-body"
                 >
                   {t("paymentMethods.expiryMonth")}
                 </label>
@@ -185,7 +185,7 @@ function AddPaymentMethod() {
                     }))
                   }
                   required
-                  className="w-full rounded-lg border border-line-strong px-4 py-3 outline-none focus:border-cedar-ring focus:ring-2 focus:ring-cedar-tint"
+                  className="w-full rounded-control border border-line-strong px-4 py-3 outline-none focus:border-cedar-ring focus:ring-2 focus:ring-cedar-tint"
                 >
                   <option value="">--</option>
                   {months.map((month) => (
@@ -199,7 +199,7 @@ function AddPaymentMethod() {
               <div>
                 <label
                   htmlFor="expYear"
-                  className="mb-2 block text-sm font-medium text-ink-body"
+                  className="mb-2 block text-small font-medium text-ink-body"
                 >
                   {t("paymentMethods.expiryYear")}
                 </label>
@@ -214,7 +214,7 @@ function AddPaymentMethod() {
                     }))
                   }
                   required
-                  className="w-full rounded-lg border border-line-strong px-4 py-3 outline-none focus:border-cedar-ring focus:ring-2 focus:ring-cedar-tint"
+                  className="w-full rounded-control border border-line-strong px-4 py-3 outline-none focus:border-cedar-ring focus:ring-2 focus:ring-cedar-tint"
                 >
                   <option value="">----</option>
                   {years.map((year) => (
@@ -229,7 +229,7 @@ function AddPaymentMethod() {
             <div>
               <label
                 htmlFor="cardholderName"
-                className="mb-2 block text-sm font-medium text-ink-body"
+                className="mb-2 block text-small font-medium text-ink-body"
               >
                 {t("paymentMethods.cardholderName")}
               </label>
@@ -247,11 +247,11 @@ function AddPaymentMethod() {
                 }
                 placeholder={t("paymentMethods.cardholderNamePlaceholder")}
                 required
-                className="w-full rounded-lg border border-line-strong px-4 py-3 outline-none focus:border-cedar-ring focus:ring-2 focus:ring-cedar-tint"
+                className="w-full rounded-control border border-line-strong px-4 py-3 outline-none focus:border-cedar-ring focus:ring-2 focus:ring-cedar-tint"
               />
             </div>
 
-            <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-line p-4">
+            <label className="flex cursor-pointer items-start gap-3 rounded-control border border-line p-4">
               <input
                 type="checkbox"
                 checked={formData.is_default}
@@ -265,10 +265,10 @@ function AddPaymentMethod() {
               />
 
               <span>
-                <span className="block text-sm font-medium text-ink-emphasis">
+                <span className="block text-small font-medium text-ink-emphasis">
                   {t("paymentMethods.setDefaultCard")}
                 </span>
-                <span className="mt-1 block text-xs text-ink-secondary">
+                <span className="mt-1 block text-micro text-ink-secondary">
                   {t("paymentMethods.setDefaultCardDesc")}
                 </span>
               </span>
@@ -279,7 +279,7 @@ function AddPaymentMethod() {
                 type="button"
                 onClick={() => navigate("/settings/payment-methods")}
                 disabled={saving}
-                className="rounded-lg border border-line-strong px-5 py-3 text-sm font-medium text-ink-body hover:bg-paper disabled:opacity-50"
+                className="rounded-control border border-line-strong px-5 py-3 text-small font-medium text-ink-body hover:bg-paper disabled:opacity-50"
               >
                 {t("paymentMethods.cancel")}
               </button>
@@ -287,7 +287,7 @@ function AddPaymentMethod() {
               <button
                 type="submit"
                 disabled={saving}
-                className="cursor-pointer rounded-lg bg-cedar px-5 py-3 text-sm font-semibold text-on-cedar hover:bg-cedar-strong disabled:opacity-50"
+                className="cursor-pointer rounded-control bg-cedar px-5 py-3 text-small font-semibold text-on-cedar hover:bg-cedar-strong disabled:opacity-50"
               >
                 {saving ? t("common.working") : t("paymentMethods.saveAdd")}
               </button>

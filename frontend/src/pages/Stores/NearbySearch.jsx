@@ -95,24 +95,24 @@ function NearbySearch({
   };
 
   return (
-    <div className="mb-4 rounded-xl bg-paper-raised p-3 shadow-sm">
+    <div className="mb-4 rounded-card bg-paper-raised p-3 shadow-card">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
         <button
           type="button"
           onClick={nearMe}
           disabled={geoBusy}
-          className="inline-flex items-center gap-1.5 rounded-md border border-line-strong px-3 py-2 text-sm font-medium text-ink-body hover:bg-paper disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 rounded-control border border-line-strong px-3 py-2 text-small font-medium text-ink-body hover:bg-paper disabled:cursor-not-allowed disabled:opacity-50"
         >
           <LocateFixed className="h-4 w-4" />
           {geoBusy ? t("nearbySearch.locating") : t("nearbySearch.nearMe")}
         </button>
 
-        <span className="text-sm text-ink-faint">{t("nearbySearch.or")}</span>
+        <span className="text-small text-ink-faint">{t("nearbySearch.or")}</span>
 
         <select
           value={placeKey}
           onChange={(e) => pickPlace(e.target.value)}
-          className="rounded-md border border-line-strong px-3 py-2 text-sm outline-none focus:border-cedar-ring"
+          className="rounded-control border border-line-strong px-3 py-2 text-small outline-none focus:border-cedar-ring"
         >
           <option value="">{t("nearbySearch.pickPlace")}</option>
           {LEBANON_PLACES.map((place) => (
@@ -123,7 +123,7 @@ function NearbySearch({
         </select>
 
         <div className="flex items-center gap-1.5">
-          <span className="text-sm text-ink-muted">
+          <span className="text-small text-ink-muted">
             {t("nearbySearch.radius")}
           </span>
           {RADII.map((km) => (
@@ -132,7 +132,7 @@ function NearbySearch({
               type="button"
               onClick={() => onRadiusChange(km)}
               aria-pressed={radiusKm === km}
-              className={`rounded-md px-2.5 py-1.5 text-sm font-medium transition ${
+              className={`rounded-control px-2.5 py-1.5 text-small font-medium transition ${
                 radiusKm === km
                   ? "bg-cedar text-on-cedar"
                   : "bg-paper-sunken text-ink-secondary hover:bg-control"
@@ -147,7 +147,7 @@ function NearbySearch({
           <button
             type="button"
             onClick={clear}
-            className="inline-flex items-center gap-1 rounded-md px-2 py-1.5 text-sm font-medium text-cedar hover:underline"
+            className="inline-flex items-center gap-1 rounded-control px-2 py-1.5 text-small font-medium text-cedar hover:underline"
           >
             <X className="h-4 w-4" />
             {t("nearbySearch.showAll")}
@@ -157,7 +157,7 @@ function NearbySearch({
 
       {pinned.length > 0 && (
         <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-2">
-          <span className="text-sm text-ink-muted">
+          <span className="text-small text-ink-muted">
             {t("nearbySearch.savedAddresses")}
           </span>
           {pinned.map((address) => (
@@ -166,7 +166,7 @@ function NearbySearch({
               type="button"
               onClick={() => pickAddress(address)}
               aria-pressed={addressId === address.id}
-              className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium transition ${
+              className={`inline-flex items-center gap-1.5 rounded-control px-2.5 py-1.5 text-small font-medium transition ${
                 addressId === address.id
                   ? "bg-cedar text-on-cedar"
                   : "bg-paper-sunken text-ink-secondary hover:bg-control"
@@ -180,13 +180,13 @@ function NearbySearch({
       )}
 
       {center && (
-        <p className="mt-2 text-sm text-ink-secondary">
+        <p className="mt-2 text-small text-ink-secondary">
           {t("nearbySearch.centeredOn", { place: center.label })}
         </p>
       )}
 
       {geoErrorKey && (
-        <p className="mt-2 text-sm text-danger">
+        <p className="mt-2 text-small text-danger">
           {t(geoErrorKey)} {t("nearbySearch.useThePicker")}
         </p>
       )}

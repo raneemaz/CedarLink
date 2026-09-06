@@ -10,15 +10,15 @@ function StoreStatusBadge({ store, className = "" }) {
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+      className={`inline-flex items-center gap-1.5 rounded-pill px-3.5 py-1.5 text-micro font-bold ${
         open
-          ? "bg-success-subtle text-success-strong"
-          : "bg-danger-tint text-danger-strong"
+          ? "bg-cedar-tint text-cedar-strong"
+          : "bg-paper-sunken text-ink-muted"
       } ${className}`}
     >
       <span
-        className={`h-1.5 w-1.5 rounded-full ${
-          open ? "bg-cedar-ring" : "bg-danger-accent"
+        className={`h-1.5 w-1.5 rounded-pill ${
+          open ? "bg-cedar-ring" : "bg-ink-faint"
         }`}
       />
       {open ? t("storeOpenBadge.open") : t("storeOpenBadge.closed")}

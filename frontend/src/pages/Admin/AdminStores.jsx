@@ -117,14 +117,14 @@ function AdminStores() {
   };
 
   if (loading) {
-    return <p className="text-sm text-ink-muted">{t("adminStores.loading")}</p>;
+    return <p className="text-small text-ink-muted">{t("adminStores.loading")}</p>;
   }
 
   const dialogConfig = action ? DIALOG[action.type] : null;
 
   return (
     <div>
-      <h1 className="mb-6 text-3xl font-bold text-ink">{t("adminStores.title")}</h1>
+      <h1 className="mb-6 text-title font-bold text-ink">{t("adminStores.title")}</h1>
 
       <div className="mb-4 flex gap-2">
         {[
@@ -138,10 +138,10 @@ function AdminStores() {
             key={key}
             type="button"
             onClick={() => setFilter(key)}
-            className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
+            className={`rounded-pill px-4 py-1.5 text-small font-medium transition ${
               filter === key
                 ? "bg-cedar text-on-cedar"
-                : "bg-paper-raised text-ink-secondary shadow-sm hover:bg-paper"
+                : "bg-paper-raised text-ink-secondary shadow-card hover:bg-paper"
             }`}
           >
             {label}
@@ -149,10 +149,10 @@ function AdminStores() {
         ))}
       </div>
 
-      <div className="overflow-x-auto rounded-2xl bg-paper-raised shadow-sm">
-        <table className="min-w-full text-sm">
+      <div className="overflow-x-auto rounded-card bg-paper-raised shadow-card">
+        <table className="min-w-full text-small">
           <thead>
-            <tr className="border-b border-line-subtle text-start text-xs uppercase tracking-wide text-ink-faint">
+            <tr className="border-b border-line-subtle text-start text-micro uppercase tracking-wide text-ink-faint">
               <th className="px-4 py-3 font-medium">{t("adminStores.colStore")}</th>
               <th className="px-4 py-3 font-medium">{t("adminStores.colOwner")}</th>
               <th className="px-4 py-3 font-medium">{t("adminStores.colProducts")}</th>
@@ -167,7 +167,7 @@ function AdminStores() {
                   <p className="font-medium text-ink">{store.name}</p>
                   <p className="text-ink-muted">{store.location || "—"}</p>
                   {store.approval_note && (
-                    <p className="mt-1 text-xs text-ink-faint">
+                    <p className="mt-1 text-micro text-ink-faint">
                       {t("adminStores.notePrefix", { note: store.approval_note })}
                     </p>
                   )}
@@ -181,7 +181,7 @@ function AdminStores() {
                 </td>
                 <td className="px-4 py-3">
                   <span
-                    className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
+                    className={`rounded-pill px-2.5 py-1 text-micro font-semibold ${
                       STATUS_BADGE[store.status] || STATUS_BADGE.active
                     }`}
                   >
@@ -191,7 +191,7 @@ function AdminStores() {
                 <td className="px-4 py-3">
                   <div className="flex justify-end gap-4">
                     {store.status === "removed" ? (
-                      <span className="text-xs text-ink-faint">—</span>
+                      <span className="text-micro text-ink-faint">—</span>
                     ) : (
                       <>
                         {(store.status === "pending" ||
@@ -246,14 +246,14 @@ function AdminStores() {
       >
         {action && action.type !== "remove" && (
           <div>
-            <label className="mb-1 block text-xs font-medium text-ink-secondary">
+            <label className="mb-1 block text-micro font-medium text-ink-secondary">
               {t("adminStores.noteLabel")}
             </label>
             <textarea
               value={note}
               onChange={(event) => setNote(event.target.value)}
               rows="2"
-              className="w-full resize-none rounded-lg border border-line-strong px-3 py-2 text-sm outline-none focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring"
+              className="w-full resize-none rounded-control border border-line-strong px-3 py-2 text-small outline-none focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring"
             />
           </div>
         )}

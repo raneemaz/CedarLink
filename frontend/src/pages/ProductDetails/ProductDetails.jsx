@@ -100,8 +100,8 @@ function ProductDetails() {
         <div className="mx-auto max-w-6xl">
           <BackLink to="/products">{t("backLink.products")}</BackLink>
 
-          <div className="mt-8 rounded-xl bg-paper-raised p-12 text-center shadow-sm">
-            <h1 className="text-xl font-semibold text-ink">{error}</h1>
+          <div className="mt-8 rounded-card bg-paper-raised p-12 text-center shadow-card">
+            <h1 className="text-title font-semibold text-ink">{error}</h1>
           </div>
         </div>
       </div>
@@ -125,11 +125,11 @@ function ProductDetails() {
         <BackLink to="/products">{t("backLink.products")}</BackLink>
 
         {/* Product */}
-        <div className="mt-6 grid overflow-hidden rounded-xl border border-line bg-paper-raised md:grid-cols-2">
+        <div className="mt-6 grid overflow-hidden rounded-card border border-line bg-paper-raised md:grid-cols-2">
           {/* Image */}
           {images.length > 0 ? (
             <div className="flex flex-col gap-3 bg-paper-sunken p-4">
-              <div className="flex min-h-[360px] flex-1 items-center justify-center overflow-hidden rounded-lg bg-paper-raised">
+              <div className="flex min-h-[360px] flex-1 items-center justify-center overflow-hidden rounded-control bg-paper-raised">
                 <img
                   src={images[activeImage]}
                   alt={name}
@@ -144,7 +144,7 @@ function ProductDetails() {
                       key={src}
                       type="button"
                       onClick={() => setActiveImage(index)}
-                      className={`h-16 w-16 shrink-0 overflow-hidden rounded-md border-2 transition ${
+                      className={`h-16 w-16 shrink-0 overflow-hidden rounded-control border-2 transition ${
                         index === activeImage
                           ? "border-cedar-ring"
                           : "border-transparent hover:border-line-strong"
@@ -163,23 +163,23 @@ function ProductDetails() {
           ) : (
             <div className="flex min-h-[400px] items-center justify-center bg-paper-sunken">
               <div className="text-center text-ink-faint">
-                <p className="mt-3 text-sm">{t("productDetails.noImage")}</p>
+                <p className="mt-3 text-small">{t("productDetails.noImage")}</p>
               </div>
             </div>
           )}
 
           {/* Information */}
           <div className="p-8 lg:p-10">
-            <p className="text-sm font-medium text-cedar">{t("productDetails.eyebrow")}</p>
+            <p className="text-small font-medium text-cedar">{t("productDetails.eyebrow")}</p>
 
-            <h1 className="mt-2 text-3xl font-bold text-ink">
+            <h1 className="mt-2 text-title font-bold text-ink">
               {name}
             </h1>
 
             <Price
               amount={product.price}
-              className="mt-5 text-2xl font-bold text-cedar"
-              approxClassName="text-sm"
+              className="mt-5 text-title font-bold text-cedar"
+              approxClassName="text-small"
             />
 
             <RatingSummary
@@ -189,7 +189,7 @@ function ProductDetails() {
             />
 
             <div className="mt-6 border-t border-line-subtle pt-6">
-              <h2 className="text-sm font-semibold text-ink">
+              <h2 className="text-small font-semibold text-ink">
                 {t("productDetails.description")}
               </h2>
 
@@ -200,11 +200,11 @@ function ProductDetails() {
 
             <div className="mt-6 grid grid-cols-2 gap-4">
               {/* Availability */}
-              <div className="flex items-center justify-between rounded-lg bg-paper px-4 py-3">
-                <span className="text-sm text-ink-secondary">{t("productDetails.availability")}</span>
+              <div className="flex items-center justify-between rounded-control bg-paper px-4 py-3">
+                <span className="text-small text-ink-secondary">{t("productDetails.availability")}</span>
 
                 <span
-                  className={`text-sm font-semibold ${
+                  className={`text-small font-semibold ${
                     product.stock > 0 ? "text-cedar" : "text-danger"
                   }`}
                 >
@@ -215,10 +215,10 @@ function ProductDetails() {
               </div>
 
               {/* Quantity */}
-              <div className="flex items-center justify-between rounded-lg bg-paper px-4 py-3">
-                <span className="text-sm text-ink-secondary">{t("productDetails.quantity")}</span>
+              <div className="flex items-center justify-between rounded-control bg-paper px-4 py-3">
+                <span className="text-small text-ink-secondary">{t("productDetails.quantity")}</span>
 
-                <div className="flex h-8 items-center overflow-hidden rounded-md border border-line-strong bg-paper-raised">
+                <div className="flex h-8 items-center overflow-hidden rounded-control border border-line-strong bg-paper-raised">
                   <button
                     type="button"
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
@@ -240,7 +240,7 @@ function ProductDetails() {
                         setQuantity(value);
                       }
                     }}
-                    className="h-8 w-10 border-x border-line-strong bg-paper-raised text-center text-sm font-medium outline-none
+                    className="h-8 w-10 border-x border-line-strong bg-paper-raised text-center text-small font-medium outline-none
                         [appearance:textfield]
                         [&::-webkit-inner-spin-button]:appearance-none
                         [&::-webkit-outer-spin-button]:appearance-none"                  />
@@ -275,25 +275,25 @@ function ProductDetails() {
                   addingToCart ||
                   product.store_accepts_orders === false
                 }
-                className="flex-1 cursor-pointer rounded-md bg-cedar px-5 py-3 text-sm font-semibold text-on-cedar transition hover:bg-cedar-strong disabled:cursor-not-allowed disabled:bg-control-hover"
+                className="flex-1 cursor-pointer rounded-control bg-cedar px-5 py-3 text-small font-semibold text-on-cedar transition hover:bg-cedar-strong disabled:cursor-not-allowed disabled:bg-control-hover"
               >
                 {addingToCart ? t("productDetails.adding") : t("productDetails.addToCart")}
               </button>
 
-              <button className="rounded-md cursor-pointer border border-line-strong px-5 py-3 text-sm font-medium text-ink-body transition hover:border-cedar hover:text-cedar">
+              <button className="rounded-control cursor-pointer border border-line-strong px-5 py-3 text-small font-medium text-ink-body transition hover:border-cedar hover:text-cedar">
                 ♡
               </button>
             </div>
             {cartMessage && (
-              <p className="mt-3 text-sm text-cedar">{cartMessage}</p>
+              <p className="mt-3 text-small text-cedar">{cartMessage}</p>
             )}
           </div>
         </div>
 
         {/* Reviews */}
-        <section className="mt-10 rounded-xl border border-line bg-paper-raised p-6">
+        <section className="mt-10 rounded-card border border-line bg-paper-raised p-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-xl font-bold text-ink">
+            <h2 className="text-title font-bold text-ink">
               {t("reviews.heading")}
             </h2>
             <RatingSummary

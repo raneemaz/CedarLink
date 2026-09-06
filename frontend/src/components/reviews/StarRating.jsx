@@ -24,13 +24,13 @@ function StarRating({ value = 0, size = "sm", className = "" }) {
       className={`relative inline-flex shrink-0 ${className}`}
       style={{ width: px * 5 }}
     >
-      <span className="flex text-ink-disabled" aria-hidden="true">
+      <span className="flex text-rating-empty" aria-hidden="true">
         {STARS.map((i) => (
           <Star key={i} size={px} strokeWidth={1.5} className="shrink-0" />
         ))}
       </span>
       <span
-        className="absolute inset-y-0 left-0 flex overflow-hidden text-rating"
+        className="absolute inset-y-0 start-0 flex overflow-hidden text-rating"
         style={{ width: `${fillPct}%` }}
         aria-hidden="true"
       >

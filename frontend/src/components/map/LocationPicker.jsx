@@ -134,7 +134,7 @@ function LocationPicker({
           type="button"
           onClick={useMyLocation}
           disabled={disabled || locating}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-line-strong px-3 py-1.5 text-sm font-medium text-ink-body hover:bg-paper disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 rounded-control border border-line-strong px-3 py-1.5 text-small font-medium text-ink-body hover:bg-paper disabled:cursor-not-allowed disabled:opacity-50"
         >
           <LocateFixed className="h-4 w-4" />
           {locating
@@ -147,7 +147,7 @@ function LocationPicker({
             type="button"
             onClick={clear}
             disabled={disabled}
-            className="inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-sm font-medium text-danger hover:bg-danger-subtle disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center gap-1 rounded-control px-2 py-1.5 text-small font-medium text-danger hover:bg-danger-subtle disabled:cursor-not-allowed disabled:opacity-50"
           >
             <X className="h-4 w-4" />
             {t("locationPicker.clear")}
@@ -156,7 +156,7 @@ function LocationPicker({
       </div>
 
       {geoError && (
-        <p className="mt-2 text-sm text-danger">
+        <p className="mt-2 text-small text-danger">
           {geoError} {t("locationPicker.dragInstead")}
         </p>
       )}
@@ -165,10 +165,10 @@ function LocationPicker({
       <div
         ref={containerRef}
         dir="ltr"
-        className="mt-3 h-64 w-full overflow-hidden rounded-xl border border-line bg-paper-sunken"
+        className="mt-3 h-64 w-full overflow-hidden rounded-card border border-line bg-paper-sunken"
       />
 
-      <p className="mt-2 text-xs text-ink-muted">
+      <p className="mt-2 text-micro text-ink-muted">
         {hasCoords ? (
           <span dir="ltr">
             {t("locationPicker.coords", {

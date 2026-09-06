@@ -115,7 +115,7 @@ function RegisterVerify() {
   return (
     <div className="min-h-screen bg-paper-sunken flex items-center justify-center px-4 py-10">
       <Card className="w-full max-w-lg">
-        <h1 className="text-3xl font-bold text-center text-cedar">
+        <h1 className="text-title font-bold text-center text-cedar">
           {t("registerVerify.title")}
         </h1>
 

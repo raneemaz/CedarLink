@@ -125,16 +125,16 @@ function NotificationPreferences() {
           </BackLink>
 
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-cedar-subtle text-cedar">
+            <div className="flex h-12 w-12 items-center justify-center rounded-card bg-cedar-subtle text-cedar">
               <Bell size={24} />
             </div>
 
             <div>
-              <h1 className="text-3xl font-bold text-ink">
+              <h1 className="text-title font-bold text-ink">
                 {t("notifications.title")}
               </h1>
 
-              <p className="mt-1 text-sm text-ink-secondary">
+              <p className="mt-1 text-small text-ink-secondary">
                 {t("notifications.subtitle")}
               </p>
             </div>
@@ -142,19 +142,19 @@ function NotificationPreferences() {
         </div>
 
         {loading ? (
-          <p className="text-sm text-ink-muted">
+          <p className="text-small text-ink-muted">
             {t("notifications.loading")}
           </p>
         ) : (
           <div className="space-y-6">
             {/* What to notify me about */}
-            <section className="overflow-hidden rounded-2xl bg-paper-raised shadow-sm">
+            <section className="overflow-hidden rounded-card bg-paper-raised shadow-card">
               <div className="border-b border-line-subtle px-6 py-5">
-                <h2 className="text-xl font-semibold text-ink">
+                <h2 className="text-title font-semibold text-ink">
                   {t("notifications.whatSection")}
                 </h2>
 
-                <p className="mt-1 text-sm text-ink-muted">
+                <p className="mt-1 text-small text-ink-muted">
                   {t("notifications.whatSectionDesc")}
                 </p>
               </div>
@@ -173,13 +173,13 @@ function NotificationPreferences() {
             </section>
 
             {/* How to reach me */}
-            <section className="overflow-hidden rounded-2xl bg-paper-raised shadow-sm">
+            <section className="overflow-hidden rounded-card bg-paper-raised shadow-card">
               <div className="border-b border-line-subtle px-6 py-5">
-                <h2 className="text-xl font-semibold text-ink">
+                <h2 className="text-title font-semibold text-ink">
                   {t("notifications.howSection")}
                 </h2>
 
-                <p className="mt-1 text-sm text-ink-muted">
+                <p className="mt-1 text-small text-ink-muted">
                   {t("notifications.howSectionDesc")}
                 </p>
               </div>
@@ -202,7 +202,7 @@ function NotificationPreferences() {
                 type="button"
                 onClick={handleSave}
                 disabled={saving}
-                className="cursor-pointer rounded-lg bg-cedar px-6 py-3 text-sm font-semibold text-on-cedar transition hover:bg-cedar-strong disabled:cursor-not-allowed disabled:opacity-60"
+                className="cursor-pointer rounded-control bg-cedar px-6 py-3 text-small font-semibold text-on-cedar transition hover:bg-cedar-strong disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {saving
                   ? t("notifications.saving")

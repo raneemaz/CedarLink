@@ -83,7 +83,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-line bg-paper-raised shadow-sm">
+    <nav className="sticky top-0 z-50 border-b border-line bg-paper-raised shadow-card">
       <div className="mx-auto flex h-20 max-w-screen-2xl items-center justify-between px-4 lg:px-8">
         {/* Logo */}
         <div className="mb-1 flex items-center justify-center gap-2">
@@ -93,13 +93,13 @@ const Navbar = () => {
             className="h-10 w-auto object-contain"
           />
 
-          <Link to="/" className="text-xl font-bold text-cedar">
+          <Link to="/" className="text-title font-bold text-cedar">
             CedarLink
           </Link>
         </div>
 
         {/* Navigation */}
-        <div className="hidden items-center gap-8 text-sm font-medium lg:flex">
+        <div className="hidden items-center gap-8 text-small font-medium lg:flex">
           <NavLink
             to="/"
             className={({ isActive }) =>
@@ -142,7 +142,7 @@ const Navbar = () => {
           onSubmit={handleSearchSubmit}
           className="mx-8 hidden w-full max-w-md xl:flex"
         >
-          <div className="flex w-full items-center rounded-full border border-line-strong bg-paper px-4">
+          <div className="flex w-full items-center rounded-pill border border-line-strong bg-paper px-4">
             <Search size={18} className="text-ink-faint" />
 
             <input
@@ -164,7 +164,7 @@ const Navbar = () => {
           >
             <ShoppingCart size={24} />
 
-            <span className="absolute -end-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-cedar text-xs text-on-cedar">
+            <span className="absolute -end-2 -top-2 flex h-5 w-5 items-center justify-center rounded-pill bg-cedar text-micro text-on-cedar">
               {cartCount}
             </span>
           </Link>
@@ -173,14 +173,14 @@ const Navbar = () => {
             <div className="hidden items-center gap-3 lg:flex">
               <Link
                 to="/login"
-                className="rounded-lg border border-cedar px-4 py-2 font-medium text-cedar transition hover:bg-cedar-subtle"
+                className="rounded-control border border-cedar px-4 py-2 font-medium text-cedar transition hover:bg-cedar-subtle"
               >
                 {t("navbar.login")}
               </Link>
 
               <Link
                 to="/register"
-                className="rounded-lg bg-cedar px-4 py-2 font-medium text-on-cedar transition hover:bg-cedar-strong"
+                className="rounded-control bg-cedar px-4 py-2 font-medium text-on-cedar transition hover:bg-cedar-strong"
               >
                 {t("navbar.register")}
               </Link>
@@ -193,7 +193,7 @@ const Navbar = () => {
               <div className="group relative hidden lg:block">
                 <button
                   type="button"
-                  className="flex items-center gap-2 rounded-lg px-3 py-2 transition hover:bg-paper-sunken"
+                  className="flex items-center gap-2 rounded-control px-3 py-2 transition hover:bg-paper-sunken"
                 >
                   <User size={20} />
 
@@ -205,12 +205,12 @@ const Navbar = () => {
                 </button>
 
                 {/* Profile Dropdown */}
-                <div className="absolute end-0 top-full mt-1 hidden w-48 overflow-hidden rounded-lg border border-line bg-paper-raised shadow-lg group-hover:block">
+                <div className="absolute end-0 top-full mt-1 hidden w-48 overflow-hidden rounded-control border border-line bg-paper-raised shadow-lift group-hover:block">
                   {roleLinks.map((link) => (
                     <Link
                       key={link.to}
                       to={link.to}
-                      className="block cursor-pointer px-4 py-3 text-sm font-medium text-cedar transition hover:bg-paper-sunken"
+                      className="block cursor-pointer px-4 py-3 text-small font-medium text-cedar transition hover:bg-paper-sunken"
                     >
                       {link.label}
                     </Link>
@@ -218,14 +218,14 @@ const Navbar = () => {
 
                   <Link
                     to="/profile"
-                    className="block cursor-pointer px-4 py-3 text-sm text-ink-body transition hover:bg-paper-sunken hover:text-cedar"
+                    className="block cursor-pointer px-4 py-3 text-small text-ink-body transition hover:bg-paper-sunken hover:text-cedar"
                   >
                     {t("navbar.myProfile")}
                   </Link>
 
                   <Link
                     to="/settings"
-                    className="block cursor-pointer px-4 py-3 text-sm text-ink-body transition hover:bg-paper-sunken hover:text-cedar"
+                    className="block cursor-pointer px-4 py-3 text-small text-ink-body transition hover:bg-paper-sunken hover:text-cedar"
                   >
                     {t("navbar.settings")}
                   </Link>
@@ -235,7 +235,7 @@ const Navbar = () => {
               <button
                 type="button"
                 onClick={handleLogout}
-                className="hidden cursor-pointer rounded-lg bg-danger-accent px-4 py-2 text-on-danger transition hover:bg-danger lg:block"
+                className="hidden cursor-pointer rounded-control bg-danger-accent px-4 py-2 text-on-danger transition hover:bg-danger lg:block"
               >
                 {t("navbar.logout")}
               </button>
@@ -265,7 +265,7 @@ const Navbar = () => {
                 end={link.to === "/"}
                 onClick={() => setMobileOpen(false)}
                 className={({ isActive }) =>
-                  `rounded-lg px-3 py-2.5 text-sm font-medium ${
+                  `rounded-control px-3 py-2.5 text-small font-medium ${
                     isActive
                       ? "bg-cedar-subtle text-cedar"
                       : "text-ink-body hover:bg-paper-sunken"
@@ -285,7 +285,7 @@ const Navbar = () => {
                     key={link.to}
                     to={link.to}
                     onClick={() => setMobileOpen(false)}
-                    className="rounded-lg px-3 py-2.5 text-sm font-medium text-cedar hover:bg-paper-sunken"
+                    className="rounded-control px-3 py-2.5 text-small font-medium text-cedar hover:bg-paper-sunken"
                   >
                     {link.label}
                   </Link>
@@ -293,21 +293,21 @@ const Navbar = () => {
                 <Link
                   to="/profile"
                   onClick={() => setMobileOpen(false)}
-                  className="rounded-lg px-3 py-2.5 text-sm text-ink-body hover:bg-paper-sunken"
+                  className="rounded-control px-3 py-2.5 text-small text-ink-body hover:bg-paper-sunken"
                 >
                   {t("navbar.myProfile")}
                 </Link>
                 <Link
                   to="/settings"
                   onClick={() => setMobileOpen(false)}
-                  className="rounded-lg px-3 py-2.5 text-sm text-ink-body hover:bg-paper-sunken"
+                  className="rounded-control px-3 py-2.5 text-small text-ink-body hover:bg-paper-sunken"
                 >
                   {t("navbar.settings")}
                 </Link>
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="mt-1 rounded-lg px-3 py-2.5 text-start text-sm font-medium text-danger hover:bg-danger-subtle"
+                  className="mt-1 rounded-control px-3 py-2.5 text-start text-small font-medium text-danger hover:bg-danger-subtle"
                 >
                   {t("navbar.logout")}
                 </button>
@@ -317,14 +317,14 @@ const Navbar = () => {
                 <Link
                   to="/login"
                   onClick={() => setMobileOpen(false)}
-                  className="flex-1 rounded-lg border border-cedar px-4 py-2 text-center font-medium text-cedar"
+                  className="flex-1 rounded-control border border-cedar px-4 py-2 text-center font-medium text-cedar"
                 >
                   {t("navbar.login")}
                 </Link>
                 <Link
                   to="/register"
                   onClick={() => setMobileOpen(false)}
-                  className="flex-1 rounded-lg bg-cedar px-4 py-2 text-center font-medium text-on-cedar"
+                  className="flex-1 rounded-control bg-cedar px-4 py-2 text-center font-medium text-on-cedar"
                 >
                   {t("navbar.register")}
                 </Link>

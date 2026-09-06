@@ -55,16 +55,16 @@ function Language() {
           </BackLink>
 
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-cedar-subtle text-cedar">
+            <div className="flex h-12 w-12 items-center justify-center rounded-card bg-cedar-subtle text-cedar">
               <Languages size={24} />
             </div>
 
             <div>
-              <h1 className="text-3xl font-bold text-ink">
+              <h1 className="text-title font-bold text-ink">
                 {t("language.title")}
               </h1>
 
-              <p className="mt-1 text-sm text-ink-secondary">
+              <p className="mt-1 text-small text-ink-secondary">
                 {t("language.subtitle")}
               </p>
             </div>
@@ -72,13 +72,13 @@ function Language() {
         </div>
 
         {/* Language Settings */}
-        <section className="overflow-hidden rounded-2xl bg-paper-raised shadow-sm">
+        <section className="overflow-hidden rounded-card bg-paper-raised shadow-card">
           <div className="border-b border-line-subtle px-6 py-5">
-            <h2 className="text-xl font-semibold text-ink">
+            <h2 className="text-title font-semibold text-ink">
               {t("language.preferredLanguage")}
             </h2>
 
-            <p className="mt-1 text-sm text-ink-muted">
+            <p className="mt-1 text-small text-ink-muted">
               {t("language.description")}
             </p>
           </div>
@@ -92,7 +92,7 @@ function Language() {
                   key={language.code}
                   type="button"
                   onClick={() => setSelectedLanguage(language.code)}
-                  className={`flex w-full cursor-pointer items-center justify-between rounded-xl border p-4 text-start transition ${
+                  className={`flex w-full cursor-pointer items-center justify-between rounded-card border p-4 text-start transition ${
                     isSelected
                       ? "border-cedar-ring bg-cedar-subtle"
                       : "border-line hover:bg-paper"
@@ -107,13 +107,13 @@ function Language() {
                           : "french"}`)}
                     </p>
 
-                    <p className="mt-1 text-sm text-ink-muted">
+                    <p className="mt-1 text-small text-ink-muted">
                       {language.nativeName}
                     </p>
                   </div>
 
                   {isSelected && (
-                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-cedar text-on-cedar">
+                    <div className="flex h-7 w-7 items-center justify-center rounded-pill bg-cedar text-on-cedar">
                       <Check size={17} />
                     </div>
                   )}
@@ -125,7 +125,7 @@ function Language() {
               <button
                 type="button"
                 onClick={handleSaveLanguage}
-                className="cursor-pointer rounded-lg bg-cedar px-6 py-3 text-sm font-semibold text-on-cedar transition hover:bg-cedar-strong"
+                className="cursor-pointer rounded-control bg-cedar px-6 py-3 text-small font-semibold text-on-cedar transition hover:bg-cedar-strong"
               >
                 {t("language.saveLanguage")}
               </button>

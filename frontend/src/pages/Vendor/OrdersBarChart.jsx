@@ -30,7 +30,7 @@ function OrdersBarChart({ series, className = "" }) {
   // as broken rather than as empty. The caller shows a message instead.
   if (max === 0) {
     return (
-      <p className={`text-sm text-ink-muted ${className}`}>
+      <p className={`text-small text-ink-muted ${className}`}>
         {t("vendorDashboard.chart.noOrdersInRange")}
       </p>
     );
@@ -43,10 +43,10 @@ function OrdersBarChart({ series, className = "" }) {
   return (
     <figure className={className}>
       <div className="flex items-baseline justify-between">
-        <figcaption className="text-sm font-medium text-ink-body">
+        <figcaption className="text-small font-medium text-ink-body">
           {t("vendorDashboard.chart.title")}
         </figcaption>
-        <span className="text-xs text-ink-muted">
+        <span className="text-micro text-ink-muted">
           {t("vendorDashboard.chart.peak", { count: max })}
         </span>
       </div>
@@ -89,7 +89,7 @@ function OrdersBarChart({ series, className = "" }) {
 
       {/* justify-between follows the inline axis, so these three flip with
           the bars rather than needing their own RTL branch. */}
-      <div className="mt-2 flex justify-between text-xs text-ink-faint">
+      <div className="mt-2 flex justify-between text-micro text-ink-faint">
         <span>{formatDate(first.date, i18n.language)}</span>
         {series.length > 2 && (
           <span className="hidden sm:inline">

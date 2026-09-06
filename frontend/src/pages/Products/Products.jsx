@@ -25,7 +25,7 @@ const LIMIT_OPTIONS = [12, 24, 48];
 const DEFAULT_LIMIT = 12;
 
 const inputClass =
-  "rounded-md border border-line-strong px-3 py-2 text-sm outline-none " +
+  "rounded-control border border-line-strong px-3 py-2 text-small outline-none " +
   "focus:border-cedar-ring";
 
 function Products() {
@@ -233,7 +233,7 @@ function Products() {
     <div className="min-h-screen bg-paper px-2 py-2 lg:px-10">
       <div className="mx-auto max-w-screen-2xl">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-ink">
+          <h1 className="text-title font-bold text-ink">
             {t("products.title")}
           </h1>
           <p className="mt-2 text-ink-muted">
@@ -242,7 +242,7 @@ function Products() {
         </div>
 
         {/* Filters */}
-        <div className="mb-4 rounded-xl bg-paper-raised p-4 shadow-sm">
+        <div className="mb-4 rounded-card bg-paper-raised p-4 shadow-card">
           <div className="grid gap-3 md:grid-cols-3 lg:grid-cols-4">
             <input
               type="text"
@@ -314,7 +314,7 @@ function Products() {
               ))}
             </select>
 
-            <label className="flex items-center gap-2 px-1 text-sm text-ink-body">
+            <label className="flex items-center gap-2 px-1 text-small text-ink-body">
               <input
                 type="checkbox"
                 checked={inStock}
@@ -330,7 +330,7 @@ function Products() {
             </label>
           </div>
 
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-line-subtle pt-3 text-sm">
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-line-subtle pt-3 text-small">
             <div className="flex items-center gap-3">
               <label className="text-ink-muted">
                 {t("products.perPage")}{" "}
@@ -354,7 +354,7 @@ function Products() {
               type="button"
               onClick={clearFilters}
               disabled={!hasActiveFilters}
-              className="rounded-md border border-line-strong px-3 py-1.5 font-medium text-ink-body hover:bg-paper disabled:cursor-not-allowed disabled:opacity-40"
+              className="rounded-control border border-line-strong px-3 py-1.5 font-medium text-ink-body hover:bg-paper disabled:cursor-not-allowed disabled:opacity-40"
             >
               {t("products.clearFilters")}
             </button>
@@ -367,8 +367,8 @@ function Products() {
             {t("products.loading")}
           </div>
         ) : products.length === 0 ? (
-          <div className="rounded-2xl bg-paper-raised py-16 text-center shadow-sm">
-            <h2 className="text-xl font-semibold text-ink-emphasis">
+          <div className="rounded-card bg-paper-raised py-16 text-center shadow-card">
+            <h2 className="text-title font-semibold text-ink-emphasis">
               {t("products.noneFound")}
             </h2>
             {activeFilters.length > 0 ? (
@@ -385,7 +385,7 @@ function Products() {
               <button
                 type="button"
                 onClick={clearFilters}
-                className="mt-4 rounded-md bg-cedar px-4 py-2 text-sm font-medium text-on-cedar hover:bg-cedar-strong"
+                className="mt-4 rounded-control bg-cedar px-4 py-2 text-small font-medium text-on-cedar hover:bg-cedar-strong"
               >
                 {t("products.clearFilters")}
               </button>
@@ -393,7 +393,7 @@ function Products() {
           </div>
         ) : (
           <>
-            <p className="mb-3 text-sm text-ink-muted">
+            <p className="mb-3 text-small text-ink-muted">
               {t("products.count", { count: total })}
               {activeFilters.length > 0 && (
                 <> · {activeFilters.join("، ")}</>
@@ -407,12 +407,12 @@ function Products() {
             </div>
 
             {pages > 1 && (
-              <div className="mt-6 flex items-center justify-between text-sm">
+              <div className="mt-6 flex items-center justify-between text-small">
                 <button
                   type="button"
                   onClick={() => setFilter("page", page - 1)}
                   disabled={page <= 1}
-                  className="rounded-lg border border-line-strong px-4 py-2 font-medium text-ink-body hover:bg-paper disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-control border border-line-strong px-4 py-2 font-medium text-ink-body hover:bg-paper disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {t("common.previous")}
                 </button>
@@ -423,7 +423,7 @@ function Products() {
                   type="button"
                   onClick={() => setFilter("page", page + 1)}
                   disabled={page >= pages}
-                  className="rounded-lg border border-line-strong px-4 py-2 font-medium text-ink-body hover:bg-paper disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-control border border-line-strong px-4 py-2 font-medium text-ink-body hover:bg-paper disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {t("common.next")}
                 </button>

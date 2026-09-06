@@ -26,7 +26,7 @@ function AdminLayout() {
     <div className="min-h-screen bg-paper">
       <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-10 lg:flex-row">
         <aside className="w-full shrink-0 lg:w-56">
-          <p className="mb-4 px-3 text-xs font-semibold uppercase tracking-wide text-ink-faint">
+          <p className="mb-4 px-3 text-micro font-semibold uppercase tracking-wide text-ink-faint">
             {t("adminLayout.console")}
           </p>
 
@@ -36,7 +36,7 @@ function AdminLayout() {
                 key={to}
                 to={to}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition ${
+                  `flex items-center gap-3 rounded-control px-3 py-2.5 text-small transition ${
                     isActive
                       ? "bg-cedar-subtle font-medium text-cedar"
                       : "text-ink-body hover:bg-paper-sunken"
@@ -51,7 +51,7 @@ function AdminLayout() {
 
           <Link
             to="/"
-            className="mt-6 flex items-center gap-2 px-3 text-sm text-ink-muted hover:text-cedar"
+            className="mt-6 flex items-center gap-2 px-3 text-small text-ink-muted hover:text-cedar"
           >
             <ArrowLeft size={16} className="rtl:rotate-180" />
             {t("common.backToCedarLink")}

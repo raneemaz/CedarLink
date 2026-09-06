@@ -32,19 +32,19 @@ function money(value) {
 
 function Card({ label, value, hint, tone = "", icon: Icon }) {
   return (
-    <div className={`rounded-xl border border-line bg-paper-raised p-5 ${tone}`}>
+    <div className={`rounded-card border border-line bg-paper-raised p-5 ${tone}`}>
       <div className="flex items-center gap-2">
         {Icon && <Icon size={15} className="shrink-0 text-ink-faint" />}
-        <p className="text-xs font-medium uppercase tracking-wide text-ink-muted">
+        <p className="text-micro font-medium uppercase tracking-wide text-ink-muted">
           {label}
         </p>
       </div>
 
-      <p className="mt-2 text-2xl font-bold text-ink" dir="ltr">
+      <p className="mt-2 text-title font-bold text-ink" dir="ltr">
         {value}
       </p>
 
-      {hint && <p className="mt-1 text-xs text-ink-muted">{hint}</p>}
+      {hint && <p className="mt-1 text-micro text-ink-muted">{hint}</p>}
     </div>
   );
 }
@@ -53,14 +53,14 @@ function ProductTable({ title, caption, rows, measure, language }) {
   const { t } = useTranslation();
 
   return (
-    <div className="rounded-xl border border-line bg-paper-raised">
+    <div className="rounded-card border border-line bg-paper-raised">
       <div className="border-b border-line-subtle px-5 py-4">
         <h2 className="font-semibold text-ink">{title}</h2>
-        <p className="mt-1 text-xs text-ink-muted">{caption}</p>
+        <p className="mt-1 text-micro text-ink-muted">{caption}</p>
       </div>
 
       {rows.length === 0 ? (
-        <p className="px-5 py-6 text-sm text-ink-muted">
+        <p className="px-5 py-6 text-small text-ink-muted">
           {t("vendorDashboard.tables.nothingSold")}
         </p>
       ) : (
@@ -68,9 +68,9 @@ function ProductTable({ title, caption, rows, measure, language }) {
           {rows.map((row, index) => (
             <li
               key={row.id}
-              className="flex items-center gap-3 px-5 py-3 text-sm"
+              className="flex items-center gap-3 px-5 py-3 text-small"
             >
-              <span className="w-5 shrink-0 text-xs text-ink-faint">
+              <span className="w-5 shrink-0 text-micro text-ink-faint">
                 {index + 1}
               </span>
 
@@ -160,17 +160,17 @@ function VendorDashboard() {
 
   const header = (
     <div>
-      <h1 className="text-2xl font-bold text-ink">
+      <h1 className="text-title font-bold text-ink">
         {t("vendorDashboard.title")}
       </h1>
-      <p className="mt-1 text-sm text-ink-muted">
+      <p className="mt-1 text-small text-ink-muted">
         {t("vendorDashboard.subtitle")}
       </p>
     </div>
   );
 
   const periodSelector = (
-    <div className="mt-6 flex flex-wrap items-end gap-4 rounded-xl border border-line bg-paper-raised p-4">
+    <div className="mt-6 flex flex-wrap items-end gap-4 rounded-card border border-line bg-paper-raised p-4">
       <div className="flex flex-wrap gap-2">
         {PRESETS.map((days) => (
           <button
@@ -180,7 +180,7 @@ function VendorDashboard() {
               setCustom({ from: "", to: "" });
               setRange(rangeForPreset(days));
             }}
-            className={`cursor-pointer rounded-lg px-3 py-2 text-sm transition ${
+            className={`cursor-pointer rounded-control px-3 py-2 text-small transition ${
               preset === days
                 ? "bg-cedar font-medium text-on-cedar"
                 : "border border-line-strong text-ink-body hover:bg-paper"
@@ -195,7 +195,7 @@ function VendorDashboard() {
         <div>
           <label
             htmlFor="range-from"
-            className="mb-1 block text-xs text-ink-muted"
+            className="mb-1 block text-micro text-ink-muted"
           >
             {t("vendorDashboard.period.from")}
           </label>
@@ -206,14 +206,14 @@ function VendorDashboard() {
             onChange={(e) =>
               setCustom((prev) => ({ ...prev, from: e.target.value }))
             }
-            className="rounded-lg border border-line-strong px-3 py-2 text-sm"
+            className="rounded-control border border-line-strong px-3 py-2 text-small"
           />
         </div>
 
         <div>
           <label
             htmlFor="range-to"
-            className="mb-1 block text-xs text-ink-muted"
+            className="mb-1 block text-micro text-ink-muted"
           >
             {t("vendorDashboard.period.to")}
           </label>
@@ -224,14 +224,14 @@ function VendorDashboard() {
             onChange={(e) =>
               setCustom((prev) => ({ ...prev, to: e.target.value }))
             }
-            className="rounded-lg border border-line-strong px-3 py-2 text-sm"
+            className="rounded-control border border-line-strong px-3 py-2 text-small"
           />
         </div>
 
         <button
           type="submit"
           disabled={!custom.from || !custom.to}
-          className="cursor-pointer rounded-lg border border-line-strong px-3 py-2 text-sm text-ink-body transition hover:bg-paper disabled:cursor-not-allowed disabled:opacity-50"
+          className="cursor-pointer rounded-control border border-line-strong px-3 py-2 text-small text-ink-body transition hover:bg-paper disabled:cursor-not-allowed disabled:opacity-50"
         >
           {t("vendorDashboard.period.apply")}
         </button>
@@ -243,7 +243,7 @@ function VendorDashboard() {
     return (
       <div>
         {header}
-        <p className="mt-8 text-sm text-ink-muted">
+        <p className="mt-8 text-small text-ink-muted">
           {t("vendorDashboard.loading")}
         </p>
       </div>
@@ -254,7 +254,7 @@ function VendorDashboard() {
     return (
       <div>
         {header}
-        <div className="mt-8 rounded-xl border border-danger-border bg-danger-subtle p-5 text-sm text-danger-strong">
+        <div className="mt-8 rounded-card border border-danger-border bg-danger-subtle p-5 text-small text-danger-strong">
           {error === "loadError" ? t("vendorDashboard.loadError") : error}
         </div>
       </div>
@@ -275,7 +275,7 @@ function VendorDashboard() {
       {header}
       {periodSelector}
 
-      <p className="mt-4 text-xs text-ink-faint">
+      <p className="mt-4 text-micro text-ink-faint">
         {t("vendorDashboard.showingRange", {
           from: formatDate(data.range.from, i18n.language),
           to: formatDate(data.range.to, i18n.language),
@@ -283,19 +283,19 @@ function VendorDashboard() {
       </p>
 
       {nothingYet ? (
-        <div className="mt-6 rounded-xl border border-dashed border-line-strong bg-paper-raised p-10 text-center">
+        <div className="mt-6 rounded-card border border-dashed border-line-strong bg-paper-raised p-10 text-center">
           <BarChart3 size={30} className="mx-auto text-ink-disabled" />
-          <h2 className="mt-4 text-lg font-semibold text-ink">
+          <h2 className="mt-4 text-body font-semibold text-ink">
             {t("vendorDashboard.empty.title")}
           </h2>
-          <p className="mx-auto mt-2 max-w-md text-sm text-ink-muted">
+          <p className="mx-auto mt-2 max-w-md text-small text-ink-muted">
             {t("vendorDashboard.empty.body")}
           </p>
         </div>
       ) : (
         <>
           {nothingCollected && (
-            <p className="mt-6 flex items-start gap-2 rounded-xl bg-info-subtle px-4 py-3 text-sm text-info">
+            <p className="mt-6 flex items-start gap-2 rounded-card bg-info-subtle px-4 py-3 text-small text-info">
               <Info size={16} className="mt-0.5 shrink-0" />
               {t("vendorDashboard.nothingDeliveredYet")}
             </p>
@@ -303,7 +303,7 @@ function VendorDashboard() {
 
           {/* Money in hand. Cash on delivery, so this is what has actually
               been collected — never mixed with what is still coming. */}
-          <h2 className="mt-8 text-sm font-semibold uppercase tracking-wide text-ink-muted">
+          <h2 className="mt-8 text-small font-semibold uppercase tracking-wide text-ink-muted">
             {t("vendorDashboard.collected.heading")}
           </h2>
 
@@ -366,11 +366,11 @@ function VendorDashboard() {
           </div>
 
           {/* Chart */}
-          <div className="mt-8 rounded-xl border border-line bg-paper-raised p-5">
+          <div className="mt-8 rounded-card border border-line bg-paper-raised p-5">
             <OrdersBarChart series={data.orders_per_day} />
 
             {data.busiest_day && (
-              <p className="mt-4 text-sm text-ink-secondary">
+              <p className="mt-4 text-small text-ink-secondary">
                 {t("vendorDashboard.chart.busiest", {
                   date: formatDate(data.busiest_day.date, i18n.language),
                   count: data.busiest_day.orders,
@@ -380,7 +380,7 @@ function VendorDashboard() {
           </div>
 
           {/* Status breakdown */}
-          <div className="mt-8 rounded-xl border border-line bg-paper-raised p-5">
+          <div className="mt-8 rounded-card border border-line bg-paper-raised p-5">
             <h2 className="font-semibold text-ink">
               {t("vendorDashboard.status.title")}
             </h2>
@@ -389,12 +389,12 @@ function VendorDashboard() {
               {STATUSES.map((status) => (
                 <div
                   key={status}
-                  className={`rounded-lg px-4 py-3 ${STATUS_TONE[status]}`}
+                  className={`rounded-control px-4 py-3 ${STATUS_TONE[status]}`}
                 >
-                  <dt className="text-xs font-medium">
+                  <dt className="text-micro font-medium">
                     {t(`orderStatus.${status}`)}
                   </dt>
-                  <dd className="mt-1 text-xl font-bold" dir="ltr">
+                  <dd className="mt-1 text-title font-bold" dir="ltr">
                     {number.format(data.orders_by_status[status])}
                   </dd>
                 </div>
@@ -425,18 +425,18 @@ function VendorDashboard() {
           </div>
 
           {/* Best rated */}
-          <div className="mt-4 rounded-xl border border-line bg-paper-raised">
+          <div className="mt-4 rounded-card border border-line bg-paper-raised">
             <div className="border-b border-line-subtle px-5 py-4">
               <h2 className="font-semibold text-ink">
                 {t("vendorDashboard.tables.bestRated")}
               </h2>
-              <p className="mt-1 text-xs text-ink-muted">
+              <p className="mt-1 text-micro text-ink-muted">
                 {t("vendorDashboard.tables.bestRatedCaption")}
               </p>
             </div>
 
             {data.best_rated_products.length === 0 ? (
-              <p className="px-5 py-6 text-sm text-ink-muted">
+              <p className="px-5 py-6 text-small text-ink-muted">
                 {t("vendorDashboard.tables.notEnoughReviews")}
               </p>
             ) : (
@@ -444,9 +444,9 @@ function VendorDashboard() {
                 {data.best_rated_products.map((row, index) => (
                   <li
                     key={row.id}
-                    className="flex items-center gap-3 px-5 py-3 text-sm"
+                    className="flex items-center gap-3 px-5 py-3 text-small"
                   >
-                    <span className="w-5 shrink-0 text-xs text-ink-faint">
+                    <span className="w-5 shrink-0 text-micro text-ink-faint">
                       {index + 1}
                     </span>
                     <span className="min-w-0 flex-1 truncate text-ink-emphasis">
@@ -458,7 +458,7 @@ function VendorDashboard() {
                     >
                       {row.rating_avg?.toFixed(1)}
                     </span>
-                    <span className="shrink-0 text-xs text-ink-faint">
+                    <span className="shrink-0 text-micro text-ink-faint">
                       {t("vendorDashboard.tables.reviews", {
                         count: row.rating_count,
                       })}

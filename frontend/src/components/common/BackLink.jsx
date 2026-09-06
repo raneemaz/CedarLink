@@ -8,7 +8,7 @@ import { ArrowLeft } from "lucide-react";
  */
 export default function BackLink({ to, onClick, children, className = "" }) {
   const classes = [
-    "inline-flex items-center gap-1.5 text-sm font-medium",
+    "inline-flex items-center gap-1.5 text-small font-medium",
     "text-cedar hover:underline",
     className,
   ]

@@ -9,7 +9,7 @@ import LanguageTabs from "../../components/common/LanguageTabs/LanguageTabs";
 import { localizedName } from "../../utils/localize";
 
 const fieldClass =
-  "w-full rounded-lg border border-line-strong px-3 py-2 text-sm outline-none " +
+  "w-full rounded-control border border-line-strong px-3 py-2 text-small outline-none " +
   "focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring";
 
 const LANG_LABEL = {
@@ -163,18 +163,18 @@ function AdminCategories() {
   };
 
   if (loading) {
-    return <p className="text-sm text-ink-muted">{t("adminCategories.loading")}</p>;
+    return <p className="text-small text-ink-muted">{t("adminCategories.loading")}</p>;
   }
 
   return (
     <div>
-      <h1 className="mb-6 text-3xl font-bold text-ink">{t("adminCategories.title")}</h1>
+      <h1 className="mb-6 text-title font-bold text-ink">{t("adminCategories.title")}</h1>
 
       <form
         onSubmit={handleCreate}
-        className="mb-6 rounded-2xl bg-paper-raised p-5 shadow-sm"
+        className="mb-6 rounded-card bg-paper-raised p-5 shadow-card"
       >
-        <p className="mb-3 text-sm font-semibold text-ink-body">
+        <p className="mb-3 text-small font-semibold text-ink-body">
           {t("adminCategories.addHeading")}
         </p>
 
@@ -208,15 +208,15 @@ function AdminCategories() {
           </Button>
         </div>
 
-        <p className="mt-2 text-xs text-ink-muted">
+        <p className="mt-2 text-micro text-ink-muted">
           {t("translationTabs.fallbackHint")}
         </p>
       </form>
 
-      <div className="overflow-hidden rounded-2xl bg-paper-raised shadow-sm">
-        <table className="min-w-full text-sm">
+      <div className="overflow-hidden rounded-card bg-paper-raised shadow-card">
+        <table className="min-w-full text-small">
           <thead>
-            <tr className="border-b border-line-subtle text-start text-xs uppercase tracking-wide text-ink-faint">
+            <tr className="border-b border-line-subtle text-start text-micro uppercase tracking-wide text-ink-faint">
               <th className="px-4 py-3 font-medium">{t("adminCategories.colName")}</th>
               <th className="px-4 py-3 font-medium">{t("adminCategories.colDescription")}</th>
               <th className="px-4 py-3 font-medium text-end">{t("adminCategories.colActions")}</th>

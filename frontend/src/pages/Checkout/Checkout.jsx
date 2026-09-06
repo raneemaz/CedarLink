@@ -210,7 +210,7 @@ function Checkout() {
   if (error) {
     return (
       <div className="mx-auto max-w-6xl px-6 py-10">
-        <div className="rounded-xl border border-danger-border bg-danger-subtle p-5">
+        <div className="rounded-card border border-danger-border bg-danger-subtle p-5">
           <p className="text-danger-strong">{error}</p>
 
           <BackLink to="/cart" className="mt-4">
@@ -226,7 +226,7 @@ function Checkout() {
   if (stores.length === 0) {
     return (
       <div className="mx-auto max-w-6xl px-6 py-16 text-center">
-        <h1 className="text-3xl font-bold text-ink">
+        <h1 className="text-title font-bold text-ink">
           {t("checkout.emptyTitle")}
         </h1>
 
@@ -236,7 +236,7 @@ function Checkout() {
 
         <Link
           to="/products"
-          className="mt-6 inline-block rounded-lg bg-cedar px-6 py-3 font-medium text-on-cedar transition hover:bg-cedar-strong"
+          className="mt-6 inline-block rounded-control bg-cedar px-6 py-3 font-medium text-on-cedar transition hover:bg-cedar-strong"
         >
           {t("checkout.browseProducts")}
         </Link>
@@ -310,7 +310,7 @@ function Checkout() {
       <div className="mb-8">
         <BackLink to="/cart">{t("backLink.cart")}</BackLink>
 
-        <h1 className="mt-4 text-3xl font-bold text-ink">
+        <h1 className="mt-4 text-title font-bold text-ink">
           {t("checkout.title")}
         </h1>
 
@@ -322,14 +322,14 @@ function Checkout() {
       <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
         <section className="space-y-6">
           {/* Delivery Information */}
-          <div className="rounded-2xl border border-line bg-paper-raised p-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-ink">
+          <div className="rounded-card border border-line bg-paper-raised p-6 shadow-card">
+            <h2 className="text-title font-semibold text-ink">
               {t("checkout.deliveryInfo")}
             </h2>
 
             <div className="mt-6 space-y-5">
               <div>
-                <label className="mb-2 block text-sm font-medium text-ink-body">
+                <label className="mb-2 block text-small font-medium text-ink-body">
                   {t("checkout.deliveryAddress")}
                 </label>
 
@@ -338,19 +338,19 @@ function Checkout() {
                   value={deliveryAddress}
                   onChange={(e) => setDeliveryAddress(e.target.value)}
                   placeholder={t("checkout.addressPlaceholder")}
-                  className="w-full rounded-lg border border-line-strong px-4 py-3 outline-none transition focus:border-cedar-ring focus:ring-2 focus:ring-cedar-tint"
+                  className="w-full rounded-control border border-line-strong px-4 py-3 outline-none transition focus:border-cedar-ring focus:ring-2 focus:ring-cedar-tint"
                 />
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-ink-body">
+                <label className="mb-2 block text-small font-medium text-ink-body">
                   {t("checkout.city")}
                 </label>
 
                 <select
                   value={deliveryCity}
                   onChange={(e) => setDeliveryCity(e.target.value)}
-                  className="w-full rounded-lg border border-line-strong bg-paper-raised px-4 py-3 outline-none transition focus:border-cedar-ring focus:ring-2 focus:ring-cedar-tint"
+                  className="w-full rounded-control border border-line-strong bg-paper-raised px-4 py-3 outline-none transition focus:border-cedar-ring focus:ring-2 focus:ring-cedar-tint"
                 >
                   <option value="">{t("checkout.selectCity")}</option>
 
@@ -373,15 +373,15 @@ function Checkout() {
           </div>
 
           {/* Payment Method */}
-          <div className="rounded-2xl border border-line bg-paper-raised p-6 shadow-sm">
+          <div className="rounded-card border border-line bg-paper-raised p-6 shadow-card">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-ink">
+              <h2 className="text-title font-semibold text-ink">
                 {t("checkout.paymentMethod")}
               </h2>
 
               <Link
                 to="/settings/payment-methods"
-                className="text-sm font-medium text-cedar hover:underline"
+                className="text-small font-medium text-cedar hover:underline"
               >
                 {t("checkout.manageCards")}
               </Link>
@@ -389,14 +389,14 @@ function Checkout() {
 
             <div className="mt-5">
               {paymentMethodsLoading && (
-                <p className="text-sm text-ink-muted">
+                <p className="text-small text-ink-muted">
                   {t("checkout.loadingMethods")}
                 </p>
               )}
 
               {!paymentMethodsLoading && paymentMethodsError && (
-                <div className="rounded-lg border border-danger-border bg-danger-subtle p-4">
-                  <p className="text-sm text-danger-strong">
+                <div className="rounded-control border border-danger-border bg-danger-subtle p-4">
+                  <p className="text-small text-danger-strong">
                     {paymentMethodsError}
                   </p>
                 </div>
@@ -405,28 +405,28 @@ function Checkout() {
               {!paymentMethodsLoading && !paymentMethodsError && (
                 <div className="space-y-3">
                   {paymentMethods.length === 0 ? (
-                    <div className="rounded-lg border border-warning-border bg-warning-subtle p-4">
-                      <p className="text-sm text-warning">
+                    <div className="rounded-control border border-warning-border bg-warning-subtle p-4">
+                      <p className="text-small text-warning">
                         {t("checkout.noCardsNote")}
                       </p>
 
                       <Link
                         to="/settings/payment-methods/new"
-                        className="mt-2 inline-block text-sm font-medium text-cedar hover:underline"
+                        className="mt-2 inline-block text-small font-medium text-cedar hover:underline"
                       >
                         {t("checkout.addCard")}
                       </Link>
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      <p className="text-sm font-medium text-ink-body">
+                      <p className="text-small font-medium text-ink-body">
                         {t("checkout.savedCards")}
                       </p>
 
                       {paymentMethods.map((method) => (
                         <label
                           key={method.id}
-                          className={`flex cursor-pointer items-center justify-between rounded-xl border p-4 transition ${
+                          className={`flex cursor-pointer items-center justify-between rounded-card border p-4 transition ${
                             selectedPaymentMethod === String(method.id)
                               ? "border-cedar-ring bg-cedar-subtle"
                               : "border-line hover:border-line-strong"
@@ -452,21 +452,21 @@ function Checkout() {
                               </p>
 
                               {method.is_default && (
-                                <p className="mt-1 text-xs text-cedar">
+                                <p className="mt-1 text-micro text-cedar">
                                   {t("checkout.defaultCard")}
                                 </p>
                               )}
                             </div>
                           </div>
 
-                          <span className="text-sm text-ink-muted">{t("checkout.card")}</span>
+                          <span className="text-small text-ink-muted">{t("checkout.card")}</span>
                         </label>
                       ))}
                     </div>
                   )}
 
                   <label
-                    className={`flex cursor-pointer items-center justify-between rounded-xl border p-4 transition ${
+                    className={`flex cursor-pointer items-center justify-between rounded-card border p-4 transition ${
                       selectedPaymentMethod === "cash_on_delivery"
                         ? "border-cedar-ring bg-cedar-subtle"
                         : "border-line hover:border-line-strong"
@@ -488,13 +488,13 @@ function Checkout() {
                         <p className="font-medium text-ink">
                           {t("checkout.cashOnDelivery")}
                         </p>
-                        <p className="mt-1 text-xs text-ink-muted">
+                        <p className="mt-1 text-micro text-ink-muted">
                           {t("checkout.cashOnDeliveryDesc")}
                         </p>
                       </div>
                     </div>
 
-                    <span className="text-sm text-ink-muted">{t("checkout.cash")}</span>
+                    <span className="text-small text-ink-muted">{t("checkout.cash")}</span>
                   </label>
                 </div>
               )}
@@ -502,9 +502,9 @@ function Checkout() {
           </div>
 
           {/* Order Items */}
-          <div className="rounded-2xl border border-line bg-paper-raised shadow-sm">
+          <div className="rounded-card border border-line bg-paper-raised shadow-card">
             <div className="border-b border-line p-6">
-              <h2 className="text-xl font-semibold text-ink">
+              <h2 className="text-title font-semibold text-ink">
                 {t("checkout.yourOrder")}
               </h2>
             </div>
@@ -532,7 +532,7 @@ function Checkout() {
                             {localizedField(item, "product_name", i18n.language)}
                           </p>
 
-                          <p className="mt-1 text-sm text-ink-muted">
+                          <p className="mt-1 text-small text-ink-muted">
                             {t("checkout.quantityLine", { count: item.quantity })}
                           </p>
                         </div>
@@ -563,8 +563,8 @@ function Checkout() {
 
         {/* Summary */}
         <aside>
-          <div className="sticky top-24 rounded-2xl border border-line bg-paper-raised p-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-ink">
+          <div className="sticky top-24 rounded-card border border-line bg-paper-raised p-6 shadow-card">
+            <h2 className="text-title font-semibold text-ink">
               {t("checkout.orderSummary")}
             </h2>
 
@@ -593,7 +593,7 @@ function Checkout() {
                 <div className="flex justify-between text-cedar">
                   <span>
                     {t("checkout.discount")}{" "}
-                    <span dir="ltr" className="font-mono text-xs">
+                    <span dir="ltr" className="font-mono text-micro">
                       {preview.coupon_code}
                     </span>
                   </span>
@@ -605,7 +605,7 @@ function Checkout() {
               )}
 
               {previewError && (
-                <p className="text-sm text-danger">{previewError}</p>
+                <p className="text-small text-danger">{previewError}</p>
               )}
 
               <div className="border-t border-line pt-4">
@@ -620,7 +620,7 @@ function Checkout() {
               </div>
 
               <div className="border-t border-line pt-4">
-                <div className="flex justify-between text-lg font-bold">
+                <div className="flex justify-between text-body font-bold">
                   <span>{t("checkout.total")}</span>
 
                   <span className="text-cedar" dir="ltr">
@@ -630,8 +630,8 @@ function Checkout() {
               </div>
 
               {orderError && (
-                <div className="rounded-lg border border-danger-border bg-danger-subtle p-3">
-                  <p className="text-sm text-danger-strong">{orderError}</p>
+                <div className="rounded-control border border-danger-border bg-danger-subtle p-3">
+                  <p className="text-small text-danger-strong">{orderError}</p>
                 </div>
               )}
 
@@ -646,7 +646,7 @@ function Checkout() {
                   !deliveryCity ||
                   !selectedPaymentMethod
                 }
-                className="w-full cursor-pointer rounded-lg bg-cedar px-5 py-3 font-semibold text-on-cedar transition hover:bg-cedar-strong disabled:cursor-not-allowed disabled:opacity-50"
+                className="w-full cursor-pointer rounded-control bg-cedar px-5 py-3 font-semibold text-on-cedar transition hover:bg-cedar-strong disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {placingOrder ? t("checkout.placingOrder") : t("checkout.placeOrder")}
               </button>

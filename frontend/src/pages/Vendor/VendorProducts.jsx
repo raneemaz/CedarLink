@@ -122,15 +122,15 @@ function VendorProducts() {
   };
 
   if (loading) {
-    return <p className="text-sm text-ink-muted">{t("vendorProducts.loading")}</p>;
+    return <p className="text-small text-ink-muted">{t("vendorProducts.loading")}</p>;
   }
 
   if (noStore) {
     return (
       <div>
-        <h1 className="text-3xl font-bold text-ink">{t("vendorProducts.title")}</h1>
+        <h1 className="text-title font-bold text-ink">{t("vendorProducts.title")}</h1>
 
-        <div className="mt-6 rounded-xl border border-dashed border-line-strong bg-paper-raised p-12 text-center">
+        <div className="mt-6 rounded-card border border-dashed border-line-strong bg-paper-raised p-12 text-center">
           <p className="text-ink-secondary">
             {t("vendorProducts.noStoreBody")}
           </p>
@@ -149,7 +149,7 @@ function VendorProducts() {
     <div>
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-ink">{t("vendorProducts.title")}</h1>
+          <h1 className="text-title font-bold text-ink">{t("vendorProducts.title")}</h1>
           <p className="mt-2 text-ink-secondary">
             {t("vendorProducts.countInStore", {
               count: total,
@@ -164,7 +164,7 @@ function VendorProducts() {
       </div>
 
       {total === 0 ? (
-        <div className="rounded-xl border border-dashed border-line-strong bg-paper-raised p-12 text-center">
+        <div className="rounded-card border border-dashed border-line-strong bg-paper-raised p-12 text-center">
           <p className="text-ink-secondary">{t("vendorProducts.emptyBody")}</p>
           <Link
             to="/vendor/products/new"
@@ -175,10 +175,10 @@ function VendorProducts() {
         </div>
       ) : (
         <>
-          <div className="overflow-x-auto rounded-2xl bg-paper-raised shadow-sm">
-            <table className="min-w-full text-sm">
+          <div className="overflow-x-auto rounded-card bg-paper-raised shadow-card">
+            <table className="min-w-full text-small">
               <thead>
-                <tr className="border-b border-line-subtle text-start text-xs uppercase tracking-wide text-ink-faint">
+                <tr className="border-b border-line-subtle text-start text-micro uppercase tracking-wide text-ink-faint">
                   <th className="px-4 py-3 font-medium">{t("vendorProducts.colProduct")}</th>
                   <th className="px-4 py-3 font-medium">{t("vendorProducts.colCategory")}</th>
                   <th className="px-4 py-3 font-medium">{t("vendorProducts.colPrice")}</th>
@@ -199,7 +199,7 @@ function VendorProducts() {
                     >
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 shrink-0 overflow-hidden rounded-md bg-paper-sunken">
+                          <div className="h-10 w-10 shrink-0 overflow-hidden rounded-control bg-paper-sunken">
                             {product.image && (
                               <img
                                 src={product.image}
@@ -235,7 +235,7 @@ function VendorProducts() {
 
                       <td className="px-4 py-3">
                         <span
-                          className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
+                          className={`rounded-pill px-2.5 py-1 text-micro font-semibold ${
                             outOfStock
                               ? "bg-danger-tint text-danger-strong"
                               : "bg-success-subtle text-success"
@@ -270,12 +270,12 @@ function VendorProducts() {
           </div>
 
           {pages > 1 && (
-            <div className="mt-4 flex items-center justify-between text-sm">
+            <div className="mt-4 flex items-center justify-between text-small">
               <button
                 type="button"
                 onClick={() => goToPage(page - 1)}
                 disabled={page <= 1}
-                className="rounded-lg border border-line-strong px-4 py-2 font-medium text-ink-body hover:bg-paper disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-control border border-line-strong px-4 py-2 font-medium text-ink-body hover:bg-paper disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {t("common.previous")}
               </button>
@@ -288,7 +288,7 @@ function VendorProducts() {
                 type="button"
                 onClick={() => goToPage(page + 1)}
                 disabled={page >= pages}
-                className="rounded-lg border border-line-strong px-4 py-2 font-medium text-ink-body hover:bg-paper disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-control border border-line-strong px-4 py-2 font-medium text-ink-body hover:bg-paper disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {t("common.next")}
               </button>

@@ -142,29 +142,34 @@ ON_FILL = [
     ("info", "info-subtle"),
 ]
 
+# Non-text user-interface affordances: WCAG 2.1 SC 1.4.11, 3:1 against
+# the adjacent surface. The unselected star is the thing that tells a
+# customer the rating is clickable, so it is a control state and NOT
+# covered by the 1.4.3 inactive-control exemption. It measured 1.47:1
+# before the redesign; the mockup draws it lighter still, which is the one
+# place the mockup was overruled.
+NON_TEXT = [
+    ("rating-empty", "paper-raised"),
+    ("rating-empty", "paper"),
+    ("cedar-ring", "paper-raised"),
+]
+
 AA_BODY = 4.5
 AA_LARGE = 3.0
+AA_NON_TEXT = 3.0
 
-# Pairs that fail today, in the light theme only, recorded so the gate can
-# fail on anything NEW without pretending these are fine.
+# Pairs allowed to fail. Empty, and it must stay that way.
 #
-# Every one of them predates the theme work: they are the original R1
-# palette, which was lifted from the pre-existing hard-coded colours and
-# never measured. The dark set introduced in R2 passes clean, which is why
-# this list has no dark entries.
+# It carried seven light-theme failures inherited from the pre-token
+# colours — values lifted from the original hard-coded utilities and
+# never measured. The redesign palette (ADR 0030) clears all seven, so
+# the list was emptied in the same commit that retargeted the values.
 #
-# R3 replaces all 42 values against the redesign palette and is required
-# to clear this list. An entry that starts passing is reported as stale, so
-# the list cannot quietly outlive the problem.
-KNOWN_FAILURES = {
-    ("light", "ink-faint", "paper"),
-    ("light", "ink-faint", "paper-raised"),
-    ("light", "ink-faint", "paper-sunken"),
-    ("light", "ink-muted", "paper-sunken"),
-    ("light", "danger", "paper-sunken"),
-    ("light", "danger", "danger-subtle"),
-    ("light", "on-danger", "danger-accent"),
-}
+# The gate reports an entry that starts passing as stale and fails, so
+# this list cannot quietly outlive the problem it describes. Adding to it
+# is a decision to ship a contrast failure and belongs in a review, not in
+# a hurry.
+KNOWN_FAILURES = set()
 
 
 def check(name, tokens, verbose):
@@ -189,6 +194,9 @@ def check(name, tokens, verbose):
 
     for fg, bg in ON_FILL:
         measure(fg, bg, AA_BODY, "body")
+
+    for fg, bg in NON_TEXT:
+        measure(fg, bg, AA_NON_TEXT, "non-text")
 
     if verbose:
         print()

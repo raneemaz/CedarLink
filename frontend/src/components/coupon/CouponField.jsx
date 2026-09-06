@@ -67,7 +67,7 @@ function CouponField({ appliedCode, onChanged, disabled }) {
   if (appliedCode) {
     return (
       <div>
-        <span className="inline-flex items-center gap-2 rounded-full bg-cedar-subtle py-1 ps-3 pe-1 text-sm font-medium text-cedar-strong">
+        <span className="inline-flex items-center gap-2 rounded-pill bg-cedar-subtle py-1 ps-3 pe-1 text-small font-medium text-cedar-strong">
           <Tag size={14} />
           {/* A code is an identifier, not prose: it reads left-to-right
               even on an Arabic page. */}
@@ -77,13 +77,13 @@ function CouponField({ appliedCode, onChanged, disabled }) {
             onClick={clear}
             disabled={busy || disabled}
             aria-label={t("coupon.removeAria", { code: appliedCode })}
-            className="cursor-pointer rounded-full p-1 text-cedar transition hover:bg-cedar-tint disabled:cursor-not-allowed disabled:opacity-50"
+            className="cursor-pointer rounded-pill p-1 text-cedar transition hover:bg-cedar-tint disabled:cursor-not-allowed disabled:opacity-50"
           >
             <X size={14} />
           </button>
         </span>
 
-        {error && <p className="mt-2 text-sm text-danger">{error}</p>}
+        {error && <p className="mt-2 text-small text-danger">{error}</p>}
       </div>
     );
   }
@@ -92,7 +92,7 @@ function CouponField({ appliedCode, onChanged, disabled }) {
     <div>
       <label
         htmlFor="coupon-code"
-        className="mb-2 block text-sm text-ink-secondary"
+        className="mb-2 block text-small text-ink-secondary"
       >
         {t("coupon.fieldLabel")}
       </label>
@@ -115,20 +115,20 @@ function CouponField({ appliedCode, onChanged, disabled }) {
           dir="ltr"
           placeholder={t("coupon.placeholder")}
           disabled={busy || disabled}
-          className="min-w-0 flex-1 rounded-lg border border-line-strong px-3 py-2 text-sm uppercase outline-none focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring disabled:bg-paper"
+          className="min-w-0 flex-1 rounded-control border border-line-strong px-3 py-2 text-small uppercase outline-none focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring disabled:bg-paper"
         />
 
         <button
           type="button"
           onClick={apply}
           disabled={busy || disabled}
-          className="shrink-0 cursor-pointer rounded-lg border border-cedar px-4 py-2 text-sm font-semibold text-cedar transition hover:bg-cedar-subtle disabled:cursor-not-allowed disabled:opacity-50"
+          className="shrink-0 cursor-pointer rounded-control border border-cedar px-4 py-2 text-small font-semibold text-cedar transition hover:bg-cedar-subtle disabled:cursor-not-allowed disabled:opacity-50"
         >
           {busy ? t("coupon.applying") : t("coupon.apply")}
         </button>
       </div>
 
-      {error && <p className="mt-2 text-sm text-danger">{error}</p>}
+      {error && <p className="mt-2 text-small text-danger">{error}</p>}
     </div>
   );
 }

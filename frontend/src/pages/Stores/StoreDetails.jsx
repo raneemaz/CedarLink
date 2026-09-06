@@ -97,8 +97,8 @@ function StoreDetails() {
       <div className="min-h-screen bg-paper px-6 py-12">
         <div className="mx-auto max-w-5xl">
           <BackLink to="/stores">{t("backLink.stores")}</BackLink>
-          <div className="mt-8 rounded-xl bg-paper-raised p-12 text-center shadow-sm">
-            <h1 className="text-xl font-semibold text-ink">{error}</h1>
+          <div className="mt-8 rounded-card bg-paper-raised p-12 text-center shadow-card">
+            <h1 className="text-title font-semibold text-ink">{error}</h1>
           </div>
         </div>
       </div>
@@ -119,9 +119,9 @@ function StoreDetails() {
       <div className="mx-auto max-w-6xl">
         <BackLink to="/stores">{t("backLink.stores")}</BackLink>
 
-        <div className="mt-6 rounded-xl border border-line bg-paper-raised p-6">
+        <div className="mt-6 rounded-card border border-line bg-paper-raised p-6">
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-3xl font-bold text-ink">{store.name}</h1>
+            <h1 className="text-title font-bold text-ink">{store.name}</h1>
             <StoreStatusBadge store={store} />
           </div>
           <p className="mt-1 text-ink-muted">
@@ -147,7 +147,7 @@ function StoreDetails() {
           )}
 
           {overrideOn && store.override_status === "closed" && (
-            <p className="mt-3 rounded-lg bg-danger-subtle px-3 py-2 text-sm text-danger-strong">
+            <p className="mt-3 rounded-control bg-danger-subtle px-3 py-2 text-small text-danger-strong">
               {store.override_reason
                 ? t("storeDetails.overrideClosedReason", {
                     reason: store.override_reason,
@@ -157,12 +157,12 @@ function StoreDetails() {
             </p>
           )}
           {overrideOn && store.override_status === "open" && (
-            <p className="mt-3 rounded-lg bg-cedar-subtle px-3 py-2 text-sm text-cedar-strong">
+            <p className="mt-3 rounded-control bg-cedar-subtle px-3 py-2 text-small text-cedar-strong">
               {t("storeDetails.overrideOpen", { until: overrideUntil })}
             </p>
           )}
 
-          <div className="mt-4 text-sm">
+          <div className="mt-4 text-small">
             <p className="text-ink-faint">{t("storeDetails.todaysHours")}</p>
             <p className="font-medium text-ink-emphasis" dir="ltr">
               {todayIdx >= 0 && (
@@ -182,7 +182,7 @@ function StoreDetails() {
             <p className="mt-3 leading-7 text-ink-secondary">{store.description}</p>
           )}
 
-          <div className="mt-5 grid gap-4 border-t border-line-subtle pt-4 text-sm sm:grid-cols-3">
+          <div className="mt-5 grid gap-4 border-t border-line-subtle pt-4 text-small sm:grid-cols-3">
             <div>
               <p className="text-ink-faint">{t("storeDetails.delivery")}</p>
               <p
@@ -212,7 +212,7 @@ function StoreDetails() {
           </div>
 
           {store.contact_info && (
-            <p className="mt-4 text-sm text-ink-muted">
+            <p className="mt-4 text-small text-ink-muted">
               {t("storeDetails.contact")}: {store.contact_info}
             </p>
           )}
@@ -224,7 +224,7 @@ function StoreDetails() {
           />
 
           {store.is_online_only ? (
-            <p className="mt-4 text-sm text-ink-secondary">
+            <p className="mt-4 text-small text-ink-secondary">
               {t("storeDetails.onlineOnly")}
             </p>
           ) : store.latitude != null && store.longitude != null ? (
@@ -242,19 +242,19 @@ function StoreDetails() {
             {announcements.map((a) => (
               <div
                 key={a.id}
-                className="flex gap-3 rounded-xl border border-warning-border bg-warning-subtle p-4"
+                className="flex gap-3 rounded-card border border-warning-border bg-warning-subtle p-4"
               >
                 <Megaphone className="mt-0.5 h-5 w-5 shrink-0 text-warning-muted" />
                 <div>
                   <p className="font-semibold text-warning">{a.title}</p>
-                  <p className="mt-1 text-sm text-warning">{a.body}</p>
+                  <p className="mt-1 text-small text-warning">{a.body}</p>
                 </div>
               </div>
             ))}
           </div>
         )}
 
-        <h2 className="mt-10 text-xl font-bold text-ink">
+        <h2 className="mt-10 text-title font-bold text-ink">
           {t("storeDetails.productsHeading", { count: products.length })}
         </h2>
 
@@ -268,9 +268,9 @@ function StoreDetails() {
           </div>
         )}
 
-        <section className="mt-10 rounded-xl border border-line bg-paper-raised p-6">
+        <section className="mt-10 rounded-card border border-line bg-paper-raised p-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-xl font-bold text-ink">
+            <h2 className="text-title font-bold text-ink">
               {t("reviews.storeHeading")}
             </h2>
             <RatingSummary
