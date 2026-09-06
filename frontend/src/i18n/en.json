@@ -238,7 +238,9 @@
       "title": "Discover products and stores around you.",
       "description": "Browse stores, search products, and explore CedarLink without logging in. Sign in only when you want to add items to cart or checkout.",
       "browseProducts": "Browse Products",
-      "browseStores": "Browse Stores"
+      "browseStores": "Browse Stores",
+      "storeCount_one": "local store on CedarLink",
+      "storeCount_other": "local stores on CedarLink"
     },
     "categories": {
       "title": "Featured categories"

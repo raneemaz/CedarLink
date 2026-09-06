@@ -44,7 +44,7 @@ function StarRatingInput({ value = 0, onChange, name = "rating", disabled }) {
               className={`rounded transition peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-cedar-ring ${
                 n <= shown
                   ? "fill-rating text-rating"
-                  : "text-ink-disabled"
+                  : "text-rating-empty"
               }`}
             />
           </label>

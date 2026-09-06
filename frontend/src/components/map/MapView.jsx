@@ -72,7 +72,7 @@ function MapView({ latitude, longitude, className = "" }) {
     <div
       ref={containerRef}
       dir="ltr"
-      className={`h-48 w-full overflow-hidden rounded-xl border border-line bg-paper-sunken ${className}`}
+      className={`h-48 w-full overflow-hidden rounded-card border border-line bg-paper-sunken ${className}`}
     />
   );
 }

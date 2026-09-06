@@ -86,7 +86,7 @@ function NotificationsFeed() {
   if (!isAuthenticated) {
     return (
       <div className="mx-auto max-w-3xl px-6 py-10">
-        <div className="rounded-xl border border-danger-border bg-danger-subtle p-5">
+        <div className="rounded-card border border-danger-border bg-danger-subtle p-5">
           <p className="text-danger-strong">
             {t("notificationsFeed.loadError")}
           </p>
@@ -107,7 +107,7 @@ function NotificationsFeed() {
     <div className="mx-auto max-w-3xl px-6 py-10">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-ink">
+          <h1 className="text-title font-bold text-ink">
             {t("notificationsFeed.title")}
           </h1>
           <p className="mt-2 text-ink-secondary">
@@ -120,7 +120,7 @@ function NotificationsFeed() {
             type="button"
             onClick={markAllRead}
             disabled={unreadCount === 0}
-            className="cursor-pointer rounded-lg border border-cedar px-4 py-2 text-sm font-medium text-cedar transition hover:bg-cedar-subtle disabled:cursor-not-allowed disabled:border-line disabled:text-ink-disabled"
+            className="cursor-pointer rounded-control border border-cedar px-4 py-2 text-small font-medium text-cedar transition hover:bg-cedar-subtle disabled:cursor-not-allowed disabled:border-line disabled:text-ink-disabled"
           >
             {t("notificationsFeed.markAllRead")}
           </button>
@@ -129,7 +129,7 @@ function NotificationsFeed() {
             type="button"
             onClick={() => setConfirmingDelete(true)}
             disabled={notifications.length === 0}
-            className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-danger-border px-4 py-2 text-sm font-medium text-danger transition hover:bg-danger-subtle disabled:cursor-not-allowed disabled:border-line disabled:text-ink-disabled"
+            className="flex cursor-pointer items-center gap-1.5 rounded-control border border-danger-border px-4 py-2 text-small font-medium text-danger transition hover:bg-danger-subtle disabled:cursor-not-allowed disabled:border-line disabled:text-ink-disabled"
           >
             <Trash2 size={15} />
             {t("notificationsFeed.deleteAll")}
@@ -138,8 +138,8 @@ function NotificationsFeed() {
       </div>
 
       {confirmingDelete && notifications.length > 0 && (
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-danger-border bg-danger-subtle px-4 py-3">
-          <p className="text-sm text-danger-strong">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-card border border-danger-border bg-danger-subtle px-4 py-3">
+          <p className="text-small text-danger-strong">
             {t("notificationsFeed.deleteAllConfirm")}
           </p>
 
@@ -148,7 +148,7 @@ function NotificationsFeed() {
               type="button"
               onClick={() => setConfirmingDelete(false)}
               disabled={deleting}
-              className="cursor-pointer rounded-lg border border-line-strong bg-paper-raised px-3 py-1.5 text-sm font-medium text-ink-body transition hover:bg-paper disabled:opacity-60"
+              className="cursor-pointer rounded-control border border-line-strong bg-paper-raised px-3 py-1.5 text-small font-medium text-ink-body transition hover:bg-paper disabled:opacity-60"
             >
               {t("common.cancel")}
             </button>
@@ -157,7 +157,7 @@ function NotificationsFeed() {
               type="button"
               onClick={handleDeleteAll}
               disabled={deleting}
-              className="cursor-pointer rounded-lg bg-danger px-3 py-1.5 text-sm font-medium text-on-danger transition hover:bg-danger-strong disabled:opacity-60"
+              className="cursor-pointer rounded-control bg-danger px-3 py-1.5 text-small font-medium text-on-danger transition hover:bg-danger-strong disabled:opacity-60"
             >
               {deleting
                 ? t("notificationsFeed.deleting")
@@ -168,7 +168,7 @@ function NotificationsFeed() {
       )}
 
       {notifications.length === 0 ? (
-        <div className="rounded-2xl border border-line bg-paper-raised py-16 text-center">
+        <div className="rounded-card border border-line bg-paper-raised py-16 text-center">
           <Bell size={28} className="mx-auto text-ink-disabled" />
           <p className="mt-3 text-ink-secondary">
             {t("notificationsFeed.empty")}
@@ -184,7 +184,7 @@ function NotificationsFeed() {
                 <button
                   type="button"
                   onClick={() => handleRowClick(notification)}
-                  className={`flex w-full cursor-pointer items-start gap-4 rounded-2xl border p-4 text-start shadow-sm transition hover:bg-paper ${
+                  className={`flex w-full cursor-pointer items-start gap-4 rounded-card border p-4 text-start shadow-card transition hover:bg-paper ${
                     notification.is_read
                       ? "border-line bg-paper-raised"
                       : "border-cedar-tint bg-cedar-subtle/50"
@@ -198,10 +198,10 @@ function NotificationsFeed() {
                     <span className="block font-medium text-ink">
                       {notification.title}
                     </span>
-                    <span className="mt-1 block text-sm text-ink-secondary">
+                    <span className="mt-1 block text-small text-ink-secondary">
                       {notification.message}
                     </span>
-                    <span className="mt-2 block text-xs text-ink-faint">
+                    <span className="mt-2 block text-micro text-ink-faint">
                       {formatRelativeTime(
                         notification.created_at,
                         i18n.language,
@@ -210,7 +210,7 @@ function NotificationsFeed() {
                   </span>
 
                   {!notification.is_read && (
-                    <span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-cedar-ring" />
+                    <span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-pill bg-cedar-ring" />
                   )}
                 </button>
               </li>
@@ -225,7 +225,7 @@ function NotificationsFeed() {
             type="button"
             onClick={handleLoadMore}
             disabled={loadingMore}
-            className="cursor-pointer rounded-lg bg-cedar px-6 py-2.5 text-sm font-medium text-on-cedar transition hover:bg-cedar-strong disabled:opacity-60"
+            className="cursor-pointer rounded-control bg-cedar px-6 py-2.5 text-small font-medium text-on-cedar transition hover:bg-cedar-strong disabled:opacity-60"
           >
             {loadingMore
               ? t("notificationsFeed.loading")

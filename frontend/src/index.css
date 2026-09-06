@@ -1,281 +1,369 @@
 @import "tailwindcss";
+@import "./fonts.css";
 
 /*
  * CedarLink design tokens.
  *
  * Named by role, never by colour: `--color-paper`, not `--color-white`.
- * A role survives a theme change and a colour does not — the day this app
- * grows a dark theme, `paper` becomes dark and every call site is already
- * correct, whereas every `bg-white` would have to be found and argued
- * about one at a time.
+ * A role survives a theme change and a colour does not — which is what
+ * made this file the whole of the dark theme (ADR 0029) and the whole of
+ * the redesign's palette (ADR 0030).
  *
- * The family names are CedarLink's own vocabulary rather than Tailwind's:
+ * Families are CedarLink's own vocabulary rather than Tailwind's:
+ *   ink-*     text        paper-*   surfaces
+ *   line-*    borders     cedar-*   brand
+ *   copper-*  accent      plus the status roles
  *
- *   ink-*     text        (was text-*; `text-text-muted` read badly)
- *   paper-*   surfaces    (was surface-*)
- *   line-*    borders     (was border-*; `border-border` read badly)
- *   cedar-*   brand       (was brand-*)
+ * VALUES come from the redesign mockup's four artboards; the component
+ * sheet wins wherever an artboard disagrees with it. The mockup's own
+ * names map onto the roles like this:
  *
- * Status roles keep their names, because "danger" and "warning" are
- * already the words a designer and a developer both use.
+ *   --paper        -> paper            --cedar-900 -> cedar-strong
+ *   --paper-2      -> paper-sunken     --cedar-700 -> cedar
+ *   --ink          -> ink              --cedar-500 -> cedar-ring
+ *   --ink-muted    -> ink-muted        --cedar-100 -> cedar-tint
+ *   --line         -> line             --cedar-50  -> cedar-subtle
+ *   --copper-700   -> copper-strong    --copper-600 -> copper
  *
- * Two ramps, chosen in docs/decisions/0028-design-tokens.md:
- *   neutral = gray     (was split gray 854 / slate 242)
- *   brand   = emerald  (was split emerald 222 / green 210)
- * Warning resolved amber over yellow, info resolved sky over blue.
- *
- * Values are the literal Tailwind v4 palette values rather than
- * `var(--color-gray-50)`, because Tailwind tree-shakes theme variables
- * that no utility references — and after the migration nothing
- * references the raw ramp, so the indirection would resolve to nothing.
- * The ramp and shade each value came from is in the comment, so the
- * provenance is still readable.
- *
- * Several tokens deliberately share a value (`line` and `control` are
- * both gray-200). That is the point: they are different roles that happen
- * to agree today, and they are free to diverge.
+ * The mockup gives one neutral text weight and one border weight; the
+ * application uses seven and three. The extra steps are interpolated
+ * along the same hue (80/85) rather than invented, so the ramp reads as
+ * one family. Every one of them is measured — see
+ * frontend/scripts/check-contrast.py, which fails CI on any pair below
+ * WCAG AA.
  */
 @theme {
+  /* ---- Type ------------------------------------------------------- */
+  /* Newsreader for display and section headings, Plus Jakarta Sans for
+     everything else. Real fallbacks on both: a blocked font host must
+     degrade to a designed face, not to whatever the OS picks first. */
+  --font-display: "Newsreader", Georgia, "Times New Roman", serif;
+  --font-ui: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI",
+    sans-serif;
+
+  /* Sizes from the component sheet. A hard-coded text-[27px] is the same
+     mistake as a hard-coded colour, so they are tokens. */
+  --text-display: 2.75rem;      /* 44px — hero */
+  --text-display--line-height: 1.08;
+  --text-display--letter-spacing: -0.015em;
+  --text-title: 1.6875rem;      /* 27px — section headings */
+  --text-title--line-height: 1.25;
+  --text-title--letter-spacing: -0.01em;
+  --text-body: 1rem;            /* 16px */
+  --text-body--line-height: 1.6;
+  --text-small: 0.875rem;       /* 14px */
+  --text-small--line-height: 1.5;
+  --text-micro: 0.75rem;        /* 12px — badges, meta */
+  --text-micro--line-height: 1.4;
+
+  /* ---- Shape ------------------------------------------------------ */
+  --radius-card: 20px;
+  --radius-control: 12px;
+  --radius-pill: 999px;
+
+  /* Green-tinted rather than grey: a neutral drop shadow on a warm
+     paper ground reads as dirt. Both are from the component sheet. */
+  --shadow-card: 0 16px 32px -16px oklch(24% 0.05 155 / 0.22);
+  --shadow-lift: 0 24px 44px -18px oklch(24% 0.05 155 / 0.3);
+  --shadow-control: 0 4px 10px -4px oklch(24% 0.05 155 / 0.3);
+
   /* ---- Surfaces --------------------------------------------------- */
-  --color-paper: oklch(98.5% 0.002 247.839); /* gray-50  — the page */
-  --color-paper-raised: #fff; /* white    — cards */
-  --color-paper-sunken: oklch(96.7% 0.003 264.542); /* gray-100 — insets */
+  --color-paper: oklch(98% 0.012 85);
+  --color-paper-raised: #fff;
+  --color-paper-sunken: oklch(96% 0.016 85);
 
   /* ---- Lines ------------------------------------------------------ */
-  --color-line-subtle: oklch(96.7% 0.003 264.542); /* gray-100 — dividers */
-  --color-line: oklch(92.8% 0.006 264.531); /* gray-200 — card edges */
-  --color-line-strong: oklch(87.2% 0.01 258.338); /* gray-300 — inputs */
+  --color-line-subtle: oklch(93.5% 0.013 85);
+  --color-line: oklch(89% 0.016 85);
+  --color-line-strong: oklch(83% 0.018 85);
 
   /* ---- Ink -------------------------------------------------------- */
-  --color-ink: oklch(21% 0.034 264.665); /* gray-900 */
-  --color-ink-emphasis: oklch(27.8% 0.033 256.848); /* gray-800 */
-  --color-ink-body: oklch(37.3% 0.034 259.733); /* gray-700 */
-  --color-ink-secondary: oklch(44.6% 0.03 256.802); /* gray-600 */
-  --color-ink-muted: oklch(55.1% 0.027 264.364); /* gray-500 */
-  --color-ink-faint: oklch(70.7% 0.022 261.325); /* gray-400 */
-  --color-ink-disabled: oklch(87.2% 0.01 258.338); /* gray-300 */
+  --color-ink: oklch(23% 0.02 80);
+  --color-ink-emphasis: oklch(30% 0.02 80);
+  --color-ink-body: oklch(37% 0.02 80);
+  --color-ink-secondary: oklch(43% 0.02 80);
+  --color-ink-muted: oklch(48% 0.02 80);
+  /* Icons and secondary metadata, held at the 3:1 large-text floor
+     rather than at the mockup's lighter grey, which measured 2.49:1. */
+  --color-ink-faint: oklch(60% 0.02 80);
+  --color-ink-disabled: oklch(74% 0.018 82);
 
   /* ---- Controls --------------------------------------------------- */
-  --color-control: oklch(92.8% 0.006 264.531); /* gray-200 */
-  --color-control-hover: oklch(87.2% 0.01 258.338); /* gray-300 */
+  --color-control: oklch(93.5% 0.013 85);
+  --color-control-hover: oklch(89% 0.016 85);
 
   /* ---- Foregrounds on a filled block ------------------------------ */
-  /* One per fill, not one shared "on-anything". They agree today and
-     they are three different questions: a dark theme may keep white on
-     cedar and want something warmer on danger. Binding them together is
-     the bug this set exists to avoid. */
-  --color-on-cedar: #fff; /* white */
-  --color-on-danger: #fff; /* white */
-  --color-on-warning: #fff; /* white */
+  --color-on-cedar: #fff;
+  --color-on-danger: #fff;
+  --color-on-warning: #fff;
+  --color-on-copper: #fff;
 
-  /* ---- Brand ------------------------------------------------------ */
-  --color-cedar-subtle: oklch(97.9% 0.021 166.113); /* emerald-50 */
-  --color-cedar-tint: oklch(95% 0.052 163.051); /* emerald-100 */
-  --color-cedar-ring: oklch(59.6% 0.145 163.225); /* emerald-600 — focus */
-  --color-cedar: oklch(50.8% 0.118 165.612); /* emerald-700 */
-  --color-cedar-strong: oklch(43.2% 0.095 166.913); /* emerald-800 */
+  /* ---- Brand: cedar ----------------------------------------------- */
+  --color-cedar-subtle: oklch(97% 0.018 150);
+  --color-cedar-tint: oklch(93% 0.035 150);
+  --color-cedar-ring: oklch(53% 0.11 155);
+  --color-cedar: oklch(38% 0.085 155);
+  --color-cedar-strong: oklch(24% 0.05 155);
+
+  /* ---- Accent: copper --------------------------------------------- */
+  /* A role the previous set did not have. The mockup uses copper for
+     sale prices, the quick-add affordance and the hero decoration, and
+     the alternative was writing the literal at each site — which is the
+     thing the lint guard exists to stop. */
+  --color-copper-tint: oklch(92% 0.045 55);
+  --color-copper: oklch(56% 0.145 45);
+  --color-copper-strong: oklch(47% 0.13 45);
 
   /* ---- Status: success -------------------------------------------- */
-  /* Currently the brand ramp — CedarLink's brand is green, so "good" and
-     "ours" look the same today. Separate roles so they can stop. */
-  --color-success-subtle: oklch(95% 0.052 163.051); /* emerald-100 */
-  --color-success: oklch(50.8% 0.118 165.612); /* emerald-700 */
-  --color-success-strong: oklch(43.2% 0.095 166.913); /* emerald-800 */
+  /* Cedar is a green brand, so "good" and "ours" agree today. Separate
+     roles so they can stop agreeing. */
+  --color-success-subtle: oklch(93% 0.035 150);
+  --color-success: oklch(38% 0.085 155);
+  --color-success-strong: oklch(24% 0.05 155);
 
   /* ---- Status: danger --------------------------------------------- */
-  --color-danger-subtle: oklch(97.1% 0.013 17.38); /* red-50 */
-  --color-danger-tint: oklch(93.6% 0.032 17.717); /* red-100 */
-  --color-danger-border: oklch(88.5% 0.062 18.334); /* red-200 */
-  --color-danger-accent: oklch(63.7% 0.237 25.331); /* red-500 */
-  --color-danger: oklch(57.7% 0.245 27.325); /* red-600 */
-  --color-danger-strong: oklch(50.5% 0.213 27.518); /* red-700 */
+  --color-danger-subtle: oklch(96% 0.02 25);
+  --color-danger-tint: oklch(92% 0.045 25);
+  --color-danger-border: oklch(86% 0.07 25);
+  --color-danger-accent: oklch(52% 0.16 25);
+  --color-danger: oklch(48% 0.16 25);
+  --color-danger-strong: oklch(40% 0.14 25);
 
   /* ---- Status: warning -------------------------------------------- */
-  --color-warning-subtle: oklch(98.7% 0.022 95.277); /* amber-50 */
-  --color-warning-tint: oklch(96.2% 0.059 95.617); /* amber-100 */
-  --color-warning-border: oklch(92.4% 0.12 95.746); /* amber-200 */
-  --color-warning-accent: oklch(82.8% 0.189 84.429); /* amber-400 */
-  --color-warning-muted: oklch(55.5% 0.163 48.998); /* amber-700 */
-  --color-warning: oklch(47.3% 0.137 46.201); /* amber-800 */
+  --color-warning-subtle: oklch(97% 0.025 75);
+  --color-warning-tint: oklch(94% 0.055 75);
+  --color-warning-border: oklch(88% 0.09 75);
+  --color-warning-accent: oklch(76% 0.15 70);
+  --color-warning-muted: oklch(50% 0.1 60);
+  --color-warning: oklch(43% 0.09 60);
 
   /* ---- Rating ------------------------------------------------------ */
-  /* Its own role, not `warning-accent`. A filled star is a rating, and a
-     rating is not a caution — sharing the token means retuning the
-     warning colour silently retunes every star on the site, and the two
-     will not want to move together. Same value today, different reason. */
-  --color-rating: oklch(82.8% 0.189 84.429); /* amber-400 */
+  /* Its own role: a filled star is a rating, not a caution, and binding
+     the two means retuning one silently retunes the other. */
+  --color-rating: oklch(76% 0.15 70);
+  /* The unselected star in an interactive rating. It is the affordance
+     that says the control is clickable, so it is SC 1.4.11 at 3:1 —
+     not the 1.4.3 inactive-control exemption. The mockup draws it as a
+     faint outline that measured 1.47:1; this is that outline darkened
+     until it clears the floor, which is the one place the mockup gives
+     way. */
+  --color-rating-empty: oklch(64% 0.03 80);
 
   /* ---- Status: info ------------------------------------------------ */
-  --color-info-subtle: oklch(97.7% 0.013 236.62); /* sky-50 */
-  --color-info: oklch(44.3% 0.11 240.79); /* sky-800 */
+  --color-info-subtle: oklch(96% 0.02 240);
+  --color-info: oklch(43% 0.1 240);
 
   /* ---- Chrome ------------------------------------------------------ */
-  --color-scrim: #000; /* black — modal backdrop, used at /40 */
+  --color-scrim: oklch(23% 0.02 80);
 }
 
 /*
- * Dark theme — the same roles, a second set of values.
+ * Arabic.
  *
- * Every rule below redefines a token and nothing else. No component, no
- * class name and no `dark:` variant is involved anywhere in the app: that
- * is the whole return on the token layer, and if a future change needs a
- * `dark:` in a className it means a role is missing here.
+ * Newsreader and Plus Jakarta Sans ship latin, latin-ext, vietnamese and
+ * cyrillic-ext — and not one Arabic codepoint. Verified against the
+ * Google Fonts css2 unicode-range declarations, not from memory; see
+ * docs/decisions/0030-visual-design.md. Without this block every Arabic
+ * screen falls back to whatever the OS picks, which is no design at all
+ * in the language a third of the report's figures are in.
  *
- * Selector specificity, not source order, decides which set wins.
- * `@theme` emits into `:root` (0,1,0). `:root[data-theme="dark"]` is
- * (0,1,1) and `:root:not([data-theme="light"])` is (0,2,0), so both beat
- * it wherever Tailwind chooses to hoist its output.
+ * Amiri for display, IBM Plex Sans Arabic for the interface, with a real
+ * fallback stack behind both.
  *
- * Three inversions are deliberate rather than mechanical:
+ * The three corrections below are defects in the mockup's CSS as
+ * written, not preferences:
+ */
+[lang="ar"],
+[dir="rtl"] {
+  --font-display: "Amiri", "Noto Naskh Arabic", Georgia, serif;
+  --font-ui: "IBM Plex Sans Arabic", "Tajawal", "Noto Naskh Arabic",
+    system-ui, sans-serif;
+
+  /* Arabic is a joined script. The mockup's -0.015em tracking pulls the
+     connecting strokes into each other and the word stops reading as a
+     word. This is not a taste question. */
+  letter-spacing: normal;
+
+  /* Descenders run deep and vowel marks sit above the line. The
+     mockup's 1.06 on the hero clips them. */
+  line-height: 1.95;
+
+  /* No capitals and a different vertical structure, so Arabic set at the
+     Latin size reads smaller and lighter. */
+  font-size: 106%;
+}
+
+/* Headings need the marks too, but not body leading. And Amiri has no
+   500 or 600 — Newsreader 600 maps to Amiri 700 or the browser
+   synthesises a bold, which smears the strokes. */
+[lang="ar"] :is(h1, h2, h3),
+[dir="rtl"] :is(h1, h2, h3) {
+  line-height: 1.5;
+  letter-spacing: normal;
+  font-weight: 700;
+}
+
+/* The type-scale tokens carry Latin tracking. Reset it for every size
+   under Arabic, or the display sizes reintroduce the tracking the block
+   above just removed. */
+[lang="ar"] .text-display,
+[dir="rtl"] .text-display,
+[lang="ar"] .text-title,
+[dir="rtl"] .text-title {
+  letter-spacing: normal;
+  line-height: 1.5;
+}
+
+/*
+ * Dark theme — the same roles, a second set of values, re-derived
+ * against the redesign palette.
  *
- *  - `paper-sunken` is *lighter* than `paper-raised` here, where in light
- *    it is darker. An inset reads as an inset by differing from the card;
- *    going darker in a dark theme merges it into the page instead.
- *  - The brand and status colours move to the light end of their ramps.
- *    emerald-700 on a near-black card is 1.9:1 — legible as a shape, not
- *    as text.
- *  - `on-cedar` / `on-danger` / `on-warning` become near-black, because
- *    the fills they sit on are now light. This is the case that justified
- *    splitting them out of one shared `on-brand`.
+ * Every rule here redefines a token and nothing else. No component, no
+ * class name and no `dark:` variant is involved anywhere in the app; the
+ * lint guard fails the build on any of the three.
+ *
+ * Specificity, not source order, decides which set wins: `@theme` emits
+ * into `:root` (0,1,0), `:root[data-theme="dark"]` is (0,1,1) and
+ * `:root:not([data-theme="light"])` is (0,2,0).
+ *
+ * The warm hue carries through — the dark ground is a warm near-black at
+ * hue 80, not a blue-grey — so the two themes read as one palette. Brand
+ * and status colours move to the light end of their ramps, and the
+ * on-* foregrounds go dark, because the fills they sit on are now light.
  */
 :root[data-theme="dark"] {
-  /* ---- Surfaces --------------------------------------------------- */
-  --color-paper: oklch(13% 0.028 261.692); /* gray-950 — the page */
-  --color-paper-raised: oklch(21% 0.034 264.665); /* gray-900 — cards */
-  --color-paper-sunken: oklch(27.8% 0.033 256.848); /* gray-800 — insets */
+  --color-paper: oklch(16% 0.012 80);
+  --color-paper-raised: oklch(21% 0.014 80);
+  --color-paper-sunken: oklch(27% 0.016 80);
 
-  /* ---- Lines ------------------------------------------------------ */
-  --color-line-subtle: oklch(27.8% 0.033 256.848); /* gray-800 */
-  --color-line: oklch(37.3% 0.034 259.733); /* gray-700 */
-  --color-line-strong: oklch(44.6% 0.03 256.802); /* gray-600 */
+  --color-line-subtle: oklch(27% 0.016 80);
+  --color-line: oklch(33% 0.018 80);
+  --color-line-strong: oklch(42% 0.02 80);
 
-  /* ---- Ink -------------------------------------------------------- */
-  --color-ink: oklch(98.5% 0.002 247.839); /* gray-50 */
-  --color-ink-emphasis: oklch(96.7% 0.003 264.542); /* gray-100 */
-  --color-ink-body: oklch(92.8% 0.006 264.531); /* gray-200 */
-  --color-ink-secondary: oklch(87.2% 0.01 258.338); /* gray-300 */
-  --color-ink-muted: oklch(70.7% 0.022 261.325); /* gray-400 */
-  --color-ink-faint: oklch(55.1% 0.027 264.364); /* gray-500 */
-  --color-ink-disabled: oklch(44.6% 0.03 256.802); /* gray-600 */
+  --color-ink: oklch(97% 0.012 85);
+  --color-ink-emphasis: oklch(94% 0.012 85);
+  --color-ink-body: oklch(89% 0.014 85);
+  --color-ink-secondary: oklch(83% 0.016 85);
+  --color-ink-muted: oklch(74% 0.018 85);
+  --color-ink-faint: oklch(60% 0.02 82);
+  --color-ink-disabled: oklch(46% 0.02 80);
 
-  /* ---- Controls --------------------------------------------------- */
-  --color-control: oklch(37.3% 0.034 259.733); /* gray-700 */
-  --color-control-hover: oklch(44.6% 0.03 256.802); /* gray-600 */
+  --color-control: oklch(33% 0.018 80);
+  --color-control-hover: oklch(42% 0.02 80);
 
-  /* ---- Foregrounds on a filled block ------------------------------ */
-  /* Near-black, not white: the fills below are light in this theme. */
-  --color-on-cedar: oklch(13% 0.028 261.692); /* gray-950 */
-  --color-on-danger: oklch(13% 0.028 261.692); /* gray-950 */
-  --color-on-warning: oklch(13% 0.028 261.692); /* gray-950 */
+  --color-on-cedar: oklch(16% 0.012 80);
+  --color-on-danger: oklch(16% 0.012 80);
+  --color-on-warning: oklch(16% 0.012 80);
+  --color-on-copper: oklch(16% 0.012 80);
 
-  /* ---- Brand ------------------------------------------------------ */
-  --color-cedar-subtle: oklch(26.2% 0.051 172.552); /* emerald-950 */
-  --color-cedar-tint: oklch(37.8% 0.077 168.94); /* emerald-900 */
-  --color-cedar-ring: oklch(69.6% 0.17 162.48); /* emerald-500 */
-  --color-cedar: oklch(76.5% 0.177 163.223); /* emerald-400 */
-  --color-cedar-strong: oklch(84.5% 0.143 164.978); /* emerald-300 */
+  --color-cedar-subtle: oklch(25% 0.035 155);
+  --color-cedar-tint: oklch(33% 0.055 155);
+  --color-cedar-ring: oklch(68% 0.14 155);
+  --color-cedar: oklch(80% 0.13 155);
+  --color-cedar-strong: oklch(88% 0.1 155);
 
-  /* ---- Status: success -------------------------------------------- */
-  --color-success-subtle: oklch(26.2% 0.051 172.552); /* emerald-950 */
-  --color-success: oklch(76.5% 0.177 163.223); /* emerald-400 */
-  --color-success-strong: oklch(84.5% 0.143 164.978); /* emerald-300 */
+  --color-copper-tint: oklch(32% 0.06 45);
+  --color-copper: oklch(78% 0.13 55);
+  --color-copper-strong: oklch(85% 0.1 55);
 
-  /* ---- Status: danger --------------------------------------------- */
-  --color-danger-subtle: oklch(25.8% 0.092 26.042); /* red-950 */
-  --color-danger-tint: oklch(39.6% 0.141 25.723); /* red-900 */
-  --color-danger-border: oklch(44.4% 0.177 26.899); /* red-800 */
-  --color-danger-accent: oklch(63.7% 0.237 25.331); /* red-500 */
-  --color-danger: oklch(70.4% 0.191 22.216); /* red-400 */
-  --color-danger-strong: oklch(80.8% 0.114 19.571); /* red-300 */
+  --color-success-subtle: oklch(25% 0.035 155);
+  --color-success: oklch(80% 0.13 155);
+  --color-success-strong: oklch(88% 0.1 155);
 
-  /* ---- Status: warning -------------------------------------------- */
-  --color-warning-subtle: oklch(27.9% 0.077 45.635); /* amber-950 */
-  --color-warning-tint: oklch(41.4% 0.112 45.904); /* amber-900 */
-  --color-warning-border: oklch(47.3% 0.137 46.201); /* amber-800 */
-  --color-warning-accent: oklch(82.8% 0.189 84.429); /* amber-400 */
-  --color-warning-muted: oklch(82.8% 0.189 84.429); /* amber-400 */
-  --color-warning: oklch(87.9% 0.169 91.605); /* amber-300 */
+  --color-danger-subtle: oklch(25% 0.05 25);
+  --color-danger-tint: oklch(32% 0.08 25);
+  --color-danger-border: oklch(40% 0.11 25);
+  --color-danger-accent: oklch(68% 0.17 25);
+  --color-danger: oklch(75% 0.14 25);
+  --color-danger-strong: oklch(84% 0.1 25);
 
-  /* ---- Rating ------------------------------------------------------ */
-  /* Unchanged. A gold star is gold on any ground. */
-  --color-rating: oklch(82.8% 0.189 84.429); /* amber-400 */
+  --color-warning-subtle: oklch(26% 0.04 70);
+  --color-warning-tint: oklch(33% 0.06 70);
+  --color-warning-border: oklch(42% 0.08 70);
+  --color-warning-accent: oklch(80% 0.15 70);
+  --color-warning-muted: oklch(84% 0.13 70);
+  --color-warning: oklch(90% 0.1 75);
 
-  /* ---- Status: info ------------------------------------------------ */
-  --color-info-subtle: oklch(29.3% 0.066 243.157); /* sky-950 */
-  --color-info: oklch(82.8% 0.111 230.318); /* sky-300 */
+  --color-rating: oklch(80% 0.15 70);
+  --color-rating-empty: oklch(55% 0.03 80);
 
-  /* ---- Chrome ------------------------------------------------------ */
-  --color-scrim: #000; /* black */
+  --color-info-subtle: oklch(26% 0.045 240);
+  --color-info: oklch(85% 0.09 240);
+
+  --color-scrim: oklch(8% 0.01 80);
 }
 
 /*
  * The system preference, for anyone who has not chosen. Guarded with
  * :not([data-theme="light"]) so an explicit light choice still wins on a
- * device set to dark — which is the point of offering the choice at all.
+ * device set to dark.
  */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --color-paper: oklch(13% 0.028 261.692);
-    --color-paper-raised: oklch(21% 0.034 264.665);
-    --color-paper-sunken: oklch(27.8% 0.033 256.848);
+    --color-paper: oklch(16% 0.012 80);
+    --color-paper-raised: oklch(21% 0.014 80);
+    --color-paper-sunken: oklch(27% 0.016 80);
 
-    --color-line-subtle: oklch(27.8% 0.033 256.848);
-    --color-line: oklch(37.3% 0.034 259.733);
-    --color-line-strong: oklch(44.6% 0.03 256.802);
+    --color-line-subtle: oklch(27% 0.016 80);
+    --color-line: oklch(33% 0.018 80);
+    --color-line-strong: oklch(42% 0.02 80);
 
-    --color-ink: oklch(98.5% 0.002 247.839);
-    --color-ink-emphasis: oklch(96.7% 0.003 264.542);
-    --color-ink-body: oklch(92.8% 0.006 264.531);
-    --color-ink-secondary: oklch(87.2% 0.01 258.338);
-    --color-ink-muted: oklch(70.7% 0.022 261.325);
-    --color-ink-faint: oklch(55.1% 0.027 264.364);
-    --color-ink-disabled: oklch(44.6% 0.03 256.802);
+    --color-ink: oklch(97% 0.012 85);
+    --color-ink-emphasis: oklch(94% 0.012 85);
+    --color-ink-body: oklch(89% 0.014 85);
+    --color-ink-secondary: oklch(83% 0.016 85);
+    --color-ink-muted: oklch(74% 0.018 85);
+    --color-ink-faint: oklch(60% 0.02 82);
+    --color-ink-disabled: oklch(46% 0.02 80);
 
-    --color-control: oklch(37.3% 0.034 259.733);
-    --color-control-hover: oklch(44.6% 0.03 256.802);
+    --color-control: oklch(33% 0.018 80);
+    --color-control-hover: oklch(42% 0.02 80);
 
-    --color-on-cedar: oklch(13% 0.028 261.692);
-    --color-on-danger: oklch(13% 0.028 261.692);
-    --color-on-warning: oklch(13% 0.028 261.692);
+    --color-on-cedar: oklch(16% 0.012 80);
+    --color-on-danger: oklch(16% 0.012 80);
+    --color-on-warning: oklch(16% 0.012 80);
+    --color-on-copper: oklch(16% 0.012 80);
 
-    --color-cedar-subtle: oklch(26.2% 0.051 172.552);
-    --color-cedar-tint: oklch(37.8% 0.077 168.94);
-    --color-cedar-ring: oklch(69.6% 0.17 162.48);
-    --color-cedar: oklch(76.5% 0.177 163.223);
-    --color-cedar-strong: oklch(84.5% 0.143 164.978);
+    --color-cedar-subtle: oklch(25% 0.035 155);
+    --color-cedar-tint: oklch(33% 0.055 155);
+    --color-cedar-ring: oklch(68% 0.14 155);
+    --color-cedar: oklch(80% 0.13 155);
+    --color-cedar-strong: oklch(88% 0.1 155);
 
-    --color-success-subtle: oklch(26.2% 0.051 172.552);
-    --color-success: oklch(76.5% 0.177 163.223);
-    --color-success-strong: oklch(84.5% 0.143 164.978);
+    --color-copper-tint: oklch(32% 0.06 45);
+    --color-copper: oklch(78% 0.13 55);
+    --color-copper-strong: oklch(85% 0.1 55);
 
-    --color-danger-subtle: oklch(25.8% 0.092 26.042);
-    --color-danger-tint: oklch(39.6% 0.141 25.723);
-    --color-danger-border: oklch(44.4% 0.177 26.899);
-    --color-danger-accent: oklch(63.7% 0.237 25.331);
-    --color-danger: oklch(70.4% 0.191 22.216);
-    --color-danger-strong: oklch(80.8% 0.114 19.571);
+    --color-success-subtle: oklch(25% 0.035 155);
+    --color-success: oklch(80% 0.13 155);
+    --color-success-strong: oklch(88% 0.1 155);
 
-    --color-warning-subtle: oklch(27.9% 0.077 45.635);
-    --color-warning-tint: oklch(41.4% 0.112 45.904);
-    --color-warning-border: oklch(47.3% 0.137 46.201);
-    --color-warning-accent: oklch(82.8% 0.189 84.429);
-    --color-warning-muted: oklch(82.8% 0.189 84.429);
-    --color-warning: oklch(87.9% 0.169 91.605);
+    --color-danger-subtle: oklch(25% 0.05 25);
+    --color-danger-tint: oklch(32% 0.08 25);
+    --color-danger-border: oklch(40% 0.11 25);
+    --color-danger-accent: oklch(68% 0.17 25);
+    --color-danger: oklch(75% 0.14 25);
+    --color-danger-strong: oklch(84% 0.1 25);
 
-    --color-rating: oklch(82.8% 0.189 84.429);
+    --color-warning-subtle: oklch(26% 0.04 70);
+    --color-warning-tint: oklch(33% 0.06 70);
+    --color-warning-border: oklch(42% 0.08 70);
+    --color-warning-accent: oklch(80% 0.15 70);
+    --color-warning-muted: oklch(84% 0.13 70);
+    --color-warning: oklch(90% 0.1 75);
 
-    --color-info-subtle: oklch(29.3% 0.066 243.157);
-    --color-info: oklch(82.8% 0.111 230.318);
+    --color-rating: oklch(80% 0.15 70);
+    --color-rating-empty: oklch(45% 0.03 80);
 
-    --color-scrim: #000;
+    --color-info-subtle: oklch(26% 0.045 240);
+    --color-info: oklch(85% 0.09 240);
+
+    --color-scrim: oklch(8% 0.01 80);
   }
 }
 
-/*
- * Tell the browser which set is live, so its own chrome — form controls,
- * scrollbars, the canvas behind the page — matches. Without this a dark
- * page keeps white scrollbars.
- */
+/* Tell the browser which set is live, so its own chrome — form controls,
+   scrollbars, the canvas behind the page — matches. */
 :root[data-theme="dark"] {
   color-scheme: dark;
 }
@@ -286,4 +374,17 @@
 
 :root:not([data-theme]) {
   color-scheme: light dark;
+}
+
+/* The interface face is the default; display is opted into per element.
+   Set here rather than on a wrapper so it survives portals and toasts. */
+body {
+  font-family: var(--font-ui);
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+:is(h1, h2) {
+  font-family: var(--font-display);
 }

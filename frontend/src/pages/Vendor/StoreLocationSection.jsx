@@ -103,7 +103,7 @@ function StoreLocationSection({ store, onStoreChange }) {
         />
 
         {onlineOnly ? (
-          <p className="rounded-lg bg-paper px-4 py-3 text-sm text-ink-secondary">
+          <p className="rounded-control bg-paper px-4 py-3 text-small text-ink-secondary">
             {t("storeLocation.onlineExplainer")}
           </p>
         ) : (

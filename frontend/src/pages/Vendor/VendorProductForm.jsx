@@ -11,7 +11,7 @@ import ProductImageManager from "./ProductImageManager";
 import { localizedName } from "../../utils/localize";
 
 const fieldClass =
-  "w-full rounded-lg border border-line-strong px-4 py-3 text-sm outline-none " +
+  "w-full rounded-control border border-line-strong px-4 py-3 text-small outline-none " +
   "focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring";
 
 const LANG_LABEL = {
@@ -196,14 +196,14 @@ function VendorProductForm() {
   };
 
   if (loading) {
-    return <p className="text-sm text-ink-muted">{t("vendorProductForm.loading")}</p>;
+    return <p className="text-small text-ink-muted">{t("vendorProductForm.loading")}</p>;
   }
 
   if (noStore) {
     return (
       <div>
-        <h1 className="text-3xl font-bold text-ink">{t("vendorProductForm.noStoreTitle")}</h1>
-        <div className="mt-6 rounded-xl border border-dashed border-line-strong bg-paper-raised p-12 text-center">
+        <h1 className="text-title font-bold text-ink">{t("vendorProductForm.noStoreTitle")}</h1>
+        <div className="mt-6 rounded-card border border-dashed border-line-strong bg-paper-raised p-12 text-center">
           <p className="text-ink-secondary">
             {t("vendorProductForm.noStoreBody")}
           </p>
@@ -229,14 +229,14 @@ function VendorProductForm() {
     <div>
       <div className="mb-8">
         <BackLink to="/vendor/products">{t("backLink.vendorProducts")}</BackLink>
-        <h1 className="mt-2 text-3xl font-bold text-ink">
+        <h1 className="mt-2 text-title font-bold text-ink">
           {isEdit ? t("vendorProductForm.editTitle") : t("vendorProductForm.addTitle")}
         </h1>
       </div>
 
       <form
         onSubmit={handleSubmit}
-        className="overflow-hidden rounded-2xl bg-paper-raised shadow-sm"
+        className="overflow-hidden rounded-card bg-paper-raised shadow-card"
       >
         <div className="space-y-6 px-6 py-6">
           {/* Name + description, one language at a time */}
@@ -251,7 +251,7 @@ function VendorProductForm() {
               <div>
                 <label
                   htmlFor={`name_${activeLang}`}
-                  className="mb-2 block text-sm font-medium text-ink-body"
+                  className="mb-2 block text-small font-medium text-ink-body"
                 >
                   {t("vendorProductForm.nameLangLabel", { lang: langName })}
                 </label>
@@ -264,14 +264,14 @@ function VendorProductForm() {
                   className={fieldClass}
                 />
                 {activeLang === "en" && errors.name_en && (
-                  <p className="mt-1 text-xs text-danger">{errors.name_en}</p>
+                  <p className="mt-1 text-micro text-danger">{errors.name_en}</p>
                 )}
               </div>
 
               <div>
                 <label
                   htmlFor={`description_${activeLang}`}
-                  className="mb-2 block text-sm font-medium text-ink-body"
+                  className="mb-2 block text-small font-medium text-ink-body"
                 >
                   {t("vendorProductForm.descriptionLangLabel", {
                     lang: langName,
@@ -288,7 +288,7 @@ function VendorProductForm() {
               </div>
             </div>
 
-            <p className="mt-2 text-xs text-ink-muted">
+            <p className="mt-2 text-micro text-ink-muted">
               {t("translationTabs.fallbackHint")}
             </p>
           </div>
@@ -297,7 +297,7 @@ function VendorProductForm() {
             <div>
               <label
                 htmlFor="price"
-                className="mb-2 block text-sm font-medium text-ink-body"
+                className="mb-2 block text-small font-medium text-ink-body"
               >
                 {t("vendorProductForm.price")}
               </label>
@@ -312,14 +312,14 @@ function VendorProductForm() {
                 className={fieldClass}
               />
               {errors.price && (
-                <p className="mt-1 text-xs text-danger">{errors.price}</p>
+                <p className="mt-1 text-micro text-danger">{errors.price}</p>
               )}
             </div>
 
             <div>
               <label
                 htmlFor="stock"
-                className="mb-2 block text-sm font-medium text-ink-body"
+                className="mb-2 block text-small font-medium text-ink-body"
               >
                 {t("vendorProductForm.stock")}
               </label>
@@ -334,7 +334,7 @@ function VendorProductForm() {
                 className={fieldClass}
               />
               {errors.stock && (
-                <p className="mt-1 text-xs text-danger">{errors.stock}</p>
+                <p className="mt-1 text-micro text-danger">{errors.stock}</p>
               )}
             </div>
           </div>
@@ -342,7 +342,7 @@ function VendorProductForm() {
           <div>
             <label
               htmlFor="category_id"
-              className="mb-2 block text-sm font-medium text-ink-body"
+              className="mb-2 block text-small font-medium text-ink-body"
             >
               {t("vendorProductForm.category")}
             </label>
@@ -361,7 +361,7 @@ function VendorProductForm() {
               ))}
             </select>
             {errors.category_id && (
-              <p className="mt-1 text-xs text-danger">
+              <p className="mt-1 text-micro text-danger">
                 {errors.category_id}
               </p>
             )}

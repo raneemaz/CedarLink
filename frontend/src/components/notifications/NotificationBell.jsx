@@ -79,16 +79,16 @@ function NotificationBell() {
         <Bell size={24} />
 
         {badge && (
-          <span className="absolute -end-2 -top-2 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-cedar px-1 text-xs text-on-cedar">
+          <span className="absolute -end-2 -top-2 flex h-5 min-w-[1.25rem] items-center justify-center rounded-pill bg-cedar px-1 text-micro text-on-cedar">
             {badge}
           </span>
         )}
       </button>
 
       {open && (
-        <div className="absolute end-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-xl border border-line bg-paper-raised shadow-lg">
+        <div className="absolute end-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-card border border-line bg-paper-raised shadow-lift">
           <div className="flex items-center justify-between border-b border-line-subtle px-4 py-3">
-            <span className="text-sm font-semibold text-ink">
+            <span className="text-small font-semibold text-ink">
               {t("notificationsFeed.title")}
             </span>
 
@@ -96,7 +96,7 @@ function NotificationBell() {
               type="button"
               onClick={markAllRead}
               disabled={unreadCount === 0}
-              className="text-xs font-medium text-cedar transition hover:underline disabled:cursor-not-allowed disabled:text-ink-disabled"
+              className="text-micro font-medium text-cedar transition hover:underline disabled:cursor-not-allowed disabled:text-ink-disabled"
             >
               {t("notificationsFeed.markAllRead")}
             </button>
@@ -104,7 +104,7 @@ function NotificationBell() {
 
           <div className="max-h-96 overflow-y-auto">
             {notifications.length === 0 ? (
-              <p className="px-4 py-6 text-center text-sm text-ink-muted">
+              <p className="px-4 py-6 text-center text-small text-ink-muted">
                 {t("notificationsFeed.empty")}
               </p>
             ) : (
@@ -125,13 +125,13 @@ function NotificationBell() {
                     </span>
 
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm font-medium text-ink">
+                      <span className="block truncate text-small font-medium text-ink">
                         {notification.title}
                       </span>
-                      <span className="mt-0.5 block truncate text-xs text-ink-muted">
+                      <span className="mt-0.5 block truncate text-micro text-ink-muted">
                         {notification.message}
                       </span>
-                      <span className="mt-1 block text-[11px] text-ink-faint">
+                      <span className="mt-1 block text-micro text-ink-faint">
                         {formatRelativeTime(
                           notification.created_at,
                           i18n.language,
@@ -140,7 +140,7 @@ function NotificationBell() {
                     </span>
 
                     {!notification.is_read && (
-                      <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-cedar-ring" />
+                      <span className="mt-1 h-2 w-2 shrink-0 rounded-pill bg-cedar-ring" />
                     )}
                   </button>
                 );
@@ -151,7 +151,7 @@ function NotificationBell() {
           <Link
             to="/notifications"
             onClick={() => setOpen(false)}
-            className="block border-t border-line-subtle px-4 py-3 text-center text-sm font-medium text-cedar transition hover:bg-paper"
+            className="block border-t border-line-subtle px-4 py-3 text-center text-small font-medium text-cedar transition hover:bg-paper"
           >
             {t("notificationsFeed.seeAll")}
           </Link>

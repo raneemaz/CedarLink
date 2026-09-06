@@ -6,11 +6,11 @@ import api from "../../services/api";
 
 function StatCard({ label, value }) {
   return (
-    <div className="rounded-xl border border-line bg-paper-raised p-5">
-      <p className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
+    <div className="rounded-card border border-line bg-paper-raised p-5">
+      <p className="text-micro font-semibold uppercase tracking-wide text-ink-faint">
         {label}
       </p>
-      <p className="mt-2 text-2xl font-bold text-ink">{value}</p>
+      <p className="mt-2 text-title font-bold text-ink">{value}</p>
     </div>
   );
 }
@@ -18,7 +18,7 @@ function StatCard({ label, value }) {
 function Section({ title, children }) {
   return (
     <section className="mt-8">
-      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-ink-faint">
+      <h2 className="mb-3 text-small font-semibold uppercase tracking-wide text-ink-faint">
         {title}
       </h2>
       {children}
@@ -51,11 +51,11 @@ function AdminOverview() {
   }, [t]);
 
   if (loading) {
-    return <p className="text-sm text-ink-muted">{t("adminOverview.loading")}</p>;
+    return <p className="text-small text-ink-muted">{t("adminOverview.loading")}</p>;
   }
 
   if (!reports) {
-    return <p className="text-sm text-ink-muted">{t("adminOverview.noData")}</p>;
+    return <p className="text-small text-ink-muted">{t("adminOverview.noData")}</p>;
   }
 
   const usersByRole = reports.users_by_role || {};
@@ -63,7 +63,7 @@ function AdminOverview() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-ink">{t("adminOverview.title")}</h1>
+      <h1 className="text-title font-bold text-ink">{t("adminOverview.title")}</h1>
 
       <Section title={t("adminOverview.sectionUsers")}>
         <div className="grid gap-4 sm:grid-cols-3">
@@ -108,13 +108,13 @@ function AdminOverview() {
 
       <Section title={t("adminOverview.sectionTopStores")}>
         {reports.top_stores_by_orders.length === 0 ? (
-          <p className="text-sm text-ink-muted">{t("adminOverview.noOrders")}</p>
+          <p className="text-small text-ink-muted">{t("adminOverview.noOrders")}</p>
         ) : (
-          <ol className="divide-y divide-line-subtle overflow-hidden rounded-xl border border-line bg-paper-raised">
+          <ol className="divide-y divide-line-subtle overflow-hidden rounded-card border border-line bg-paper-raised">
             {reports.top_stores_by_orders.map((row, index) => (
               <li
                 key={row.store}
-                className="flex items-center justify-between px-5 py-3 text-sm"
+                className="flex items-center justify-between px-5 py-3 text-small"
               >
                 <span className="text-ink-emphasis">
                   {index + 1}. {row.store}

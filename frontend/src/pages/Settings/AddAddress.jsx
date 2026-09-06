@@ -69,11 +69,11 @@ function AddAddress() {
             {t("backLink.savedAddresses")}
           </BackLink>
 
-          <h1 className="text-3xl font-bold text-ink">
+          <h1 className="text-title font-bold text-ink">
             {t("addresses.formAddTitle")}
           </h1>
 
-          <p className="mt-2 text-sm text-ink-secondary">
+          <p className="mt-2 text-small text-ink-secondary">
             {t("addresses.formAddSubtitle")}
           </p>
         </div>
@@ -81,14 +81,14 @@ function AddAddress() {
         {/* Form */}
         <form
           onSubmit={handleSubmit}
-          className="rounded-xl bg-paper-raised p-6 shadow-sm"
+          className="rounded-card bg-paper-raised p-6 shadow-card"
         >
           <div className="space-y-6">
             {/* Address Label */}
             <div>
               <label
                 htmlFor="label"
-                className="mb-2 block text-sm font-medium text-ink-body"
+                className="mb-2 block text-small font-medium text-ink-body"
               >
                 {t("addresses.labelField")}
               </label>
@@ -99,7 +99,7 @@ function AddAddress() {
                 value={formData.label}
                 onChange={handleChange}
                 required
-                className="w-full rounded-lg border border-line-strong px-4 py-3 text-sm outline-none focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring"
+                className="w-full rounded-control border border-line-strong px-4 py-3 text-small outline-none focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring"
               >
                 <option value="">{t("addresses.selectLabel")}</option>
                 <option value="Home">{t("addresses.labelHome")}</option>
@@ -112,7 +112,7 @@ function AddAddress() {
             <div>
               <label
                 htmlFor="recipient_name"
-                className="mb-2 block text-sm font-medium text-ink-body"
+                className="mb-2 block text-small font-medium text-ink-body"
               >
                 {t("addresses.recipientName")}
               </label>
@@ -125,7 +125,7 @@ function AddAddress() {
                 onChange={handleChange}
                 placeholder={t("addresses.recipientNamePlaceholder")}
                 required
-                className="w-full rounded-lg border border-line-strong px-4 py-3 text-sm outline-none focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring"
+                className="w-full rounded-control border border-line-strong px-4 py-3 text-small outline-none focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring"
               />
             </div>
 
@@ -133,7 +133,7 @@ function AddAddress() {
             <div>
               <label
                 htmlFor="phone"
-                className="mb-2 block text-sm font-medium text-ink-body"
+                className="mb-2 block text-small font-medium text-ink-body"
               >
                 {t("addresses.phone")}
               </label>
@@ -146,7 +146,7 @@ function AddAddress() {
                 onChange={handleChange}
                 placeholder={t("addresses.phonePlaceholder")}
                 required
-                className="w-full rounded-lg border border-line-strong px-4 py-3 text-sm outline-none focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring"
+                className="w-full rounded-control border border-line-strong px-4 py-3 text-small outline-none focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring"
               />
             </div>
 
@@ -154,7 +154,7 @@ function AddAddress() {
             <div>
               <label
                 htmlFor="address_line"
-                className="mb-2 block text-sm font-medium text-ink-body"
+                className="mb-2 block text-small font-medium text-ink-body"
               >
                 {t("addresses.addressField")}
               </label>
@@ -167,7 +167,7 @@ function AddAddress() {
                 onChange={handleChange}
                 placeholder={t("addresses.addressPlaceholder")}
                 required
-                className="w-full rounded-lg border border-line-strong px-4 py-3 text-sm outline-none focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring"
+                className="w-full rounded-control border border-line-strong px-4 py-3 text-small outline-none focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring"
               />
             </div>
 
@@ -175,7 +175,7 @@ function AddAddress() {
             <div>
               <label
                 htmlFor="city"
-                className="mb-2 block text-sm font-medium text-ink-body"
+                className="mb-2 block text-small font-medium text-ink-body"
               >
                 {t("addresses.city")}
               </label>
@@ -188,7 +188,7 @@ function AddAddress() {
                 onChange={handleChange}
                 placeholder={t("addresses.cityPlaceholder")}
                 required
-                className="w-full rounded-lg border border-line-strong px-4 py-3 text-sm outline-none focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring"
+                className="w-full rounded-control border border-line-strong px-4 py-3 text-small outline-none focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring"
               />
             </div>
 
@@ -196,7 +196,7 @@ function AddAddress() {
             <div>
               <label
                 htmlFor="delivery_instructions"
-                className="mb-2 block text-sm font-medium text-ink-body"
+                className="mb-2 block text-small font-medium text-ink-body"
               >
                 {t("addresses.deliveryInstructions")}
               </label>
@@ -208,7 +208,7 @@ function AddAddress() {
                 onChange={handleChange}
                 placeholder={t("addresses.deliveryInstructionsPlaceholder")}
                 rows="3"
-                className="w-full resize-none rounded-lg border border-line-strong px-4 py-3 text-sm outline-none focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring"
+                className="w-full resize-none rounded-control border border-line-strong px-4 py-3 text-small outline-none focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring"
               />
             </div>
 
@@ -216,11 +216,11 @@ function AddAddress() {
                 behaves exactly as it did before this existed; it just
                 cannot be used as a search centre on /stores. */}
             <div>
-              <span className="mb-2 block text-sm font-medium text-ink-body">
+              <span className="mb-2 block text-small font-medium text-ink-body">
                 {t("addresses.pinField")}
               </span>
 
-              <p className="mb-3 text-xs text-ink-muted">
+              <p className="mb-3 text-micro text-ink-muted">
                 {t("addresses.pinHelp")}
               </p>
 
@@ -246,7 +246,7 @@ function AddAddress() {
             </div>
 
             {/* Default Address */}
-            <div className="flex items-start gap-3 rounded-lg bg-cedar-subtle p-4">
+            <div className="flex items-start gap-3 rounded-control bg-cedar-subtle p-4">
               <input
                 id="is_default"
                 name="is_default"
@@ -259,12 +259,12 @@ function AddAddress() {
               <div>
                 <label
                   htmlFor="is_default"
-                  className="cursor-pointer text-sm font-medium text-ink-emphasis"
+                  className="cursor-pointer text-small font-medium text-ink-emphasis"
                 >
                   {t("addresses.setDefaultAddress")}
                 </label>
 
-                <p className="mt-1 text-xs text-ink-secondary">
+                <p className="mt-1 text-micro text-ink-secondary">
                   {t("addresses.setDefaultAddressDesc")}
                 </p>
               </div>
@@ -277,7 +277,7 @@ function AddAddress() {
               type="button"
               onClick={() => navigate("/settings/addresses")}
               disabled={saving}
-              className="cursor-pointer rounded-lg border border-line-strong px-5 py-3 text-sm font-medium text-ink-body hover:bg-paper disabled:cursor-not-allowed disabled:opacity-50"
+              className="cursor-pointer rounded-control border border-line-strong px-5 py-3 text-small font-medium text-ink-body hover:bg-paper disabled:cursor-not-allowed disabled:opacity-50"
             >
               {t("addresses.cancel")}
             </button>
@@ -285,7 +285,7 @@ function AddAddress() {
             <button
               type="submit"
               disabled={saving}
-              className="cursor-pointer rounded-lg bg-cedar px-5 py-3 text-sm font-semibold text-on-cedar hover:bg-cedar-strong disabled:cursor-not-allowed disabled:opacity-50"
+              className="cursor-pointer rounded-control bg-cedar px-5 py-3 text-small font-semibold text-on-cedar hover:bg-cedar-strong disabled:cursor-not-allowed disabled:opacity-50"
             >
               {saving ? t("common.working") : t("addresses.saveAdd")}
             </button>

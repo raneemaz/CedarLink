@@ -115,15 +115,15 @@ function RateYourOrder({ orderId }) {
 
   if (loading && !data) {
     return (
-      <div className="rounded-2xl border border-line bg-paper-raised p-6 shadow-sm">
-        <p className="text-sm text-ink-muted">{t("rateOrder.loading")}</p>
+      <div className="rounded-card border border-line bg-paper-raised p-6 shadow-card">
+        <p className="text-small text-ink-muted">{t("rateOrder.loading")}</p>
       </div>
     );
   }
   if (error) {
     return (
-      <div className="rounded-2xl border border-line bg-paper-raised p-6 shadow-sm">
-        <p className="text-sm text-danger">{error}</p>
+      <div className="rounded-card border border-line bg-paper-raised p-6 shadow-card">
+        <p className="text-small text-danger">{error}</p>
       </div>
     );
   }
@@ -147,12 +147,12 @@ function RateYourOrder({ orderId }) {
   ];
 
   return (
-    <div className="rounded-2xl border border-line bg-paper-raised shadow-sm">
+    <div className="rounded-card border border-line bg-paper-raised shadow-card">
       <div className="border-b border-line p-6">
-        <h2 className="text-xl font-semibold text-ink">
+        <h2 className="text-title font-semibold text-ink">
           {t("rateOrder.heading")}
         </h2>
-        <p className="mt-1 text-sm text-ink-muted">{t("rateOrder.subtitle")}</p>
+        <p className="mt-1 text-small text-ink-muted">{t("rateOrder.subtitle")}</p>
       </div>
 
       <ul className="divide-y divide-line-subtle">
@@ -177,7 +177,7 @@ function RateYourOrder({ orderId }) {
                   />
                 </div>
               ) : row.review?.status === "removed" ? (
-                <p className="mt-2 text-sm text-ink-muted">
+                <p className="mt-2 text-small text-ink-muted">
                   {t("rateOrder.removed")}
                 </p>
               ) : row.review ? (
@@ -185,17 +185,17 @@ function RateYourOrder({ orderId }) {
                   <div className="flex flex-wrap items-center gap-2">
                     <StarRating value={row.review.rating} size="sm" />
                     {row.review.title && (
-                      <span className="text-sm font-medium text-ink-emphasis">
+                      <span className="text-small font-medium text-ink-emphasis">
                         {row.review.title}
                       </span>
                     )}
                   </div>
                   {row.review.body && (
-                    <p className="mt-1 whitespace-pre-line text-sm text-ink-secondary">
+                    <p className="mt-1 whitespace-pre-line text-small text-ink-secondary">
                       {row.review.body}
                     </p>
                   )}
-                  <div className="mt-2 flex gap-3 text-sm">
+                  <div className="mt-2 flex gap-3 text-small">
                     <button
                       type="button"
                       onClick={() => {
@@ -224,7 +224,7 @@ function RateYourOrder({ orderId }) {
                     setFormError("");
                     setOpenKey(row.key);
                   }}
-                  className="mt-2 rounded-lg border border-cedar px-3 py-1.5 text-sm font-medium text-cedar transition hover:bg-cedar hover:text-on-cedar"
+                  className="mt-2 rounded-control border border-cedar px-3 py-1.5 text-small font-medium text-cedar transition hover:bg-cedar hover:text-on-cedar"
                 >
                   {t("rateOrder.write")}
                 </button>

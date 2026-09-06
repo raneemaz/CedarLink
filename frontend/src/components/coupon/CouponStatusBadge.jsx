@@ -9,7 +9,7 @@ function CouponStatusBadge({ coupon }) {
 
   return (
     <span
-      className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_CLASSES[status]}`}
+      className={`inline-flex rounded-pill px-2.5 py-0.5 text-micro font-semibold ${STATUS_CLASSES[status]}`}
     >
       {t(`coupon.status.${status}`)}
     </span>

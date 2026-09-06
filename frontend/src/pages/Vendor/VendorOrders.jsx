@@ -59,7 +59,7 @@ function StatusBadge({ map, status, ns }) {
   const { t } = useTranslation();
   return (
     <span
-      className={`rounded-full px-2.5 py-1 text-xs font-semibold ${badgeClass(
+      className={`rounded-pill px-2.5 py-1 text-micro font-semibold ${badgeClass(
         map,
         status,
       )}`}
@@ -155,16 +155,16 @@ function OrderCard({ order, onChanged }) {
   };
 
   return (
-    <div className="overflow-hidden rounded-2xl bg-paper-raised shadow-sm">
+    <div className="overflow-hidden rounded-card bg-paper-raised shadow-card">
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line-subtle px-6 py-4">
         <div className="flex items-center gap-3">
-          <h3 className="text-lg font-bold text-ink">
+          <h3 className="text-body font-bold text-ink">
             {t("orders.orderNumber", { id: order.id })}
           </h3>
           <StatusBadge map={ORDER_BADGE} status={order.status} ns="orderStatus" />
         </div>
-        <span className="text-sm text-ink-muted">
+        <span className="text-small text-ink-muted">
           {formatDateTime(order.created_at, i18n.language)}
         </span>
       </div>
@@ -172,36 +172,36 @@ function OrderCard({ order, onChanged }) {
       {/* Customer + delivery target */}
       <div className="grid gap-6 border-b border-line-subtle px-6 py-5 sm:grid-cols-2">
         <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-faint">
+          <p className="mb-2 text-micro font-semibold uppercase tracking-wide text-ink-faint">
             {t("vendorOrders.customer")}
           </p>
           <p className="text-ink-emphasis">
             {order.customer.first_name} {order.customer.last_name}
           </p>
-          <p className="text-sm text-ink-muted">{order.customer.email}</p>
+          <p className="text-small text-ink-muted">{order.customer.email}</p>
           {order.customer.phone && (
-            <p className="text-sm text-ink-muted">{order.customer.phone}</p>
+            <p className="text-small text-ink-muted">{order.customer.phone}</p>
           )}
         </div>
         <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-faint">
+          <p className="mb-2 text-micro font-semibold uppercase tracking-wide text-ink-faint">
             {t("vendorOrders.deliverTo")}
           </p>
           <p className="text-ink-emphasis">{order.delivery_address}</p>
-          <p className="text-sm text-ink-muted">{order.delivery_city}</p>
+          <p className="text-small text-ink-muted">{order.delivery_city}</p>
         </div>
       </div>
 
       {/* Items */}
       <div className="border-b border-line-subtle px-6 py-5">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-ink-faint">
+        <p className="mb-3 text-micro font-semibold uppercase tracking-wide text-ink-faint">
           {t("vendorOrders.items")}
         </p>
         <div className="space-y-2">
           {order.items.map((item) => (
             <div
               key={item.id}
-              className="flex items-center justify-between text-sm"
+              className="flex items-center justify-between text-small"
             >
               <span className="text-ink-emphasis">
                 {localizedField(item, "product_name", i18n.language)}{" "}
@@ -215,7 +215,7 @@ function OrderCard({ order, onChanged }) {
         </div>
         <div className="mt-4 flex items-center justify-between border-t border-line-subtle pt-3">
           <span className="font-semibold text-ink">{t("orders.total")}</span>
-          <span className="text-lg font-bold text-cedar">
+          <span className="text-body font-bold text-cedar">
             ${order.total_price.toFixed(2)}
           </span>
         </div>
@@ -244,12 +244,12 @@ function OrderCard({ order, onChanged }) {
 
       {/* Delivery */}
       <div className="px-6 py-5">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-ink-faint">
+        <p className="mb-3 text-micro font-semibold uppercase tracking-wide text-ink-faint">
           {t("vendorOrders.deliverySection")}
         </p>
 
         {/* Both state machines, side by side — they are not coupled. */}
-        <div className="mb-4 flex flex-wrap items-center gap-x-6 gap-y-2 rounded-lg bg-paper px-4 py-3 text-sm">
+        <div className="mb-4 flex flex-wrap items-center gap-x-6 gap-y-2 rounded-control bg-paper px-4 py-3 text-small">
           <span className="flex items-center gap-2 text-ink-secondary">
             {t("vendorOrders.orderStatusLabel")}
             <StatusBadge map={ORDER_BADGE} status={order.status} ns="orderStatus" />
@@ -270,7 +270,7 @@ function OrderCard({ order, onChanged }) {
 
         {assignment ? (
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="text-sm">
+            <div className="text-small">
               <p className="text-ink-emphasis">{assignment.driver_name}</p>
               <p className="text-ink-muted">{assignment.driver_phone}</p>
             </div>
@@ -299,7 +299,7 @@ function OrderCard({ order, onChanged }) {
             <div>
               <label
                 htmlFor={`driver-name-${order.id}`}
-                className="mb-1 block text-xs font-medium text-ink-secondary"
+                className="mb-1 block text-micro font-medium text-ink-secondary"
               >
                 {t("vendorOrders.driverName")}
               </label>
@@ -308,13 +308,13 @@ function OrderCard({ order, onChanged }) {
                 type="text"
                 value={driverName}
                 onChange={(event) => setDriverName(event.target.value)}
-                className="w-full rounded-lg border border-line-strong px-3 py-2 text-sm outline-none focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring"
+                className="w-full rounded-control border border-line-strong px-3 py-2 text-small outline-none focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring"
               />
             </div>
             <div>
               <label
                 htmlFor={`driver-phone-${order.id}`}
-                className="mb-1 block text-xs font-medium text-ink-secondary"
+                className="mb-1 block text-micro font-medium text-ink-secondary"
               >
                 {t("vendorOrders.driverPhone")}
               </label>
@@ -323,7 +323,7 @@ function OrderCard({ order, onChanged }) {
                 type="tel"
                 value={driverPhone}
                 onChange={(event) => setDriverPhone(event.target.value)}
-                className="w-full rounded-lg border border-line-strong px-3 py-2 text-sm outline-none focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring"
+                className="w-full rounded-control border border-line-strong px-3 py-2 text-small outline-none focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring"
               />
             </div>
             <Button type="submit" disabled={assigning}>
@@ -400,14 +400,14 @@ function VendorOrders() {
   };
 
   if (loading) {
-    return <p className="text-sm text-ink-muted">{t("vendorOrders.loading")}</p>;
+    return <p className="text-small text-ink-muted">{t("vendorOrders.loading")}</p>;
   }
 
   if (noStore) {
     return (
       <div>
-        <h1 className="text-3xl font-bold text-ink">{t("vendorOrders.title")}</h1>
-        <div className="mt-6 rounded-xl border border-dashed border-line-strong bg-paper-raised p-12 text-center">
+        <h1 className="text-title font-bold text-ink">{t("vendorOrders.title")}</h1>
+        <div className="mt-6 rounded-card border border-dashed border-line-strong bg-paper-raised p-12 text-center">
           <p className="text-ink-secondary">
             {t("vendorOrders.noStoreBody")}
           </p>
@@ -425,12 +425,12 @@ function VendorOrders() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-ink">{t("vendorOrders.title")}</h1>
+        <h1 className="text-title font-bold text-ink">{t("vendorOrders.title")}</h1>
         <button
           type="button"
           onClick={refresh}
           disabled={refreshing}
-          className="text-sm font-medium text-cedar hover:underline disabled:opacity-50"
+          className="text-small font-medium text-cedar hover:underline disabled:opacity-50"
         >
           {refreshing ? t("vendorOrders.refreshing") : t("vendorOrders.refresh")}
         </button>
@@ -442,10 +442,10 @@ function VendorOrders() {
             key={key}
             type="button"
             onClick={() => setFilter(key)}
-            className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
+            className={`rounded-pill px-4 py-1.5 text-small font-medium transition ${
               filter === key
                 ? "bg-cedar text-on-cedar"
-                : "bg-paper-raised text-ink-secondary shadow-sm hover:bg-paper"
+                : "bg-paper-raised text-ink-secondary shadow-card hover:bg-paper"
             }`}
           >
             {t(labelKey)}
@@ -454,7 +454,7 @@ function VendorOrders() {
       </div>
 
       {orders.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-line-strong bg-paper-raised p-12 text-center">
+        <div className="rounded-card border border-dashed border-line-strong bg-paper-raised p-12 text-center">
           <p className="text-ink-secondary">
             {filter === "all"
               ? t("vendorOrders.emptyAll")

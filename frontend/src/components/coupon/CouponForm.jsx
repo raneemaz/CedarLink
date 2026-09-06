@@ -6,18 +6,18 @@ function Field({ label, hint, htmlFor, children }) {
     <div>
       <label
         htmlFor={htmlFor}
-        className="mb-1.5 block text-sm font-medium text-ink-body"
+        className="mb-1.5 block text-small font-medium text-ink-body"
       >
         {label}
       </label>
       {children}
-      {hint && <p className="mt-1 text-xs text-ink-muted">{hint}</p>}
+      {hint && <p className="mt-1 text-micro text-ink-muted">{hint}</p>}
     </div>
   );
 }
 
 const INPUT =
-  "w-full rounded-lg border border-line-strong px-3 py-2 text-sm outline-none " +
+  "w-full rounded-control border border-line-strong px-3 py-2 text-small outline-none " +
   "focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring";
 
 /**
@@ -91,7 +91,7 @@ function CouponForm({ form, setForm, onSubmit, onCancel, saving, editing }) {
             placeholder="SUMMER20"
           />
           {show(codeError) && (
-            <p className="mt-1 text-xs text-danger">{codeError}</p>
+            <p className="mt-1 text-micro text-danger">{codeError}</p>
           )}
         </Field>
 
@@ -137,7 +137,7 @@ function CouponForm({ form, setForm, onSubmit, onCancel, saving, editing }) {
             className={INPUT}
           />
           {show(valueError) && (
-            <p className="mt-1 text-xs text-danger">{valueError}</p>
+            <p className="mt-1 text-micro text-danger">{valueError}</p>
           )}
         </Field>
 
@@ -184,7 +184,7 @@ function CouponForm({ form, setForm, onSubmit, onCancel, saving, editing }) {
             className={INPUT}
           />
           {show(windowError) && (
-            <p className="mt-1 text-xs text-danger">{windowError}</p>
+            <p className="mt-1 text-micro text-danger">{windowError}</p>
           )}
         </Field>
 
@@ -229,7 +229,7 @@ function CouponForm({ form, setForm, onSubmit, onCancel, saving, editing }) {
         </Field>
       </div>
 
-      <label className="flex items-start gap-3 rounded-lg bg-paper p-4">
+      <label className="flex items-start gap-3 rounded-control bg-paper p-4">
         <input
           type="checkbox"
           checked={form.is_active}
@@ -237,10 +237,10 @@ function CouponForm({ form, setForm, onSubmit, onCancel, saving, editing }) {
           className="mt-0.5 h-4 w-4 rounded border-line-strong text-cedar focus:ring-cedar-ring"
         />
         <span>
-          <span className="block text-sm font-medium text-ink-emphasis">
+          <span className="block text-small font-medium text-ink-emphasis">
             {t("coupon.form.isActive")}
           </span>
-          <span className="mt-0.5 block text-xs text-ink-muted">
+          <span className="mt-0.5 block text-micro text-ink-muted">
             {t("coupon.form.isActiveHint")}
           </span>
         </span>
@@ -251,7 +251,7 @@ function CouponForm({ form, setForm, onSubmit, onCancel, saving, editing }) {
           type="button"
           onClick={onCancel}
           disabled={saving}
-          className="cursor-pointer rounded-lg border border-line-strong px-4 py-2 text-sm font-medium text-ink-body hover:bg-paper disabled:opacity-50"
+          className="cursor-pointer rounded-control border border-line-strong px-4 py-2 text-small font-medium text-ink-body hover:bg-paper disabled:opacity-50"
         >
           {t("common.cancel")}
         </button>
@@ -259,7 +259,7 @@ function CouponForm({ form, setForm, onSubmit, onCancel, saving, editing }) {
         <button
           type="submit"
           disabled={saving}
-          className="cursor-pointer rounded-lg bg-cedar px-4 py-2 text-sm font-semibold text-on-cedar hover:bg-cedar-strong disabled:cursor-not-allowed disabled:opacity-50"
+          className="cursor-pointer rounded-control bg-cedar px-4 py-2 text-small font-semibold text-on-cedar hover:bg-cedar-strong disabled:cursor-not-allowed disabled:opacity-50"
         >
           {saving
             ? t("common.working")

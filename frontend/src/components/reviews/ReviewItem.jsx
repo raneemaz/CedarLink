@@ -53,10 +53,10 @@ function ReviewItem({ review }) {
     <article className="border-b border-line-subtle py-4 last:border-b-0">
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
         <StarRating value={review.rating} size="sm" />
-        <span className="text-sm font-medium text-ink">
+        <span className="text-small font-medium text-ink">
           {review.author_name || t("reviews.anonymous")}
         </span>
-        <span className="text-xs text-ink-faint">
+        <span className="text-micro text-ink-faint">
           {formatDate(review.created_at, i18n.language)}
           {edited && ` · ${t("reviews.edited")}`}
         </span>
@@ -66,7 +66,7 @@ function ReviewItem({ review }) {
         <p className="mt-2 font-medium text-ink">{review.title}</p>
       )}
       {review.body && (
-        <p className="mt-1 whitespace-pre-line text-sm leading-6 text-ink-secondary">
+        <p className="mt-1 whitespace-pre-line text-small leading-6 text-ink-secondary">
           {review.body}
         </p>
       )}
@@ -74,7 +74,7 @@ function ReviewItem({ review }) {
       {isAuthenticated && (
         <div className="mt-2">
           {reported ? (
-            <span className="text-xs text-ink-faint">
+            <span className="text-micro text-ink-faint">
               {t("reviewReport.reported")}
             </span>
           ) : (
@@ -84,7 +84,7 @@ function ReviewItem({ review }) {
                 setReason("");
                 setDialogOpen(true);
               }}
-              className="inline-flex items-center gap-1 text-xs text-ink-faint transition hover:text-danger"
+              className="inline-flex items-center gap-1 text-micro text-ink-faint transition hover:text-danger"
             >
               <Flag className="h-3 w-3" />
               {t("reviewReport.action")}
@@ -106,7 +106,7 @@ function ReviewItem({ review }) {
       >
         <label
           htmlFor={`report-reason-${review.id}`}
-          className="mb-1 block text-xs font-medium text-ink-secondary"
+          className="mb-1 block text-micro font-medium text-ink-secondary"
         >
           {t("reviewReport.reasonLabel")}
         </label>
@@ -116,7 +116,7 @@ function ReviewItem({ review }) {
           maxLength={500}
           value={reason}
           onChange={(e) => setReason(e.target.value)}
-          className="w-full resize-none rounded-lg border border-line-strong px-3 py-2 text-sm outline-none focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring"
+          className="w-full resize-none rounded-control border border-line-strong px-3 py-2 text-small outline-none focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring"
         />
       </ConfirmDialog>
     </article>

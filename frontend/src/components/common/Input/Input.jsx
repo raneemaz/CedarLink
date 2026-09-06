@@ -26,7 +26,7 @@ function Input({
         autoComplete={autoComplete}
         className="
           w-full
-          rounded-xl
+          rounded-card
           border
           border-line-strong
           px-4

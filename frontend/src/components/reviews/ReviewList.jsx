@@ -7,7 +7,7 @@ import ReviewItem from "./ReviewItem";
 const PER_PAGE = 5;
 
 const pagerClass =
-  "rounded-lg border border-line-strong px-3 py-1.5 font-medium text-ink-body " +
+  "rounded-control border border-line-strong px-3 py-1.5 font-medium text-ink-body " +
   "hover:bg-paper disabled:cursor-not-allowed disabled:opacity-50";
 
 /**
@@ -49,20 +49,20 @@ function ReviewList({ endpoint }) {
   }, [endpoint, page, t]);
 
   if (loading && !data) {
-    return <p className="text-sm text-ink-faint">{t("reviews.loading")}</p>;
+    return <p className="text-small text-ink-faint">{t("reviews.loading")}</p>;
   }
   if (error) {
-    return <p className="text-sm text-danger">{error}</p>;
+    return <p className="text-small text-danger">{error}</p>;
   }
 
   const reviews = data?.reviews ?? [];
   if (reviews.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-line px-6 py-10 text-center">
-        <p className="text-sm font-medium text-ink-secondary">
+      <div className="rounded-card border border-dashed border-line px-6 py-10 text-center">
+        <p className="text-small font-medium text-ink-secondary">
           {t("reviews.emptyTitle")}
         </p>
-        <p className="mt-1 text-xs text-ink-faint">{t("reviews.emptyBody")}</p>
+        <p className="mt-1 text-micro text-ink-faint">{t("reviews.emptyBody")}</p>
       </div>
     );
   }
@@ -78,7 +78,7 @@ function ReviewList({ endpoint }) {
       </div>
 
       {pages > 1 && (
-        <div className="mt-4 flex items-center justify-between text-sm">
+        <div className="mt-4 flex items-center justify-between text-small">
           <button
             type="button"
             onClick={() => setPage((p) => Math.max(1, p - 1))}

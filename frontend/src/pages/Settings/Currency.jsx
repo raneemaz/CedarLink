@@ -109,16 +109,16 @@ function Currency() {
           </BackLink>
 
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-cedar-subtle text-cedar">
+            <div className="flex h-12 w-12 items-center justify-center rounded-card bg-cedar-subtle text-cedar">
               <Coins size={24} />
             </div>
 
             <div>
-              <h1 className="text-3xl font-bold text-ink">
+              <h1 className="text-title font-bold text-ink">
                 {t("currency.title")}
               </h1>
 
-              <p className="mt-1 text-sm text-ink-secondary">
+              <p className="mt-1 text-small text-ink-secondary">
                 {t("currency.subtitle")}
               </p>
             </div>
@@ -126,20 +126,20 @@ function Currency() {
         </div>
 
         {/* Currency Settings */}
-        <section className="overflow-hidden rounded-2xl bg-paper-raised shadow-sm">
+        <section className="overflow-hidden rounded-card bg-paper-raised shadow-card">
           <div className="border-b border-line-subtle px-6 py-5">
-            <h2 className="text-xl font-semibold text-ink">
+            <h2 className="text-title font-semibold text-ink">
               {t("currency.preferredCurrency")}
             </h2>
 
-            <p className="mt-1 text-sm text-ink-muted">
+            <p className="mt-1 text-small text-ink-muted">
               {t("currency.description")}
             </p>
           </div>
 
           <div className="space-y-3 px-6 py-6">
             {loading ? (
-              <p className="text-sm text-ink-muted">
+              <p className="text-small text-ink-muted">
                 {t("currency.loading")}
               </p>
             ) : (
@@ -152,7 +152,7 @@ function Currency() {
                       key={option.code}
                       type="button"
                       onClick={() => setSelectedCurrency(option.code)}
-                      className={`flex w-full cursor-pointer items-center justify-between rounded-xl border p-4 text-start transition ${
+                      className={`flex w-full cursor-pointer items-center justify-between rounded-card border p-4 text-start transition ${
                         isSelected
                           ? "border-cedar-ring bg-cedar-subtle"
                           : "border-line hover:bg-paper"
@@ -163,13 +163,13 @@ function Currency() {
                           {t(`currency.${option.labelKey}`)}
                         </p>
 
-                        <p className="mt-1 text-sm text-ink-muted">
+                        <p className="mt-1 text-small text-ink-muted">
                           {option.code} · {option.sample}
                         </p>
                       </div>
 
                       {isSelected && (
-                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-cedar text-on-cedar">
+                        <div className="flex h-7 w-7 items-center justify-center rounded-pill bg-cedar text-on-cedar">
                           <Check size={17} />
                         </div>
                       )}
@@ -177,7 +177,7 @@ function Currency() {
                   );
                 })}
 
-                <p className="pt-2 text-xs text-ink-faint">
+                <p className="pt-2 text-micro text-ink-faint">
                   {t("currency.approxNote")}
                 </p>
 
@@ -186,7 +186,7 @@ function Currency() {
                     type="button"
                     onClick={handleSaveCurrency}
                     disabled={saving}
-                    className="cursor-pointer rounded-lg bg-cedar px-6 py-3 text-sm font-semibold text-on-cedar transition hover:bg-cedar-strong disabled:cursor-not-allowed disabled:opacity-60"
+                    className="cursor-pointer rounded-control bg-cedar px-6 py-3 text-small font-semibold text-on-cedar transition hover:bg-cedar-strong disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {saving
                       ? t("currency.saving")

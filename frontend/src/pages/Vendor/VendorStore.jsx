@@ -25,7 +25,7 @@ const CITY_OPTIONS = Array.from(
 ).sort((a, b) => a.localeCompare(b));
 
 export const fieldClass =
-  "w-full rounded-lg border border-line-strong px-4 py-3 text-sm outline-none " +
+  "w-full rounded-control border border-line-strong px-4 py-3 text-small outline-none " +
   "focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring";
 
 const EMPTY_DETAILS = {
@@ -68,12 +68,12 @@ export function Section({ title, description, children, onSubmit, footer }) {
   return (
     <Wrapper
       onSubmit={onSubmit}
-      className="overflow-hidden rounded-2xl bg-paper-raised shadow-sm"
+      className="overflow-hidden rounded-card bg-paper-raised shadow-card"
     >
       <div className="border-b border-line-subtle px-6 py-5">
-        <h2 className="text-xl font-semibold text-ink">{title}</h2>
+        <h2 className="text-title font-semibold text-ink">{title}</h2>
         {description && (
-          <p className="mt-1 text-sm text-ink-muted">{description}</p>
+          <p className="mt-1 text-small text-ink-muted">{description}</p>
         )}
       </div>
 
@@ -93,7 +93,7 @@ function TextField({ label, name, value, onChange, hint, ...rest }) {
     <div>
       <label
         htmlFor={name}
-        className="mb-2 block text-sm font-medium text-ink-body"
+        className="mb-2 block text-small font-medium text-ink-body"
       >
         {label}
       </label>
@@ -107,7 +107,7 @@ function TextField({ label, name, value, onChange, hint, ...rest }) {
         {...rest}
       />
 
-      {hint && <p className="mt-1 text-xs text-ink-muted">{hint}</p>}
+      {hint && <p className="mt-1 text-micro text-ink-muted">{hint}</p>}
     </div>
   );
 }
@@ -130,7 +130,7 @@ function StoreDetailFields({ values, onChange }) {
       <div>
         <label
           htmlFor="description"
-          className="mb-2 block text-sm font-medium text-ink-body"
+          className="mb-2 block text-small font-medium text-ink-body"
         >
           {t("vendorStore.description")}
         </label>
@@ -150,7 +150,7 @@ function StoreDetailFields({ values, onChange }) {
       <div>
         <label
           htmlFor="location"
-          className="mb-2 block text-sm font-medium text-ink-body"
+          className="mb-2 block text-small font-medium text-ink-body"
         >
           {t("vendorStore.locationCity")}
         </label>
@@ -171,7 +171,7 @@ function StoreDetailFields({ values, onChange }) {
           ))}
         </select>
 
-        <p className="mt-1 text-xs text-ink-muted">
+        <p className="mt-1 text-micro text-ink-muted">
           {t("vendorStore.locationHint")}
         </p>
       </div>
@@ -329,7 +329,7 @@ function VendorStore() {
   };
 
   if (loading) {
-    return <p className="text-sm text-ink-muted">{t("vendorStore.loading")}</p>;
+    return <p className="text-small text-ink-muted">{t("vendorStore.loading")}</p>;
   }
 
   // ---- No store yet: creation form ----------------------------------------
@@ -337,7 +337,7 @@ function VendorStore() {
     return (
       <div>
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-ink">{t("vendorStore.headingNoStore")}</h1>
+          <h1 className="text-title font-bold text-ink">{t("vendorStore.headingNoStore")}</h1>
           <p className="mt-2 text-ink-secondary">
             {t("vendorStore.subtitleNoStore")}
           </p>
@@ -394,11 +394,11 @@ function VendorStore() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-ink">{t("vendorStore.headingStore")}</h1>
+        <h1 className="text-title font-bold text-ink">{t("vendorStore.headingStore")}</h1>
         <p className="mt-2 text-ink-secondary">
           {store.name}
           {!store.is_active && (
-            <span className="ms-2 rounded-full bg-danger-tint px-2 py-0.5 text-xs font-semibold text-danger-strong">
+            <span className="ms-2 rounded-pill bg-danger-tint px-2 py-0.5 text-micro font-semibold text-danger-strong">
               {t("vendorStore.deactivatedBadge")}
             </span>
           )}
@@ -493,7 +493,7 @@ function VendorStore() {
               <p className="font-medium text-ink">
                 {store.is_active ? t("vendorStore.active") : t("vendorStore.deactivated")}
               </p>
-              <p className="mt-1 text-sm text-ink-muted">
+              <p className="mt-1 text-small text-ink-muted">
                 {store.is_active
                   ? t("vendorStore.activeDesc")
                   : t("vendorStore.deactivatedDesc")}

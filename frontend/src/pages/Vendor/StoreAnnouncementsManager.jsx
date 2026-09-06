@@ -193,17 +193,17 @@ function StoreAnnouncementsManager({ storeId }) {
       }
     >
       {loading ? (
-        <p className="text-sm text-ink-muted">
+        <p className="text-small text-ink-muted">
           {t("storeAnnouncements.loading")}
         </p>
       ) : (
         <div className="space-y-4">
-          <p className="text-xs text-ink-muted">
+          <p className="text-micro text-ink-muted">
             {t("storeAnnouncements.activeCount", { count: activeCount })}
           </p>
 
           {items.length === 0 && editing === null && (
-            <p className="text-sm text-ink-faint">
+            <p className="text-small text-ink-faint">
               {t("storeAnnouncements.empty")}
             </p>
           )}
@@ -218,12 +218,12 @@ function StoreAnnouncementsManager({ storeId }) {
                       <p className="flex items-center gap-2 font-semibold text-ink">
                         {item.title}
                         <span
-                          className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLE[key]}`}
+                          className={`rounded-pill px-2 py-0.5 text-micro font-medium ${STATUS_STYLE[key]}`}
                         >
                           {t(`storeAnnouncements.status.${key}`)}
                         </span>
                       </p>
-                      <p className="mt-1 text-sm text-ink-secondary">
+                      <p className="mt-1 text-small text-ink-secondary">
                         {item.body}
                       </p>
                     </div>
@@ -233,7 +233,7 @@ function StoreAnnouncementsManager({ storeId }) {
                         type="button"
                         onClick={() => startEdit(item)}
                         aria-label={t("storeAnnouncements.edit")}
-                        className="rounded-lg p-2 text-ink-faint hover:bg-paper-sunken hover:text-ink-body"
+                        className="rounded-control p-2 text-ink-faint hover:bg-paper-sunken hover:text-ink-body"
                       >
                         <Pencil className="h-4 w-4" />
                       </button>
@@ -241,7 +241,7 @@ function StoreAnnouncementsManager({ storeId }) {
                         type="button"
                         onClick={() => remove(item)}
                         aria-label={t("storeAnnouncements.delete")}
-                        className="rounded-lg p-2 text-ink-faint hover:bg-paper-sunken hover:text-danger"
+                        className="rounded-control p-2 text-ink-faint hover:bg-paper-sunken hover:text-danger"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -251,7 +251,7 @@ function StoreAnnouncementsManager({ storeId }) {
                   <button
                     type="button"
                     onClick={() => toggleActive(item)}
-                    className="mt-2 text-xs font-medium text-cedar hover:underline"
+                    className="mt-2 text-micro font-medium text-cedar hover:underline"
                   >
                     {item.is_active
                       ? t("storeAnnouncements.deactivate")
@@ -265,9 +265,9 @@ function StoreAnnouncementsManager({ storeId }) {
           {editing !== null && (
             <form
               onSubmit={submit}
-              className="space-y-4 rounded-xl border border-line p-4"
+              className="space-y-4 rounded-card border border-line p-4"
             >
-              <p className="text-sm font-semibold text-ink">
+              <p className="text-small font-semibold text-ink">
                 {editing === "new"
                   ? t("storeAnnouncements.newHeading")
                   : t("storeAnnouncements.editHeading")}
@@ -276,7 +276,7 @@ function StoreAnnouncementsManager({ storeId }) {
               <div>
                 <label
                   htmlFor="ann-title"
-                  className="mb-1 block text-sm font-medium text-ink-body"
+                  className="mb-1 block text-small font-medium text-ink-body"
                 >
                   {t("storeAnnouncements.fieldTitle")}
                 </label>
@@ -295,7 +295,7 @@ function StoreAnnouncementsManager({ storeId }) {
               <div>
                 <label
                   htmlFor="ann-body"
-                  className="mb-1 block text-sm font-medium text-ink-body"
+                  className="mb-1 block text-small font-medium text-ink-body"
                 >
                   {t("storeAnnouncements.fieldBody")}
                 </label>
@@ -315,7 +315,7 @@ function StoreAnnouncementsManager({ storeId }) {
                 <div>
                   <label
                     htmlFor="ann-start"
-                    className="mb-1 block text-sm font-medium text-ink-body"
+                    className="mb-1 block text-small font-medium text-ink-body"
                   >
                     {t("storeAnnouncements.fieldStart")}
                   </label>
@@ -327,13 +327,13 @@ function StoreAnnouncementsManager({ storeId }) {
                     onChange={(e) =>
                       setForm((p) => ({ ...p, starts_at: e.target.value }))
                     }
-                    className="w-full rounded-lg border border-line-strong px-3 py-2 text-sm outline-none focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring"
+                    className="w-full rounded-control border border-line-strong px-3 py-2 text-small outline-none focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring"
                   />
                 </div>
                 <div>
                   <label
                     htmlFor="ann-end"
-                    className="mb-1 block text-sm font-medium text-ink-body"
+                    className="mb-1 block text-small font-medium text-ink-body"
                   >
                     {t("storeAnnouncements.fieldEnd")}
                   </label>
@@ -345,12 +345,12 @@ function StoreAnnouncementsManager({ storeId }) {
                     onChange={(e) =>
                       setForm((p) => ({ ...p, ends_at: e.target.value }))
                     }
-                    className="w-full rounded-lg border border-line-strong px-3 py-2 text-sm outline-none focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring"
+                    className="w-full rounded-control border border-line-strong px-3 py-2 text-small outline-none focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring"
                   />
                 </div>
               </div>
 
-              <label className="flex items-center gap-2 text-sm text-ink-body">
+              <label className="flex items-center gap-2 text-small text-ink-body">
                 <input
                   type="checkbox"
                   checked={form.is_active}
@@ -362,7 +362,7 @@ function StoreAnnouncementsManager({ storeId }) {
               </label>
 
               {formError && (
-                <p className="text-xs text-danger">{formError}</p>
+                <p className="text-micro text-danger">{formError}</p>
               )}
 
               <div className="flex gap-3">

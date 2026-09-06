@@ -113,10 +113,10 @@ function AdminCoupons() {
     <div>
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-ink">
+          <h1 className="text-title font-bold text-ink">
             {t("coupon.adminTitle")}
           </h1>
-          <p className="mt-1 text-sm text-ink-secondary">
+          <p className="mt-1 text-small text-ink-secondary">
             {t("coupon.adminSubtitle")}
           </p>
         </div>
@@ -125,7 +125,7 @@ function AdminCoupons() {
           <button
             type="button"
             onClick={startCreate}
-            className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-cedar px-4 py-2 text-sm font-semibold text-on-cedar transition hover:bg-cedar-strong"
+            className="inline-flex cursor-pointer items-center gap-2 rounded-control bg-cedar px-4 py-2 text-small font-semibold text-on-cedar transition hover:bg-cedar-strong"
           >
             <Plus size={16} />
             {t("coupon.newPlatformCoupon")}
@@ -134,13 +134,13 @@ function AdminCoupons() {
       </div>
 
       {editing && (
-        <div className="mb-8 rounded-2xl border border-line bg-paper-raised p-6">
-          <h2 className="mb-1 text-lg font-semibold text-ink">
+        <div className="mb-8 rounded-card border border-line bg-paper-raised p-6">
+          <h2 className="mb-1 text-body font-semibold text-ink">
             {editing === "new"
               ? t("coupon.form.createPlatformTitle")
               : t("coupon.form.editTitle", { code: editing.code })}
           </h2>
-          <p className="mb-5 text-sm text-ink-muted">
+          <p className="mb-5 text-small text-ink-muted">
             {t("coupon.form.platformScopeNote")}
           </p>
 
@@ -156,17 +156,17 @@ function AdminCoupons() {
       )}
 
       <section className="mb-10">
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-ink-muted">
+        <h2 className="mb-3 text-small font-semibold uppercase tracking-wide text-ink-muted">
           {t("coupon.platformSection")}
         </h2>
 
         {platformWide.length === 0 ? (
-          <div className="rounded-2xl border border-line bg-paper-raised p-10 text-center">
+          <div className="rounded-card border border-line bg-paper-raised p-10 text-center">
             <TicketPercent size={28} className="mx-auto text-ink-faint" />
             <p className="mt-3 font-medium text-ink-body">
               {t("coupon.emptyPlatformTitle")}
             </p>
-            <p className="mt-1 text-sm text-ink-muted">
+            <p className="mt-1 text-small text-ink-muted">
               {t("coupon.emptyPlatformBody")}
             </p>
           </div>
@@ -180,15 +180,15 @@ function AdminCoupons() {
       </section>
 
       <section>
-        <h2 className="mb-1 text-sm font-semibold uppercase tracking-wide text-ink-muted">
+        <h2 className="mb-1 text-small font-semibold uppercase tracking-wide text-ink-muted">
           {t("coupon.storeSection")}
         </h2>
-        <p className="mb-3 text-sm text-ink-muted">
+        <p className="mb-3 text-small text-ink-muted">
           {t("coupon.storeSectionNote")}
         </p>
 
         {storeScoped.length === 0 ? (
-          <p className="rounded-2xl border border-line bg-paper-raised p-10 text-center text-sm text-ink-muted">
+          <p className="rounded-card border border-line bg-paper-raised p-10 text-center text-small text-ink-muted">
             {t("coupon.emptyStoreScoped")}
           </p>
         ) : (

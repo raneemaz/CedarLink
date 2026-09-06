@@ -102,15 +102,15 @@ function StoreOverridePanel({ store, onStoreChange }) {
       description={t("storeOverride.description")}
     >
       <div className="space-y-6">
-        <div className="rounded-xl bg-paper px-4 py-3">
-          <p className="text-xs font-medium uppercase tracking-wide text-ink-muted">
+        <div className="rounded-card bg-paper px-4 py-3">
+          <p className="text-micro font-medium uppercase tracking-wide text-ink-muted">
             {t("storeOverride.currentLabel")}
           </p>
-          <p className="mt-1 text-sm font-semibold text-ink">
+          <p className="mt-1 text-small font-semibold text-ink">
             {currentState()}
           </p>
           {overrideActive && store.override_reason && (
-            <p className="mt-1 text-sm text-ink-secondary">
+            <p className="mt-1 text-small text-ink-secondary">
               {store.override_reason}
             </p>
           )}
@@ -130,21 +130,21 @@ function StoreOverridePanel({ store, onStoreChange }) {
         </div>
 
         <form onSubmit={applyOverride} className="space-y-5">
-          <p className="text-sm font-semibold text-ink">
+          <p className="text-small font-semibold text-ink">
             {overrideActive
               ? t("storeOverride.replaceHeading")
               : t("storeOverride.setHeading")}
           </p>
 
           <fieldset>
-            <legend className="mb-2 text-sm font-medium text-ink-body">
+            <legend className="mb-2 text-small font-medium text-ink-body">
               {t("storeOverride.statusLabel")}
             </legend>
             <div className="flex flex-wrap gap-2">
               {["closed", "open"].map((option) => (
                 <label
                   key={option}
-                  className={`cursor-pointer rounded-lg border px-4 py-2 text-sm font-medium ${
+                  className={`cursor-pointer rounded-control border px-4 py-2 text-small font-medium ${
                     status === option
                       ? "border-cedar-ring bg-cedar-subtle text-cedar-strong"
                       : "border-line-strong text-ink-secondary"
@@ -167,7 +167,7 @@ function StoreOverridePanel({ store, onStoreChange }) {
           <div>
             <label
               htmlFor="override-reason"
-              className="mb-2 block text-sm font-medium text-ink-body"
+              className="mb-2 block text-small font-medium text-ink-body"
             >
               {t("storeOverride.reasonLabel")}
             </label>
@@ -179,7 +179,7 @@ function StoreOverridePanel({ store, onStoreChange }) {
                     key={key}
                     type="button"
                     onClick={() => setReason(label)}
-                    className="rounded-full border border-line-strong px-3 py-1 text-xs font-medium text-ink-secondary hover:border-cedar-ring hover:text-cedar-strong"
+                    className="rounded-pill border border-line-strong px-3 py-1 text-micro font-medium text-ink-secondary hover:border-cedar-ring hover:text-cedar-strong"
                   >
                     {label}
                   </button>
@@ -198,14 +198,14 @@ function StoreOverridePanel({ store, onStoreChange }) {
           </div>
 
           <fieldset>
-            <legend className="mb-2 text-sm font-medium text-ink-body">
+            <legend className="mb-2 text-small font-medium text-ink-body">
               {t("storeOverride.durationLabel")}
             </legend>
             <div className="flex flex-wrap gap-2">
               {DURATIONS.map((option) => (
                 <label
                   key={option}
-                  className={`cursor-pointer rounded-lg border px-3 py-2 text-sm font-medium ${
+                  className={`cursor-pointer rounded-control border px-3 py-2 text-small font-medium ${
                     duration === option
                       ? "border-cedar-ring bg-cedar-subtle text-cedar-strong"
                       : "border-line-strong text-ink-secondary"
@@ -231,12 +231,12 @@ function StoreOverridePanel({ store, onStoreChange }) {
                 aria-label={t("storeOverride.durations.custom")}
                 value={customUntil}
                 onChange={(e) => setCustomUntil(e.target.value)}
-                className="mt-2 rounded-lg border border-line-strong px-3 py-2 text-sm outline-none focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring"
+                className="mt-2 rounded-control border border-line-strong px-3 py-2 text-small outline-none focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring"
               />
             )}
           </fieldset>
 
-          {error && <p className="text-xs text-danger">{error}</p>}
+          {error && <p className="text-micro text-danger">{error}</p>}
 
           <Button type="submit" disabled={submitting}>
             {submitting

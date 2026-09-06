@@ -111,7 +111,7 @@ function Settings() {
       <div className="mx-auto max-w-4xl">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-ink">
+          <h1 className="text-title font-bold text-ink">
             {t("settings.title")}
           </h1>
 
@@ -125,15 +125,15 @@ function Settings() {
           {settingSections.map((section) => (
             <section
               key={section.title}
-              className="overflow-hidden rounded-2xl bg-paper-raised shadow-sm"
+              className="overflow-hidden rounded-card bg-paper-raised shadow-card"
             >
               {/* Section Header */}
               <div className="border-b border-line-subtle px-6 py-5">
-                <h2 className="text-xl font-semibold text-ink">
+                <h2 className="text-title font-semibold text-ink">
                   {section.title}
                 </h2>
 
-                <p className="mt-1 text-sm text-ink-muted">
+                <p className="mt-1 text-small text-ink-muted">
                   {section.description}
                 </p>
               </div>
@@ -154,7 +154,7 @@ function Settings() {
                       }`}
                     >
                       {/* Icon */}
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cedar-subtle text-cedar">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-card bg-cedar-subtle text-cedar">
                         <Icon size={21} />
                       </div>
 
@@ -164,7 +164,7 @@ function Settings() {
                           {item.title}
                         </h3>
 
-                        <p className="mt-1 text-sm text-ink-muted">
+                        <p className="mt-1 text-small text-ink-muted">
                           {item.description}
                         </p>
                       </div>

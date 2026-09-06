@@ -93,7 +93,7 @@ function ReauthPanel({ userId, twoFactorEnabled, submitting, submitLabel, onSubm
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         placeholder={t("privacyData.passwordPlaceholder")}
-        className={`w-full rounded-lg border border-line-strong bg-paper-raised px-4 py-2.5 text-sm outline-none focus:ring-2 ${focusClass}`}
+        className={`w-full rounded-control border border-line-strong bg-paper-raised px-4 py-2.5 text-small outline-none focus:ring-2 ${focusClass}`}
       />
 
       {twoFactorEnabled && !challengeToken && (
@@ -101,7 +101,7 @@ function ReauthPanel({ userId, twoFactorEnabled, submitting, submitLabel, onSubm
           type="button"
           onClick={startChallenge}
           disabled={sending}
-          className={`cursor-pointer rounded-lg px-5 py-2.5 text-sm font-semibold transition disabled:opacity-60 ${btnClass}`}
+          className={`cursor-pointer rounded-control px-5 py-2.5 text-small font-semibold transition disabled:opacity-60 ${btnClass}`}
         >
           {sending
             ? t("privacyData.sending")
@@ -117,7 +117,7 @@ function ReauthPanel({ userId, twoFactorEnabled, submitting, submitLabel, onSubm
           value={code}
           onChange={(e) => setCode(e.target.value)}
           placeholder={t("privacyData.codePlaceholder")}
-          className="w-full rounded-lg border border-line-strong bg-paper-raised px-4 py-2.5 text-sm outline-none focus:border-line-strong focus:ring-2 focus:ring-line-subtle"
+          className="w-full rounded-control border border-line-strong bg-paper-raised px-4 py-2.5 text-small outline-none focus:border-line-strong focus:ring-2 focus:ring-line-subtle"
         />
       )}
 
@@ -126,7 +126,7 @@ function ReauthPanel({ userId, twoFactorEnabled, submitting, submitLabel, onSubm
           type="button"
           onClick={submit}
           disabled={submitting}
-          className={`cursor-pointer rounded-lg px-5 py-2.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${btnClass}`}
+          className={`cursor-pointer rounded-control px-5 py-2.5 text-small font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${btnClass}`}
         >
           {submitting ? t("privacyData.working") : submitLabel}
         </button>
@@ -206,7 +206,7 @@ function PrivacyData() {
   if (!userId) {
     return (
       <div className="mx-auto max-w-3xl px-6 py-10">
-        <div className="rounded-xl border border-danger-border bg-danger-subtle p-5">
+        <div className="rounded-card border border-danger-border bg-danger-subtle p-5">
           <p className="text-danger-strong">{t("privacyData.loadError")}</p>
         </div>
       </div>
@@ -222,14 +222,14 @@ function PrivacyData() {
           </BackLink>
 
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-cedar-subtle text-cedar">
+            <div className="flex h-12 w-12 items-center justify-center rounded-card bg-cedar-subtle text-cedar">
               <ShieldCheck size={24} />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-ink">
+              <h1 className="text-title font-bold text-ink">
                 {t("privacyData.title")}
               </h1>
-              <p className="mt-1 text-sm text-ink-secondary">
+              <p className="mt-1 text-small text-ink-secondary">
                 {t("privacyData.subtitle")}
               </p>
             </div>
@@ -237,18 +237,18 @@ function PrivacyData() {
         </div>
 
         {statusLoading ? (
-          <p className="text-sm text-ink-muted">{t("privacyData.loading")}</p>
+          <p className="text-small text-ink-muted">{t("privacyData.loading")}</p>
         ) : (
           <div className="space-y-6">
             {/* Deactivate */}
-            <section className="rounded-2xl border border-warning-border bg-paper-raised p-6 shadow-sm">
+            <section className="rounded-card border border-warning-border bg-paper-raised p-6 shadow-card">
               <div className="flex items-start gap-3">
                 <PauseCircle size={22} className="mt-0.5 text-warning-muted" />
                 <div className="flex-1">
-                  <h2 className="text-lg font-semibold text-ink">
+                  <h2 className="text-body font-semibold text-ink">
                     {t("privacyData.deactivateTitle")}
                   </h2>
-                  <p className="mt-1 text-sm text-ink-secondary">
+                  <p className="mt-1 text-small text-ink-secondary">
                     {t("privacyData.deactivateDesc")}
                   </p>
 
@@ -256,7 +256,7 @@ function PrivacyData() {
                     <button
                       type="button"
                       onClick={() => setShowDeactivate(true)}
-                      className="mt-4 cursor-pointer rounded-lg border border-warning-accent px-5 py-2.5 text-sm font-semibold text-warning-muted transition hover:bg-warning-subtle"
+                      className="mt-4 cursor-pointer rounded-control border border-warning-accent px-5 py-2.5 text-small font-semibold text-warning-muted transition hover:bg-warning-subtle"
                     >
                       {t("privacyData.deactivateButton")}
                     </button>
@@ -274,18 +274,18 @@ function PrivacyData() {
             </section>
 
             {/* Delete */}
-            <section className="rounded-2xl border border-danger-border bg-paper-raised p-6 shadow-sm">
+            <section className="rounded-card border border-danger-border bg-paper-raised p-6 shadow-card">
               <div className="flex items-start gap-3">
                 <Trash2 size={22} className="mt-0.5 text-danger" />
                 <div className="flex-1">
-                  <h2 className="text-lg font-semibold text-ink">
+                  <h2 className="text-body font-semibold text-ink">
                     {t("privacyData.deleteTitle")}
                   </h2>
-                  <p className="mt-1 text-sm text-ink-secondary">
+                  <p className="mt-1 text-small text-ink-secondary">
                     {t("privacyData.deleteDesc")}
                   </p>
 
-                  <ul className="mt-3 list-disc space-y-1 ps-5 text-sm text-ink-muted">
+                  <ul className="mt-3 list-disc space-y-1 ps-5 text-small text-ink-muted">
                     <li>{t("privacyData.deleteKept")}</li>
                     <li>{t("privacyData.deleteRemoved")}</li>
                     <li>{t("privacyData.deleteIrreversible")}</li>
@@ -295,13 +295,13 @@ function PrivacyData() {
                     <button
                       type="button"
                       onClick={() => setShowDelete(true)}
-                      className="mt-4 cursor-pointer rounded-lg border border-danger-border px-5 py-2.5 text-sm font-semibold text-danger transition hover:bg-danger-subtle"
+                      className="mt-4 cursor-pointer rounded-control border border-danger-border px-5 py-2.5 text-small font-semibold text-danger transition hover:bg-danger-subtle"
                     >
                       {t("privacyData.deleteButton")}
                     </button>
                   ) : (
                     <div className="mt-4">
-                      <label className="block text-sm font-medium text-ink-body">
+                      <label className="block text-small font-medium text-ink-body">
                         {t("privacyData.typeDeleteLabel")}
                       </label>
                       <input
@@ -311,7 +311,7 @@ function PrivacyData() {
                           setDeleteConfirmText(e.target.value)
                         }
                         placeholder="DELETE"
-                        className="mt-2 w-full rounded-lg border border-line-strong bg-paper-raised px-4 py-2.5 text-sm outline-none focus:border-danger-accent focus:ring-2 focus:ring-danger-tint"
+                        className="mt-2 w-full rounded-control border border-line-strong bg-paper-raised px-4 py-2.5 text-small outline-none focus:border-danger-accent focus:ring-2 focus:ring-danger-tint"
                       />
 
                       <ReauthPanel

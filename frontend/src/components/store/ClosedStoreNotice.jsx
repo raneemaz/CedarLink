@@ -29,7 +29,7 @@ function ClosedStoreNotice({
   if (!acceptsOrders) {
     return (
       <p
-        className={`flex items-start gap-2 rounded-lg bg-warning-subtle px-3 py-2 text-sm text-warning ${className}`}
+        className={`flex items-start gap-2 rounded-control bg-warning-subtle px-3 py-2 text-small text-warning ${className}`}
       >
         <Ban size={16} className="mt-0.5 shrink-0" />
         {t("storeClosed.cannotOrder")}
@@ -41,7 +41,7 @@ function ClosedStoreNotice({
 
   return (
     <p
-      className={`flex items-start gap-2 rounded-lg bg-info-subtle px-3 py-2 text-sm text-info ${className}`}
+      className={`flex items-start gap-2 rounded-control bg-info-subtle px-3 py-2 text-small text-info ${className}`}
     >
       <Clock size={16} className="mt-0.5 shrink-0" />
       {opening

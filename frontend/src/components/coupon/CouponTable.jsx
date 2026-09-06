@@ -36,8 +36,8 @@ function CouponTable({ coupons, onEdit, onDelete, showStore = false }) {
   };
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-line bg-paper-raised">
-      <table className="w-full min-w-[46rem] text-sm">
+    <div className="overflow-x-auto rounded-card border border-line bg-paper-raised">
+      <table className="w-full min-w-[46rem] text-small">
         <thead className="border-b border-line bg-paper text-start">
           <tr>
             <th className="px-4 py-3 text-start font-semibold text-ink-secondary">
@@ -122,7 +122,7 @@ function CouponTable({ coupons, onEdit, onDelete, showStore = false }) {
                         aria-label={t("coupon.editAria", {
                           code: coupon.code,
                         })}
-                        className="cursor-pointer rounded-lg p-2 text-ink-muted transition hover:bg-paper-sunken hover:text-cedar"
+                        className="cursor-pointer rounded-control p-2 text-ink-muted transition hover:bg-paper-sunken hover:text-cedar"
                       >
                         <Pencil size={16} />
                       </button>
@@ -134,7 +134,7 @@ function CouponTable({ coupons, onEdit, onDelete, showStore = false }) {
                         aria-label={t("coupon.deleteAria", {
                           code: coupon.code,
                         })}
-                        className="cursor-pointer rounded-lg p-2 text-ink-muted transition hover:bg-danger-subtle hover:text-danger"
+                        className="cursor-pointer rounded-control p-2 text-ink-muted transition hover:bg-danger-subtle hover:text-danger"
                       >
                         <Trash2 size={16} />
                       </button>

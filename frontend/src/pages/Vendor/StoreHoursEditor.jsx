@@ -10,7 +10,7 @@ import { Section } from "./VendorStore";
 // A compact field — the shared fieldClass is w-full, which would stack the
 // two time inputs on top of each other.
 const timeFieldClass =
-  "rounded-lg border border-line-strong px-3 py-2 text-sm outline-none " +
+  "rounded-control border border-line-strong px-3 py-2 text-small outline-none " +
   "focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring";
 
 // day_of_week is 0-6 with Monday = 0 (Python datetime.weekday()), so the
@@ -211,7 +211,7 @@ function StoreHoursEditor({ storeId }) {
       }
     >
       {loading ? (
-        <p className="text-sm text-ink-muted">{t("storeHours.loading")}</p>
+        <p className="text-small text-ink-muted">{t("storeHours.loading")}</p>
       ) : (
         <ul className="divide-y divide-line-subtle">
           {DAY_KEYS.map((dayKey, dayIndex) => {
@@ -219,11 +219,11 @@ function StoreHoursEditor({ storeId }) {
             return (
               <li key={dayKey} className="py-4 first:pt-0 last:pb-0">
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  <span className="text-sm font-semibold text-ink">
+                  <span className="text-small font-semibold text-ink">
                     {t(`storeHours.days.${dayKey}`)}
                   </span>
 
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-micro">
                     <button
                       type="button"
                       onClick={() => copyTo(dayIndex, [0, 1, 2, 3, 4, 5, 6])}
@@ -243,7 +243,7 @@ function StoreHoursEditor({ storeId }) {
 
                 <div className="mt-3 space-y-2">
                   {ranges.length === 0 && (
-                    <p className="text-sm text-ink-faint">
+                    <p className="text-small text-ink-faint">
                       {t("storeHours.closed")}
                     </p>
                   )}
@@ -270,7 +270,7 @@ function StoreHoursEditor({ storeId }) {
                         }
                         className={timeFieldClass}
                       />
-                      <span className="text-sm text-ink-muted">
+                      <span className="text-small text-ink-muted">
                         {t("storeHours.rangeSeparator")}
                       </span>
                       <input
@@ -292,7 +292,7 @@ function StoreHoursEditor({ storeId }) {
                         type="button"
                         onClick={() => removeRange(dayIndex, rangeIndex)}
                         aria-label={t("storeHours.removeRange")}
-                        className="rounded-lg p-2 text-ink-faint hover:bg-paper-sunken hover:text-danger"
+                        className="rounded-control p-2 text-ink-faint hover:bg-paper-sunken hover:text-danger"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -302,14 +302,14 @@ function StoreHoursEditor({ storeId }) {
                   <button
                     type="button"
                     onClick={() => addRange(dayIndex)}
-                    className="inline-flex items-center gap-1 text-sm font-medium text-cedar hover:underline"
+                    className="inline-flex items-center gap-1 text-small font-medium text-cedar hover:underline"
                   >
                     <Plus className="h-4 w-4" />
                     {t("storeHours.addRange")}
                   </button>
 
                   {errors[dayIndex] && (
-                    <p className="text-xs text-danger">{errors[dayIndex]}</p>
+                    <p className="text-micro text-danger">{errors[dayIndex]}</p>
                   )}
                 </div>
               </li>

@@ -47,7 +47,7 @@ function OrderDetails() {
   if (error) {
     return (
       <div className="mx-auto max-w-6xl px-6 py-10">
-        <div className="rounded-xl border border-danger-border bg-danger-subtle p-5">
+        <div className="rounded-card border border-danger-border bg-danger-subtle p-5">
           <p className="text-danger-strong">{error}</p>
 
           <BackLink to="/orders" className="mt-4">
@@ -84,7 +84,7 @@ const total = Number(order.total_price || 0);
 
         <div className="mt-4 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
-            <h1 className="text-3xl font-bold text-ink">
+            <h1 className="text-title font-bold text-ink">
               {t("orderDetails.orderNumber", { id: order.id })}
             </h1>
 
@@ -94,7 +94,7 @@ const total = Number(order.total_price || 0);
           </div>
 
           <span
-            className={`w-fit rounded-full px-4 py-2 text-sm font-semibold ${
+            className={`w-fit rounded-pill px-4 py-2 text-small font-semibold ${
               order.status === "pending"
                 ? "bg-warning-tint text-warning-muted"
                 : order.status === "processing"
@@ -115,9 +115,9 @@ const total = Number(order.total_price || 0);
       <div className="grid gap-8 lg:grid-cols-3">
         {/* Order items */}
         <section className="lg:col-span-2">
-          <div className="rounded-2xl border border-line bg-paper-raised shadow-sm">
+          <div className="rounded-card border border-line bg-paper-raised shadow-card">
             <div className="border-b border-line p-6">
-              <h2 className="text-xl font-semibold text-ink">
+              <h2 className="text-title font-semibold text-ink">
                 {t("orderDetails.orderItems")}
               </h2>
             </div>
@@ -133,7 +133,7 @@ const total = Number(order.total_price || 0);
                       {localizedField(item, "product_name", i18n.language)}
                     </h3>
 
-                    <p className="mt-1 text-sm text-ink-muted">
+                    <p className="mt-1 text-small text-ink-muted">
                       {t("orderDetails.priceLine", {
                         price: `$${(Number(item.subtotal) / Number(item.quantity)).toFixed(2)}`,
                         quantity: item.quantity,
@@ -150,14 +150,14 @@ const total = Number(order.total_price || 0);
           </div>
 
           {/* Delivery information */}
-          <div className="mt-6 rounded-2xl border border-line bg-paper-raised p-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-ink">
+          <div className="mt-6 rounded-card border border-line bg-paper-raised p-6 shadow-card">
+            <h2 className="text-title font-semibold text-ink">
               {t("orderDetails.deliveryInfo")}
             </h2>
 
             <div className="mt-5 space-y-4">
               <div>
-                <p className="text-sm text-ink-muted">
+                <p className="text-small text-ink-muted">
                   {t("orderDetails.deliveryAddress")}
                 </p>
 
@@ -167,7 +167,7 @@ const total = Number(order.total_price || 0);
               </div>
 
               <div>
-                <p className="text-sm text-ink-muted">
+                <p className="text-small text-ink-muted">
                   {t("orderDetails.city")}
                 </p>
 
@@ -187,8 +187,8 @@ const total = Number(order.total_price || 0);
 
         {/* Summary */}
 <aside>
-  <div className="sticky top-24 rounded-2xl border border-line bg-paper-raised p-6 shadow-sm">
-    <h2 className="text-xl font-semibold text-ink">
+  <div className="sticky top-24 rounded-card border border-line bg-paper-raised p-6 shadow-card">
+    <h2 className="text-title font-semibold text-ink">
       {t("orderDetails.orderSummary")}
     </h2>
 
@@ -217,7 +217,7 @@ const total = Number(order.total_price || 0);
         <div className="flex justify-between text-cedar">
           <span>
             {t("orderDetails.discount")}{" "}
-            <span dir="ltr" className="font-mono text-xs">
+            <span dir="ltr" className="font-mono text-micro">
               {order.coupon_code}
             </span>
           </span>
@@ -229,7 +229,7 @@ const total = Number(order.total_price || 0);
       )}
 
       <div className="border-t border-line pt-4">
-        <div className="flex justify-between text-lg font-bold">
+        <div className="flex justify-between text-body font-bold">
           <span>{t("orderDetails.total")}</span>
 
           <span className="text-cedar" dir="ltr">
