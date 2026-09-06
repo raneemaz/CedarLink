@@ -100,15 +100,29 @@ def read_sets():
     return sets
 
 
-# Body text roles, and the surfaces they are allowed to sit on.
-TEXT_ROLES = [
+# ---- what must pass, and what is exempt -------------------------------- #
+
+# Body text. Every one of these must clear 4.5:1 on every surface below.
+BODY_ROLES = [
     "ink", "ink-emphasis", "ink-body", "ink-secondary", "ink-muted",
-    "ink-faint", "ink-disabled", "cedar", "danger", "warning", "info",
-    "success", "warning-muted", "danger-strong", "cedar-strong",
+    "cedar", "danger", "warning", "info", "success",
+    "warning-muted", "danger-strong", "cedar-strong",
 ]
+
+# Not body text: icons and secondary metadata. Large-text bar, 3:1.
+LARGE_ROLES = ["ink-faint"]
+
+# Exempt, and the exemption is narrower than it looks — see
+# docs/decisions/0029-theme-setting.md. WCAG 2.1 SC 1.4.3 excludes text in
+# *inactive* user-interface components, which covers five of the nine
+# `ink-disabled` call sites (all `disabled:` variants). The other four are
+# decorative icons and one star-rating track; none is body text, and none
+# is measured here. Listed rather than silently skipped.
+EXEMPT_ROLES = ["ink-disabled"]
+
 SURFACES = ["paper", "paper-raised", "paper-sunken"]
 
-# Foreground-on-fill pairs, where the fill is the background.
+# Foreground-on-fill pairs, where the fill is the background. All body.
 ON_FILL = [
     ("on-cedar", "cedar"),
     ("on-danger", "danger"),
@@ -131,39 +145,126 @@ ON_FILL = [
 AA_BODY = 4.5
 AA_LARGE = 3.0
 
-sets = read_sets()
-failures = 0
-which = sys.argv[1] if len(sys.argv) > 1 else None
+# Pairs that fail today, in the light theme only, recorded so the gate can
+# fail on anything NEW without pretending these are fine.
+#
+# Every one of them predates the theme work: they are the original R1
+# palette, which was lifted from the pre-existing hard-coded colours and
+# never measured. The dark set introduced in R2 passes clean, which is why
+# this list has no dark entries.
+#
+# R3 replaces all 42 values against the redesign palette and is required
+# to clear this list. An entry that starts passing is reported as stale, so
+# the list cannot quietly outlive the problem.
+KNOWN_FAILURES = {
+    ("light", "ink-faint", "paper"),
+    ("light", "ink-faint", "paper-raised"),
+    ("light", "ink-faint", "paper-sunken"),
+    ("light", "ink-muted", "paper-sunken"),
+    ("light", "danger", "paper-sunken"),
+    ("light", "danger", "danger-subtle"),
+    ("light", "on-danger", "danger-accent"),
+}
 
-for name, tokens in sets.items():
-    if which and name != which:
-        continue
-    print(f"\n=== {name.upper()} ===")
-    print(f"{'foreground':<16}{'background':<16}{'ratio':>7}  AA")
+
+def check(name, tokens, verbose):
+    """Every required pair for one theme. Returns the list of failures."""
+    failures = []
+    rows = []
+
+    def measure(fg, bg, floor, kind):
+        if fg not in tokens or bg not in tokens:
+            return
+        r = ratio(parse(tokens[fg]), parse(tokens[bg]))
+        ok = r >= floor
+        rows.append((fg, bg, r, floor, kind, ok))
+        if not ok:
+            failures.append((fg, bg, r, floor))
 
     for surface in SURFACES:
-        for role in TEXT_ROLES:
-            if role not in tokens or surface not in tokens:
-                continue
-            r = ratio(parse(tokens[role]), parse(tokens[surface]))
-            ok = "pass" if r >= AA_BODY else (
-                "LARGE-ONLY" if r >= AA_LARGE else "FAIL"
-            )
-            if r < AA_LARGE:
-                failures += 1
-            if which or r < AA_BODY or surface == "paper-raised":
-                print(f"{role:<16}{surface:<16}{r:>6.2f}  {ok}")
+        for role in BODY_ROLES:
+            measure(role, surface, AA_BODY, "body")
+        for role in LARGE_ROLES:
+            measure(role, surface, AA_LARGE, "large")
 
-    print(f"{'--- fills ---':<32}")
     for fg, bg in ON_FILL:
-        if fg not in tokens or bg not in tokens:
-            continue
-        r = ratio(parse(tokens[fg]), parse(tokens[bg]))
-        ok = "pass" if r >= AA_BODY else (
-            "LARGE-ONLY" if r >= AA_LARGE else "FAIL"
-        )
-        if r < AA_LARGE:
-            failures += 1
-        print(f"{fg:<16}{bg:<16}{r:>6.2f}  {ok}")
+        measure(fg, bg, AA_BODY, "body")
 
-print(f"\nbelow 3:1 (fails even for large text): {failures}")
+    if verbose:
+        print()
+        print(f"=== {name.upper()} ===")
+        print(f"{'foreground':<16}{'background':<16}{'ratio':>7} {'floor':>6}  ")
+        for fg, bg, r, floor, kind, ok in rows:
+            print(f"{fg:<16}{bg:<16}{r:>6.2f} {floor:>6.1f}  "
+                  f"{'pass' if ok else 'FAIL'} ({kind})")
+        for role in EXEMPT_ROLES:
+            for surface in SURFACES:
+                if role in tokens and surface in tokens:
+                    r = ratio(parse(tokens[role]), parse(tokens[surface]))
+                    print(f"{role:<16}{surface:<16}{r:>6.2f} {'--':>6}  "
+                          f"exempt (SC 1.4.3, inactive control)")
+
+    return failures
+
+
+def main():
+    args = [a for a in sys.argv[1:] if not a.startswith("-")]
+    quiet = "--quiet" in sys.argv
+    only = args[0] if args else None
+
+    sets = read_sets()
+    new_failures = []
+    still_failing = []
+    seen = set()
+
+    for name, tokens in sets.items():
+        if only and name != only:
+            continue
+        for fg, bg, r, floor in check(name, tokens, verbose=not quiet):
+            key = (name, fg, bg)
+            seen.add(key)
+            (still_failing if key in KNOWN_FAILURES else new_failures).append(
+                (name, fg, bg, r, floor)
+            )
+
+    stale = sorted(KNOWN_FAILURES - seen) if not only else []
+
+    print()
+    for name, fg, bg, r, floor in still_failing:
+        print(f"  known   {name:<6} {fg} on {bg}: {r:.2f}:1 "
+              f"(needs {floor}:1) — pre-existing, R3 must clear it")
+    for name, fg, bg in stale:
+        print(f"  stale   {name:<6} {fg} on {bg} now passes — "
+              f"remove it from KNOWN_FAILURES")
+
+    if stale:
+        print()
+        print("Contrast: the known-failure list is out of date.")
+        return 1
+
+    if not new_failures:
+        themes = ", ".join(n for n in sets if not only or n == only)
+        print(f"Contrast: no new AA failures ({themes}; "
+              f"{len(still_failing)} known).")
+        return 0
+
+    all_failures = {}
+    for name, fg, bg, r, floor in new_failures:
+        all_failures.setdefault(name, []).append((fg, bg, r, floor))
+
+    total = sum(len(v) for v in all_failures.values())
+    print(f"Contrast: {total} NEW pair(s) below the WCAG AA floor.")
+    print()
+    for name, failures in all_failures.items():
+        for fg, bg, r, floor in failures:
+            print(f"  {name:<6} {fg} on {bg}: {r:.2f}:1, needs {floor}:1")
+    print()
+    print(
+        "A theme that fails contrast is a worse accessibility outcome "
+        "than no theme."
+    )
+    print("Adjust the value in src/index.css — do not lower the floor.")
+    return 1
+
+
+sys.exit(main())

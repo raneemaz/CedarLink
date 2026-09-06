@@ -160,10 +160,75 @@ Two honest exceptions, neither of them body text:
 Stated plainly because chapter 7 will want to claim the theme is
 accessible: **every body-text role passes AA in dark, on every surface,
 with margin.** The two roles that do not are a decorative one that meets
-the large-text bar and a disabled one the specification exempts — and
-both are worse in the light theme that has been shipping all along. If
-anything, this session improved the accessibility of the light theme's
-weakest pairs by giving the project a script that measures them.
+the large-text bar and a disabled one — see the audit below before citing
+the exemption. Both are worse in the light theme that has been shipping
+all along.
+
+### `ink-disabled`: the SC 1.4.3 exemption covers five of nine sites
+
+Chapter 7 should not cite the exemption without this list. Every call
+site, audited:
+
+| # | site | inactive control? |
+|---|---|---|
+| 1 | `NotificationBell.jsx:99` — `disabled:text-ink-disabled` | **yes** |
+| 2 | `NotificationsFeed.jsx:123` — `disabled:` | **yes** |
+| 3 | `NotificationsFeed.jsx:132` — `disabled:` | **yes** |
+| 4 | `ProductDetails.jsx:226` — `disabled:` quantity − | **yes** |
+| 5 | `ProductDetails.jsx:254` — `disabled:` quantity + | **yes** |
+| 6 | `NotificationsFeed.jsx:172` — empty-state bell icon | no — decoration |
+| 7 | `VendorDashboard.jsx:287` — empty-state chart icon | no — decoration |
+| 8 | `StarRating.jsx:27` — unfilled star track, `aria-hidden` | no — decoration |
+| 9 | `StarRatingInput.jsx:47` — **unselected star in a live input** | **no — active** |
+
+Sites 1–5 are inactive controls and SC 1.4.3 exempts them outright.
+
+Sites 6–8 are not controls at all. They are decorative: the two empty
+states carry their meaning in an adjacent heading and paragraph, and the
+star track is `aria-hidden` with the rating also stated as text by
+`RatingSummary`. SC 1.4.3's "incidental — decoration" clause covers them,
+which is a *different* clause from the inactive-component one.
+
+**Site 9 is neither, and it is a real defect.** The unselected star in
+`StarRatingInput` is the visible state of an active user-interface
+component, which puts it under **SC 1.4.11 Non-text Contrast** at 3:1 —
+not under 1.4.3 at all. It measures **2.35:1 in dark and 1.47:1 in
+light**, so it fails, and it fails worse in the theme that has been
+shipping since before any of this work.
+
+That is one call site, not a theme-wide problem, and the fix is a token
+change rather than a component change — but the honest claim for chapter
+7 is "the exemption covers the disabled states; one rating control is
+below 1.4.11 and is listed as known" rather than a blanket exemption.
+
+## The contrast gate
+
+`check-contrast.py` runs in CI as its own step and **fails the build** on
+any new pair below the floor, so the requirement does not depend on
+somebody remembering it during the next palette change. Verified by
+lightening `ink-body` in the dark set until it dropped to 1.77:1 and
+watching the step exit 1 naming all four affected pairs, then reverting.
+
+It also revealed something the manual pass had not: **the light theme
+fails AA on seven pairs today**, all of them pre-dating the theme work.
+They are the original R1 values, which were lifted from the pre-existing
+hard-coded colours and never measured:
+
+```
+light  ink-faint on paper            2.49:1  (needs 3.0)
+light  ink-faint on paper-raised     2.60:1  (needs 3.0)
+light  ink-faint on paper-sunken     2.36:1  (needs 3.0)
+light  ink-muted on paper-sunken     4.39:1  (needs 4.5)
+light  danger    on paper-sunken     4.33:1  (needs 4.5)
+light  danger    on danger-subtle    4.36:1  (needs 4.5)
+light  on-danger on danger-accent    3.82:1  (needs 4.5)
+```
+
+They are recorded in `KNOWN_FAILURES` with the reason rather than excused
+by lowering the floor, so the gate passes today and fails on anything
+new. The script also fails if one of them *starts* passing, so the list
+cannot outlive the problem. R3 replaces all 42 values and is required to
+clear it.
 
 ## The alternative not taken
 

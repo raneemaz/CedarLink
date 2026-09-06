@@ -11,8 +11,21 @@ export const THEMES = ["light", "dark", "system"];
 
 export const DEFAULT_THEME = "system";
 
-/** Where a signed-out visitor's choice lives. Signed-in users get the API. */
+/**
+ * Where the render cache lives, per identity.
+ *
+ * Namespaced by user id, because the pre-paint script cannot ask the API
+ * who is signed in — it reads this and paints. On a shared browser a bare
+ * key means the next person to load the page gets the previous person's
+ * theme for a frame, which is a small leak of someone else's preference
+ * and a visible flash. Signed-out visitors keep the bare key: there is no
+ * id to namespace by, and nothing of anyone's to confuse it with.
+ */
 export const THEME_CACHE_KEY = "cedarlink_theme";
+
+export function themeCacheKey(userId) {
+  return userId == null ? THEME_CACHE_KEY : `${THEME_CACHE_KEY}:${userId}`;
+}
 
 /** Anything unrecognised — a stale cache, a hand-edited value — is system. */
 export function normalizeTheme(value) {
@@ -61,25 +74,25 @@ export function applyTheme(preference, root) {
   return attribute;
 }
 
-export function readThemeCache(storage) {
+export function readThemeCache(userId, storage) {
   const store =
     storage || (typeof localStorage === "undefined" ? null : localStorage);
   if (!store) return DEFAULT_THEME;
 
   try {
-    return normalizeTheme(store.getItem(THEME_CACHE_KEY));
+    return normalizeTheme(store.getItem(themeCacheKey(userId)));
   } catch {
     return DEFAULT_THEME;
   }
 }
 
-export function writeThemeCache(preference, storage) {
+export function writeThemeCache(preference, userId, storage) {
   const store =
     storage || (typeof localStorage === "undefined" ? null : localStorage);
   if (!store) return;
 
   try {
-    store.setItem(THEME_CACHE_KEY, normalizeTheme(preference));
+    store.setItem(themeCacheKey(userId), normalizeTheme(preference));
   } catch {
     /* storage unavailable — the choice still applies for this session */
   }

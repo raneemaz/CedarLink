@@ -22,6 +22,17 @@ jobs:
       - name: Lint
         run: flake8 app tests run.py
 
+      - name: Contrast (WCAG AA)
+        # Every text-on-surface and text-on-fill ratio, computed from the
+        # token values in frontend/src/index.css. Fails on any NEW pair
+        # below 4.5:1 body / 3:1 large. Seven light-theme pairs fail today
+        # and are named in KNOWN_FAILURES with the reason; the script also
+        # fails if one of them starts passing, so the list cannot rot.
+        # Lives in the Python job because it is a Python script and this
+        # job already has an interpreter — it reads a frontend file, it
+        # does not need node. R3 replaces all 42 values and must clear it.
+        run: python frontend/scripts/check-contrast.py --quiet
+
       - name: Migrations apply to an empty database
         run: flask db upgrade
         env:
