@@ -86,7 +86,7 @@ function StoreDetails() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-surface px-6 py-12 text-center text-text-muted">
+      <div className="min-h-screen bg-paper px-6 py-12 text-center text-ink-muted">
         {t("storeDetails.loading")}
       </div>
     );
@@ -94,11 +94,11 @@ function StoreDetails() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-surface px-6 py-12">
+      <div className="min-h-screen bg-paper px-6 py-12">
         <div className="mx-auto max-w-5xl">
           <BackLink to="/stores">{t("backLink.stores")}</BackLink>
-          <div className="mt-8 rounded-xl bg-surface-raised p-12 text-center shadow-sm">
-            <h1 className="text-xl font-semibold text-text-primary">{error}</h1>
+          <div className="mt-8 rounded-xl bg-paper-raised p-12 text-center shadow-sm">
+            <h1 className="text-xl font-semibold text-ink">{error}</h1>
           </div>
         </div>
       </div>
@@ -115,16 +115,16 @@ function StoreDetails() {
     : null;
 
   return (
-    <div className="min-h-screen bg-surface px-6 py-10 lg:px-10">
+    <div className="min-h-screen bg-paper px-6 py-10 lg:px-10">
       <div className="mx-auto max-w-6xl">
         <BackLink to="/stores">{t("backLink.stores")}</BackLink>
 
-        <div className="mt-6 rounded-xl border border-border bg-surface-raised p-6">
+        <div className="mt-6 rounded-xl border border-line bg-paper-raised p-6">
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-3xl font-bold text-text-primary">{store.name}</h1>
+            <h1 className="text-3xl font-bold text-ink">{store.name}</h1>
             <StoreStatusBadge store={store} />
           </div>
-          <p className="mt-1 text-text-muted">
+          <p className="mt-1 text-ink-muted">
             {store.location || t("storeDetails.locationNotSet")}
           </p>
 
@@ -157,16 +157,16 @@ function StoreDetails() {
             </p>
           )}
           {overrideOn && store.override_status === "open" && (
-            <p className="mt-3 rounded-lg bg-brand-subtle px-3 py-2 text-sm text-brand-strong">
+            <p className="mt-3 rounded-lg bg-cedar-subtle px-3 py-2 text-sm text-cedar-strong">
               {t("storeDetails.overrideOpen", { until: overrideUntil })}
             </p>
           )}
 
           <div className="mt-4 text-sm">
-            <p className="text-text-faint">{t("storeDetails.todaysHours")}</p>
-            <p className="font-medium text-text-emphasis" dir="ltr">
+            <p className="text-ink-faint">{t("storeDetails.todaysHours")}</p>
+            <p className="font-medium text-ink-emphasis" dir="ltr">
               {todayIdx >= 0 && (
-                <span className="text-text-faint">
+                <span className="text-ink-faint">
                   {t(`storeHours.days.${DAY_KEYS[todayIdx]}`)} ·{" "}
                 </span>
               )}
@@ -179,17 +179,17 @@ function StoreDetails() {
           </div>
 
           {store.description && (
-            <p className="mt-3 leading-7 text-text-secondary">{store.description}</p>
+            <p className="mt-3 leading-7 text-ink-secondary">{store.description}</p>
           )}
 
-          <div className="mt-5 grid gap-4 border-t border-border-subtle pt-4 text-sm sm:grid-cols-3">
+          <div className="mt-5 grid gap-4 border-t border-line-subtle pt-4 text-sm sm:grid-cols-3">
             <div>
-              <p className="text-text-faint">{t("storeDetails.delivery")}</p>
+              <p className="text-ink-faint">{t("storeDetails.delivery")}</p>
               <p
                 className={
                   store.delivery_available
-                    ? "font-medium text-brand"
-                    : "font-medium text-text-muted"
+                    ? "font-medium text-cedar"
+                    : "font-medium text-ink-muted"
                 }
               >
                 {store.delivery_available
@@ -198,21 +198,21 @@ function StoreDetails() {
               </p>
             </div>
             <div>
-              <p className="text-text-faint">{t("storeDetails.insideCityFee")}</p>
-              <p className="font-medium text-text-emphasis">
+              <p className="text-ink-faint">{t("storeDetails.insideCityFee")}</p>
+              <p className="font-medium text-ink-emphasis">
                 ${Number(store.inside_city_delivery_fee).toFixed(2)}
               </p>
             </div>
             <div>
-              <p className="text-text-faint">{t("storeDetails.outsideCityFee")}</p>
-              <p className="font-medium text-text-emphasis">
+              <p className="text-ink-faint">{t("storeDetails.outsideCityFee")}</p>
+              <p className="font-medium text-ink-emphasis">
                 ${Number(store.outside_city_delivery_fee).toFixed(2)}
               </p>
             </div>
           </div>
 
           {store.contact_info && (
-            <p className="mt-4 text-sm text-text-muted">
+            <p className="mt-4 text-sm text-ink-muted">
               {t("storeDetails.contact")}: {store.contact_info}
             </p>
           )}
@@ -220,11 +220,11 @@ function StoreDetails() {
           <StoreSocialLinks
             links={socialLinks}
             storeName={store.name}
-            className="mt-5 border-t border-border-subtle pt-4"
+            className="mt-5 border-t border-line-subtle pt-4"
           />
 
           {store.is_online_only ? (
-            <p className="mt-4 text-sm text-text-secondary">
+            <p className="mt-4 text-sm text-ink-secondary">
               {t("storeDetails.onlineOnly")}
             </p>
           ) : store.latitude != null && store.longitude != null ? (
@@ -254,12 +254,12 @@ function StoreDetails() {
           </div>
         )}
 
-        <h2 className="mt-10 text-xl font-bold text-text-primary">
+        <h2 className="mt-10 text-xl font-bold text-ink">
           {t("storeDetails.productsHeading", { count: products.length })}
         </h2>
 
         {products.length === 0 ? (
-          <p className="mt-4 text-text-muted">{t("storeDetails.noProducts")}</p>
+          <p className="mt-4 text-ink-muted">{t("storeDetails.noProducts")}</p>
         ) : (
           <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {products.map((product) => (
@@ -268,9 +268,9 @@ function StoreDetails() {
           </div>
         )}
 
-        <section className="mt-10 rounded-xl border border-border bg-surface-raised p-6">
+        <section className="mt-10 rounded-xl border border-line bg-paper-raised p-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-xl font-bold text-text-primary">
+            <h2 className="text-xl font-bold text-ink">
               {t("reviews.storeHeading")}
             </h2>
             <RatingSummary

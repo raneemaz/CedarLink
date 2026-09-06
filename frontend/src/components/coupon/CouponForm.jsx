@@ -6,19 +6,19 @@ function Field({ label, hint, htmlFor, children }) {
     <div>
       <label
         htmlFor={htmlFor}
-        className="mb-1.5 block text-sm font-medium text-text-body"
+        className="mb-1.5 block text-sm font-medium text-ink-body"
       >
         {label}
       </label>
       {children}
-      {hint && <p className="mt-1 text-xs text-text-muted">{hint}</p>}
+      {hint && <p className="mt-1 text-xs text-ink-muted">{hint}</p>}
     </div>
   );
 }
 
 const INPUT =
-  "w-full rounded-lg border border-border-strong px-3 py-2 text-sm outline-none " +
-  "focus:border-brand-ring focus:ring-1 focus:ring-brand-ring";
+  "w-full rounded-lg border border-line-strong px-3 py-2 text-sm outline-none " +
+  "focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring";
 
 /**
  * Create / edit form, shared by the vendor and admin coupon pages.
@@ -229,29 +229,29 @@ function CouponForm({ form, setForm, onSubmit, onCancel, saving, editing }) {
         </Field>
       </div>
 
-      <label className="flex items-start gap-3 rounded-lg bg-surface p-4">
+      <label className="flex items-start gap-3 rounded-lg bg-paper p-4">
         <input
           type="checkbox"
           checked={form.is_active}
           onChange={set("is_active")}
-          className="mt-0.5 h-4 w-4 rounded border-border-strong text-brand focus:ring-brand-ring"
+          className="mt-0.5 h-4 w-4 rounded border-line-strong text-cedar focus:ring-cedar-ring"
         />
         <span>
-          <span className="block text-sm font-medium text-text-emphasis">
+          <span className="block text-sm font-medium text-ink-emphasis">
             {t("coupon.form.isActive")}
           </span>
-          <span className="mt-0.5 block text-xs text-text-muted">
+          <span className="mt-0.5 block text-xs text-ink-muted">
             {t("coupon.form.isActiveHint")}
           </span>
         </span>
       </label>
 
-      <div className="flex justify-end gap-3 border-t border-border-subtle pt-4">
+      <div className="flex justify-end gap-3 border-t border-line-subtle pt-4">
         <button
           type="button"
           onClick={onCancel}
           disabled={saving}
-          className="cursor-pointer rounded-lg border border-border-strong px-4 py-2 text-sm font-medium text-text-body hover:bg-surface disabled:opacity-50"
+          className="cursor-pointer rounded-lg border border-line-strong px-4 py-2 text-sm font-medium text-ink-body hover:bg-paper disabled:opacity-50"
         >
           {t("common.cancel")}
         </button>
@@ -259,7 +259,7 @@ function CouponForm({ form, setForm, onSubmit, onCancel, saving, editing }) {
         <button
           type="submit"
           disabled={saving}
-          className="cursor-pointer rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-on-brand hover:bg-brand-strong disabled:cursor-not-allowed disabled:opacity-50"
+          className="cursor-pointer rounded-lg bg-cedar px-4 py-2 text-sm font-semibold text-on-cedar hover:bg-cedar-strong disabled:cursor-not-allowed disabled:opacity-50"
         >
           {saving
             ? t("common.working")

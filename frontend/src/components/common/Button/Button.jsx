@@ -8,13 +8,13 @@ function Button({
 }) {
   const variants = {
     primary:
-      "bg-brand hover:bg-brand-strong text-on-brand",
+      "bg-cedar hover:bg-cedar-strong text-on-cedar",
 
     secondary:
-      "bg-control hover:bg-control-hover text-text-emphasis",
+      "bg-control hover:bg-control-hover text-ink-emphasis",
 
     danger:
-      "bg-danger hover:bg-danger-strong text-on-brand",
+      "bg-danger hover:bg-danger-strong text-on-danger",
   };
 
   return (

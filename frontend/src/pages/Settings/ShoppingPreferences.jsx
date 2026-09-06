@@ -157,7 +157,7 @@ function ShoppingPreferences() {
   };
 
   return (
-    <div className="min-h-screen bg-surface px-6 py-10">
+    <div className="min-h-screen bg-paper px-6 py-10">
       <div className="mx-auto max-w-4xl">
         <div className="mb-8">
           <BackLink onClick={() => navigate("/settings")} className="mb-4">
@@ -165,15 +165,15 @@ function ShoppingPreferences() {
           </BackLink>
 
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-subtle text-brand">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-cedar-subtle text-cedar">
               <ShoppingBag size={24} />
             </div>
 
             <div>
-              <h1 className="text-3xl font-bold text-text-primary">
+              <h1 className="text-3xl font-bold text-ink">
                 {t("shoppingPreferences.title")}
               </h1>
-              <p className="mt-1 text-sm text-text-secondary">
+              <p className="mt-1 text-sm text-ink-secondary">
                 {t("shoppingPreferences.subtitle")}
               </p>
             </div>
@@ -181,22 +181,22 @@ function ShoppingPreferences() {
         </div>
 
         {loading ? (
-          <p className="text-sm text-text-muted">
+          <p className="text-sm text-ink-muted">
             {t("shoppingPreferences.loading")}
           </p>
         ) : (
           <div className="space-y-6">
-            <section className="overflow-hidden rounded-2xl bg-surface-raised shadow-sm">
-              <div className="border-b border-border-subtle px-6 py-5">
-                <h2 className="text-xl font-semibold text-text-primary">
+            <section className="overflow-hidden rounded-2xl bg-paper-raised shadow-sm">
+              <div className="border-b border-line-subtle px-6 py-5">
+                <h2 className="text-xl font-semibold text-ink">
                   {t("shoppingPreferences.checkoutSection")}
                 </h2>
-                <p className="mt-1 text-sm text-text-muted">
+                <p className="mt-1 text-sm text-ink-muted">
                   {t("shoppingPreferences.checkoutSectionDesc")}
                 </p>
               </div>
 
-              <div className="divide-y divide-border-subtle px-6">
+              <div className="divide-y divide-line-subtle px-6">
                 <Toggle
                   checked={preferences.autofill_default_address}
                   onChange={(v) => setField("autofill_default_address", v)}
@@ -205,10 +205,10 @@ function ShoppingPreferences() {
                 />
 
                 <div className="py-4">
-                  <p className="font-medium text-text-primary">
+                  <p className="font-medium text-ink">
                     {t("shoppingPreferences.paymentLabel")}
                   </p>
-                  <p className="mt-1 text-sm text-text-muted">
+                  <p className="mt-1 text-sm text-ink-muted">
                     {t("shoppingPreferences.paymentDesc")}
                   </p>
 
@@ -218,8 +218,8 @@ function ShoppingPreferences() {
                         key={method}
                         className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 text-sm transition ${
                           preferences.preferred_payment_method === method
-                            ? "border-brand-ring bg-brand-subtle"
-                            : "border-border hover:bg-surface"
+                            ? "border-cedar-ring bg-cedar-subtle"
+                            : "border-line hover:bg-paper"
                         }`}
                       >
                         <input
@@ -247,11 +247,11 @@ function ShoppingPreferences() {
                 <div className="py-4">
                   <label
                     htmlFor="default_delivery_city"
-                    className="block font-medium text-text-primary"
+                    className="block font-medium text-ink"
                   >
                     {t("shoppingPreferences.cityLabel")}
                   </label>
-                  <p className="mt-1 text-sm text-text-muted">
+                  <p className="mt-1 text-sm text-ink-muted">
                     {t("shoppingPreferences.cityDesc")}
                   </p>
 
@@ -264,7 +264,7 @@ function ShoppingPreferences() {
                         e.target.value || null,
                       )
                     }
-                    className="mt-3 w-full rounded-lg border border-border-strong bg-surface-raised px-4 py-2.5 text-sm outline-none focus:border-brand-ring focus:ring-2 focus:ring-brand-tint"
+                    className="mt-3 w-full rounded-lg border border-line-strong bg-paper-raised px-4 py-2.5 text-sm outline-none focus:border-cedar-ring focus:ring-2 focus:ring-cedar-tint"
                   >
                     <option value="">
                       {t("shoppingPreferences.cityNone")}
@@ -285,19 +285,19 @@ function ShoppingPreferences() {
             {/* Interests — stated, never inferred. The home page leads
                 with these; nothing here is derived from what the customer
                 has browsed or bought, because none of that is recorded. */}
-            <section className="overflow-hidden rounded-2xl bg-surface-raised shadow-sm">
-              <div className="border-b border-border-subtle px-6 py-5">
-                <h2 className="text-xl font-semibold text-text-primary">
+            <section className="overflow-hidden rounded-2xl bg-paper-raised shadow-sm">
+              <div className="border-b border-line-subtle px-6 py-5">
+                <h2 className="text-xl font-semibold text-ink">
                   {t("shoppingPreferences.interestsSection")}
                 </h2>
-                <p className="mt-1 text-sm text-text-muted">
+                <p className="mt-1 text-sm text-ink-muted">
                   {t("shoppingPreferences.interestsSectionDesc")}
                 </p>
               </div>
 
               <div className="px-6 py-5">
                 <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-                  <p className="text-sm text-text-secondary">
+                  <p className="text-sm text-ink-secondary">
                     {t("shoppingPreferences.interestsChosen", {
                       count: interests.length,
                       max: MAX_INTERESTS,
@@ -308,7 +308,7 @@ function ShoppingPreferences() {
                     <button
                       type="button"
                       onClick={() => setField("interest_category_ids", [])}
-                      className="cursor-pointer text-sm font-medium text-brand hover:underline"
+                      className="cursor-pointer text-sm font-medium text-cedar hover:underline"
                     >
                       {t("shoppingPreferences.interestsClear")}
                     </button>
@@ -316,7 +316,7 @@ function ShoppingPreferences() {
                 </div>
 
                 {categories.length === 0 ? (
-                  <p className="text-sm text-text-muted">
+                  <p className="text-sm text-ink-muted">
                     {t("shoppingPreferences.interestsNone")}
                   </p>
                 ) : (
@@ -336,12 +336,12 @@ function ShoppingPreferences() {
                           aria-pressed={chosen}
                           className={`inline-flex cursor-pointer items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-40 ${
                             chosen
-                              ? "border-brand bg-brand text-on-brand"
-                              : "border-border-strong bg-surface-raised text-text-body hover:bg-surface"
+                              ? "border-cedar bg-cedar text-on-cedar"
+                              : "border-line-strong bg-paper-raised text-ink-body hover:bg-paper"
                           }`}
                         >
                           {chosen && (
-                            <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-on-brand/25 text-xs">
+                            <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-on-cedar/25 text-xs">
                               {rank}
                             </span>
                           )}
@@ -352,18 +352,18 @@ function ShoppingPreferences() {
                   </div>
                 )}
 
-                <p className="mt-4 text-xs text-text-muted">
+                <p className="mt-4 text-xs text-ink-muted">
                   {t("shoppingPreferences.interestsHint")}
                 </p>
               </div>
             </section>
 
-            <section className="overflow-hidden rounded-2xl bg-surface-raised shadow-sm">
-              <div className="border-b border-border-subtle px-6 py-5">
-                <h2 className="text-xl font-semibold text-text-primary">
+            <section className="overflow-hidden rounded-2xl bg-paper-raised shadow-sm">
+              <div className="border-b border-line-subtle px-6 py-5">
+                <h2 className="text-xl font-semibold text-ink">
                   {t("shoppingPreferences.browsingSection")}
                 </h2>
-                <p className="mt-1 text-sm text-text-muted">
+                <p className="mt-1 text-sm text-ink-muted">
                   {t("shoppingPreferences.browsingSectionDesc")}
                 </p>
               </div>
@@ -383,7 +383,7 @@ function ShoppingPreferences() {
                 type="button"
                 onClick={handleSave}
                 disabled={saving}
-                className="cursor-pointer rounded-lg bg-brand px-6 py-3 text-sm font-semibold text-on-brand transition hover:bg-brand-strong disabled:cursor-not-allowed disabled:opacity-60"
+                className="cursor-pointer rounded-lg bg-cedar px-6 py-3 text-sm font-semibold text-on-cedar transition hover:bg-cedar-strong disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {saving
                   ? t("shoppingPreferences.saving")

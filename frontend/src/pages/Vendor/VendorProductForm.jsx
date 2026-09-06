@@ -11,8 +11,8 @@ import ProductImageManager from "./ProductImageManager";
 import { localizedName } from "../../utils/localize";
 
 const fieldClass =
-  "w-full rounded-lg border border-border-strong px-4 py-3 text-sm outline-none " +
-  "focus:border-brand-ring focus:ring-1 focus:ring-brand-ring";
+  "w-full rounded-lg border border-line-strong px-4 py-3 text-sm outline-none " +
+  "focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring";
 
 const LANG_LABEL = {
   en: "language.english",
@@ -196,20 +196,20 @@ function VendorProductForm() {
   };
 
   if (loading) {
-    return <p className="text-sm text-text-muted">{t("vendorProductForm.loading")}</p>;
+    return <p className="text-sm text-ink-muted">{t("vendorProductForm.loading")}</p>;
   }
 
   if (noStore) {
     return (
       <div>
-        <h1 className="text-3xl font-bold text-text-primary">{t("vendorProductForm.noStoreTitle")}</h1>
-        <div className="mt-6 rounded-xl border border-dashed border-border-strong bg-surface-raised p-12 text-center">
-          <p className="text-text-secondary">
+        <h1 className="text-3xl font-bold text-ink">{t("vendorProductForm.noStoreTitle")}</h1>
+        <div className="mt-6 rounded-xl border border-dashed border-line-strong bg-paper-raised p-12 text-center">
+          <p className="text-ink-secondary">
             {t("vendorProductForm.noStoreBody")}
           </p>
           <Link
             to="/vendor/store"
-            className="mt-4 inline-block font-semibold text-brand hover:underline"
+            className="mt-4 inline-block font-semibold text-cedar hover:underline"
           >
             {t("vendorProductForm.createStore")}
           </Link>
@@ -229,14 +229,14 @@ function VendorProductForm() {
     <div>
       <div className="mb-8">
         <BackLink to="/vendor/products">{t("backLink.vendorProducts")}</BackLink>
-        <h1 className="mt-2 text-3xl font-bold text-text-primary">
+        <h1 className="mt-2 text-3xl font-bold text-ink">
           {isEdit ? t("vendorProductForm.editTitle") : t("vendorProductForm.addTitle")}
         </h1>
       </div>
 
       <form
         onSubmit={handleSubmit}
-        className="overflow-hidden rounded-2xl bg-surface-raised shadow-sm"
+        className="overflow-hidden rounded-2xl bg-paper-raised shadow-sm"
       >
         <div className="space-y-6 px-6 py-6">
           {/* Name + description, one language at a time */}
@@ -251,7 +251,7 @@ function VendorProductForm() {
               <div>
                 <label
                   htmlFor={`name_${activeLang}`}
-                  className="mb-2 block text-sm font-medium text-text-body"
+                  className="mb-2 block text-sm font-medium text-ink-body"
                 >
                   {t("vendorProductForm.nameLangLabel", { lang: langName })}
                 </label>
@@ -271,7 +271,7 @@ function VendorProductForm() {
               <div>
                 <label
                   htmlFor={`description_${activeLang}`}
-                  className="mb-2 block text-sm font-medium text-text-body"
+                  className="mb-2 block text-sm font-medium text-ink-body"
                 >
                   {t("vendorProductForm.descriptionLangLabel", {
                     lang: langName,
@@ -288,7 +288,7 @@ function VendorProductForm() {
               </div>
             </div>
 
-            <p className="mt-2 text-xs text-text-muted">
+            <p className="mt-2 text-xs text-ink-muted">
               {t("translationTabs.fallbackHint")}
             </p>
           </div>
@@ -297,7 +297,7 @@ function VendorProductForm() {
             <div>
               <label
                 htmlFor="price"
-                className="mb-2 block text-sm font-medium text-text-body"
+                className="mb-2 block text-sm font-medium text-ink-body"
               >
                 {t("vendorProductForm.price")}
               </label>
@@ -319,7 +319,7 @@ function VendorProductForm() {
             <div>
               <label
                 htmlFor="stock"
-                className="mb-2 block text-sm font-medium text-text-body"
+                className="mb-2 block text-sm font-medium text-ink-body"
               >
                 {t("vendorProductForm.stock")}
               </label>
@@ -342,7 +342,7 @@ function VendorProductForm() {
           <div>
             <label
               htmlFor="category_id"
-              className="mb-2 block text-sm font-medium text-text-body"
+              className="mb-2 block text-sm font-medium text-ink-body"
             >
               {t("vendorProductForm.category")}
             </label>
@@ -369,7 +369,7 @@ function VendorProductForm() {
 
         </div>
 
-        <div className="flex justify-end gap-3 border-t border-border-subtle px-6 py-4">
+        <div className="flex justify-end gap-3 border-t border-line-subtle px-6 py-4">
           <Button
             variant="secondary"
             onClick={() => navigate("/vendor/products")}

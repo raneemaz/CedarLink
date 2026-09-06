@@ -32,12 +32,15 @@ function ReauthPanel({ userId, twoFactorEnabled, submitting, submitLabel, onSubm
   const [code, setCode] = useState("");
   const [sending, setSending] = useState(false);
 
+  // The foreground travels with the fill. It was a fixed `text-on-cedar`
+  // on the button while the background switched underneath it, which was
+  // only invisible because both foregrounds are white today.
   const btnClass = danger
-    ? "bg-danger hover:bg-danger-strong"
-    : "bg-brand hover:bg-brand-strong";
+    ? "bg-danger text-on-danger hover:bg-danger-strong"
+    : "bg-cedar text-on-cedar hover:bg-cedar-strong";
   const focusClass = danger
     ? "focus:border-danger-accent focus:ring-danger-tint"
-    : "focus:border-brand-ring focus:ring-brand-tint";
+    : "focus:border-cedar-ring focus:ring-cedar-tint";
 
   const startChallenge = async () => {
     if (!password) {
@@ -90,7 +93,7 @@ function ReauthPanel({ userId, twoFactorEnabled, submitting, submitLabel, onSubm
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         placeholder={t("privacyData.passwordPlaceholder")}
-        className={`w-full rounded-lg border border-border-strong bg-surface-raised px-4 py-2.5 text-sm outline-none focus:ring-2 ${focusClass}`}
+        className={`w-full rounded-lg border border-line-strong bg-paper-raised px-4 py-2.5 text-sm outline-none focus:ring-2 ${focusClass}`}
       />
 
       {twoFactorEnabled && !challengeToken && (
@@ -98,7 +101,7 @@ function ReauthPanel({ userId, twoFactorEnabled, submitting, submitLabel, onSubm
           type="button"
           onClick={startChallenge}
           disabled={sending}
-          className={`cursor-pointer rounded-lg px-5 py-2.5 text-sm font-semibold text-on-brand transition disabled:opacity-60 ${btnClass}`}
+          className={`cursor-pointer rounded-lg px-5 py-2.5 text-sm font-semibold transition disabled:opacity-60 ${btnClass}`}
         >
           {sending
             ? t("privacyData.sending")
@@ -114,7 +117,7 @@ function ReauthPanel({ userId, twoFactorEnabled, submitting, submitLabel, onSubm
           value={code}
           onChange={(e) => setCode(e.target.value)}
           placeholder={t("privacyData.codePlaceholder")}
-          className="w-full rounded-lg border border-border-strong bg-surface-raised px-4 py-2.5 text-sm outline-none focus:border-border-strong focus:ring-2 focus:ring-border-subtle"
+          className="w-full rounded-lg border border-line-strong bg-paper-raised px-4 py-2.5 text-sm outline-none focus:border-line-strong focus:ring-2 focus:ring-line-subtle"
         />
       )}
 
@@ -123,7 +126,7 @@ function ReauthPanel({ userId, twoFactorEnabled, submitting, submitLabel, onSubm
           type="button"
           onClick={submit}
           disabled={submitting}
-          className={`cursor-pointer rounded-lg px-5 py-2.5 text-sm font-semibold text-on-brand transition disabled:cursor-not-allowed disabled:opacity-60 ${btnClass}`}
+          className={`cursor-pointer rounded-lg px-5 py-2.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${btnClass}`}
         >
           {submitting ? t("privacyData.working") : submitLabel}
         </button>
@@ -211,7 +214,7 @@ function PrivacyData() {
   }
 
   return (
-    <div className="min-h-screen bg-surface px-6 py-10">
+    <div className="min-h-screen bg-paper px-6 py-10">
       <div className="mx-auto max-w-3xl">
         <div className="mb-8">
           <BackLink onClick={() => navigate("/settings")} className="mb-4">
@@ -219,14 +222,14 @@ function PrivacyData() {
           </BackLink>
 
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-subtle text-brand">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-cedar-subtle text-cedar">
               <ShieldCheck size={24} />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-text-primary">
+              <h1 className="text-3xl font-bold text-ink">
                 {t("privacyData.title")}
               </h1>
-              <p className="mt-1 text-sm text-text-secondary">
+              <p className="mt-1 text-sm text-ink-secondary">
                 {t("privacyData.subtitle")}
               </p>
             </div>
@@ -234,18 +237,18 @@ function PrivacyData() {
         </div>
 
         {statusLoading ? (
-          <p className="text-sm text-text-muted">{t("privacyData.loading")}</p>
+          <p className="text-sm text-ink-muted">{t("privacyData.loading")}</p>
         ) : (
           <div className="space-y-6">
             {/* Deactivate */}
-            <section className="rounded-2xl border border-warning-border bg-surface-raised p-6 shadow-sm">
+            <section className="rounded-2xl border border-warning-border bg-paper-raised p-6 shadow-sm">
               <div className="flex items-start gap-3">
                 <PauseCircle size={22} className="mt-0.5 text-warning-muted" />
                 <div className="flex-1">
-                  <h2 className="text-lg font-semibold text-text-primary">
+                  <h2 className="text-lg font-semibold text-ink">
                     {t("privacyData.deactivateTitle")}
                   </h2>
-                  <p className="mt-1 text-sm text-text-secondary">
+                  <p className="mt-1 text-sm text-ink-secondary">
                     {t("privacyData.deactivateDesc")}
                   </p>
 
@@ -271,18 +274,18 @@ function PrivacyData() {
             </section>
 
             {/* Delete */}
-            <section className="rounded-2xl border border-danger-border bg-surface-raised p-6 shadow-sm">
+            <section className="rounded-2xl border border-danger-border bg-paper-raised p-6 shadow-sm">
               <div className="flex items-start gap-3">
                 <Trash2 size={22} className="mt-0.5 text-danger" />
                 <div className="flex-1">
-                  <h2 className="text-lg font-semibold text-text-primary">
+                  <h2 className="text-lg font-semibold text-ink">
                     {t("privacyData.deleteTitle")}
                   </h2>
-                  <p className="mt-1 text-sm text-text-secondary">
+                  <p className="mt-1 text-sm text-ink-secondary">
                     {t("privacyData.deleteDesc")}
                   </p>
 
-                  <ul className="mt-3 list-disc space-y-1 ps-5 text-sm text-text-muted">
+                  <ul className="mt-3 list-disc space-y-1 ps-5 text-sm text-ink-muted">
                     <li>{t("privacyData.deleteKept")}</li>
                     <li>{t("privacyData.deleteRemoved")}</li>
                     <li>{t("privacyData.deleteIrreversible")}</li>
@@ -298,7 +301,7 @@ function PrivacyData() {
                     </button>
                   ) : (
                     <div className="mt-4">
-                      <label className="block text-sm font-medium text-text-body">
+                      <label className="block text-sm font-medium text-ink-body">
                         {t("privacyData.typeDeleteLabel")}
                       </label>
                       <input
@@ -308,7 +311,7 @@ function PrivacyData() {
                           setDeleteConfirmText(e.target.value)
                         }
                         placeholder="DELETE"
-                        className="mt-2 w-full rounded-lg border border-border-strong bg-surface-raised px-4 py-2.5 text-sm outline-none focus:border-danger-accent focus:ring-2 focus:ring-danger-tint"
+                        className="mt-2 w-full rounded-lg border border-line-strong bg-paper-raised px-4 py-2.5 text-sm outline-none focus:border-danger-accent focus:ring-2 focus:ring-danger-tint"
                       />
 
                       <ReauthPanel

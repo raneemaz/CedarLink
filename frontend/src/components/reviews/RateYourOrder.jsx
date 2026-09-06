@@ -115,14 +115,14 @@ function RateYourOrder({ orderId }) {
 
   if (loading && !data) {
     return (
-      <div className="rounded-2xl border border-border bg-surface-raised p-6 shadow-sm">
-        <p className="text-sm text-text-muted">{t("rateOrder.loading")}</p>
+      <div className="rounded-2xl border border-line bg-paper-raised p-6 shadow-sm">
+        <p className="text-sm text-ink-muted">{t("rateOrder.loading")}</p>
       </div>
     );
   }
   if (error) {
     return (
-      <div className="rounded-2xl border border-border bg-surface-raised p-6 shadow-sm">
+      <div className="rounded-2xl border border-line bg-paper-raised p-6 shadow-sm">
         <p className="text-sm text-danger">{error}</p>
       </div>
     );
@@ -147,20 +147,20 @@ function RateYourOrder({ orderId }) {
   ];
 
   return (
-    <div className="rounded-2xl border border-border bg-surface-raised shadow-sm">
-      <div className="border-b border-border p-6">
-        <h2 className="text-xl font-semibold text-text-primary">
+    <div className="rounded-2xl border border-line bg-paper-raised shadow-sm">
+      <div className="border-b border-line p-6">
+        <h2 className="text-xl font-semibold text-ink">
           {t("rateOrder.heading")}
         </h2>
-        <p className="mt-1 text-sm text-text-muted">{t("rateOrder.subtitle")}</p>
+        <p className="mt-1 text-sm text-ink-muted">{t("rateOrder.subtitle")}</p>
       </div>
 
-      <ul className="divide-y divide-border-subtle">
+      <ul className="divide-y divide-line-subtle">
         {rows.map((row) => {
           const isOpen = openKey === row.key;
           return (
             <li key={row.key} className="p-6">
-              <p className="font-medium text-text-primary">{row.label}</p>
+              <p className="font-medium text-ink">{row.label}</p>
 
               {isOpen ? (
                 <div className="mt-3">
@@ -177,7 +177,7 @@ function RateYourOrder({ orderId }) {
                   />
                 </div>
               ) : row.review?.status === "removed" ? (
-                <p className="mt-2 text-sm text-text-muted">
+                <p className="mt-2 text-sm text-ink-muted">
                   {t("rateOrder.removed")}
                 </p>
               ) : row.review ? (
@@ -185,13 +185,13 @@ function RateYourOrder({ orderId }) {
                   <div className="flex flex-wrap items-center gap-2">
                     <StarRating value={row.review.rating} size="sm" />
                     {row.review.title && (
-                      <span className="text-sm font-medium text-text-emphasis">
+                      <span className="text-sm font-medium text-ink-emphasis">
                         {row.review.title}
                       </span>
                     )}
                   </div>
                   {row.review.body && (
-                    <p className="mt-1 whitespace-pre-line text-sm text-text-secondary">
+                    <p className="mt-1 whitespace-pre-line text-sm text-ink-secondary">
                       {row.review.body}
                     </p>
                   )}
@@ -202,7 +202,7 @@ function RateYourOrder({ orderId }) {
                         setFormError("");
                         setOpenKey(row.key);
                       }}
-                      className="inline-flex items-center gap-1 font-medium text-brand hover:underline"
+                      className="inline-flex items-center gap-1 font-medium text-cedar hover:underline"
                     >
                       <Pencil className="h-3.5 w-3.5" />
                       {t("rateOrder.edit")}
@@ -224,7 +224,7 @@ function RateYourOrder({ orderId }) {
                     setFormError("");
                     setOpenKey(row.key);
                   }}
-                  className="mt-2 rounded-lg border border-brand px-3 py-1.5 text-sm font-medium text-brand transition hover:bg-brand hover:text-on-brand"
+                  className="mt-2 rounded-lg border border-cedar px-3 py-1.5 text-sm font-medium text-cedar transition hover:bg-cedar hover:text-on-cedar"
                 >
                   {t("rateOrder.write")}
                 </button>

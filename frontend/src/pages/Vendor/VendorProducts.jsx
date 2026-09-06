@@ -122,21 +122,21 @@ function VendorProducts() {
   };
 
   if (loading) {
-    return <p className="text-sm text-text-muted">{t("vendorProducts.loading")}</p>;
+    return <p className="text-sm text-ink-muted">{t("vendorProducts.loading")}</p>;
   }
 
   if (noStore) {
     return (
       <div>
-        <h1 className="text-3xl font-bold text-text-primary">{t("vendorProducts.title")}</h1>
+        <h1 className="text-3xl font-bold text-ink">{t("vendorProducts.title")}</h1>
 
-        <div className="mt-6 rounded-xl border border-dashed border-border-strong bg-surface-raised p-12 text-center">
-          <p className="text-text-secondary">
+        <div className="mt-6 rounded-xl border border-dashed border-line-strong bg-paper-raised p-12 text-center">
+          <p className="text-ink-secondary">
             {t("vendorProducts.noStoreBody")}
           </p>
           <Link
             to="/vendor/store"
-            className="mt-4 inline-block font-semibold text-brand hover:underline"
+            className="mt-4 inline-block font-semibold text-cedar hover:underline"
           >
             {t("vendorProducts.createStore")}
           </Link>
@@ -149,8 +149,8 @@ function VendorProducts() {
     <div>
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-text-primary">{t("vendorProducts.title")}</h1>
-          <p className="mt-2 text-text-secondary">
+          <h1 className="text-3xl font-bold text-ink">{t("vendorProducts.title")}</h1>
+          <p className="mt-2 text-ink-secondary">
             {t("vendorProducts.countInStore", {
               count: total,
               store: store.name,
@@ -164,21 +164,21 @@ function VendorProducts() {
       </div>
 
       {total === 0 ? (
-        <div className="rounded-xl border border-dashed border-border-strong bg-surface-raised p-12 text-center">
-          <p className="text-text-secondary">{t("vendorProducts.emptyBody")}</p>
+        <div className="rounded-xl border border-dashed border-line-strong bg-paper-raised p-12 text-center">
+          <p className="text-ink-secondary">{t("vendorProducts.emptyBody")}</p>
           <Link
             to="/vendor/products/new"
-            className="mt-4 inline-block font-semibold text-brand hover:underline"
+            className="mt-4 inline-block font-semibold text-cedar hover:underline"
           >
             {t("vendorProducts.addFirst")}
           </Link>
         </div>
       ) : (
         <>
-          <div className="overflow-x-auto rounded-2xl bg-surface-raised shadow-sm">
+          <div className="overflow-x-auto rounded-2xl bg-paper-raised shadow-sm">
             <table className="min-w-full text-sm">
               <thead>
-                <tr className="border-b border-border-subtle text-start text-xs uppercase tracking-wide text-text-faint">
+                <tr className="border-b border-line-subtle text-start text-xs uppercase tracking-wide text-ink-faint">
                   <th className="px-4 py-3 font-medium">{t("vendorProducts.colProduct")}</th>
                   <th className="px-4 py-3 font-medium">{t("vendorProducts.colCategory")}</th>
                   <th className="px-4 py-3 font-medium">{t("vendorProducts.colPrice")}</th>
@@ -188,7 +188,7 @@ function VendorProducts() {
                 </tr>
               </thead>
 
-              <tbody className="divide-y divide-border-subtle">
+              <tbody className="divide-y divide-line-subtle">
                 {products.map((product) => {
                   const outOfStock = product.stock <= 0;
 
@@ -199,7 +199,7 @@ function VendorProducts() {
                     >
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 shrink-0 overflow-hidden rounded-md bg-surface-sunken">
+                          <div className="h-10 w-10 shrink-0 overflow-hidden rounded-md bg-paper-sunken">
                             {product.image && (
                               <img
                                 src={product.image}
@@ -208,26 +208,26 @@ function VendorProducts() {
                               />
                             )}
                           </div>
-                          <span className="font-medium text-text-primary">
+                          <span className="font-medium text-ink">
                             {localizedName(product, i18n.language)}
                           </span>
                         </div>
                       </td>
 
-                      <td className="px-4 py-3 text-text-secondary">
+                      <td className="px-4 py-3 text-ink-secondary">
                         {localizedName(
                           categories[product.category_id],
                           i18n.language,
                         ) || "—"}
                       </td>
 
-                      <td className="px-4 py-3 text-text-primary">
+                      <td className="px-4 py-3 text-ink">
                         ${Number(product.price).toFixed(2)}
                       </td>
 
                       <td
                         className={`px-4 py-3 font-medium ${
-                          outOfStock ? "text-danger" : "text-text-primary"
+                          outOfStock ? "text-danger" : "text-ink"
                         }`}
                       >
                         {product.stock}
@@ -249,7 +249,7 @@ function VendorProducts() {
                         <div className="flex justify-end gap-4">
                           <Link
                             to={`/vendor/products/${product.id}/edit`}
-                            className="font-medium text-brand hover:underline"
+                            className="font-medium text-cedar hover:underline"
                           >
                             {t("vendorProducts.edit")}
                           </Link>
@@ -275,12 +275,12 @@ function VendorProducts() {
                 type="button"
                 onClick={() => goToPage(page - 1)}
                 disabled={page <= 1}
-                className="rounded-lg border border-border-strong px-4 py-2 font-medium text-text-body hover:bg-surface disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-lg border border-line-strong px-4 py-2 font-medium text-ink-body hover:bg-paper disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {t("common.previous")}
               </button>
 
-              <span className="text-text-muted">
+              <span className="text-ink-muted">
                 {t("common.pageOf", { page, pages })}
               </span>
 
@@ -288,7 +288,7 @@ function VendorProducts() {
                 type="button"
                 onClick={() => goToPage(page + 1)}
                 disabled={page >= pages}
-                className="rounded-lg border border-border-strong px-4 py-2 font-medium text-text-body hover:bg-surface disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-lg border border-line-strong px-4 py-2 font-medium text-ink-body hover:bg-paper disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {t("common.next")}
               </button>

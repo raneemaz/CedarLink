@@ -102,15 +102,15 @@ function StoreOverridePanel({ store, onStoreChange }) {
       description={t("storeOverride.description")}
     >
       <div className="space-y-6">
-        <div className="rounded-xl bg-surface px-4 py-3">
-          <p className="text-xs font-medium uppercase tracking-wide text-text-muted">
+        <div className="rounded-xl bg-paper px-4 py-3">
+          <p className="text-xs font-medium uppercase tracking-wide text-ink-muted">
             {t("storeOverride.currentLabel")}
           </p>
-          <p className="mt-1 text-sm font-semibold text-text-primary">
+          <p className="mt-1 text-sm font-semibold text-ink">
             {currentState()}
           </p>
           {overrideActive && store.override_reason && (
-            <p className="mt-1 text-sm text-text-secondary">
+            <p className="mt-1 text-sm text-ink-secondary">
               {store.override_reason}
             </p>
           )}
@@ -130,14 +130,14 @@ function StoreOverridePanel({ store, onStoreChange }) {
         </div>
 
         <form onSubmit={applyOverride} className="space-y-5">
-          <p className="text-sm font-semibold text-text-primary">
+          <p className="text-sm font-semibold text-ink">
             {overrideActive
               ? t("storeOverride.replaceHeading")
               : t("storeOverride.setHeading")}
           </p>
 
           <fieldset>
-            <legend className="mb-2 text-sm font-medium text-text-body">
+            <legend className="mb-2 text-sm font-medium text-ink-body">
               {t("storeOverride.statusLabel")}
             </legend>
             <div className="flex flex-wrap gap-2">
@@ -146,8 +146,8 @@ function StoreOverridePanel({ store, onStoreChange }) {
                   key={option}
                   className={`cursor-pointer rounded-lg border px-4 py-2 text-sm font-medium ${
                     status === option
-                      ? "border-brand-ring bg-brand-subtle text-brand-strong"
-                      : "border-border-strong text-text-secondary"
+                      ? "border-cedar-ring bg-cedar-subtle text-cedar-strong"
+                      : "border-line-strong text-ink-secondary"
                   }`}
                 >
                   <input
@@ -167,7 +167,7 @@ function StoreOverridePanel({ store, onStoreChange }) {
           <div>
             <label
               htmlFor="override-reason"
-              className="mb-2 block text-sm font-medium text-text-body"
+              className="mb-2 block text-sm font-medium text-ink-body"
             >
               {t("storeOverride.reasonLabel")}
             </label>
@@ -179,7 +179,7 @@ function StoreOverridePanel({ store, onStoreChange }) {
                     key={key}
                     type="button"
                     onClick={() => setReason(label)}
-                    className="rounded-full border border-border-strong px-3 py-1 text-xs font-medium text-text-secondary hover:border-brand-ring hover:text-brand-strong"
+                    className="rounded-full border border-line-strong px-3 py-1 text-xs font-medium text-ink-secondary hover:border-cedar-ring hover:text-cedar-strong"
                   >
                     {label}
                   </button>
@@ -198,7 +198,7 @@ function StoreOverridePanel({ store, onStoreChange }) {
           </div>
 
           <fieldset>
-            <legend className="mb-2 text-sm font-medium text-text-body">
+            <legend className="mb-2 text-sm font-medium text-ink-body">
               {t("storeOverride.durationLabel")}
             </legend>
             <div className="flex flex-wrap gap-2">
@@ -207,8 +207,8 @@ function StoreOverridePanel({ store, onStoreChange }) {
                   key={option}
                   className={`cursor-pointer rounded-lg border px-3 py-2 text-sm font-medium ${
                     duration === option
-                      ? "border-brand-ring bg-brand-subtle text-brand-strong"
-                      : "border-border-strong text-text-secondary"
+                      ? "border-cedar-ring bg-cedar-subtle text-cedar-strong"
+                      : "border-line-strong text-ink-secondary"
                   }`}
                 >
                   <input
@@ -231,7 +231,7 @@ function StoreOverridePanel({ store, onStoreChange }) {
                 aria-label={t("storeOverride.durations.custom")}
                 value={customUntil}
                 onChange={(e) => setCustomUntil(e.target.value)}
-                className="mt-2 rounded-lg border border-border-strong px-3 py-2 text-sm outline-none focus:border-brand-ring focus:ring-1 focus:ring-brand-ring"
+                className="mt-2 rounded-lg border border-line-strong px-3 py-2 text-sm outline-none focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring"
               />
             )}
           </fieldset>

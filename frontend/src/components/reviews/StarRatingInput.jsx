@@ -41,10 +41,10 @@ function StarRatingInput({ value = 0, onChange, name = "rating", disabled }) {
             <Star
               size={28}
               strokeWidth={1.5}
-              className={`rounded transition peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-brand-ring ${
+              className={`rounded transition peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-cedar-ring ${
                 n <= shown
-                  ? "fill-warning-accent text-warning-accent"
-                  : "text-text-disabled"
+                  ? "fill-rating text-rating"
+                  : "text-ink-disabled"
               }`}
             />
           </label>

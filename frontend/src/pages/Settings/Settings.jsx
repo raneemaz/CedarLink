@@ -100,15 +100,15 @@ function Settings() {
   ];
 
   return (
-    <div className="min-h-[70vh] bg-surface px-6 py-10">
+    <div className="min-h-[70vh] bg-paper px-6 py-10">
       <div className="mx-auto max-w-4xl">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-text-primary">
+          <h1 className="text-3xl font-bold text-ink">
             {t("settings.title")}
           </h1>
 
-          <p className="mt-2 text-text-secondary">
+          <p className="mt-2 text-ink-secondary">
             {t("settings.subtitle")}
           </p>
         </div>
@@ -118,15 +118,15 @@ function Settings() {
           {settingSections.map((section) => (
             <section
               key={section.title}
-              className="overflow-hidden rounded-2xl bg-surface-raised shadow-sm"
+              className="overflow-hidden rounded-2xl bg-paper-raised shadow-sm"
             >
               {/* Section Header */}
-              <div className="border-b border-border-subtle px-6 py-5">
-                <h2 className="text-xl font-semibold text-text-primary">
+              <div className="border-b border-line-subtle px-6 py-5">
+                <h2 className="text-xl font-semibold text-ink">
                   {section.title}
                 </h2>
 
-                <p className="mt-1 text-sm text-text-muted">
+                <p className="mt-1 text-sm text-ink-muted">
                   {section.description}
                 </p>
               </div>
@@ -140,24 +140,24 @@ function Settings() {
                     <Link
                       key={item.title}
                       to={item.path}
-                      className={`group flex items-center gap-4 px-6 py-5 transition hover:bg-surface ${
+                      className={`group flex items-center gap-4 px-6 py-5 transition hover:bg-paper ${
                         index !== section.items.length - 1
-                          ? "border-b border-border-subtle"
+                          ? "border-b border-line-subtle"
                           : ""
                       }`}
                     >
                       {/* Icon */}
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-subtle text-brand">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cedar-subtle text-cedar">
                         <Icon size={21} />
                       </div>
 
                       {/* Text */}
                       <div className="min-w-0 flex-1">
-                        <h3 className="font-medium text-text-primary group-hover:text-brand">
+                        <h3 className="font-medium text-ink group-hover:text-cedar">
                           {item.title}
                         </h3>
 
-                        <p className="mt-1 text-sm text-text-muted">
+                        <p className="mt-1 text-sm text-ink-muted">
                           {item.description}
                         </p>
                       </div>
@@ -165,7 +165,7 @@ function Settings() {
                       {/* Arrow — points toward the row's trailing edge */}
                       <ChevronRight
                         size={20}
-                        className="shrink-0 text-text-faint transition group-hover:translate-x-1 group-hover:text-brand rtl:rotate-180"
+                        className="shrink-0 text-ink-faint transition group-hover:translate-x-1 group-hover:text-cedar rtl:rotate-180"
                       />
                     </Link>
                   );

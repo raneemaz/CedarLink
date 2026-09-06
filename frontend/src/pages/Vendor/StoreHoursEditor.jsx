@@ -10,8 +10,8 @@ import { Section } from "./VendorStore";
 // A compact field — the shared fieldClass is w-full, which would stack the
 // two time inputs on top of each other.
 const timeFieldClass =
-  "rounded-lg border border-border-strong px-3 py-2 text-sm outline-none " +
-  "focus:border-brand-ring focus:ring-1 focus:ring-brand-ring";
+  "rounded-lg border border-line-strong px-3 py-2 text-sm outline-none " +
+  "focus:border-cedar-ring focus:ring-1 focus:ring-cedar-ring";
 
 // day_of_week is 0-6 with Monday = 0 (Python datetime.weekday()), so the
 // display order below is also the wire value — index === day_of_week.
@@ -211,15 +211,15 @@ function StoreHoursEditor({ storeId }) {
       }
     >
       {loading ? (
-        <p className="text-sm text-text-muted">{t("storeHours.loading")}</p>
+        <p className="text-sm text-ink-muted">{t("storeHours.loading")}</p>
       ) : (
-        <ul className="divide-y divide-border-subtle">
+        <ul className="divide-y divide-line-subtle">
           {DAY_KEYS.map((dayKey, dayIndex) => {
             const ranges = week[dayIndex];
             return (
               <li key={dayKey} className="py-4 first:pt-0 last:pb-0">
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  <span className="text-sm font-semibold text-text-primary">
+                  <span className="text-sm font-semibold text-ink">
                     {t(`storeHours.days.${dayKey}`)}
                   </span>
 
@@ -227,14 +227,14 @@ function StoreHoursEditor({ storeId }) {
                     <button
                       type="button"
                       onClick={() => copyTo(dayIndex, [0, 1, 2, 3, 4, 5, 6])}
-                      className="font-medium text-brand hover:underline"
+                      className="font-medium text-cedar hover:underline"
                     >
                       {t("storeHours.copyToAll")}
                     </button>
                     <button
                       type="button"
                       onClick={() => copyTo(dayIndex, WEEKDAY_INDICES)}
-                      className="font-medium text-brand hover:underline"
+                      className="font-medium text-cedar hover:underline"
                     >
                       {t("storeHours.copyToWeekdays")}
                     </button>
@@ -243,7 +243,7 @@ function StoreHoursEditor({ storeId }) {
 
                 <div className="mt-3 space-y-2">
                   {ranges.length === 0 && (
-                    <p className="text-sm text-text-faint">
+                    <p className="text-sm text-ink-faint">
                       {t("storeHours.closed")}
                     </p>
                   )}
@@ -270,7 +270,7 @@ function StoreHoursEditor({ storeId }) {
                         }
                         className={timeFieldClass}
                       />
-                      <span className="text-sm text-text-muted">
+                      <span className="text-sm text-ink-muted">
                         {t("storeHours.rangeSeparator")}
                       </span>
                       <input
@@ -292,7 +292,7 @@ function StoreHoursEditor({ storeId }) {
                         type="button"
                         onClick={() => removeRange(dayIndex, rangeIndex)}
                         aria-label={t("storeHours.removeRange")}
-                        className="rounded-lg p-2 text-text-faint hover:bg-surface-sunken hover:text-danger"
+                        className="rounded-lg p-2 text-ink-faint hover:bg-paper-sunken hover:text-danger"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -302,7 +302,7 @@ function StoreHoursEditor({ storeId }) {
                   <button
                     type="button"
                     onClick={() => addRange(dayIndex)}
-                    className="inline-flex items-center gap-1 text-sm font-medium text-brand hover:underline"
+                    className="inline-flex items-center gap-1 text-sm font-medium text-cedar hover:underline"
                   >
                     <Plus className="h-4 w-4" />
                     {t("storeHours.addRange")}

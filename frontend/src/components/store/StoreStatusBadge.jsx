@@ -18,7 +18,7 @@ function StoreStatusBadge({ store, className = "" }) {
     >
       <span
         className={`h-1.5 w-1.5 rounded-full ${
-          open ? "bg-brand-ring" : "bg-danger-accent"
+          open ? "bg-cedar-ring" : "bg-danger-accent"
         }`}
       />
       {open ? t("storeOpenBadge.open") : t("storeOpenBadge.closed")}

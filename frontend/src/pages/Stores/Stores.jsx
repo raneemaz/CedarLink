@@ -147,11 +147,11 @@ function Stores() {
   };
 
   return (
-    <div className="min-h-screen bg-surface px-2 py-2 lg:px-10">
+    <div className="min-h-screen bg-paper px-2 py-2 lg:px-10">
       <div className="mx-auto max-w-screen-2xl">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-text-primary">{t("storesPage.title")}</h1>
-          <p className="mt-2 text-text-muted">
+          <h1 className="text-2xl font-bold text-ink">{t("storesPage.title")}</h1>
+          <p className="mt-2 text-ink-muted">
             {t("storesPage.subtitle")}
           </p>
         </div>
@@ -166,7 +166,7 @@ function Stores() {
 
         <form
           onSubmit={handleSearch}
-          className="mb-4 rounded-xl bg-surface-raised p-2 shadow-sm"
+          className="mb-4 rounded-xl bg-paper-raised p-2 shadow-sm"
         >
           <div className="grid gap-4 md:grid-cols-4">
             <input
@@ -174,13 +174,13 @@ function Stores() {
               value={keywordInput}
               onChange={(event) => setKeywordInput(event.target.value)}
               placeholder={t("storesPage.searchPlaceholder")}
-              className="rounded-md border border-border-strong px-3 py-2 outline-none focus:border-brand-ring md:col-span-2"
+              className="rounded-md border border-line-strong px-3 py-2 outline-none focus:border-cedar-ring md:col-span-2"
             />
 
             <select
               value={locationInput}
               onChange={(event) => setLocationInput(event.target.value)}
-              className="rounded-md border border-border-strong px-3 py-2 outline-none focus:border-brand-ring"
+              className="rounded-md border border-line-strong px-3 py-2 outline-none focus:border-cedar-ring"
             >
               <option value="">{t("storesPage.allLocations")}</option>
               {CITY_OPTIONS.map((city) => (
@@ -192,7 +192,7 @@ function Stores() {
 
             <button
               type="submit"
-              className="rounded-md bg-brand px-4 py-2 font-medium text-on-brand transition hover:bg-brand-strong"
+              className="rounded-md bg-cedar px-4 py-2 font-medium text-on-cedar transition hover:bg-cedar-strong"
             >
               {t("storesPage.search")}
             </button>
@@ -200,21 +200,21 @@ function Stores() {
         </form>
 
         {loading ? (
-          <div className="py-20 text-center text-text-muted">
+          <div className="py-20 text-center text-ink-muted">
             {t("storesPage.loading")}
           </div>
         ) : stores.length === 0 ? (
-          <div className="rounded-2xl bg-surface-raised py-20 text-center shadow-sm">
-            <h2 className="text-xl font-semibold text-text-emphasis">
+          <div className="rounded-2xl bg-paper-raised py-20 text-center shadow-sm">
+            <h2 className="text-xl font-semibold text-ink-emphasis">
               {t("storesPage.noneFound")}
             </h2>
-            <p className="mt-2 text-text-muted">
+            <p className="mt-2 text-ink-muted">
               {t("storesPage.tryDifferent")}
             </p>
           </div>
         ) : (
           <>
-            <p className="mb-3 text-sm text-text-muted">
+            <p className="mb-3 text-sm text-ink-muted">
               {nearby
                 ? t("storesPage.countNearby", { count: total, km: radiusKm })
                 : t("storesPage.count", { count: total })}
@@ -225,15 +225,15 @@ function Stores() {
                 <Link
                   key={store.id}
                   to={`/stores/${store.id}`}
-                  className="flex flex-col rounded-xl border border-border bg-surface-raised p-5 transition duration-200 hover:-translate-y-1 hover:shadow-md"
+                  className="flex flex-col rounded-xl border border-line bg-paper-raised p-5 transition duration-200 hover:-translate-y-1 hover:shadow-md"
                 >
                   <div className="flex items-start justify-between gap-2">
-                    <h3 className="truncate text-lg font-semibold text-text-primary">
+                    <h3 className="truncate text-lg font-semibold text-ink">
                       {store.name}
                     </h3>
                     <StoreStatusBadge store={store} className="shrink-0" />
                   </div>
-                  <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-text-muted">
+                  <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-ink-muted">
                     <span>{store.location || t("storesPage.locationNotSet")}</span>
                     {store.is_online_only && (
                       <span className="rounded-full bg-info-subtle px-2 py-0.5 text-xs font-medium text-info">
@@ -241,7 +241,7 @@ function Stores() {
                       </span>
                     )}
                     {typeof store.distance_km === "number" && (
-                      <span className="font-medium text-brand">
+                      <span className="font-medium text-cedar">
                         · {distanceLabel(store.distance_km)}
                       </span>
                     )}
@@ -255,28 +255,28 @@ function Stores() {
                   />
 
                   {store.description && (
-                    <p className="mt-2 line-clamp-2 text-sm text-text-muted">
+                    <p className="mt-2 line-clamp-2 text-sm text-ink-muted">
                       {store.description}
                     </p>
                   )}
 
-                  <div className="mt-4 space-y-1 border-t border-border-subtle pt-3 text-sm">
+                  <div className="mt-4 space-y-1 border-t border-line-subtle pt-3 text-sm">
                     <p
                       className={
                         store.delivery_available
-                          ? "font-medium text-brand"
-                          : "font-medium text-text-faint"
+                          ? "font-medium text-cedar"
+                          : "font-medium text-ink-faint"
                       }
                     >
                       {store.delivery_available
                         ? t("storesPage.deliveryAvailable")
                         : t("storesPage.deliveryUnavailable")}
                     </p>
-                    <p className="text-text-muted">
+                    <p className="text-ink-muted">
                       {t("storesPage.insideCity")}: $
                       {Number(store.inside_city_delivery_fee).toFixed(2)}
                     </p>
-                    <p className="text-text-muted">
+                    <p className="text-ink-muted">
                       {t("storesPage.outsideCity")}: $
                       {Number(store.outside_city_delivery_fee).toFixed(2)}
                     </p>
@@ -291,18 +291,18 @@ function Stores() {
                   type="button"
                   onClick={() => setPage((current) => current - 1)}
                   disabled={page <= 1}
-                  className="rounded-lg border border-border-strong px-4 py-2 font-medium text-text-body hover:bg-surface disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-lg border border-line-strong px-4 py-2 font-medium text-ink-body hover:bg-paper disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {t("common.previous")}
                 </button>
-                <span className="text-text-muted">
+                <span className="text-ink-muted">
                   {t("common.pageOf", { page, pages })}
                 </span>
                 <button
                   type="button"
                   onClick={() => setPage((current) => current + 1)}
                   disabled={page >= pages}
-                  className="rounded-lg border border-border-strong px-4 py-2 font-medium text-text-body hover:bg-surface disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-lg border border-line-strong px-4 py-2 font-medium text-ink-body hover:bg-paper disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {t("common.next")}
                 </button>

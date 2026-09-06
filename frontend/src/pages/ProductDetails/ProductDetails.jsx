@@ -86,8 +86,8 @@ function ProductDetails() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-surface px-6 py-12">
-        <div className="mx-auto max-w-6xl text-center text-text-muted">
+      <div className="min-h-screen bg-paper px-6 py-12">
+        <div className="mx-auto max-w-6xl text-center text-ink-muted">
           {t("productDetails.loading")}
         </div>
       </div>
@@ -96,12 +96,12 @@ function ProductDetails() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-surface px-6 py-12">
+      <div className="min-h-screen bg-paper px-6 py-12">
         <div className="mx-auto max-w-6xl">
           <BackLink to="/products">{t("backLink.products")}</BackLink>
 
-          <div className="mt-8 rounded-xl bg-surface-raised p-12 text-center shadow-sm">
-            <h1 className="text-xl font-semibold text-text-primary">{error}</h1>
+          <div className="mt-8 rounded-xl bg-paper-raised p-12 text-center shadow-sm">
+            <h1 className="text-xl font-semibold text-ink">{error}</h1>
           </div>
         </div>
       </div>
@@ -119,17 +119,17 @@ function ProductDetails() {
       : [];
 
   return (
-    <div className="min-h-screen bg-surface px-6 py-10 lg:px-10">
+    <div className="min-h-screen bg-paper px-6 py-10 lg:px-10">
       <div className="mx-auto max-w-6xl">
         {/* Back */}
         <BackLink to="/products">{t("backLink.products")}</BackLink>
 
         {/* Product */}
-        <div className="mt-6 grid overflow-hidden rounded-xl border border-border bg-surface-raised md:grid-cols-2">
+        <div className="mt-6 grid overflow-hidden rounded-xl border border-line bg-paper-raised md:grid-cols-2">
           {/* Image */}
           {images.length > 0 ? (
-            <div className="flex flex-col gap-3 bg-surface-sunken p-4">
-              <div className="flex min-h-[360px] flex-1 items-center justify-center overflow-hidden rounded-lg bg-surface-raised">
+            <div className="flex flex-col gap-3 bg-paper-sunken p-4">
+              <div className="flex min-h-[360px] flex-1 items-center justify-center overflow-hidden rounded-lg bg-paper-raised">
                 <img
                   src={images[activeImage]}
                   alt={name}
@@ -146,8 +146,8 @@ function ProductDetails() {
                       onClick={() => setActiveImage(index)}
                       className={`h-16 w-16 shrink-0 overflow-hidden rounded-md border-2 transition ${
                         index === activeImage
-                          ? "border-brand-ring"
-                          : "border-transparent hover:border-border-strong"
+                          ? "border-cedar-ring"
+                          : "border-transparent hover:border-line-strong"
                       }`}
                     >
                       <img
@@ -161,8 +161,8 @@ function ProductDetails() {
               )}
             </div>
           ) : (
-            <div className="flex min-h-[400px] items-center justify-center bg-surface-sunken">
-              <div className="text-center text-text-faint">
+            <div className="flex min-h-[400px] items-center justify-center bg-paper-sunken">
+              <div className="text-center text-ink-faint">
                 <p className="mt-3 text-sm">{t("productDetails.noImage")}</p>
               </div>
             </div>
@@ -170,15 +170,15 @@ function ProductDetails() {
 
           {/* Information */}
           <div className="p-8 lg:p-10">
-            <p className="text-sm font-medium text-brand">{t("productDetails.eyebrow")}</p>
+            <p className="text-sm font-medium text-cedar">{t("productDetails.eyebrow")}</p>
 
-            <h1 className="mt-2 text-3xl font-bold text-text-primary">
+            <h1 className="mt-2 text-3xl font-bold text-ink">
               {name}
             </h1>
 
             <Price
               amount={product.price}
-              className="mt-5 text-2xl font-bold text-brand"
+              className="mt-5 text-2xl font-bold text-cedar"
               approxClassName="text-sm"
             />
 
@@ -188,24 +188,24 @@ function ProductDetails() {
               className="mt-3"
             />
 
-            <div className="mt-6 border-t border-border-subtle pt-6">
-              <h2 className="text-sm font-semibold text-text-primary">
+            <div className="mt-6 border-t border-line-subtle pt-6">
+              <h2 className="text-sm font-semibold text-ink">
                 {t("productDetails.description")}
               </h2>
 
-              <p className="mt-2 leading-7 text-text-secondary">
+              <p className="mt-2 leading-7 text-ink-secondary">
                 {description || t("productDetails.noDescription")}
               </p>
             </div>
 
             <div className="mt-6 grid grid-cols-2 gap-4">
               {/* Availability */}
-              <div className="flex items-center justify-between rounded-lg bg-surface px-4 py-3">
-                <span className="text-sm text-text-secondary">{t("productDetails.availability")}</span>
+              <div className="flex items-center justify-between rounded-lg bg-paper px-4 py-3">
+                <span className="text-sm text-ink-secondary">{t("productDetails.availability")}</span>
 
                 <span
                   className={`text-sm font-semibold ${
-                    product.stock > 0 ? "text-brand" : "text-danger"
+                    product.stock > 0 ? "text-cedar" : "text-danger"
                   }`}
                 >
                   {product.stock > 0
@@ -215,15 +215,15 @@ function ProductDetails() {
               </div>
 
               {/* Quantity */}
-              <div className="flex items-center justify-between rounded-lg bg-surface px-4 py-3">
-                <span className="text-sm text-text-secondary">{t("productDetails.quantity")}</span>
+              <div className="flex items-center justify-between rounded-lg bg-paper px-4 py-3">
+                <span className="text-sm text-ink-secondary">{t("productDetails.quantity")}</span>
 
-                <div className="flex h-8 items-center overflow-hidden rounded-md border border-border-strong bg-surface-raised">
+                <div className="flex h-8 items-center overflow-hidden rounded-md border border-line-strong bg-paper-raised">
                   <button
                     type="button"
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                     disabled={quantity <= 1}
-                    className="flex h-8 w-8 cursor-pointer items-center justify-center text-text-body transition hover:bg-surface-sunken disabled:cursor-not-allowed disabled:text-text-disabled"
+                    className="flex h-8 w-8 cursor-pointer items-center justify-center text-ink-body transition hover:bg-paper-sunken disabled:cursor-not-allowed disabled:text-ink-disabled"
                   >
                     −
                   </button>
@@ -240,7 +240,7 @@ function ProductDetails() {
                         setQuantity(value);
                       }
                     }}
-                    className="h-8 w-10 border-x border-border-strong bg-surface-raised text-center text-sm font-medium outline-none
+                    className="h-8 w-10 border-x border-line-strong bg-paper-raised text-center text-sm font-medium outline-none
                         [appearance:textfield]
                         [&::-webkit-inner-spin-button]:appearance-none
                         [&::-webkit-outer-spin-button]:appearance-none"                  />
@@ -251,7 +251,7 @@ function ProductDetails() {
                       setQuantity((q) => Math.min(product.stock, q + 1))
                     }
                     disabled={quantity >= product.stock}
-                    className="flex h-8 w-8 cursor-pointer items-center justify-center text-text-body transition hover:bg-surface-sunken disabled:cursor-not-allowed disabled:text-text-disabled"
+                    className="flex h-8 w-8 cursor-pointer items-center justify-center text-ink-body transition hover:bg-paper-sunken disabled:cursor-not-allowed disabled:text-ink-disabled"
                   >
                     +
                   </button>
@@ -275,25 +275,25 @@ function ProductDetails() {
                   addingToCart ||
                   product.store_accepts_orders === false
                 }
-                className="flex-1 cursor-pointer rounded-md bg-brand px-5 py-3 text-sm font-semibold text-on-brand transition hover:bg-brand-strong disabled:cursor-not-allowed disabled:bg-control-hover"
+                className="flex-1 cursor-pointer rounded-md bg-cedar px-5 py-3 text-sm font-semibold text-on-cedar transition hover:bg-cedar-strong disabled:cursor-not-allowed disabled:bg-control-hover"
               >
                 {addingToCart ? t("productDetails.adding") : t("productDetails.addToCart")}
               </button>
 
-              <button className="rounded-md cursor-pointer border border-border-strong px-5 py-3 text-sm font-medium text-text-body transition hover:border-brand hover:text-brand">
+              <button className="rounded-md cursor-pointer border border-line-strong px-5 py-3 text-sm font-medium text-ink-body transition hover:border-cedar hover:text-cedar">
                 ♡
               </button>
             </div>
             {cartMessage && (
-              <p className="mt-3 text-sm text-brand">{cartMessage}</p>
+              <p className="mt-3 text-sm text-cedar">{cartMessage}</p>
             )}
           </div>
         </div>
 
         {/* Reviews */}
-        <section className="mt-10 rounded-xl border border-border bg-surface-raised p-6">
+        <section className="mt-10 rounded-xl border border-line bg-paper-raised p-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-xl font-bold text-text-primary">
+            <h2 className="text-xl font-bold text-ink">
               {t("reviews.heading")}
             </h2>
             <RatingSummary

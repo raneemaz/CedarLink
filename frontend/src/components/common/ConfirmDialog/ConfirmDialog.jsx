@@ -25,11 +25,11 @@ function ConfirmDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-scrim/40 px-4">
-      <div className="w-full max-w-md rounded-2xl bg-surface-raised p-6 shadow-xl">
-        <h2 className="text-lg font-semibold text-text-primary">{title}</h2>
+      <div className="w-full max-w-md rounded-2xl bg-paper-raised p-6 shadow-xl">
+        <h2 className="text-lg font-semibold text-ink">{title}</h2>
 
         {message && (
-          <p className="mt-2 text-sm text-text-secondary">{message}</p>
+          <p className="mt-2 text-sm text-ink-secondary">{message}</p>
         )}
 
         {children && <div className="mt-4">{children}</div>}

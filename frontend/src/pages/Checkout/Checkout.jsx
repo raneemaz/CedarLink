@@ -202,7 +202,7 @@ function Checkout() {
   if (loading) {
     return (
       <div className="mx-auto max-w-6xl px-6 py-10">
-        <p className="text-text-secondary">{t("checkout.loading")}</p>
+        <p className="text-ink-secondary">{t("checkout.loading")}</p>
       </div>
     );
   }
@@ -226,17 +226,17 @@ function Checkout() {
   if (stores.length === 0) {
     return (
       <div className="mx-auto max-w-6xl px-6 py-16 text-center">
-        <h1 className="text-3xl font-bold text-text-primary">
+        <h1 className="text-3xl font-bold text-ink">
           {t("checkout.emptyTitle")}
         </h1>
 
-        <p className="mt-3 text-text-secondary">
+        <p className="mt-3 text-ink-secondary">
           {t("checkout.emptyBody")}
         </p>
 
         <Link
           to="/products"
-          className="mt-6 inline-block rounded-lg bg-brand px-6 py-3 font-medium text-on-brand transition hover:bg-brand-strong"
+          className="mt-6 inline-block rounded-lg bg-cedar px-6 py-3 font-medium text-on-cedar transition hover:bg-cedar-strong"
         >
           {t("checkout.browseProducts")}
         </Link>
@@ -310,11 +310,11 @@ function Checkout() {
       <div className="mb-8">
         <BackLink to="/cart">{t("backLink.cart")}</BackLink>
 
-        <h1 className="mt-4 text-3xl font-bold text-text-primary">
+        <h1 className="mt-4 text-3xl font-bold text-ink">
           {t("checkout.title")}
         </h1>
 
-        <p className="mt-2 text-text-secondary">
+        <p className="mt-2 text-ink-secondary">
           {t("checkout.subtitle")}
         </p>
       </div>
@@ -322,14 +322,14 @@ function Checkout() {
       <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
         <section className="space-y-6">
           {/* Delivery Information */}
-          <div className="rounded-2xl border border-border bg-surface-raised p-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-text-primary">
+          <div className="rounded-2xl border border-line bg-paper-raised p-6 shadow-sm">
+            <h2 className="text-xl font-semibold text-ink">
               {t("checkout.deliveryInfo")}
             </h2>
 
             <div className="mt-6 space-y-5">
               <div>
-                <label className="mb-2 block text-sm font-medium text-text-body">
+                <label className="mb-2 block text-sm font-medium text-ink-body">
                   {t("checkout.deliveryAddress")}
                 </label>
 
@@ -338,19 +338,19 @@ function Checkout() {
                   value={deliveryAddress}
                   onChange={(e) => setDeliveryAddress(e.target.value)}
                   placeholder={t("checkout.addressPlaceholder")}
-                  className="w-full rounded-lg border border-border-strong px-4 py-3 outline-none transition focus:border-brand-ring focus:ring-2 focus:ring-brand-tint"
+                  className="w-full rounded-lg border border-line-strong px-4 py-3 outline-none transition focus:border-cedar-ring focus:ring-2 focus:ring-cedar-tint"
                 />
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-text-body">
+                <label className="mb-2 block text-sm font-medium text-ink-body">
                   {t("checkout.city")}
                 </label>
 
                 <select
                   value={deliveryCity}
                   onChange={(e) => setDeliveryCity(e.target.value)}
-                  className="w-full rounded-lg border border-border-strong bg-surface-raised px-4 py-3 outline-none transition focus:border-brand-ring focus:ring-2 focus:ring-brand-tint"
+                  className="w-full rounded-lg border border-line-strong bg-paper-raised px-4 py-3 outline-none transition focus:border-cedar-ring focus:ring-2 focus:ring-cedar-tint"
                 >
                   <option value="">{t("checkout.selectCity")}</option>
 
@@ -373,15 +373,15 @@ function Checkout() {
           </div>
 
           {/* Payment Method */}
-          <div className="rounded-2xl border border-border bg-surface-raised p-6 shadow-sm">
+          <div className="rounded-2xl border border-line bg-paper-raised p-6 shadow-sm">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-text-primary">
+              <h2 className="text-xl font-semibold text-ink">
                 {t("checkout.paymentMethod")}
               </h2>
 
               <Link
                 to="/settings/payment-methods"
-                className="text-sm font-medium text-brand hover:underline"
+                className="text-sm font-medium text-cedar hover:underline"
               >
                 {t("checkout.manageCards")}
               </Link>
@@ -389,7 +389,7 @@ function Checkout() {
 
             <div className="mt-5">
               {paymentMethodsLoading && (
-                <p className="text-sm text-text-muted">
+                <p className="text-sm text-ink-muted">
                   {t("checkout.loadingMethods")}
                 </p>
               )}
@@ -412,14 +412,14 @@ function Checkout() {
 
                       <Link
                         to="/settings/payment-methods/new"
-                        className="mt-2 inline-block text-sm font-medium text-brand hover:underline"
+                        className="mt-2 inline-block text-sm font-medium text-cedar hover:underline"
                       >
                         {t("checkout.addCard")}
                       </Link>
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      <p className="text-sm font-medium text-text-body">
+                      <p className="text-sm font-medium text-ink-body">
                         {t("checkout.savedCards")}
                       </p>
 
@@ -428,8 +428,8 @@ function Checkout() {
                           key={method.id}
                           className={`flex cursor-pointer items-center justify-between rounded-xl border p-4 transition ${
                             selectedPaymentMethod === String(method.id)
-                              ? "border-brand-ring bg-brand-subtle"
-                              : "border-border hover:border-border-strong"
+                              ? "border-cedar-ring bg-cedar-subtle"
+                              : "border-line hover:border-line-strong"
                           }`}
                         >
                           <div className="flex items-center gap-3">
@@ -447,19 +447,19 @@ function Checkout() {
                             />
 
                             <div>
-                              <p className="font-medium text-text-primary">
+                              <p className="font-medium text-ink">
                                 {getCardLabel(method)}
                               </p>
 
                               {method.is_default && (
-                                <p className="mt-1 text-xs text-brand">
+                                <p className="mt-1 text-xs text-cedar">
                                   {t("checkout.defaultCard")}
                                 </p>
                               )}
                             </div>
                           </div>
 
-                          <span className="text-sm text-text-muted">{t("checkout.card")}</span>
+                          <span className="text-sm text-ink-muted">{t("checkout.card")}</span>
                         </label>
                       ))}
                     </div>
@@ -468,8 +468,8 @@ function Checkout() {
                   <label
                     className={`flex cursor-pointer items-center justify-between rounded-xl border p-4 transition ${
                       selectedPaymentMethod === "cash_on_delivery"
-                        ? "border-brand-ring bg-brand-subtle"
-                        : "border-border hover:border-border-strong"
+                        ? "border-cedar-ring bg-cedar-subtle"
+                        : "border-line hover:border-line-strong"
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -485,16 +485,16 @@ function Checkout() {
                       />
 
                       <div>
-                        <p className="font-medium text-text-primary">
+                        <p className="font-medium text-ink">
                           {t("checkout.cashOnDelivery")}
                         </p>
-                        <p className="mt-1 text-xs text-text-muted">
+                        <p className="mt-1 text-xs text-ink-muted">
                           {t("checkout.cashOnDeliveryDesc")}
                         </p>
                       </div>
                     </div>
 
-                    <span className="text-sm text-text-muted">{t("checkout.cash")}</span>
+                    <span className="text-sm text-ink-muted">{t("checkout.cash")}</span>
                   </label>
                 </div>
               )}
@@ -502,9 +502,9 @@ function Checkout() {
           </div>
 
           {/* Order Items */}
-          <div className="rounded-2xl border border-border bg-surface-raised shadow-sm">
-            <div className="border-b border-border p-6">
-              <h2 className="text-xl font-semibold text-text-primary">
+          <div className="rounded-2xl border border-line bg-paper-raised shadow-sm">
+            <div className="border-b border-line p-6">
+              <h2 className="text-xl font-semibold text-ink">
                 {t("checkout.yourOrder")}
               </h2>
             </div>
@@ -513,31 +513,31 @@ function Checkout() {
               {stores.map((store) => (
                 <div
                   key={store.store_id}
-                  className="border-b border-border last:border-b-0"
+                  className="border-b border-line last:border-b-0"
                 >
-                  <div className="bg-surface px-6 py-4">
-                    <h3 className="font-semibold text-text-primary">
+                  <div className="bg-paper px-6 py-4">
+                    <h3 className="font-semibold text-ink">
                       {store.store_name}
                     </h3>
                   </div>
 
-                  <div className="divide-y divide-border-subtle">
+                  <div className="divide-y divide-line-subtle">
                     {store.items.map((item) => (
                       <div
                         key={item.id}
                         className="flex items-center justify-between px-6 py-4"
                       >
                         <div>
-                          <p className="font-medium text-text-primary">
+                          <p className="font-medium text-ink">
                             {localizedField(item, "product_name", i18n.language)}
                           </p>
 
-                          <p className="mt-1 text-sm text-text-muted">
+                          <p className="mt-1 text-sm text-ink-muted">
                             {t("checkout.quantityLine", { count: item.quantity })}
                           </p>
                         </div>
 
-                        <span className="font-medium text-text-primary">
+                        <span className="font-medium text-ink">
                           {/* Server-computed line total — never multiply in
                               the client (single source of pricing truth). */}
                           ${Number(item.subtotal).toFixed(2)}
@@ -547,11 +547,11 @@ function Checkout() {
                   </div>
 
                   <div className="flex justify-between px-6 py-4">
-                    <span className="font-medium text-text-secondary">
+                    <span className="font-medium text-ink-secondary">
                       {t("checkout.storeSubtotal")}
                     </span>
 
-                    <span className="font-semibold text-text-primary">
+                    <span className="font-semibold text-ink">
                       ${Number(store.store_subtotal).toFixed(2)}
                     </span>
                   </div>
@@ -563,14 +563,14 @@ function Checkout() {
 
         {/* Summary */}
         <aside>
-          <div className="sticky top-24 rounded-2xl border border-border bg-surface-raised p-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-text-primary">
+          <div className="sticky top-24 rounded-2xl border border-line bg-paper-raised p-6 shadow-sm">
+            <h2 className="text-xl font-semibold text-ink">
               {t("checkout.orderSummary")}
             </h2>
 
             <div className="mt-6 space-y-4">
               <div className="flex justify-between">
-                <span className="text-text-secondary">{t("checkout.cartSubtotal")}</span>
+                <span className="text-ink-secondary">{t("checkout.cartSubtotal")}</span>
 
                 <span className="font-medium" dir="ltr">
                   ${Number(preview?.subtotal ?? cart?.total ?? 0).toFixed(2)}
@@ -578,7 +578,7 @@ function Checkout() {
               </div>
 
               <div className="flex justify-between">
-                <span className="text-text-secondary">{t("checkout.delivery")}</span>
+                <span className="text-ink-secondary">{t("checkout.delivery")}</span>
 
                 <span className="font-medium" dir="ltr">
                   {previewLoading
@@ -590,7 +590,7 @@ function Checkout() {
               </div>
 
               {Number(preview?.discount) > 0 && (
-                <div className="flex justify-between text-brand">
+                <div className="flex justify-between text-cedar">
                   <span>
                     {t("checkout.discount")}{" "}
                     <span dir="ltr" className="font-mono text-xs">
@@ -608,7 +608,7 @@ function Checkout() {
                 <p className="text-sm text-danger">{previewError}</p>
               )}
 
-              <div className="border-t border-border pt-4">
+              <div className="border-t border-line pt-4">
                 <CouponField
                   /* Falls back to the cart's held code so the chip does
                      not disappear between arriving here and choosing a
@@ -619,11 +619,11 @@ function Checkout() {
                 />
               </div>
 
-              <div className="border-t border-border pt-4">
+              <div className="border-t border-line pt-4">
                 <div className="flex justify-between text-lg font-bold">
                   <span>{t("checkout.total")}</span>
 
-                  <span className="text-brand" dir="ltr">
+                  <span className="text-cedar" dir="ltr">
                     ${Number(preview?.total ?? cart?.total ?? 0).toFixed(2)}
                   </span>
                 </div>
@@ -646,7 +646,7 @@ function Checkout() {
                   !deliveryCity ||
                   !selectedPaymentMethod
                 }
-                className="w-full cursor-pointer rounded-lg bg-brand px-5 py-3 font-semibold text-on-brand transition hover:bg-brand-strong disabled:cursor-not-allowed disabled:opacity-50"
+                className="w-full cursor-pointer rounded-lg bg-cedar px-5 py-3 font-semibold text-on-cedar transition hover:bg-cedar-strong disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {placingOrder ? t("checkout.placingOrder") : t("checkout.placeOrder")}
               </button>
