@@ -42,9 +42,9 @@ export function ThemeProvider({ children }) {
   const { user } = useAuth() || {};
   const userId = user?.id ?? null;
 
-  // Read once, then kept current by setTheme. This is the whole store
-  // for a signed-out visitor and a render cache for everyone else.
-  const [cached, setCached] = useState(() => readThemeCache());
+  // Read per identity, then kept current by setTheme. This is the whole
+  // store for a signed-out visitor and a render cache for everyone else.
+  const [cached, setCached] = useState(() => readThemeCache(null));
 
   // The choice this session made, tagged with who made it so it is
   // discarded rather than inherited when the account changes.
@@ -59,6 +59,16 @@ export function ThemeProvider({ children }) {
 
   const theme =
     chosen && chosen.userId === userId ? chosen.theme : accountTheme;
+
+  // Mirror the account's theme into that account's cache. Without this,
+  // the first load on a new device has nothing to read before React runs,
+  // so every user who chose a non-default theme gets a frame of the wrong
+  // one — which is precisely what the pre-paint script exists to prevent.
+  // Writing to storage is an external-system sync, not a setState.
+  useEffect(() => {
+    if (userId == null) return;
+    writeThemeCache(normalizeTheme(user?.theme), userId);
+  }, [userId, user?.theme]);
 
   // The document is stamped before React mounts by the inline script in
   // index.html; this keeps it in step afterwards. Writing an attribute on
@@ -85,8 +95,8 @@ export function ThemeProvider({ children }) {
       // Applied first, saved second: the switch is the whole feedback,
       // and a slow network should not make it feel broken.
       setChosen({ userId, theme: value });
-      setCached(value);
-      writeThemeCache(value);
+      if (userId == null) setCached(value);
+      writeThemeCache(value, userId);
 
       if (userId == null) return { ok: true };
 

@@ -29,7 +29,17 @@
         // no attribute, so the prefers-color-scheme block in index.css
         // decides and keeps deciding.
         try {
-          var theme = localStorage.getItem("cedarlink_theme");
+          // The cache is namespaced by user id, so a shared browser
+          // cannot paint the previous account's theme. Signed out, the
+          // key is bare. Must stay in step with themeCacheKey() in
+          // utils/theme.js — a test asserts it does.
+          var key = "cedarlink_theme";
+          var stored = localStorage.getItem("user");
+          if (stored) {
+            var id = JSON.parse(stored).id;
+            if (id !== null && id !== undefined) key += ":" + id;
+          }
+          var theme = localStorage.getItem(key);
           if (theme === "light" || theme === "dark") {
             document.documentElement.setAttribute("data-theme", theme);
           } else {
