@@ -8,6 +8,7 @@ import {
   ShieldCheck,
   ChevronRight,
   Languages,
+  Palette,
   Coins,
 } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -44,6 +45,12 @@ function Settings() {
           title: t("settings.language.title"),
           description: t("settings.language.description"),
           path: "/settings/language",
+        },
+        {
+          icon: Palette,
+          title: t("settings.theme.title"),
+          description: t("settings.theme.description"),
+          path: "/settings/theme",
         },
       ],
     },

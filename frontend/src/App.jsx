@@ -42,6 +42,7 @@ import PaymentMethods from "./pages/Settings/PaymentMethods";
 import AddPaymentMethod from "./pages/Settings/AddPaymentMethod";
 import EditPaymentMethod from "./pages/Settings/EditPaymentMethod";
 import Language from "./pages/Settings/Language";
+import ThemeSettings from "./pages/Settings/Theme";
 import Currency from "./pages/Settings/Currency";
 import NotificationPreferences from "./pages/Settings/NotificationPreferences";
 import ShoppingPreferences from "./pages/Settings/ShoppingPreferences";
@@ -87,6 +88,7 @@ function App() {
           path="/settings/payment-methods/new"
           element={<AddPaymentMethod />}
         />
+        <Route path="/settings/theme" element={<ThemeSettings />} />
         <Route
           path="/settings/currency"
           element={<Currency />}

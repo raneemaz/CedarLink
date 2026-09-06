@@ -30,6 +30,18 @@ class User(db.Model):
         server_default="USD",
     )
 
+    # Light, dark, or follow the device. Stored on the account rather than
+    # in the browser so it travels between a customer's phone and their
+    # laptop, the same way language and currency already do. "system" is
+    # the default because it is the only value that is right without the
+    # user having said anything.
+    theme = db.Column(
+        db.Enum("light", "dark", "system", name="theme_preference"),
+        nullable=False,
+        default="system",
+        server_default="system",
+    )
+
     role = db.Column(db.Enum("customer", "vendor", "admin"), nullable=False)
 
     is_verified = db.Column(db.Boolean, nullable=False, default=False)

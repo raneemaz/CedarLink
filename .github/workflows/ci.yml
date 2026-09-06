@@ -88,6 +88,13 @@ jobs:
         # and watching it fail. See docs/decisions/0028-design-tokens.md.
         run: npm run lint:tokens
 
+      - name: Unit tests
+        # Node's own runner, no framework. Covers the theme-resolution
+        # rules, which are pure functions on purpose: "does an explicit
+        # light choice beat a dark device" has a right answer and no DOM
+        # in it. See docs/decisions/0029-theme-setting.md.
+        run: npm test
+
       # Linux is case-sensitive — this is what catches an import that only
       # resolves on Windows/macOS (e.g. pages/settings vs pages/Settings).
       - run: npm run build

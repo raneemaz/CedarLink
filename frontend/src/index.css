@@ -112,3 +112,178 @@
   /* ---- Chrome ------------------------------------------------------ */
   --color-scrim: #000; /* black — modal backdrop, used at /40 */
 }
+
+/*
+ * Dark theme — the same roles, a second set of values.
+ *
+ * Every rule below redefines a token and nothing else. No component, no
+ * class name and no `dark:` variant is involved anywhere in the app: that
+ * is the whole return on the token layer, and if a future change needs a
+ * `dark:` in a className it means a role is missing here.
+ *
+ * Selector specificity, not source order, decides which set wins.
+ * `@theme` emits into `:root` (0,1,0). `:root[data-theme="dark"]` is
+ * (0,1,1) and `:root:not([data-theme="light"])` is (0,2,0), so both beat
+ * it wherever Tailwind chooses to hoist its output.
+ *
+ * Three inversions are deliberate rather than mechanical:
+ *
+ *  - `paper-sunken` is *lighter* than `paper-raised` here, where in light
+ *    it is darker. An inset reads as an inset by differing from the card;
+ *    going darker in a dark theme merges it into the page instead.
+ *  - The brand and status colours move to the light end of their ramps.
+ *    emerald-700 on a near-black card is 1.9:1 — legible as a shape, not
+ *    as text.
+ *  - `on-cedar` / `on-danger` / `on-warning` become near-black, because
+ *    the fills they sit on are now light. This is the case that justified
+ *    splitting them out of one shared `on-brand`.
+ */
+:root[data-theme="dark"] {
+  /* ---- Surfaces --------------------------------------------------- */
+  --color-paper: oklch(13% 0.028 261.692); /* gray-950 — the page */
+  --color-paper-raised: oklch(21% 0.034 264.665); /* gray-900 — cards */
+  --color-paper-sunken: oklch(27.8% 0.033 256.848); /* gray-800 — insets */
+
+  /* ---- Lines ------------------------------------------------------ */
+  --color-line-subtle: oklch(27.8% 0.033 256.848); /* gray-800 */
+  --color-line: oklch(37.3% 0.034 259.733); /* gray-700 */
+  --color-line-strong: oklch(44.6% 0.03 256.802); /* gray-600 */
+
+  /* ---- Ink -------------------------------------------------------- */
+  --color-ink: oklch(98.5% 0.002 247.839); /* gray-50 */
+  --color-ink-emphasis: oklch(96.7% 0.003 264.542); /* gray-100 */
+  --color-ink-body: oklch(92.8% 0.006 264.531); /* gray-200 */
+  --color-ink-secondary: oklch(87.2% 0.01 258.338); /* gray-300 */
+  --color-ink-muted: oklch(70.7% 0.022 261.325); /* gray-400 */
+  --color-ink-faint: oklch(55.1% 0.027 264.364); /* gray-500 */
+  --color-ink-disabled: oklch(44.6% 0.03 256.802); /* gray-600 */
+
+  /* ---- Controls --------------------------------------------------- */
+  --color-control: oklch(37.3% 0.034 259.733); /* gray-700 */
+  --color-control-hover: oklch(44.6% 0.03 256.802); /* gray-600 */
+
+  /* ---- Foregrounds on a filled block ------------------------------ */
+  /* Near-black, not white: the fills below are light in this theme. */
+  --color-on-cedar: oklch(13% 0.028 261.692); /* gray-950 */
+  --color-on-danger: oklch(13% 0.028 261.692); /* gray-950 */
+  --color-on-warning: oklch(13% 0.028 261.692); /* gray-950 */
+
+  /* ---- Brand ------------------------------------------------------ */
+  --color-cedar-subtle: oklch(26.2% 0.051 172.552); /* emerald-950 */
+  --color-cedar-tint: oklch(37.8% 0.077 168.94); /* emerald-900 */
+  --color-cedar-ring: oklch(69.6% 0.17 162.48); /* emerald-500 */
+  --color-cedar: oklch(76.5% 0.177 163.223); /* emerald-400 */
+  --color-cedar-strong: oklch(84.5% 0.143 164.978); /* emerald-300 */
+
+  /* ---- Status: success -------------------------------------------- */
+  --color-success-subtle: oklch(26.2% 0.051 172.552); /* emerald-950 */
+  --color-success: oklch(76.5% 0.177 163.223); /* emerald-400 */
+  --color-success-strong: oklch(84.5% 0.143 164.978); /* emerald-300 */
+
+  /* ---- Status: danger --------------------------------------------- */
+  --color-danger-subtle: oklch(25.8% 0.092 26.042); /* red-950 */
+  --color-danger-tint: oklch(39.6% 0.141 25.723); /* red-900 */
+  --color-danger-border: oklch(44.4% 0.177 26.899); /* red-800 */
+  --color-danger-accent: oklch(63.7% 0.237 25.331); /* red-500 */
+  --color-danger: oklch(70.4% 0.191 22.216); /* red-400 */
+  --color-danger-strong: oklch(80.8% 0.114 19.571); /* red-300 */
+
+  /* ---- Status: warning -------------------------------------------- */
+  --color-warning-subtle: oklch(27.9% 0.077 45.635); /* amber-950 */
+  --color-warning-tint: oklch(41.4% 0.112 45.904); /* amber-900 */
+  --color-warning-border: oklch(47.3% 0.137 46.201); /* amber-800 */
+  --color-warning-accent: oklch(82.8% 0.189 84.429); /* amber-400 */
+  --color-warning-muted: oklch(82.8% 0.189 84.429); /* amber-400 */
+  --color-warning: oklch(87.9% 0.169 91.605); /* amber-300 */
+
+  /* ---- Rating ------------------------------------------------------ */
+  /* Unchanged. A gold star is gold on any ground. */
+  --color-rating: oklch(82.8% 0.189 84.429); /* amber-400 */
+
+  /* ---- Status: info ------------------------------------------------ */
+  --color-info-subtle: oklch(29.3% 0.066 243.157); /* sky-950 */
+  --color-info: oklch(82.8% 0.111 230.318); /* sky-300 */
+
+  /* ---- Chrome ------------------------------------------------------ */
+  --color-scrim: #000; /* black */
+}
+
+/*
+ * The system preference, for anyone who has not chosen. Guarded with
+ * :not([data-theme="light"]) so an explicit light choice still wins on a
+ * device set to dark — which is the point of offering the choice at all.
+ */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-paper: oklch(13% 0.028 261.692);
+    --color-paper-raised: oklch(21% 0.034 264.665);
+    --color-paper-sunken: oklch(27.8% 0.033 256.848);
+
+    --color-line-subtle: oklch(27.8% 0.033 256.848);
+    --color-line: oklch(37.3% 0.034 259.733);
+    --color-line-strong: oklch(44.6% 0.03 256.802);
+
+    --color-ink: oklch(98.5% 0.002 247.839);
+    --color-ink-emphasis: oklch(96.7% 0.003 264.542);
+    --color-ink-body: oklch(92.8% 0.006 264.531);
+    --color-ink-secondary: oklch(87.2% 0.01 258.338);
+    --color-ink-muted: oklch(70.7% 0.022 261.325);
+    --color-ink-faint: oklch(55.1% 0.027 264.364);
+    --color-ink-disabled: oklch(44.6% 0.03 256.802);
+
+    --color-control: oklch(37.3% 0.034 259.733);
+    --color-control-hover: oklch(44.6% 0.03 256.802);
+
+    --color-on-cedar: oklch(13% 0.028 261.692);
+    --color-on-danger: oklch(13% 0.028 261.692);
+    --color-on-warning: oklch(13% 0.028 261.692);
+
+    --color-cedar-subtle: oklch(26.2% 0.051 172.552);
+    --color-cedar-tint: oklch(37.8% 0.077 168.94);
+    --color-cedar-ring: oklch(69.6% 0.17 162.48);
+    --color-cedar: oklch(76.5% 0.177 163.223);
+    --color-cedar-strong: oklch(84.5% 0.143 164.978);
+
+    --color-success-subtle: oklch(26.2% 0.051 172.552);
+    --color-success: oklch(76.5% 0.177 163.223);
+    --color-success-strong: oklch(84.5% 0.143 164.978);
+
+    --color-danger-subtle: oklch(25.8% 0.092 26.042);
+    --color-danger-tint: oklch(39.6% 0.141 25.723);
+    --color-danger-border: oklch(44.4% 0.177 26.899);
+    --color-danger-accent: oklch(63.7% 0.237 25.331);
+    --color-danger: oklch(70.4% 0.191 22.216);
+    --color-danger-strong: oklch(80.8% 0.114 19.571);
+
+    --color-warning-subtle: oklch(27.9% 0.077 45.635);
+    --color-warning-tint: oklch(41.4% 0.112 45.904);
+    --color-warning-border: oklch(47.3% 0.137 46.201);
+    --color-warning-accent: oklch(82.8% 0.189 84.429);
+    --color-warning-muted: oklch(82.8% 0.189 84.429);
+    --color-warning: oklch(87.9% 0.169 91.605);
+
+    --color-rating: oklch(82.8% 0.189 84.429);
+
+    --color-info-subtle: oklch(29.3% 0.066 243.157);
+    --color-info: oklch(82.8% 0.111 230.318);
+
+    --color-scrim: #000;
+  }
+}
+
+/*
+ * Tell the browser which set is live, so its own chrome — form controls,
+ * scrollbars, the canvas behind the page — matches. Without this a dark
+ * page keeps white scrollbars.
+ */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root:not([data-theme]) {
+  color-scheme: light dark;
+}
