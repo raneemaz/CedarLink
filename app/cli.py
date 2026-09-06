@@ -106,7 +106,7 @@ def create_admin(
     )
 
 
-DEMO_PASSWORD = "Cedar!2026"
+DEMO_PASSWORD = "Cedar!2026"  # nosec B105
 ADMIN_EMAIL = "admin@cedarlink.demo"
 
 # Distinct fill colours for the generated placeholder images.
@@ -279,7 +279,13 @@ def _reset_demo_data():
             {"name": table},
         ).first()
         if exists:
-            db.session.execute(text(f"DELETE FROM {table}"))
+            # `table` is one of the hardcoded names in _RESET_ORDER (never a
+            # request value) and a table name cannot be a bound parameter.
+            # This helper is dev/demo only — `_refuse_in_production` guards
+            # every caller.
+            db.session.execute(
+                text(f"DELETE FROM {table}")  # nosec B608
+            )
 
     db.session.commit()
 

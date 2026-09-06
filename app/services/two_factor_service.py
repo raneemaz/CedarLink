@@ -24,6 +24,7 @@ from app.extensions import db
 from app.models.two_factor_challenge import TwoFactorChallenge
 from app.models.two_factor_recovery_code import TwoFactorRecoveryCode
 from app.models.user import User
+from app.utils.safe_http import safe_urlopen
 
 EMAIL_METHOD = "email"
 SMS_METHOD = "sms"
@@ -45,7 +46,7 @@ LOGIN_PURPOSE = "login"
 SETUP_PURPOSE = "setup"
 SECURITY_PURPOSE = "security"
 REGISTRATION_PURPOSE = "registration"
-PASSWORD_RESET_PURPOSE = "password_reset"
+PASSWORD_RESET_PURPOSE = "password_reset"  # nosec B105
 
 PASSWORD_RESET_MIN_LENGTH = 8
 
@@ -296,10 +297,7 @@ def _twilio_request(url, account_sid, auth_token, data):
     )
 
     try:
-        with urllib.request.urlopen(
-            request_object,
-            timeout=15,
-        ) as response:
+        with safe_urlopen(request_object, timeout=15) as response:
             return response.read()
 
     except (

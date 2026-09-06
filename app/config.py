@@ -8,7 +8,7 @@ PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, ".."))
 
 # Used as a stand-in secret in development and testing only. ProdConfig
 # refuses to start if the real values are not supplied by the environment.
-_PLACEHOLDER_SECRET = "change-this-to-a-long-secret-key"
+_PLACEHOLDER_SECRET = "change-this-to-a-long-secret-key"  # nosec B105
 # A syntactically valid Fernet key so the 2FA service can import under tests
 # without a real key being configured.
 _PLACEHOLDER_FERNET_KEY = "ZmDfcTF7_60GrrY167zsiPd67pEvs0aGOv2oasOM1Pg="

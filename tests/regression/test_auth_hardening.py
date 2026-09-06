@@ -17,6 +17,28 @@ def _register_body(email, method="email"):
     }
 
 
+# --- password floor (ADR 0033) --------------------------------------- #
+
+def test_registration_rejects_a_short_password(client):
+    body = _register_body("shortpw@cedarlink.test")
+    body["password"] = "abc123"  # 6 chars
+
+    resp = client.post("/api/auth/register", json=body)
+
+    assert resp.status_code == 400
+    assert "8 characters" in resp.get_json()["message"]
+    assert User.query.filter_by(email="shortpw@cedarlink.test").first() is None
+
+
+def test_registration_accepts_an_eight_character_password(client):
+    body = _register_body("okpw@cedarlink.test")
+    body["password"] = "abcd1234"  # exactly 8
+
+    resp = client.post("/api/auth/register", json=body)
+
+    assert resp.status_code == 201
+
+
 # --- enumeration ------------------------------------------------------- #
 
 def test_registration_answers_the_same_for_taken_and_free_email(

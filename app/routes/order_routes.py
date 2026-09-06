@@ -6,6 +6,7 @@ from app.models.payment_method import PaymentMethod
 from app.services import order_service
 from app.services.coupon_service import CouponError
 from app.services.order_service import OrderError
+from app.utils.decorators import role_required
 from app.utils.errors import internal_error
 
 
@@ -132,7 +133,7 @@ def get_order(id):
 
 
 @order_bp.route("/vendor/orders", methods=["GET"])
-@jwt_required()
+@role_required("vendor")
 def get_vendor_orders():
     user_id = int(get_jwt_identity())
 

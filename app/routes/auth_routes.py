@@ -31,7 +31,6 @@ from app.services.two_factor_service import (
     verify_login_challenge,
     verify_registration_challenge,
 )
-from app.utils.decorators import role_required
 
 logger = logging.getLogger(__name__)
 
@@ -42,6 +41,12 @@ auth_bp = Blueprint("auth", __name__, url_prefix="/api/auth")
 # assignable through a public endpoint — it is created out of band via the
 # `flask create-admin` CLI command (see app/cli.py).
 PUBLIC_REGISTRATION_ROLES = ("customer", "vendor")
+
+# Minimum password length at registration. Deliberately the same 8 the
+# password-reset flow (two_factor_service.PASSWORD_RESET_MIN_LENGTH) and
+# `flask create-admin` already require. This is a length floor only — there
+# is no complexity or breach-list check (stated limitation, ADR 0033).
+MIN_PASSWORD_LENGTH = 8
 
 
 # Per-IP limits stop a single host hammering an endpoint; per-account limits
@@ -102,6 +107,16 @@ def register():
     ]):
         return jsonify({
             "message": "Missing required fields"
+        }), 400
+
+    # Registration accepted any non-empty password until the security pass
+    # (ADR 0033). The floor matches the reset flow and the admin CLI, which
+    # already enforced it — this closes the one path that did not.
+    if len(password) < MIN_PASSWORD_LENGTH:
+        return jsonify({
+            "message": (
+                f"Password must be at least {MIN_PASSWORD_LENGTH} characters"
+            )
         }), 400
 
     # Public registration can only create a customer or a vendor. Any other
@@ -496,11 +511,3 @@ def reactivate():
     return jsonify({
         "message": "Your account has been reactivated. You can sign in now."
     }), 200
-
-
-@auth_bp.route("/test-admin", methods=["GET"])
-@role_required("admin")
-def test_admin():
-    return jsonify({
-        "message": "Welcome Admin!"
-    })

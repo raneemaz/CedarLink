@@ -19,6 +19,8 @@ import urllib.request
 
 from flask import current_app
 
+from app.utils.safe_http import safe_urlopen
+
 # Only ever holds a SUCCESSFUL API result.
 _cache = {"rates": None, "fetched_at": 0.0}
 
@@ -54,7 +56,7 @@ def get_rates():
             headers={"User-Agent": "CedarLink/1.0"},
         )
 
-        with urllib.request.urlopen(request, timeout=5) as response:
+        with safe_urlopen(request, timeout=5) as response:
             data = json.loads(response.read().decode())
 
         api_rates = data.get("rates") or {}

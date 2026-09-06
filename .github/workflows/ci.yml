@@ -22,6 +22,22 @@ jobs:
       - name: Lint
         run: flake8 app tests run.py
 
+      - name: Security static analysis (bandit)
+        # Python SAST over app/. Gated at medium+ severity: the six LOW
+        # findings are string-match false positives (rate-limit literals,
+        # config placeholders, a demo password) and are enumerated with
+        # their reasoning in docs/security/owasp-top-10.md and ADR 0033.
+        # A new MEDIUM or HIGH finding fails the build. Two lines carry an
+        # inline `# nosec <id>` with the reason at the code.
+        run: bandit -r app/ -ll
+
+      - name: Dependency CVEs (pip-audit)
+        # Audits the declared dependency surface, not the whole venv — the
+        # build toolchain (pip, setuptools) is environment hygiene, tracked
+        # in ADR 0033, not a CedarLink dependency. Fails on any advisory
+        # against a package in requirements.txt.
+        run: pip-audit -r requirements.txt
+
       - name: Contrast (WCAG AA)
         # Every text-on-surface and text-on-fill ratio, computed from the
         # token values in frontend/src/index.css. Fails on any NEW pair
@@ -85,6 +101,12 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - run: npm ci
+
+      - name: Dependency CVEs (npm audit)
+        # Fails on a high or critical advisory anywhere in the tree. The
+        # nanoid advisory found in this pass was fixed by `npm audit fix`
+        # (postcss transitive, build-time only). See ADR 0033.
+        run: npm audit --audit-level=high
 
       - run: npm run lint
 
