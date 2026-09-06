@@ -37,7 +37,6 @@ function Button({
       onClick={onClick}
       disabled={disabled}
       className={`
-        cursor-pointer
         px-6 py-3
         rounded-pill
         text-small

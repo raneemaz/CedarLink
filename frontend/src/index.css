@@ -56,6 +56,14 @@
   --text-micro: 0.75rem;        /* 12px — badges, meta */
   --text-micro--line-height: 1.4;
 
+  /* The wordmark, which is not a step on the scale — it is one string at
+     one size, and a hard-coded text-[20px] is the same mistake as a
+     hard-coded colour. The Latin tracking is carried here; the
+     [lang="ar"] block resets it, because tracking severs Arabic joins. */
+  --text-wordmark: 1.25rem;     /* 20px */
+  --text-wordmark--line-height: 1.2;
+  --text-wordmark--letter-spacing: -0.01em;
+
   /* ---- Shape ------------------------------------------------------ */
   --radius-card: 20px;
   --radius-control: 12px;
@@ -203,15 +211,22 @@
   font-weight: 700;
 }
 
-/* The type-scale tokens carry Latin tracking. Reset it for every size
-   under Arabic, or the display sizes reintroduce the tracking the block
-   above just removed. */
-[lang="ar"] .text-display,
-[dir="rtl"] .text-display,
-[lang="ar"] .text-title,
-[dir="rtl"] .text-title {
+/* The type-scale tokens carry Latin tracking, and a utility that sets
+   letter-spacing directly beats an inherited `normal` from the ancestor
+   block above. Every size that carries tracking has to be named here or
+   it quietly reintroduces the join-severing the block above removed. */
+[lang="ar"] :is(.text-display, .text-title, .text-wordmark),
+[dir="rtl"] :is(.text-display, .text-title, .text-wordmark) {
   letter-spacing: normal;
   line-height: 1.5;
+}
+
+/* The wordmark is an anchor, not a heading, so the :is(h1,h2,h3) rule
+   above does not reach it — and Amiri has no 600, so asking for one
+   makes the browser synthesise a bold and smear the strokes. */
+[lang="ar"] .text-wordmark,
+[dir="rtl"] .text-wordmark {
+  font-weight: 700;
 }
 
 /*
@@ -374,6 +389,26 @@
 
 :root:not([data-theme]) {
   color-scheme: light dark;
+}
+
+/*
+ * Controls look clickable.
+ *
+ * One base rule rather than a `cursor-pointer` utility at each call site:
+ * a rule cannot drift, and 200 call sites can — one of them gets forgotten
+ * and a button on some settings screen quietly stops looking like a
+ * button. `[role="button"]` is included because a div wearing that role is
+ * a control by declaration, and `summary` because it is one by default.
+ */
+button,
+[role="button"],
+summary {
+  cursor: pointer;
+}
+
+button:disabled,
+[role="button"][aria-disabled="true"] {
+  cursor: not-allowed;
 }
 
 /* The interface face is the default; display is opted into per element.
