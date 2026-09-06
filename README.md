@@ -188,6 +188,14 @@ flask create-admin --email you@example.com --first-name Ada --last-name Lovelace
 Admins are verified immediately. Logging in still sends a verification code
 (see "Logging in" under Demo accounts).
 
+### Line endings
+
+The repository stores text as LF, and `.gitattributes` enforces it with
+`* text=auto eol=lf`. A Windows checkout does not need `core.autocrlf`
+set — that is a per-machine setting that does not travel with a clone, so
+relying on it means one developer's working tree can turn every tracked
+file into a whitespace diff and hide real changes in `git status`.
+
 ### Running tests
 
 The suite runs on `TestConfig` (file-based SQLite, mail suppressed) with a
