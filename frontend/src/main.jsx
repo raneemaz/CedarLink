@@ -8,6 +8,7 @@ import { CurrencyProvider } from "./context/CurrencyContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import { NotificationsProvider } from "./context/NotificationsContext";
 import AppToaster from "./components/common/AppToaster";
+import ScrollToTop from "./components/common/ScrollToTop";
 import "react-toastify/dist/ReactToastify.css";
 import "./i18n/i18n";
 
@@ -18,6 +19,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <CurrencyProvider>
           <NotificationsProvider>
             <BrowserRouter>
+              <ScrollToTop />
               <App />
               <AppToaster />
             </BrowserRouter>
