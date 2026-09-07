@@ -1,13 +1,14 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
-from app.extensions import db
+from app.extensions import db, limiter
 from app.models.cart import Cart
 from app.models.cart_item import CartItem
 from app.models.product import Product
 from app.services import coupon_service, order_service, store_service
 from app.services.coupon_service import CouponError
 from app.services.order_service import OrderError
+from app.utils.rate_limit import user_or_ip_key
 
 
 cart_bp = Blueprint("cart", __name__)
@@ -265,6 +266,11 @@ def delete_cart_item(item_id):
 # --------------------------------------------------------------------------- #
 
 @cart_bp.route("/coupon", methods=["POST"])
+# Per-user, not per-IP: this is the enumeration guard for the distinct
+# rejection reasons ("no such code" / "expired" / "already used"). The
+# reasons stay; brute-forcing a code namespace at 40/hour is not viable.
+@limiter.limit("10 per minute", key_func=user_or_ip_key)
+@limiter.limit("40 per hour", key_func=user_or_ip_key)
 @jwt_required()
 def apply_coupon():
     """Validate a code against the current cart and quote it.

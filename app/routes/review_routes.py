@@ -6,11 +6,12 @@ Every write goes through ``review_service``; handlers parse, call, commit.
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
-from app.extensions import db
+from app.extensions import db, limiter
 from app.models.user import User
 from app.services import review_service
 from app.services.review_service import ReviewError
 from app.utils.decorators import role_required
+from app.utils.rate_limit import user_or_ip_key
 from app.utils.errors import internal_error
 
 review_bp = Blueprint("review_bp", __name__)
@@ -78,6 +79,11 @@ def get_order_reviewable(order_id):
 # --------------------------------------------------------------------------- #
 
 @review_bp.route("/reviews", methods=["POST"])
+# Spam / rating-manipulation path. A review needs a delivered order, so
+# volume is naturally capped, but that does not stop a script hammering
+# the endpoint across many orders. Per user.
+@limiter.limit("6 per minute", key_func=user_or_ip_key)
+@limiter.limit("20 per hour", key_func=user_or_ip_key)
 @role_required("customer")
 def create_review():
     data = request.get_json() or {}
@@ -159,6 +165,10 @@ def delete_review(review_id):
 # --------------------------------------------------------------------------- #
 
 @review_bp.route("/reviews/<int:review_id>/report", methods=["POST"])
+# Report abuse: one report per (review, user) is the unique-index cap,
+# but a script can still churn the endpoint. Per user.
+@limiter.limit("10 per minute", key_func=user_or_ip_key)
+@limiter.limit("30 per hour", key_func=user_or_ip_key)
 @jwt_required()
 def report_review(review_id):
     data = request.get_json() or {}

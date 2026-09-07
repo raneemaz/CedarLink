@@ -1,12 +1,13 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
-from app.extensions import db
+from app.extensions import db, limiter
 from app.models.payment_method import PaymentMethod
 from app.services import order_service
 from app.services.coupon_service import CouponError
 from app.services.order_service import OrderError
 from app.utils.decorators import role_required
+from app.utils.rate_limit import user_or_ip_key
 from app.utils.errors import internal_error
 
 
@@ -69,6 +70,11 @@ def checkout_preview():
 
 
 @order_bp.route("/orders", methods=["POST"])
+# Checkout is the financial-cost path: it reserves stock, claims coupon
+# uses and writes rows. A real customer places a handful of orders a
+# session; 30/hour is well clear of that and caps scripted abuse.
+@limiter.limit("8 per minute", key_func=user_or_ip_key)
+@limiter.limit("30 per hour", key_func=user_or_ip_key)
 @jwt_required()
 def checkout():
     user_id = int(get_jwt_identity())
