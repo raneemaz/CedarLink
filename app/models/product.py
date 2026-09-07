@@ -14,6 +14,11 @@ class Product(db.Model):
         # Last line of defence behind the conditional-UPDATE decrement
         # (CL-06). The column allowed negatives before.
         db.CheckConstraint("stock >= 0", name="ck_products_stock_non_negative"),
+        # The product listing filters by store_id and category_id and
+        # joins to stores; the listing had no index on either (ADR 0032
+        # F2 / ADR 0033).
+        db.Index("ix_products_store_id", "store_id"),
+        db.Index("ix_products_category_id", "category_id"),
     )
 
     id = db.Column(db.Integer, primary_key=True)

@@ -6,6 +6,7 @@ from app.models.product import Product
 from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
 from app.models.store import Store
 from sqlalchemy import or_
+from sqlalchemy.orm import selectinload
 from app.models.category import Category
 from app.services import shopping_preferences_service
 from app.utils.file_utils import product_image_url
@@ -137,7 +138,14 @@ def _store_availability(store):
 @jwt_required(optional=True)
 def get_products():
     # Soft-deleted products are gone from the storefront and the vendor list.
-    query = Product.query.filter(Product.deleted_at.is_(None))
+    # product_card() reads product.images[0] and product.store.name for
+    # every row; without these the listing fires ~2 extra queries per
+    # product (ADR 0032 F2). selectin, not joined: a joined store would
+    # multiply rows against images, and images is a small collection.
+    query = Product.query.options(
+        selectinload(Product.images),
+        selectinload(Product.store),
+    ).filter(Product.deleted_at.is_(None))
 
     sort = request.args.get("sort")
     keyword = request.args.get("keyword")

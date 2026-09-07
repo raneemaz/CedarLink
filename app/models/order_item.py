@@ -3,6 +3,12 @@ from app.extensions import db
 
 class OrderItem(db.Model):
     __tablename__ = "order_items"
+    __table_args__ = (
+        # The dashboard's goods/units figures JOIN order_items to orders;
+        # without this the join scans all order_items (ADR 0032 F1).
+        db.Index("ix_order_items_order_id", "order_id"),
+    )
+
     id = db.Column(db.Integer, primary_key=True)
 
     order_id = db.Column(

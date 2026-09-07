@@ -5,31 +5,31 @@
 
 | endpoint | queries | wall (ms) |
 |---|---:|---:|
-| store directory (+is_open_now) | 3 | 5.7 |
-| nearby search (Beirut) | 2 | 3.5 |
-| product listing + category filter | 19 | 14.2 |
-| product listing + in_stock filter | 18 | 11.5 |
-| vendor dashboard (90 days) | 10 | 7.2 |
-| admin overview | 13 | 7.9 |
+| store directory (+is_open_now) | 3 | 4.3 |
+| nearby search (Beirut) | 2 | 2.5 |
+| product listing + category filter | 4 | 5.5 |
+| product listing + in_stock filter | 4 | 5.8 |
+| vendor dashboard (90 days) | 10 | 7.8 |
+| admin overview | 13 | 6.9 |
 
-## large: 10,000 stores, 100,000 products, 50,000 orders (100,000 order items) — seeded in 4.6s
+## large: 10,000 stores, 100,000 products, 50,000 orders (100,000 order items) — seeded in 6.0s
 
 | endpoint | queries | wall (ms) |
 |---|---:|---:|
-| store directory (+is_open_now) | 3 | 7.0 |
-| nearby search (Beirut) | 3 | 183.1 |
-| product listing + category filter | 19 | 43.6 |
-| product listing + in_stock filter | 19 | 40.8 |
-| vendor dashboard (90 days) | 10 | 168.6 |
-| admin overview | 13 | 150.7 |
+| store directory (+is_open_now) | 3 | 5.3 |
+| nearby search (Beirut) | 3 | 168.6 |
+| product listing + category filter | 4 | 20.4 |
+| product listing + in_stock filter | 4 | 21.4 |
+| vendor dashboard (90 days) | 10 | 297.1 |
+| admin overview | 13 | 125.5 |
 
 ## Query plans at large scale
 
 
-### store directory (+is_open_now)  ·  3 queries  ·  7.0 ms
+### store directory (+is_open_now)  ·  3 queries  ·  5.3 ms
 
 ```
-SCAN stores | USE TEMP B-TREE FOR ORDER BY
+SCAN stores USING INDEX ix_stores_name
     SELECT stores.id AS stores_id, stores.owner_id AS stores_owner_id, stores.name AS stores_name, stores.description AS stores_description, stores.location AS stores_location, stores.contact_info AS stores_contact_info, stores.is_active AS sto
 ```
 
@@ -43,7 +43,7 @@ SCAN stores
     SELECT count(*) AS count_1 FROM (SELECT stores.id AS stores_id, stores.owner_id AS stores_owner_id, stores.name AS stores_name, stores.description AS stores_description, stores.location AS stores_location, stores.contact_info AS stores_cont
 ```
 
-### nearby search (Beirut)  ·  3 queries  ·  183.1 ms
+### nearby search (Beirut)  ·  3 queries  ·  168.6 ms
 
 ```
 SEARCH stores USING INDEX ix_stores_lat_lng (latitude>? AND latitude<?)
@@ -60,21 +60,11 @@ SEARCH store_hours USING INDEX ix_store_hours_store_id (store_id=?) | USE TEMP B
     SELECT store_hours.store_id AS store_hours_store_id, store_hours.id AS store_hours_id, store_hours.day_of_week AS store_hours_day_of_week, store_hours.opens_at AS store_hours_opens_at, store_hours.closes_at AS store_hours_closes_at FROM sto
 ```
 
-### product listing + category filter  ·  19 queries  ·  43.6 ms
+### product listing + category filter  ·  4 queries  ·  20.4 ms
 
 ```
-SCAN products | BLOOM FILTER ON stores (id=?) | SEARCH stores USING INTEGER PRIMARY KEY (rowid=?)
+SEARCH products USING INDEX ix_products_category_id (category_id=?) | SEARCH stores USING INTEGER PRIMARY KEY (rowid=?)
     SELECT products.id AS products_id, products.name_en AS products_name_en, products.name_ar AS products_name_ar, products.name_fr AS products_name_fr, products.description_en AS products_description_en, products.description_ar AS products_des
-```
-
-```
-SCAN products | BLOOM FILTER ON stores (id=?) | SEARCH stores USING INTEGER PRIMARY KEY (rowid=?)
-    SELECT count(*) AS count_1 FROM (SELECT products.id AS products_id, products.name_en AS products_name_en, products.name_ar AS products_name_ar, products.name_fr AS products_name_fr, products.description_en AS products_description_en, produc
-```
-
-```
-SCAN product_images
-    SELECT product_images.id AS product_images_id, product_images.image_url AS product_images_image_url, product_images.product_id AS product_images_product_id FROM product_images WHERE ? = product_images.product_id
 ```
 
 ```
@@ -82,21 +72,21 @@ SEARCH stores USING INTEGER PRIMARY KEY (rowid=?)
     SELECT stores.id AS stores_id, stores.owner_id AS stores_owner_id, stores.name AS stores_name, stores.description AS stores_description, stores.location AS stores_location, stores.contact_info AS stores_contact_info, stores.is_active AS sto
 ```
 
-### product listing + in_stock filter  ·  19 queries  ·  40.8 ms
-
 ```
-SCAN products | BLOOM FILTER ON stores (id=?) | SEARCH stores USING INTEGER PRIMARY KEY (rowid=?)
-    SELECT products.id AS products_id, products.name_en AS products_name_en, products.name_ar AS products_name_ar, products.name_fr AS products_name_fr, products.description_en AS products_description_en, products.description_ar AS products_des
+SEARCH product_images USING INDEX ix_product_images_product_id (product_id=?)
+    SELECT product_images.product_id AS product_images_product_id, product_images.id AS product_images_id, product_images.image_url AS product_images_image_url FROM product_images WHERE product_images.product_id IN (?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 ```
 
 ```
-SCAN products | BLOOM FILTER ON stores (id=?) | SEARCH stores USING INTEGER PRIMARY KEY (rowid=?)
+SEARCH products USING INDEX ix_products_category_id (category_id=?) | SEARCH stores USING INTEGER PRIMARY KEY (rowid=?)
     SELECT count(*) AS count_1 FROM (SELECT products.id AS products_id, products.name_en AS products_name_en, products.name_ar AS products_name_ar, products.name_fr AS products_name_fr, products.description_en AS products_description_en, produc
 ```
 
+### product listing + in_stock filter  ·  4 queries  ·  21.4 ms
+
 ```
-SCAN product_images
-    SELECT product_images.id AS product_images_id, product_images.image_url AS product_images_image_url, product_images.product_id AS product_images_product_id FROM product_images WHERE ? = product_images.product_id
+SEARCH products USING INDEX ix_products_category_id (category_id=?) | SEARCH stores USING INTEGER PRIMARY KEY (rowid=?)
+    SELECT products.id AS products_id, products.name_en AS products_name_en, products.name_ar AS products_name_ar, products.name_fr AS products_name_fr, products.description_en AS products_description_en, products.description_ar AS products_des
 ```
 
 ```
@@ -104,7 +94,17 @@ SEARCH stores USING INTEGER PRIMARY KEY (rowid=?)
     SELECT stores.id AS stores_id, stores.owner_id AS stores_owner_id, stores.name AS stores_name, stores.description AS stores_description, stores.location AS stores_location, stores.contact_info AS stores_contact_info, stores.is_active AS sto
 ```
 
-### vendor dashboard (90 days)  ·  10 queries  ·  168.6 ms
+```
+SEARCH product_images USING INDEX ix_product_images_product_id (product_id=?)
+    SELECT product_images.product_id AS product_images_product_id, product_images.id AS product_images_id, product_images.image_url AS product_images_image_url FROM product_images WHERE product_images.product_id IN (?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+```
+
+```
+SEARCH products USING INDEX ix_products_category_id (category_id=?) | SEARCH stores USING INTEGER PRIMARY KEY (rowid=?)
+    SELECT count(*) AS count_1 FROM (SELECT products.id AS products_id, products.name_en AS products_name_en, products.name_ar AS products_name_ar, products.name_fr AS products_name_fr, products.description_en AS products_description_en, produc
+```
+
+### vendor dashboard (90 days)  ·  10 queries  ·  297.1 ms
 
 ```
 SEARCH token_denylist USING COVERING INDEX ix_token_denylist_jti (jti=?)
@@ -117,46 +117,46 @@ SEARCH users USING INTEGER PRIMARY KEY (rowid=?)
 ```
 
 ```
-SCAN stores
+SEARCH stores USING INDEX ix_stores_owner_id (owner_id=?)
     SELECT stores.id AS stores_id, stores.owner_id AS stores_owner_id, stores.name AS stores_name, stores.description AS stores_description, stores.location AS stores_location, stores.contact_info AS stores_contact_info, stores.is_active AS sto
 ```
 
 ```
-SCAN orders | USE TEMP B-TREE FOR GROUP BY
+SEARCH orders USING INDEX ix_orders_store_id_created_at (store_id=? AND created_at>? AND created_at<?) | USE TEMP B-TREE FOR GROUP BY
     SELECT orders.status, count(orders.id) AS count_1, sum(orders.delivery_fee) AS sum_1, sum(orders.total_price) AS sum_2 FROM orders WHERE orders.store_id = ? AND orders.created_at >= ? AND orders.created_at < ? GROUP BY orders.status
 ```
 
 ```
-SCAN order_items | BLOOM FILTER ON orders (id=?) | SEARCH orders USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY
+SEARCH orders USING INDEX ix_orders_store_id_created_at (store_id=? AND created_at>? AND created_at<?) | SEARCH order_items USING INDEX ix_order_items_order_id (order_id=?) | USE TEMP B-TREE FOR GROUP BY
     SELECT orders.status, sum(CAST(order_items.quantity * order_items.unit_price AS NUMERIC(10, 2))) AS sum_1, sum(order_items.quantity) AS sum_2 FROM orders JOIN order_items ON order_items.order_id = orders.id WHERE orders.store_id = ? AND ord
 ```
 
 ```
-SCAN coupon_redemptions | SEARCH orders USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY
+SEARCH orders USING INDEX ix_orders_store_id_created_at (store_id=? AND created_at>? AND created_at<?) | SCAN coupon_redemptions | USE TEMP B-TREE FOR GROUP BY
     SELECT orders.status, sum(coupon_redemptions.amount_applied) AS sum_1 FROM orders JOIN coupon_redemptions ON coupon_redemptions.order_id = orders.id WHERE orders.store_id = ? AND orders.created_at >= ? AND orders.created_at < ? GROUP BY ord
 ```
 
 ```
-SCAN orders | USE TEMP B-TREE FOR GROUP BY
+SEARCH orders USING COVERING INDEX ix_orders_store_id_created_at (store_id=? AND created_at>? AND created_at<?) | USE TEMP B-TREE FOR GROUP BY
     SELECT date(orders.created_at, ?) AS day, count(orders.id) AS count_1 FROM orders WHERE orders.store_id = ? AND orders.created_at >= ? AND orders.created_at < ? GROUP BY date(orders.created_at, ?)
 ```
 
 ```
-SCAN order_items | BLOOM FILTER ON orders (id=?) | SEARCH orders USING INTEGER PRIMARY KEY (rowid=?) | SEARCH products USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY | USE TEMP B-TREE FOR ORDER BY
+SEARCH orders USING INDEX ix_orders_store_id_created_at (store_id=? AND created_at>? AND created_at<?) | SEARCH order_items USING INDEX ix_order_items_order_id (order_id=?) | SEARCH products USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY | USE TEMP B-TREE FOR ORDER BY
     SELECT products.id, products.name_en, products.name_ar, products.name_fr, sum(order_items.quantity) AS units, sum(CAST(order_items.quantity * order_items.unit_price AS NUMERIC(10, 2))) AS revenue FROM products JOIN order_items ON order_item
 ```
 
 ```
-SCAN order_items | BLOOM FILTER ON orders (id=?) | SEARCH orders USING INTEGER PRIMARY KEY (rowid=?) | SEARCH products USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY | USE TEMP B-TREE FOR ORDER BY
+SEARCH orders USING INDEX ix_orders_store_id_created_at (store_id=? AND created_at>? AND created_at<?) | SEARCH order_items USING INDEX ix_order_items_order_id (order_id=?) | SEARCH products USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY | USE TEMP B-TREE FOR ORDER BY
     SELECT products.id, products.name_en, products.name_ar, products.name_fr, sum(order_items.quantity) AS units, sum(CAST(order_items.quantity * order_items.unit_price AS NUMERIC(10, 2))) AS revenue FROM products JOIN order_items ON order_item
 ```
 
 ```
-SCAN products | USE TEMP B-TREE FOR ORDER BY
+SEARCH products USING INDEX ix_products_store_id (store_id=?) | USE TEMP B-TREE FOR ORDER BY
     SELECT products.id, products.name_en, products.name_ar, products.name_fr, products.rating_avg, products.rating_count FROM products WHERE products.store_id = ? AND products.deleted_at IS NULL AND products.rating_count >= ? ORDER BY products.
 ```
 
-### admin overview  ·  13 queries  ·  150.7 ms
+### admin overview  ·  13 queries  ·  125.5 ms
 
 ```
 SEARCH token_denylist USING COVERING INDEX ix_token_denylist_jti (jti=?)
@@ -214,7 +214,7 @@ SCAN orders
 ```
 
 ```
-SCAN orders | SEARCH stores USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY | USE TEMP B-TREE FOR ORDER BY
+SCAN stores | SEARCH orders USING COVERING INDEX ix_orders_store_id_created_at (store_id=?) | USE TEMP B-TREE FOR ORDER BY
     SELECT stores.name AS stores_name, count(orders.id) AS count_1 FROM stores JOIN orders ON orders.store_id = stores.id GROUP BY stores.id ORDER BY count(orders.id) DESC LIMIT ? OFFSET ?
 ```
 
@@ -222,19 +222,19 @@ SCAN orders | SEARCH stores USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TRE
 
 | endpoint | queries s->l | ms s->l |
 |---|---|---|
-| store directory (+is_open_now) | 3 -> 3 | 5.7 -> 7.0 |
-| nearby search (Beirut) | 2 -> 3 | 3.5 -> 183.1 |
-| product listing + category filter | 19 -> 19 | 14.2 -> 43.6 |
-| product listing + in_stock filter | 18 -> 19 | 11.5 -> 40.8 |
-| vendor dashboard (90 days) | 10 -> 10 | 7.2 -> 168.6 |
-| admin overview | 13 -> 13 | 7.9 -> 150.7 |
+| store directory (+is_open_now) | 3 -> 3 | 4.3 -> 5.3 |
+| nearby search (Beirut) | 2 -> 3 | 2.5 -> 168.6 |
+| product listing + category filter | 4 -> 4 | 5.5 -> 20.4 |
+| product listing + in_stock filter | 4 -> 4 | 5.8 -> 21.4 |
+| vendor dashboard (90 days) | 10 -> 10 | 7.8 -> 297.1 |
+| admin overview | 13 -> 13 | 6.9 -> 125.5 |
 
 ## Indexes present on the hot tables (large db)
 
 - **users**: sqlite_autoindex_users_1
-- **stores**: ix_stores_lat_lng
-- **products**: (none)
-- **orders**: (none)
-- **order_items**: (none)
+- **stores**: ix_stores_lat_lng, ix_stores_name, ix_stores_owner_id
+- **products**: ix_products_category_id, ix_products_store_id
+- **orders**: ix_orders_store_id_created_at
+- **order_items**: ix_order_items_order_id
 - **reviews**: ix_reviews_product_id, ix_reviews_store_id, ix_reviews_user_id, sqlite_autoindex_reviews_1, sqlite_autoindex_reviews_2
 - **coupon_redemptions**: ix_coupon_redemptions_coupon_id_user_id

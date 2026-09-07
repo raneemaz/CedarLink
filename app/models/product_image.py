@@ -7,6 +7,12 @@ if TYPE_CHECKING:
 
 class ProductImage(db.Model):
     __tablename__ = "product_images"
+    __table_args__ = (
+        # `WHERE product_id = ?` — one lookup per product in the listing
+        # serializer, each a full scan without this (ADR 0032 F2).
+        db.Index("ix_product_images_product_id", "product_id"),
+    )
+
     id = db.Column(db.Integer, primary_key=True)
     image_url = db.Column(db.String(255), nullable=False)
 

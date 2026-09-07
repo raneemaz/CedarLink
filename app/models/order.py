@@ -10,6 +10,15 @@ def _utc_now():
 
 class Order(db.Model):
     __tablename__ = "orders"
+    __table_args__ = (
+        # Every analytics query and the vendor order list filter
+        # `store_id = ? [AND created_at BETWEEN ? AND ?]`. Without this the
+        # `orders` table has no secondary index at all and each is a full
+        # scan (ADR 0032 F1 / ADR 0033). Composite so the same index also
+        # serves `store_id` alone.
+        db.Index("ix_orders_store_id_created_at", "store_id", "created_at"),
+    )
+
     id = db.Column(db.Integer, primary_key=True)
 
     user_id = db.Column(

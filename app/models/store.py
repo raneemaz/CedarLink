@@ -22,6 +22,10 @@ class Store(db.Model):
         # the composite index makes that a range scan. See
         # docs/decisions/0018-location-and-distance-search.md.
         db.Index("ix_stores_lat_lng", "latitude", "longitude"),
+        # `GET /api/vendor/*` resolves the caller's store by owner_id; the
+        # directory sorts by name (ADR 0032 F1/F6 / ADR 0033).
+        db.Index("ix_stores_owner_id", "owner_id"),
+        db.Index("ix_stores_name", "name"),
     )
 
     id = db.Column(db.Integer, primary_key=True)

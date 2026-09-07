@@ -4,9 +4,9 @@ Default pool (15 connections), SQLite 5 s busy timeout, app in-process.
 
 | path | N | wall (s) | req/s | ok | err | err % | first error |
 |---|--:|--:|--:|--:|--:|--:|---|
-| read  GET /api/products | 10 | 0.23 | 44.3 | 10 | 0 | 0.0 | `-` |
-| read  GET /api/products | 50 | 0.91 | 55.2 | 50 | 0 | 0.0 | `-` |
-| read  GET /api/products | 100 | 1.78 | 56.1 | 100 | 0 | 0.0 | `-` |
-| checkout POST /api/orders | 10 | 0.75 | 13.3 | 10 | 0 | 0.0 | `-` |
-| checkout POST /api/orders | 50 | 3.77 | 13.3 | 50 | 0 | 0.0 | `-` |
-| checkout POST /api/orders | 100 | 7.51 | 13.3 | 97 | 3 | 3.0 | `OperationalError: (sqlite3.OperationalError) database is locked [SQL: INSERT INTO orders (user_id, store_id, status, delivery_address, delivery_city, total_price, delivery_fee, created_at, updated_at)` |
+| read  GET /api/products | 10 | 0.22 | 45.3 | 10 | 0 | 0.0 | `-` |
+| read  GET /api/products | 50 | 0.83 | 60.2 | 50 | 0 | 0.0 | `-` |
+| read  GET /api/products | 100 | 1.81 | 55.4 | 100 | 0 | 0.0 | `-` |
+| checkout POST /api/orders | 10 | 0.78 | 12.8 | 10 | 0 | 0.0 | `-` |
+| checkout POST /api/orders | 50 | 4.14 | 12.1 | 50 | 0 | 0.0 | `-` |
+| checkout POST /api/orders | 100 | 8.38 | 11.9 | 100 | 0 | 0.0 | `-` |
