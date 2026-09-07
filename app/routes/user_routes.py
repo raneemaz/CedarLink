@@ -128,18 +128,26 @@ def update_user(user_id):
     # Normalize email exactly like registration
     email = email.strip().lower()
 
-    # Check whether another user already has this email
-    existing_user = User.query.filter(
-        User.email == email, User.id != user_id
-    ).first()
-
-    if existing_user:
-        return jsonify({"message": "Email already exists"}), 400
+    # Anti-enumeration: returning "Email already exists" here is an
+    # existence oracle for any address (authenticated, own account only,
+    # but still). Match the decoy-success pattern registration uses — the
+    # other fields are updated, the email is only changed when it is both
+    # new and free, and the response is identical either way. The body
+    # echoes the real stored email, so a caller sees the change did not
+    # take. See docs/decisions/0033-security-pass.md.
+    taken = (
+        email != user.email
+        and User.query.filter(
+            User.email == email, User.id != user_id
+        ).first()
+        is not None
+    )
 
     user.first_name = first_name.strip()
     user.last_name = last_name.strip()
-    user.email = email
     user.phone = phone.strip() if phone else None
+    if email != user.email and not taken:
+        user.email = email
 
     db.session.commit()
 
