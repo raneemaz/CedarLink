@@ -1,4 +1,6 @@
 import os
+
+from cryptography.fernet import Fernet
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -9,9 +11,6 @@ PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, ".."))
 # Used as a stand-in secret in development and testing only. ProdConfig
 # refuses to start if the real values are not supplied by the environment.
 _PLACEHOLDER_SECRET = "change-this-to-a-long-secret-key"  # nosec B105
-# A syntactically valid Fernet key so the 2FA service can import under tests
-# without a real key being configured.
-_PLACEHOLDER_FERNET_KEY = "ZmDfcTF7_60GrrY167zsiPd67pEvs0aGOv2oasOM1Pg="
 
 
 class Config:
@@ -108,9 +107,15 @@ class TestConfig(Config):
 
     SECRET_KEY = os.getenv("SECRET_KEY", _PLACEHOLDER_SECRET)
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", _PLACEHOLDER_SECRET)
-    TWO_FACTOR_ENCRYPTION_KEY = os.getenv(
-        "TWO_FACTOR_ENCRYPTION_KEY",
-        _PLACEHOLDER_FERNET_KEY,
+    # A fresh key every test process, generated here rather than committed:
+    # the 2FA service needs a syntactically valid Fernet key to import, and
+    # a real-looking key string must never sit in the repo. An env var still
+    # wins so CI or a developer can pin one. ProdConfig is unaffected — it
+    # requires TWO_FACTOR_ENCRYPTION_KEY from the environment and has no
+    # fallback (see REQUIRED_ENV).
+    TWO_FACTOR_ENCRYPTION_KEY = (
+        os.getenv("TWO_FACTOR_ENCRYPTION_KEY")
+        or Fernet.generate_key().decode()
     )
     MAIL_SUPPRESS_SEND = True
 
