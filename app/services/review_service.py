@@ -18,9 +18,8 @@ JSON body ({"error": msg, "code": ...}) — the OrderError shape.
 """
 
 from datetime import datetime, timezone
-from decimal import ROUND_HALF_UP, Decimal
 
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import selectinload
 
@@ -159,29 +158,56 @@ def _assert_verified_purchase(user, order, kind, entity):
 # --------------------------------------------------------------------------- #
 
 def _recalculate_rating(kind, entity):
-    """Recompute (avg, count) from the counting rows in one query.
+    """Recompute ``rating_count`` / ``rating_avg`` in ONE statement.
 
-    Counting = every status except 'removed' (ADR 0017). Never
-    read-modify-write — that is the CL-06 lost-update hazard (ADR 0015).
+    ``UPDATE <table> SET rating_count = (SELECT count() ...),
+    rating_avg = (SELECT round(avg(), 2) ...) WHERE id = :id`` — both
+    aggregates as correlated subqueries in a single UPDATE.
+
+    The previous shape was an unlocked ``SELECT avg(), count()`` followed
+    by a separate attribute assignment that flushed later — two statements
+    a concurrent writer could interleave, so on an MVCC database the
+    second writer could store a count that is already stale (ADR 0032 §4).
+    SQLite serialises writers and could not exhibit that, so this is not a
+    bug being fixed — it is the same guarantee written in a shape that
+    ports to Postgres unchanged.
+
+    Counting = every status except 'removed' (ADR 0017). ``round(avg, 2)``
+    matches the old ``Decimal.quantize(ROUND_HALF_UP)`` for the non-
+    negative 1–5 range; an empty set gives ``avg = NULL`` → ``rating_avg``
+    NULL, as before.
     """
-    where = (
-        Review.product_id == entity.id
-        if kind == "product"
-        else Review.store_id == entity.id
-    )
+    table = Product.__table__ if kind == "product" else Store.__table__
+    target = (
+        Review.product_id if kind == "product" else Review.store_id
+    ) == entity.id
+    counting = target & Review.status.in_(COUNTING_STATUSES)
 
-    avg, count = db.session.execute(
-        select(func.avg(Review.rating), func.count(Review.id)).where(
-            where, Review.status.in_(COUNTING_STATUSES)
+    # A pending review edit / status change / delete has to be visible to
+    # the correlated subqueries. A Core `update(<table>)` does not autoflush
+    # the way a `select()` does, so flush explicitly.
+    db.session.flush()
+
+    db.session.execute(
+        update(table)
+        .where(table.c.id == entity.id)
+        .values(
+            rating_count=(
+                select(func.count(Review.id))
+                .where(counting)
+                .scalar_subquery()
+            ),
+            rating_avg=(
+                select(func.round(func.avg(Review.rating), 2))
+                .where(counting)
+                .scalar_subquery()
+            ),
         )
-    ).one()
-
-    entity.rating_count = int(count or 0)
-    entity.rating_avg = (
-        Decimal(str(avg)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
-        if avg is not None
-        else None
+        .execution_options(synchronize_session=False)
     )
+    # The ORM copy in this session is now behind the row; the next read
+    # (or the caller's commit) reloads it.
+    db.session.expire(entity, ["rating_count", "rating_avg"])
 
 
 def _entity_for_review(review):
