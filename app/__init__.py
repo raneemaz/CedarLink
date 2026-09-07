@@ -1,5 +1,5 @@
 import os
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from werkzeug.exceptions import RequestEntityTooLarge
 from werkzeug.middleware.proxy_fix import ProxyFix
 from app.config import get_config
@@ -125,5 +125,29 @@ def create_app(config_object=None):
         return jsonify({
             "message": "Image is too large. Maximum size is 5 MB."
         }), 413
+
+    @app.after_request
+    def _security_headers(response):
+        # ADR 0033. A JSON API, so the set is small:
+        #  - nosniff: never let a browser guess a response is HTML/JS.
+        #  - frame DENY: nothing here is meant to be framed.
+        #  - Referrer-Policy: do not leak a full URL cross-origin.
+        #  - HSTS: only stamped when the request already arrived over TLS,
+        #    so it is inert in dev (plain http) and correct in prod behind
+        #    a TLS proxy. No `preload`.
+        # CSP is deliberately not set here: the pre-paint inline theme
+        # script in frontend/index.html would need a nonce or hash to
+        # survive a real policy, and that is its own piece of work.
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+        response.headers.setdefault("X-Frame-Options", "DENY")
+        response.headers.setdefault(
+            "Referrer-Policy", "strict-origin-when-cross-origin"
+        )
+        if request.is_secure:
+            response.headers.setdefault(
+                "Strict-Transport-Security",
+                "max-age=31536000; includeSubDomains",
+            )
+        return response
 
     return app
