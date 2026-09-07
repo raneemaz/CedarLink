@@ -81,6 +81,15 @@ def _link(platform, value):
                 "00961 3 100 001",
                 "9613100001",
                 "(961) 3 100 001",
+                # wa.me share link — bare host, full URL, case-insensitive,
+                # and with the ?text= suffix a real share link carries.
+                "wa.me/9613100001",
+                "https://wa.me/9613100001",
+                "HTTPS://WA.ME/9613100001",
+                "https://wa.me/9613100001?text=Hi%20there",
+                # api.whatsapp.com click-to-chat link — number in phone=.
+                "https://api.whatsapp.com/send?phone=9613100001",
+                "https://api.whatsapp.com/send?phone=9613100001&text=Hello",
             ),
         ),
         (
@@ -142,7 +151,14 @@ def test_a_facebook_url_is_not_accepted_as_an_instagram_handle():
 
 @pytest.mark.parametrize(
     "value",
-    ["03 100 001", "0961 3 100 001"],
+    [
+        "03 100 001",
+        "0961 3 100 001",
+        # a wa.me link with a national number is unwrapped and then gets
+        # the same refusal — not a silent accept.
+        "wa.me/03100001",
+        "https://api.whatsapp.com/send?phone=03100001",
+    ],
 )
 def test_a_national_number_without_a_country_code_is_refused(value):
     with pytest.raises(SocialLinkError) as exc:

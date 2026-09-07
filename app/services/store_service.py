@@ -15,7 +15,7 @@ import math
 import re
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
-from urllib.parse import urlsplit, urlunsplit
+from urllib.parse import parse_qs, urlsplit, urlunsplit
 from zoneinfo import ZoneInfo
 
 from app.extensions import db
@@ -742,6 +742,35 @@ def _normalize_phone(value):
     return "tel:+" + _international_digits(value, "phone")
 
 
+# The two link forms WhatsApp itself hands a vendor: the wa.me share link
+# (number in the path, maybe a ?text= share suffix) and the api.whatsapp.com
+# click-to-chat link (number in a phone= query). socialPlatforms.js: "a
+# vendor may paste whatever they have."
+_WA_ME_RE = re.compile(r"^(?:https?://)?wa\.me/", re.IGNORECASE)
+_WA_API_RE = re.compile(
+    r"^(?:https?://)?api\.whatsapp\.com/send/?\?", re.IGNORECASE
+)
+
+
+def _normalize_whatsapp(value):
+    """A number, or a wa.me / api.whatsapp.com link -> ``https://wa.me/<digits>``.
+
+    Whatever wrapper the vendor pasted is stripped down to the number,
+    which then goes through the same ``_international_digits`` validation a
+    typed number does — so ``wa.me/03123456`` still gets the
+    "include the country code" refusal rather than a silent accept.
+    """
+    if _WA_ME_RE.match(value):
+        number = _WA_ME_RE.sub("", value, count=1).split("?", 1)[0]
+        number = number.split("#", 1)[0]
+    elif _WA_API_RE.match(value):
+        number = parse_qs(urlsplit(value).query).get("phone", [""])[0]
+    else:
+        number = value
+
+    return "https://wa.me/" + _international_digits(number, "WhatsApp")
+
+
 def normalize_social_value(platform, raw):
     """The stored, ready-to-render value for one platform.
 
@@ -760,9 +789,7 @@ def normalize_social_value(platform, raw):
     if platform in _PROFILE_PLATFORMS:
         normalized = _normalize_profile(platform, value)
     elif platform == WHATSAPP:
-        normalized = "https://wa.me/" + _international_digits(
-            value, "WhatsApp"
-        )
+        normalized = _normalize_whatsapp(value)
     elif platform == WEBSITE:
         normalized = _normalize_website(value)
     elif platform == EMAIL:

@@ -51,7 +51,7 @@ canonical form per platform:
 | Platform | Accepts | Stores |
 |---|---|---|
 | instagram / facebook / tiktok | handle, `@handle`, `host/handle`, full URL | `https://…/handle` |
-| whatsapp | a number, with or without `+`, spaces or dashes | `https://wa.me/<digits>` |
+| whatsapp | a number (with or without `+`, spaces, dashes), **or** a `wa.me/` / `api.whatsapp.com/send?phone=` link | `https://wa.me/<digits>` |
 | website | a bare domain or a full URL | the URL, scheme preserved |
 | email | an address, with or without `mailto:` | `mailto:<address>` |
 | phone | a number as above | `tel:+<digits>` |
@@ -127,6 +127,32 @@ The icons carry no text, so each anchor has its own accessible name from
 a per-platform string: "Hamra Grocery on Instagram", but "Call Hamra
 Grocery" and "Hamra Grocery website". One "{{store}} on {{platform}}"
 template reads correctly for Instagram and absurdly for Phone.
+
+## Addendum — 2026-09-07: WhatsApp link forms
+
+The WhatsApp branch originally took only a typed number, which
+contradicted the field's own stated intent ("a vendor may paste whatever
+they have", `socialPlatforms.js`) — the two link forms WhatsApp actually
+hands a vendor were refused.
+
+`_normalize_whatsapp` now strips a `wa.me/` prefix (scheme and host
+case-insensitive, optional scheme) and drops a `?text=` share suffix, or
+reads `phone=` out of an `api.whatsapp.com/send?…` link, then runs what is
+left through the **same** `_international_digits` validation every typed
+number gets — the same shape `_normalize_phone` uses for a `tel:` prefix.
+So `wa.me/03100001` still gets the "include the country code" refusal, not
+a silent accept; `web.whatsapp.com/…` and the `wa.me/message/<code>`
+short-link form fall through and are refused (we cannot resolve them to a
+number); the `javascript:` scheme guard still fires on
+`wa.me/javascript:…`.
+
+`api.whatsapp.com` was in scope from the start: it is one regex and one
+`parse_qs`, and it is the other link WhatsApp's own share sheet produces.
+
+The parametrised list in
+`tests/integration/test_store_social_links.py::test_every_input_variant_normalises_to_the_same_value`
+is the record of "these are the accepted input forms"; the new cases are
+in it.
 
 ## The alternative not taken
 
