@@ -157,6 +157,11 @@ def _fire(app, level, make_request):
 
 
 def main():
+    # `--wal` runs the whole test with PRAGMA journal_mode=WAL instead of
+    # the default rollback journal — a measurement for ADR 0032/0033, not a
+    # change to the app's default mode.
+    wal = "--wal" in sys.argv
+
     if not SRC_DB.exists():
         sys.exit(f"no demo db at {SRC_DB} — run `flask seed` first")
     if WORK_DB.exists():
@@ -168,6 +173,25 @@ def main():
         RATELIMIT_ENABLED = False
 
     app = create_app(Cfg)
+
+    if wal:
+        from sqlalchemy import event, text
+
+        with app.app_context():
+            engine = db.engine
+
+            @event.listens_for(engine, "connect")
+            def _wal(dbapi_connection, _record):
+                cur = dbapi_connection.cursor()
+                cur.execute("PRAGMA journal_mode=WAL")
+                cur.close()
+
+            db.session.execute(text("PRAGMA journal_mode=WAL"))
+            mode = db.session.execute(text("PRAGMA journal_mode")).scalar()
+        print(f"journal_mode: {mode}")
+    else:
+        print("journal_mode: delete (rollback journal, the default)")
+
     tokens = _prepare(app)
 
     print("pool: QueuePool size 5 + overflow 10 = 15 connections\n")
@@ -224,10 +248,12 @@ def main():
 
     with app.app_context():
         db.engine.dispose()
-    try:
-        WORK_DB.unlink(missing_ok=True)
-    except OSError:
-        pass  # Windows may still hold the handle; *.db is gitignored
+    for path in (WORK_DB, Path(str(WORK_DB) + "-wal"),
+                 Path(str(WORK_DB) + "-shm")):
+        try:
+            path.unlink(missing_ok=True)
+        except OSError:
+            pass  # Windows may still hold the handle; *.db* is gitignored
 
 
 if __name__ == "__main__":
