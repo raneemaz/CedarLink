@@ -6,9 +6,10 @@ from app.models.payment_method import PaymentMethod
 from app.services import order_service
 from app.services.coupon_service import CouponError
 from app.services.order_service import OrderError
+from app.utils.db_retry import with_write_retry
 from app.utils.decorators import role_required
-from app.utils.rate_limit import user_or_ip_key
 from app.utils.errors import internal_error
+from app.utils.rate_limit import user_or_ip_key
 
 
 order_bp = Blueprint("order_bp", __name__)
@@ -97,11 +98,18 @@ def checkout():
         # Only the code is read from the body. Any "discount" the client
         # cares to send is ignored — the amount is computed server-side
         # from the coupon record, in price_cart, and nowhere else.
-        result = order_service.checkout(
-            user_id,
-            delivery_address,
-            delivery_city,
-            data.get("coupon_code"),
+        #
+        # with_write_retry: under a burst, SQLite's single writer makes a
+        # few checkouts exceed the busy timeout with "database is locked"
+        # (ADR 0032 §3). The transaction has rolled back by then, so
+        # re-running it is safe. Two short retries, checkout only.
+        result = with_write_retry(
+            lambda: order_service.checkout(
+                user_id,
+                delivery_address,
+                delivery_city,
+                data.get("coupon_code"),
+            )
         )
     except OrderError as exc:
         db.session.rollback()
