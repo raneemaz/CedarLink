@@ -90,16 +90,16 @@ honest answer is "not addressed":
 
 | Category | State |
 |---|---|
-| A01 Broken Access Control | Strong; enumerated tests. One missing guard **fixed** this pass. |
-| A02 Security Misconfiguration | **Partial.** No security headers; CORS default is dev-local; **`PRAGMA foreign_keys` OFF in prod**. |
-| A03 Software Supply Chain | Now gated (this pass). No SBOM / provenance / hash-pinning. |
-| A04 Cryptographic Failures | Strong (scrypt, Fernet, no card data). No app-level TLS/HSTS. Committed Fernet placeholder. |
+| A01 Broken Access Control | Strong; enumerated tests. One missing guard fixed (first pass). |
+| A02 Security Misconfiguration | Headers **fixed** (§5a), `PRAGMA foreign_keys` **fixed** (§5a). Still: CSP by decision, CORS default is dev-local. |
+| A03 Software Supply Chain | Gated (bandit / pip-audit / npm audit). No SBOM / provenance / hash-pinning. |
+| A04 Cryptographic Failures | Strong (scrypt, Fernet, no card data). Committed Fernet key **fixed** (§5a). Still: no app-level HSTS enforcement beyond the header; no key rotation story. |
 | A05 Injection | Strong. ORM throughout; one guarded raw-SQL constant. |
 | A06 Insecure Design | Strong on the recorded decisions. **No formal threat model doc.** |
-| A07 Authentication Failures | Strong (2FA, throttling, enumeration resistance). Password floor **fixed** this pass; still no complexity / breach check; no refresh rotation. |
-| A08 Software/Data Integrity | Migration-drift gate; recompute-not-increment. Review aggregate is race-safe **on SQLite only** (ADR 0032). |
-| A09 Security Logging & Alerting | **Largely unaddressed.** 13 log calls in `app/`; no audit log; no alerting. |
-| A10 Mishandling Exceptional Conditions | Strong containment (one error shape, correlation id, no leak). No retry/backoff on `database is locked` (ADR 0032). |
+| A07 Authentication Failures | Strong (2FA, enumeration resistance). Password floor + abuse-path rate limiting + `PUT /users` enum leak all **fixed**. Still: no complexity / breach check, no refresh rotation. |
+| A08 Software/Data Integrity | Migration-drift gate; recompute-not-increment. Review aggregate now atomic — **fixed** (§5a #6). |
+| A09 Security Logging & Alerting | **Largely unaddressed.** 13 log calls in `app/`; no audit log; no alerting. The one category this pass did not move. |
+| A10 Mishandling Exceptional Conditions | Strong containment. `database is locked` retry on checkout **fixed** (§5a #7); the SQLite write ceiling itself remains (ADR 0032). |
 
 A table of ten green ticks would not be credible. A09 is close to empty
 and A02 has real holes.
@@ -149,51 +149,67 @@ fails if a new admin-prefixed route is not in the tested set.
 
 ---
 
-## 5. Residual risks (stated, not fixed)
+## 5. Residual risks
+
+### 5a. Follow-up pass — 2026-09-07 (commits `ecb3921`…`aec70cf`)
+
+A ten-item punch list. Seven of the ten residual risks below (§5b) are
+now closed; the numbering is preserved so the original claim stays
+visible next to its fix.
+
+| # | Was | Change | Proof |
+|---|---|---|---|
+| 2 | rate limiting was auth-only | `@limiter.limit` (per user, IP fallback) on `POST /api/cart/coupon` (10/min, 40/hour — the /hour cap is the coupon-enumeration guard), `POST /api/orders` (8/min, 30/hour), `POST /api/reviews` (6/min, 20/hour), review report (10/min, 30/hour). `app/utils/rate_limit.user_or_ip_key`. | `tests/security/test_rate_limits.py` (4) |
+| 3 | `PRAGMA foreign_keys` OFF in dev/prod | `Engine.connect` listener moved from `conftest.py` into `app/extensions.py` — fires in every config. Full suite: 509 pass, **0 new failures** (the suite already ran with FK on, so any cascade that relied on FK-off would already have failed). `flask seed` / `--reset` verified. | 509-test run + `flask seed` |
+| 4 | no security headers | `after_request`: `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin`, and HSTS only when `request.is_secure` (inert on dev http, correct behind a TLS proxy — ProxyFix already trusts `X-Forwarded-Proto`). **CSP is deliberately still absent** — the pre-paint inline theme script in `frontend/index.html` needs a nonce or hash to survive a real policy, which is its own piece of work. | `tests/security/test_security_headers.py` (5) |
+| 6 | review aggregate race-safe on SQLite only | `review_service._recalculate_rating` is now one `UPDATE …/stores SET rating_count = (SELECT count()…), rating_avg = (SELECT round(avg(),2)…) WHERE id = :id`. Ports to Postgres unchanged (ADR 0032 §4). | `tests/integration/test_rating_recompute_atomic.py` (3) — asserts exactly one statement |
+| 7 | `database is locked` not retried | `app/utils/db_retry.with_write_retry` around the checkout call only — on that specific error, roll back, back off 50/100 ms, retry (3 total). `scripts/loadtest.py` N=100 checkout: **before** 0,1,2,2,3,5 failures / 6 runs → **after** 0,0,0,0,0 / 5 runs. Throughput unchanged. | `tests/unit/test_db_retry.py` (4) + loadtest re-run |
+| 8 | committed Fernet key | `config._PLACEHOLDER_FERNET_KEY` deleted. `TestConfig.TWO_FACTOR_ENCRYPTION_KEY` falls back to `Fernet.generate_key()` — a fresh key per test process, never in the diff. `ProdConfig` unchanged (env-required). | existing 2FA suite (~25) still green |
+| 9 | email-existence leak on `PUT /api/users/<id>` | Matches the decoy-success pattern registration uses: name/phone update as before, the email changes only when new **and** free, response byte-for-byte identical either way, body echoes the true stored email. | `tests/security/test_email_enumeration.py` (3) |
+| 10 | webhook secret compared with `!=` | `hmac.compare_digest`, matching the TOTP check in `two_factor_service.py`. Still fails closed when `PAYMENT_WEBHOOK_SECRET` is unset. | `tests/security/test_payment_webhook_secret.py` (4) |
+
+`bandit -r app/ -ll` still clean after all of this; `pip-audit -r
+requirements.txt` clean (`bandit`, `pip-audit` are pinned; `bandit` also
+lints the two new `# nosec`-free util modules).
+
+### 5b. Still open
 
 1. **No penetration test.** No manual adversarial testing, no external
-   review, no bug bounty. This pass is static analysis, dependency
-   scanning, and authorisation tests only.
-2. **Rate limiting covers auth only.** All nine `@limiter.limit`
-   decorators are in `auth_routes.py`. Checkout, review creation, review
-   reporting, cart mutations, product/store writes, the notifications
-   endpoints and `GET /api/exchange-rates` are **unthrottled**. The
-   limiter storage is `memory://` — per-process, so it does not hold
-   across multiple workers (ADR 0009 already notes this).
-3. **`PRAGMA foreign_keys` is OFF in development and production.** SQLite
-   ignores every foreign-key clause without the per-connection pragma;
-   CedarLink issues it only under `TestConfig` (ADR 0023). Foreign-key
-   integrity is *tested* but not *enforced at runtime*. ORM cascades run;
-   database-level `ON DELETE` actions do not. Moving to Postgres (ADR
-   0032) makes this moot; on SQLite the fix is a one-line `connect` event
-   listener in `create_app`, deliberately not made here because it changes
-   deletion behaviour and needs its own review.
-4. **No security response headers.** No HSTS, `X-Content-Type-Options`,
-   `X-Frame-Options`, `Referrer-Policy` or CSP. TLS is assumed to be a
-   proxy's job and is not enforced or asserted by the app.
-5. **A09 is essentially unbuilt.** No audit log of authentication
-   failures, lockouts, password resets, 2FA changes, or admin actions; no
-   alerting on anything. Correlation-id'd 500 logs and a handful of
-   lifecycle `INFO` lines are the whole of it.
-6. **The review-rating aggregate is race-safe on SQLite only.** An
-   unlocked `SELECT avg,count` then a separate `UPDATE products` — SQLite
-   serialises writers so it is exact, an MVCC database would let a
-   concurrent writer store a stale count (ADR 0032 §4).
-7. **`database is locked` under load is not retried.** ~100 concurrent
-   checkouts produce a small fraction of generic 500s (contained, no
-   leak) with no backoff or circuit breaker (ADR 0032 §3).
-8. **Committed key material.** `config._PLACEHOLDER_FERNET_KEY` is a real
-   Fernet key string in the repo. Used only under `TestConfig`;
-   `ProdConfig` requires `TWO_FACTOR_ENCRYPTION_KEY` from the environment.
-   Still a smell; there is no rotation story for that key.
-9. **Registration still leaks email existence on one path** — `PUT
-   /api/users/<id>` returns "Email already exists" when changing your own
-   email to a taken one. Authenticated, own-account only, low value.
-10. **Payment webhook secret is compared with `!=`**, not a constant-time
-    comparison (`app/routes/payment_routes.py`) — a timing side channel on
-    a secret. The endpoint fails closed if `PAYMENT_WEBHOOK_SECRET` is
-    unset and nothing in the app currently calls the payment flow
-    (ADR 0024), so this is low priority but real.
+   review, no bug bounty. This work is static analysis, dependency
+   scanning, and authorisation / abuse-path tests only.
+2. *(fixed — §5a #2)* — **narrower residual:** cart *item* mutations,
+   the notifications endpoints and `GET /api/exchange-rates` are still
+   unthrottled (deliberately — a cart edit is idempotent-ish, notifications
+   are self-scoped reads/marks, and the exchange rate is served from an
+   in-process cache so hammering it does not reach the upstream). The
+   limiter storage is still `memory://` — per-process, needs a shared
+   backend for multiple workers (ADR 0009).
+3. *(fixed — §5a #3)*
+4. *(fixed — §5a #4)* — **CSP is still not set**, by decision (see the
+   table). That is the one header of the standard set CedarLink does not
+   send.
+5. **A09 (Security Logging and Alerting) is essentially unbuilt.** No
+   audit log of authentication failures, lockouts, password resets, 2FA
+   changes, or admin actions; no alerting on anything. Correlation-id'd
+   500 logs and a handful of lifecycle `INFO` lines are the whole of it.
+   This is the largest remaining gap and needs a project of its own — a
+   structured audit-event sink, an append-only store, threshold alerts on
+   auth-failure and 5xx rate.
+6. *(fixed — §5a #6)*
+7. *(fixed — §5a #7)* — the retry masks the SQLite single-writer ceiling,
+   it does not lift it (~12 write/s; ADR 0032). WAL roughly doubles it
+   (measured, ADR 0032) but the app's `journal_mode` default is unchanged.
+8. *(fixed — §5a #8)* — no rotation story for the production
+   `TWO_FACTOR_ENCRYPTION_KEY` (rotating it makes every stored TOTP secret
+   undecryptable). Roadmap.
+9. *(fixed — §5a #9)*
+10. *(fixed — §5a #10)* — the payment flow is still not wired up at all
+    (ADR 0024); when it is, the webhook needs a real signature scheme
+    (HMAC of the body), not just a shared bearer secret.
+11. **`token_denylist` has no cleanup job.** Measured (ADR 0032): 100,000
+    expired rows add **0 ms** to the per-request blocklist lookup (covering
+    index, O(log n)), so this is storage tidiness, not a performance
+    finding. A periodic `DELETE … WHERE expires_at < now()` is roadmap.
 
 ---
 
@@ -201,9 +217,14 @@ fails if a new admin-prefixed route is not in the tested set.
 
 - Three CI gates added; `requirements.txt` gains `bandit`, `pip-audit`,
   and a `pytest` bump; `package-lock.json` gains the `nanoid` bump.
-- `tests/security/` — 13 tests, ~6 s, part of the suite.
+- `tests/security/` — now 32 tests (13 in the first pass, 19 in the
+  follow-up), part of the suite.
 - `docs/security/owasp-top-10.md` is the living map; this ADR is the
   point-in-time record.
-- Six fixes shipped (table §4). Ten residual risks logged (§5) as the
-  security backlog — items 3, 4, 5 and 10 are the next concrete pieces of
-  work.
+- **First pass:** six fixes (table §4), ten residual risks (§5).
+- **Follow-up pass (§5a):** seven of the ten residual risks closed, plus
+  the scale fixes in ADR 0032. What is left (§5b): no penetration test
+  (#1), A09 unbuilt (#5), CSP by decision (#4), a narrower rate-limit gap
+  (#2), and three roadmap items (#8 key rotation, #10 real webhook
+  signatures, #11 denylist cleanup). **A09 is the one that needs a
+  project, not a patch.**

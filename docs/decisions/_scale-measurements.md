@@ -5,28 +5,28 @@
 
 | endpoint | queries | wall (ms) |
 |---|---:|---:|
-| store directory (+is_open_now) | 3 | 4.3 |
-| nearby search (Beirut) | 2 | 2.5 |
-| product listing + category filter | 4 | 5.5 |
-| product listing + in_stock filter | 4 | 5.8 |
-| vendor dashboard (90 days) | 10 | 7.8 |
-| admin overview | 13 | 6.9 |
+| store directory (+is_open_now) | 3 | 5.1 |
+| nearby search (Beirut) | 2 | 2.9 |
+| product listing + category filter | 4 | 5.3 |
+| product listing + in_stock filter | 4 | 4.8 |
+| vendor dashboard (90 days) | 10 | 8.8 |
+| admin overview | 13 | 19.2 |
 
-## large: 10,000 stores, 100,000 products, 50,000 orders (100,000 order items) — seeded in 6.0s
+## large: 10,000 stores, 100,000 products, 50,000 orders (100,000 order items) — seeded in 5.8s
 
 | endpoint | queries | wall (ms) |
 |---|---:|---:|
-| store directory (+is_open_now) | 3 | 5.3 |
-| nearby search (Beirut) | 3 | 168.6 |
-| product listing + category filter | 4 | 20.4 |
-| product listing + in_stock filter | 4 | 21.4 |
-| vendor dashboard (90 days) | 10 | 297.1 |
-| admin overview | 13 | 125.5 |
+| store directory (+is_open_now) | 3 | 5.1 |
+| nearby search (Beirut) | 3 | 171.9 |
+| product listing + category filter | 4 | 19.7 |
+| product listing + in_stock filter | 4 | 20.8 |
+| vendor dashboard (90 days) | 10 | 307.2 |
+| admin overview | 13 | 110.6 |
 
 ## Query plans at large scale
 
 
-### store directory (+is_open_now)  ·  3 queries  ·  5.3 ms
+### store directory (+is_open_now)  ·  3 queries  ·  5.1 ms
 
 ```
 SCAN stores USING INDEX ix_stores_name
@@ -43,7 +43,7 @@ SCAN stores
     SELECT count(*) AS count_1 FROM (SELECT stores.id AS stores_id, stores.owner_id AS stores_owner_id, stores.name AS stores_name, stores.description AS stores_description, stores.location AS stores_location, stores.contact_info AS stores_cont
 ```
 
-### nearby search (Beirut)  ·  3 queries  ·  168.6 ms
+### nearby search (Beirut)  ·  3 queries  ·  171.9 ms
 
 ```
 SEARCH stores USING INDEX ix_stores_lat_lng (latitude>? AND latitude<?)
@@ -60,7 +60,7 @@ SEARCH store_hours USING INDEX ix_store_hours_store_id (store_id=?) | USE TEMP B
     SELECT store_hours.store_id AS store_hours_store_id, store_hours.id AS store_hours_id, store_hours.day_of_week AS store_hours_day_of_week, store_hours.opens_at AS store_hours_opens_at, store_hours.closes_at AS store_hours_closes_at FROM sto
 ```
 
-### product listing + category filter  ·  4 queries  ·  20.4 ms
+### product listing + category filter  ·  4 queries  ·  19.7 ms
 
 ```
 SEARCH products USING INDEX ix_products_category_id (category_id=?) | SEARCH stores USING INTEGER PRIMARY KEY (rowid=?)
@@ -82,7 +82,7 @@ SEARCH products USING INDEX ix_products_category_id (category_id=?) | SEARCH sto
     SELECT count(*) AS count_1 FROM (SELECT products.id AS products_id, products.name_en AS products_name_en, products.name_ar AS products_name_ar, products.name_fr AS products_name_fr, products.description_en AS products_description_en, produc
 ```
 
-### product listing + in_stock filter  ·  4 queries  ·  21.4 ms
+### product listing + in_stock filter  ·  4 queries  ·  20.8 ms
 
 ```
 SEARCH products USING INDEX ix_products_category_id (category_id=?) | SEARCH stores USING INTEGER PRIMARY KEY (rowid=?)
@@ -104,7 +104,7 @@ SEARCH products USING INDEX ix_products_category_id (category_id=?) | SEARCH sto
     SELECT count(*) AS count_1 FROM (SELECT products.id AS products_id, products.name_en AS products_name_en, products.name_ar AS products_name_ar, products.name_fr AS products_name_fr, products.description_en AS products_description_en, produc
 ```
 
-### vendor dashboard (90 days)  ·  10 queries  ·  297.1 ms
+### vendor dashboard (90 days)  ·  10 queries  ·  307.2 ms
 
 ```
 SEARCH token_denylist USING COVERING INDEX ix_token_denylist_jti (jti=?)
@@ -156,7 +156,7 @@ SEARCH products USING INDEX ix_products_store_id (store_id=?) | USE TEMP B-TREE 
     SELECT products.id, products.name_en, products.name_ar, products.name_fr, products.rating_avg, products.rating_count FROM products WHERE products.store_id = ? AND products.deleted_at IS NULL AND products.rating_count >= ? ORDER BY products.
 ```
 
-### admin overview  ·  13 queries  ·  125.5 ms
+### admin overview  ·  13 queries  ·  110.6 ms
 
 ```
 SEARCH token_denylist USING COVERING INDEX ix_token_denylist_jti (jti=?)
@@ -222,12 +222,12 @@ SCAN stores | SEARCH orders USING COVERING INDEX ix_orders_store_id_created_at (
 
 | endpoint | queries s->l | ms s->l |
 |---|---|---|
-| store directory (+is_open_now) | 3 -> 3 | 4.3 -> 5.3 |
-| nearby search (Beirut) | 2 -> 3 | 2.5 -> 168.6 |
-| product listing + category filter | 4 -> 4 | 5.5 -> 20.4 |
-| product listing + in_stock filter | 4 -> 4 | 5.8 -> 21.4 |
-| vendor dashboard (90 days) | 10 -> 10 | 7.8 -> 297.1 |
-| admin overview | 13 -> 13 | 6.9 -> 125.5 |
+| store directory (+is_open_now) | 3 -> 3 | 5.1 -> 5.1 |
+| nearby search (Beirut) | 2 -> 3 | 2.9 -> 171.9 |
+| product listing + category filter | 4 -> 4 | 5.3 -> 19.7 |
+| product listing + in_stock filter | 4 -> 4 | 4.8 -> 20.8 |
+| vendor dashboard (90 days) | 10 -> 10 | 8.8 -> 307.2 |
+| admin overview | 13 -> 13 | 19.2 -> 110.6 |
 
 ## Indexes present on the hot tables (large db)
 

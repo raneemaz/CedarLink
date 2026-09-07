@@ -4,9 +4,9 @@ Default pool (15 connections), SQLite 5 s busy timeout, app in-process.
 
 | path | N | wall (s) | req/s | ok | err | err % | first error |
 |---|--:|--:|--:|--:|--:|--:|---|
-| read  GET /api/products | 10 | 0.22 | 45.3 | 10 | 0 | 0.0 | `-` |
-| read  GET /api/products | 50 | 0.83 | 60.2 | 50 | 0 | 0.0 | `-` |
-| read  GET /api/products | 100 | 1.81 | 55.4 | 100 | 0 | 0.0 | `-` |
-| checkout POST /api/orders | 10 | 0.78 | 12.8 | 10 | 0 | 0.0 | `-` |
-| checkout POST /api/orders | 50 | 4.14 | 12.1 | 50 | 0 | 0.0 | `-` |
-| checkout POST /api/orders | 100 | 8.38 | 11.9 | 100 | 0 | 0.0 | `-` |
+| read  GET /api/products | 10 | 0.13 | 76.3 | 10 | 0 | 0.0 | `-` |
+| read  GET /api/products | 50 | 0.43 | 115.2 | 50 | 0 | 0.0 | `-` |
+| read  GET /api/products | 100 | 0.93 | 107.8 | 100 | 0 | 0.0 | `-` |
+| checkout POST /api/orders | 10 | 0.44 | 22.5 | 10 | 0 | 0.0 | `-` |
+| checkout POST /api/orders | 50 | 2.04 | 24.5 | 50 | 0 | 0.0 | `-` |
+| checkout POST /api/orders | 100 | 3.18 | 31.4 | 100 | 0 | 0.0 | `-` |

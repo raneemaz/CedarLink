@@ -67,20 +67,24 @@ Admin!") was removed in this pass.
 **Proof.** ADR 0001 (config split), `tests/regression/test_error_handling.py`,
 ADR 0007 §CL-20.
 
-**Not addressed — this is a real gap.**
-- **No security headers.** The app sends no `Strict-Transport-Security`,
-  `X-Content-Type-Options: nosniff`, `X-Frame-Options`,
-  `Referrer-Policy` or `Content-Security-Policy`. TLS is assumed to be
-  terminated by a proxy that is not part of this repo, and nothing
-  enforces HTTPS or HSTS from the app.
+**Fixed in the follow-up pass (ADR 0033 §5a).**
+- **Security headers.** `X-Content-Type-Options: nosniff`,
+  `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin`
+  on every response; HSTS when the request arrived over TLS.
+  `tests/security/test_security_headers.py`.
+- **`PRAGMA foreign_keys=ON` in every configuration** — the
+  `Engine.connect` listener moved into `app/extensions.py`. Dev and prod
+  now get the integrity guarantee the tests always had. Full suite: 0 new
+  failures.
+
+**Still not addressed.**
+- **CSP.** Deliberately not sent — the pre-paint inline theme script in
+  `frontend/index.html` needs a nonce or hash to survive a real policy.
+  This is the one header of the standard set CedarLink omits, by
+  decision.
 - **CORS default is developer-local.** With `CORS_ORIGINS` unset the
   allowlist is `localhost:5173-5175`. In production it must be set
   explicitly; nothing warns if it is not.
-- **`PRAGMA foreign_keys` is OFF in dev and prod.** SQLite ignores every
-  `FOREIGN KEY` clause unless the pragma is issued per connection.
-  CedarLink issues it only in the test suite (ADR 0023), so foreign-key
-  enforcement is *tested* but not *deployed*. The ORM-level cascades run;
-  the database-level ones do not.
 - No hardened container / deployment manifest in the repo; runtime
   posture (worker count, reverse proxy, TLS, log shipping) is out of
   scope of the codebase and undocumented.
@@ -210,10 +214,12 @@ suspension (bulk, via `tokens_revoked_at`; ADR 0008).
 - `tests/regression/test_auth_hardening.py`: enumeration + throttling.
 - `tests/integration/test_token_revocation.py`: `test_suspended_users_live_token_is_rejected_on_the_next_request`.
 
-**Fixed in this pass.** `POST /api/auth/register` enforced **no** password
+**Fixed.** First pass: `POST /api/auth/register` enforced **no** password
 length — a one-character password was accepted, while the reset flow and
 the admin CLI both required 8. Now `MIN_PASSWORD_LENGTH = 8` at
-registration too (`tests/regression/test_auth_hardening.py::test_registration_rejects_a_short_password`).
+registration too. Follow-up pass (ADR 0033 §5a): abuse-path rate limiting
+(coupon apply, checkout, review create, review report) and the
+email-enumeration fix on `PUT /api/users/<id>`.
 
 **Not addressed.** Length floor only — no complexity rule, no
 breached-password (HIBP) check. Access tokens live 15 minutes, refresh
@@ -237,13 +243,14 @@ into an undocumented second palette (ADR 0028). Lockfiles are committed.
 **Proof.** ADR 0016 + the CI "Models and migrations agree" step;
 `tests/integration/test_scale_concurrency.py::test_50_reviews_on_one_product_leave_a_consistent_aggregate`.
 
+**Fixed in the follow-up pass (ADR 0033 §5a #6).** The review-aggregate
+recompute is now a single atomic `UPDATE … SET rating_count = (SELECT …),
+rating_avg = (SELECT …) WHERE id = :id` — one statement, ports to Postgres
+unchanged. `tests/integration/test_rating_recompute_atomic.py` asserts
+exactly one statement per recompute.
+
 **Not addressed.** No CI artifact signing or provenance (SLSA). No
 integrity check on uploaded product images beyond extension and size.
-**The review-aggregate recompute is race-safe on SQLite only** — it does
-an unlocked `SELECT` then a separate `UPDATE`, which SQLite serialises but
-an MVCC database would not; a concurrent overwrite could store a stale
-`rating_count` on Postgres (ADR 0032 §4). No `SELECT ... FOR UPDATE` and
-no trigger.
 
 ---
 
