@@ -1,3 +1,4 @@
+import hmac
 import os
 
 from flask import Blueprint, request, jsonify
@@ -190,9 +191,15 @@ def payment_webhook(provider):
     data = request.get_json() or {}
 
     expected_secret = os.getenv("PAYMENT_WEBHOOK_SECRET")
-    received_secret = request.headers.get("X-Webhook-Secret")
+    received_secret = request.headers.get("X-Webhook-Secret", "")
 
-    if not expected_secret or received_secret != expected_secret:
+    # Constant-time comparison so the response time does not leak how much
+    # of the secret matched — the same reason two_factor_service uses
+    # hmac.compare_digest for the TOTP check. Fails closed when the secret
+    # is not configured.
+    if not expected_secret or not hmac.compare_digest(
+        received_secret, expected_secret
+    ):
         return jsonify({
             "message": "Invalid webhook signature"
         }), 401
