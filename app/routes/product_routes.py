@@ -14,6 +14,7 @@ from app.utils.product_payload import (
     product_card,
     rating_fields,
     translation_fields,
+    variant_fields,
 )
 
 
@@ -340,6 +341,9 @@ def get_product(id):
         "image": images[0]["url"] if images else None,
         **_translation_fields(product),
         **_rating_fields(product),
+        # options / variants — only present when the product has them, so a
+        # plain product's detail payload is unchanged (ADR 0035).
+        **variant_fields(product),
     }), 200
 
 

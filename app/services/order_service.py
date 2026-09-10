@@ -16,10 +16,12 @@ from sqlalchemy import select, update
 from app.extensions import db
 from app.models.cart import Cart
 from app.models.cart_item import CartItem
+from app.models.category import SUPPORTED_LANGUAGES
 from app.models.order import Order
 from app.models.coupon_redemption import CouponRedemption
 from app.models.order_item import OrderItem
 from app.models.product import Product
+from app.models.product_variant import ProductVariant
 from app.models.store import Store
 from app.models.user import User
 from app.services import coupon_service, store_service
@@ -103,7 +105,7 @@ def assert_store_accepts_orders(store):
 
 def _serialize_item(item):
     product = item.product
-    return {
+    payload = {
         "id": item.id,
         "product_id": item.product_id,
         # English canonical + every translation; the client picks the
@@ -116,6 +118,20 @@ def _serialize_item(item):
         "unit_price": float(item.unit_price),
         "subtotal": float(item.unit_price * item.quantity),
     }
+
+    # Only when the line was placed against a variant — a plain line
+    # serializes exactly as before (ADR 0035). The label is the one stored
+    # at order time, so a later rename cannot rewrite this history.
+    if item.variant_id is not None:
+        payload.update({
+            "variant_id": item.variant_id,
+            "variant_label": item.variant_label_en,
+            "variant_label_en": item.variant_label_en,
+            "variant_label_ar": item.variant_label_ar,
+            "variant_label_fr": item.variant_label_fr,
+        })
+
+    return payload
 
 
 def _serialize_order(order):
@@ -149,6 +165,91 @@ def _serialize_status_change(order):
         "store_id": order.store_id,
         "status": order.status,
         "updated_at": order.updated_at.isoformat(),
+    }
+
+
+# --------------------------------------------------------------------------- #
+# Variants — resolving the price and the label for one cart/order line
+# --------------------------------------------------------------------------- #
+
+def resolve_unit_price(product, variant):
+    """The unit price for a line: the variant's own price when it has set
+    one, otherwise the product's price. Numeric/Decimal in, Decimal out —
+    no float anywhere in the chain (CL-07). See ADR 0035.
+    """
+    if variant is not None and variant.price is not None:
+        return variant.price
+    return product.price
+
+
+def _load_line_variant(cart_item, product):
+    """The ``ProductVariant`` a cart line points at, or ``None`` for a plain
+    line. Raises ``OrderError`` the same way a vanished product does when the
+    variant is gone, retired, or belongs to a different product.
+    """
+    if cart_item.variant_id is None:
+        return None
+
+    variant = db.session.get(ProductVariant, cart_item.variant_id)
+
+    if (
+        variant is None
+        or not variant.is_active
+        or variant.product_id != product.id
+    ):
+        raise OrderError(
+            f"\"{product.name}\" is no longer available in the option you "
+            "chose. Remove it from your cart to continue.",
+            400,
+            product_id=product.id,
+            product_name=product.name,
+            variant_id=cart_item.variant_id,
+        )
+
+    return variant
+
+
+def select_variant_for_cart(product, variant_id):
+    """Validate a client-supplied ``variant_id`` for an add-to-cart against
+    ``product``. Returns the ``ProductVariant``, or ``None`` for a plain
+    add. Raises ``OrderError`` (the route returns ``.payload`` /
+    ``.status_code``), so cart-add and checkout reject the same things.
+    """
+    active_variants = [v for v in product.variants if v.is_active]
+
+    if variant_id is None:
+        # A product with option axes has no single stock or price — the
+        # customer has to say which combination they want.
+        if active_variants:
+            raise OrderError(
+                "Choose an option before adding this to your cart.",
+                400,
+                product_id=product.id,
+                code="variant_required",
+            )
+        return None
+
+    if not isinstance(variant_id, int) or isinstance(variant_id, bool):
+        raise OrderError("variant_id must be an integer", 400)
+
+    variant = db.session.get(ProductVariant, variant_id)
+
+    if (
+        variant is None
+        or not variant.is_active
+        or variant.product_id != product.id
+    ):
+        raise OrderError("Variant not found", 404, product_id=product.id)
+
+    return variant
+
+
+def _variant_label_columns(variant):
+    """``{variant_label_en/ar/fr: ...}`` denormalised for the order item —
+    each value in its own trilingual text, not a translated sentence."""
+    return {
+        f"variant_label_{lang}": variant.label(lang)
+        for lang in SUPPORTED_LANGUAGES
     }
 
 
@@ -203,18 +304,24 @@ def price_cart(user_id, delivery_city, coupon_code=None):
                 product_name=product.name,
             )
 
-        if product.stock < item.quantity:
+        variant = _load_line_variant(item, product)
+
+        # Once a line carries a variant, that variant's stock is what is
+        # checked — products.stock is no longer authoritative for it.
+        available = variant.stock if variant is not None else product.stock
+
+        if available < item.quantity:
             raise OrderError(
                 "Insufficient stock",
                 400,
                 product_id=product.id,
                 product_name=product.name,
-                available_stock=product.stock,
+                available_stock=available,
                 requested_quantity=item.quantity,
             )
 
         items_by_store.setdefault(product.store_id, []).append(
-            {"cart_item": item, "product": product}
+            {"cart_item": item, "product": product, "variant": variant}
         )
 
     stores = []
@@ -237,10 +344,13 @@ def price_cart(user_id, delivery_city, coupon_code=None):
                 store_name=store.name,
             )
 
-        # Decimal end to end — Product.price is Numeric now (CL-07).
+        # Decimal end to end — Product.price is Numeric now (CL-07). The
+        # per-line price is the variant's when it set one, else the
+        # product's (ADR 0035) — resolved in one place, here and at write.
         subtotal = sum(
             (
-                entry["product"].price * entry["cart_item"].quantity
+                resolve_unit_price(entry["product"], entry["variant"])
+                * entry["cart_item"].quantity
                 for entry in grouped_items
             ),
             Decimal("0"),
@@ -391,7 +501,9 @@ def _cart_goods_by_store(cart):
         if product is None:
             continue
         totals.setdefault(product.store_id, Decimal("0"))
-        totals[product.store_id] += product.price * item.quantity
+        totals[product.store_id] += (
+            resolve_unit_price(product, item.variant) * item.quantity
+        )
 
     return totals
 
@@ -455,6 +567,44 @@ def _reserve_stock(product, quantity):
         )
 
 
+def _reserve_variant_stock(product, variant, quantity):
+    """The variant-level twin of ``_reserve_stock`` (ADR 0035).
+
+    A deliberately separate statement, not a merge into the CL-06 one:
+    ``UPDATE product_variants SET stock = stock - :qty
+      WHERE id = :id AND stock >= :qty``.
+    Its own barrier test (test_concurrent_variant_checkout.py) proves this
+    path cannot oversell — it is a new proof for new code, not a re-run of
+    CL-06. ``_reserve_stock`` is untouched and still handles plain lines.
+    """
+    reserved = db.session.execute(
+        update(ProductVariant)
+        .where(
+            ProductVariant.id == variant.id,
+            ProductVariant.stock >= quantity,
+        )
+        .values(stock=ProductVariant.stock - quantity)
+        .execution_options(synchronize_session=False)
+    )
+
+    if reserved.rowcount == 0:
+        on_hand = db.session.execute(
+            select(ProductVariant.stock).where(
+                ProductVariant.id == variant.id
+            )
+        ).scalar_one()
+
+        raise OrderError(
+            "Insufficient stock",
+            400,
+            product_id=product.id,
+            product_name=product.name,
+            variant_id=variant.id,
+            available_stock=on_hand,
+            requested_quantity=quantity,
+        )
+
+
 def checkout(user_id, delivery_address, delivery_city, coupon_code=None):
     """Turn the priced cart into one order per store and empty the cart.
 
@@ -496,13 +646,26 @@ def checkout(user_id, delivery_address, delivery_city, coupon_code=None):
             )
 
         for entry in group["items"]:
-            _reserve_stock(entry["product"], entry["cart_item"].quantity)
+            product = entry["product"]
+            variant = entry["variant"]
+            quantity = entry["cart_item"].quantity
+
+            if variant is not None:
+                _reserve_variant_stock(product, variant, quantity)
+            else:
+                _reserve_stock(product, quantity)
 
             db.session.add(OrderItem(
                 order_id=order.id,
-                product_id=entry["product"].id,
-                quantity=entry["cart_item"].quantity,
-                unit_price=entry["product"].price,
+                product_id=product.id,
+                quantity=quantity,
+                unit_price=resolve_unit_price(product, variant),
+                variant_id=variant.id if variant is not None else None,
+                **(
+                    _variant_label_columns(variant)
+                    if variant is not None
+                    else {}
+                ),
             ))
 
         created.append({
@@ -697,6 +860,15 @@ def cancel_order(user_id, order_id):
     order.status = "canceled"
 
     for item in order.items:
+        # Give back to wherever it was taken from: the variant when the
+        # line carried one, the product otherwise (ADR 0035) — the mirror
+        # of the two decrement statements at checkout.
+        if item.variant_id is not None:
+            variant = db.session.get(ProductVariant, item.variant_id)
+            if variant:
+                variant.stock += item.quantity
+            continue
+
         product = db.session.get(Product, item.product_id)
 
         if product:

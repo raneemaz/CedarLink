@@ -4,10 +4,11 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.extensions import db, limiter
 from app.models.cart import Cart
 from app.models.cart_item import CartItem
+from app.models.category import SUPPORTED_LANGUAGES
 from app.models.product import Product
 from app.services import coupon_service, order_service, store_service
 from app.services.coupon_service import CouponError
-from app.services.order_service import OrderError
+from app.services.order_service import OrderError, resolve_unit_price
 from app.utils.rate_limit import user_or_ip_key
 
 
@@ -32,7 +33,8 @@ def get_cart():
     stores = {}
 
     for item in cart.items:
-        subtotal = float(item.product.price) * item.quantity
+        unit_price = float(resolve_unit_price(item.product, item.variant))
+        subtotal = unit_price * item.quantity
         store_id = item.product.store_id
 
         if store_id not in stores:
@@ -64,7 +66,7 @@ def get_cart():
                 "store_subtotal": 0
             }
 
-        stores[store_id]["items"].append({
+        line = {
             "id": item.id,
             "product_id": item.product.id,
             # English canonical + every translation; the client picks the
@@ -73,10 +75,22 @@ def get_cart():
             "product_name_en": item.product.name_en,
             "product_name_ar": item.product.name_ar,
             "product_name_fr": item.product.name_fr,
-            "price": float(item.product.price),
+            # Resolved price — the variant's when it set one (ADR 0035).
+            "price": unit_price,
             "quantity": item.quantity,
             "subtotal": subtotal
-        })
+        }
+
+        # Variant lines carry the chosen option label, built live from the
+        # option values (the cart is not order history — it can follow a
+        # rename). Absent entirely for a plain line.
+        if item.variant is not None:
+            line["variant_id"] = item.variant_id
+            line["variant_label"] = item.variant.label("en")
+            for lang in SUPPORTED_LANGUAGES:
+                line[f"variant_label_{lang}"] = item.variant.label(lang)
+
+        stores[store_id]["items"].append(line)
 
         stores[store_id]["store_subtotal"] += subtotal
 
@@ -136,8 +150,17 @@ def add_to_cart():
     # cart-add and checkout share one rule).
     try:
         order_service.assert_store_accepts_orders(product.store)
+        # Same rule at cart-add and checkout: which variant, is it real,
+        # is one required at all (ADR 0035).
+        variant = order_service.select_variant_for_cart(
+            product, data.get("variant_id")
+        )
     except OrderError as exc:
         return jsonify(exc.payload), exc.status_code
+
+    variant_id = variant.id if variant is not None else None
+    # Once a line has a variant, that variant's stock is authoritative.
+    available_stock = variant.stock if variant is not None else product.stock
 
     cart = Cart.query.filter_by(user_id=user_id).first()
 
@@ -148,30 +171,32 @@ def add_to_cart():
 
     existing_item = CartItem.query.filter_by(
         cart_id=cart.id,
-        product_id=product.id
+        product_id=product.id,
+        variant_id=variant_id
     ).first()
 
     if existing_item:
         new_quantity = existing_item.quantity + quantity
 
-        if new_quantity > product.stock:
+        if new_quantity > available_stock:
             return jsonify({
                 "error": "Requested quantity exceeds available stock",
-                "available_stock": product.stock
+                "available_stock": available_stock
             }), 400
 
         existing_item.quantity = new_quantity
 
     else:
-        if quantity > product.stock:
+        if quantity > available_stock:
             return jsonify({
                 "error": "Requested quantity exceeds available stock",
-                "available_stock": product.stock
+                "available_stock": available_stock
             }), 400
 
         new_item = CartItem(
             cart_id=cart.id,
             product_id=product.id,
+            variant_id=variant_id,
             quantity=quantity
         )
 
@@ -214,10 +239,14 @@ def update_cart_item(item_id):
             "error": "Cart item not found"
         }), 404
 
-    if quantity > item.product.stock:
+    available_stock = (
+        item.variant.stock if item.variant is not None else item.product.stock
+    )
+
+    if quantity > available_stock:
         return jsonify({
             "error": "Requested quantity exceeds available stock",
-            "available_stock": item.product.stock
+            "available_stock": available_stock
         }), 400
 
     item.quantity = quantity

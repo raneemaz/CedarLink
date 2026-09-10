@@ -37,6 +37,10 @@ from app.models.category import Category
 from app.models.order import Order
 from app.models.order_item import OrderItem
 from app.models.product import Product
+from app.models.product_option import ProductOption
+from app.models.product_option_value import ProductOptionValue
+from app.models.product_variant import ProductVariant
+from app.models.product_variant_value import ProductVariantValue
 from app.models.store import Store
 from app.models.store_hours import StoreHours
 from app.models.user import User
@@ -364,6 +368,62 @@ def make_product(make_store, make_category):
 @pytest.fixture()
 def product(make_product):
     return make_product()
+
+
+@pytest.fixture()
+def make_variant(_reset_db):
+    """One variant on a product: a fresh option axis, one value, one variant
+    row wired to it. ``price=None`` exercises the fall-back-to-product path.
+    """
+    counter = {"n": 0}
+
+    def _make(
+        product,
+        label="Red",
+        label_ar=None,
+        label_fr=None,
+        price=None,
+        stock=5,
+        is_active=True,
+        option_name=None,
+        sku=None,
+    ):
+        counter["n"] += 1
+        option = ProductOption(
+            product_id=product.id,
+            name_en=option_name or f"Option {counter['n']}",
+        )
+        _db.session.add(option)
+        _db.session.flush()
+
+        value = ProductOptionValue(
+            option_id=option.id,
+            value_en=label,
+            value_ar=label_ar,
+            value_fr=label_fr,
+        )
+        _db.session.add(value)
+        _db.session.flush()
+
+        variant = ProductVariant(
+            product_id=product.id,
+            price=price,
+            stock=stock,
+            is_active=is_active,
+            sku=sku,
+        )
+        _db.session.add(variant)
+        _db.session.flush()
+
+        _db.session.add(
+            ProductVariantValue(
+                variant_id=variant.id, option_value_id=value.id
+            )
+        )
+        _db.session.commit()
+        return variant
+
+    return _make
 
 
 @pytest.fixture()

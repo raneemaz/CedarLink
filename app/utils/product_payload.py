@@ -28,6 +28,72 @@ def translation_fields(product):
     return fields
 
 
+def _option_value_payload(value):
+    return {
+        "id": value.id,
+        "value": value.value_en,
+        "value_en": value.value_en,
+        "value_ar": value.value_ar,
+        "value_fr": value.value_fr,
+        "display_order": value.display_order,
+    }
+
+
+def _variant_payload(product, variant):
+    # Resolved price: the variant's own when it set one, else the product's
+    # (ADR 0035). float only at this JSON boundary. price_override is kept
+    # separate so the vendor form can tell "same as product" from "set".
+    resolved = variant.price if variant.price is not None else product.price
+    return {
+        "id": variant.id,
+        "sku": variant.sku,
+        "price": float(resolved),
+        "price_override": (
+            float(variant.price) if variant.price is not None else None
+        ),
+        "stock": variant.stock,
+        "is_active": variant.is_active,
+        "option_value_ids": sorted(
+            link.option_value_id for link in variant.values
+        ),
+        "label": variant.label("en"),
+        "label_en": variant.label("en"),
+        "label_ar": variant.label("ar"),
+        "label_fr": variant.label("fr"),
+    }
+
+
+def variant_fields(product):
+    """``options`` + ``variants`` for the product detail payload — an empty
+    dict when the product has no options, so a plain product serializes
+    byte-for-byte as it did before this feature (ADR 0035). Not included on
+    the grid card.
+    """
+    if not product.options:
+        return {}
+
+    return {
+        "options": [
+            {
+                "id": option.id,
+                "name": option.name_en,
+                "name_en": option.name_en,
+                "name_ar": option.name_ar,
+                "name_fr": option.name_fr,
+                "display_order": option.display_order,
+                "values": [
+                    _option_value_payload(value) for value in option.values
+                ],
+            }
+            for option in product.options
+        ],
+        "variants": [
+            _variant_payload(product, variant)
+            for variant in product.variants
+        ],
+    }
+
+
 def rating_fields(entity):
     """``rating_avg`` (float or None) + ``rating_count`` for a product/store."""
     return {
