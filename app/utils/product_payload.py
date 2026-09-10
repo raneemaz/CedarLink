@@ -63,14 +63,25 @@ def _variant_payload(product, variant):
     }
 
 
-def variant_fields(product):
+def variant_fields(product, include_inactive=False):
     """``options`` + ``variants`` for the product detail payload — an empty
     dict when the product has no options, so a plain product serializes
     byte-for-byte as it did before this feature (ADR 0035). Not included on
     the grid card.
+
+    ``include_inactive`` — the vendor's own edit view needs the retired
+    variants to manage them; the public product page must not show a
+    variant a customer could then try to pick (ADR 0036). Options and
+    their values are always returned in full: a value no active variant
+    uses simply won't resolve, and the picker marks that combination
+    unavailable.
     """
     if not product.options:
         return {}
+
+    variants = product.variants
+    if not include_inactive:
+        variants = [v for v in variants if v.is_active]
 
     return {
         "options": [
@@ -88,8 +99,7 @@ def variant_fields(product):
             for option in product.options
         ],
         "variants": [
-            _variant_payload(product, variant)
-            for variant in product.variants
+            _variant_payload(product, variant) for variant in variants
         ],
     }
 

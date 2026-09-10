@@ -56,6 +56,7 @@ def create_app(config_object=None):
     from app.routes.store_routes import store_bp
     from app.routes.category_routes import category_bp
     from app.routes.product_routes import product_bp
+    from app.routes.product_variant_routes import product_variant_bp
     from app.routes.product_image_routes import product_image_bp
     from app.routes.cart_routes import cart_bp
     from app.routes.order_routes import order_bp
@@ -87,6 +88,7 @@ def create_app(config_object=None):
     app.register_blueprint(cart_bp, url_prefix="/api/cart")
     app.register_blueprint(product_image_bp, url_prefix="/api")
     app.register_blueprint(product_bp, url_prefix="/api")
+    app.register_blueprint(product_variant_bp, url_prefix="/api")
     app.register_blueprint(category_bp, url_prefix="/api")
     app.register_blueprint(address_bp)
     app.register_blueprint(auth_bp)

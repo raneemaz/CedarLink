@@ -44,6 +44,18 @@ FOREIGN_PRODUCT_ROUTES = {
     "product_bp.delete_product": ("DELETE", None),
     "product_image_bp.add_image": ("POST", None),
     "product_image_bp.delete_image": ("DELETE", None),
+    # V-2 option / value / variant CRUD — the ownership check fires before
+    # any sub-resource lookup, so the sub-ids here are placeholders.
+    "product_variant_bp.create_option": ("POST", {"name_en": "x"}),
+    "product_variant_bp.update_option": ("PUT", {"name_en": "x"}),
+    "product_variant_bp.delete_option": ("DELETE", None),
+    "product_variant_bp.create_value": ("POST", {"value_en": "x"}),
+    "product_variant_bp.update_value": ("PUT", {"value_en": "x"}),
+    "product_variant_bp.delete_value": ("DELETE", None),
+    "product_variant_bp.create_variant": ("POST", {"stock": 1}),
+    "product_variant_bp.update_variant": ("PUT", {"stock": 1}),
+    "product_variant_bp.set_variant_active": ("PATCH", {"is_active": False}),
+    "product_variant_bp.delete_variant": ("DELETE", None),
 }
 
 # Public reads on a store — not an isolation boundary, excluded on purpose.
@@ -105,6 +117,10 @@ def _fill(rule, ctx):
     out = out.replace("<int:coupon_id>", str(ctx["coupon_id"]))
     out = out.replace("<int:aid>", str(ctx["announcement_id"]))
     out = out.replace("<int:image_id>", str(ctx["image_id"]))
+    # V-2 variant sub-resources — placeholders; ownership is checked first.
+    out = out.replace("<int:option_id>", "1")
+    out = out.replace("<int:value_id>", "1")
+    out = out.replace("<int:variant_id>", "1")
     return out
 
 
