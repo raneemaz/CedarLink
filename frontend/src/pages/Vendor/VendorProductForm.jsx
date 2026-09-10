@@ -8,6 +8,7 @@ import api from "../../services/api";
 import Button from "../../components/common/Button/Button";
 import LanguageTabs from "../../components/common/LanguageTabs/LanguageTabs";
 import ProductImageManager from "./ProductImageManager";
+import VendorVariantManager from "./VendorVariantManager";
 import { localizedName } from "../../utils/localize";
 
 const fieldClass =
@@ -388,8 +389,9 @@ function VendorProductForm() {
       </form>
 
       {isEdit && (
-        <div className="mt-6">
+        <div className="mt-6 space-y-6">
           <ProductImageManager productId={id} />
+          <VendorVariantManager productId={id} productPrice={form.price} />
         </div>
       )}
     </div>

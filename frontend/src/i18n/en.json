@@ -464,7 +464,10 @@
     "addToCart": "Add to Cart",
     "adding": "Adding...",
     "addedToCart": "Product added to cart.",
-    "cartError": "Unable to add this product to your cart."
+    "cartError": "Unable to add this product to your cart.",
+    "chooseOptions": "Choose your options",
+    "selectAllOptions": "Select an option to continue",
+    "combinationUnavailable": "That combination is not available."
   },
   "categoriesPage": {
     "title": "Categories",
@@ -1184,7 +1187,9 @@
     "toastDeleted": "\"{{name}}\" deleted.",
     "errLoad": "Unable to load your products.",
     "errLoadPage": "Unable to load that page.",
-    "errDelete": "Unable to delete this product."
+    "errDelete": "Unable to delete this product.",
+    "variantCount_one": "{{count}} variant",
+    "variantCount_other": "{{count}} variants"
   },
   "vendorProductForm": {
     "loading": "Loading...",
@@ -1238,6 +1243,43 @@
     "errRemove": "Unable to remove that image.",
     "toastUploaded": "Image uploaded.",
     "toastRemoved": "Image removed."
+  },
+  "vendorVariants": {
+    "sectionTitle": "Options and variants",
+    "sectionHint": "Add option axes (Colour, Size) and the combinations you actually stock. A product with variants is bought by choosing one — its own price and stock are ignored.",
+    "loading": "Loading options...",
+    "addAxis": "Add option",
+    "addValue": "Add value",
+    "addVariant": "Add variant",
+    "newAxisPlaceholder": "New option name ({{lang}})",
+    "newValuePlaceholder": "New value ({{lang}})",
+    "deleteAxis": "Delete option",
+    "deleteValue": "Delete value",
+    "deleteVariant": "Delete variant",
+    "variantsHeading": "Variants",
+    "noVariants": "No variants yet. Add one from the values above.",
+    "colCombination": "Combination",
+    "colPrice": "Price",
+    "colStock": "Stock",
+    "colActive": "Status",
+    "colActions": "Actions",
+    "sameAsProduct": "Same as product (${{price}})",
+    "priceOptional": "Price (optional)",
+    "choose": "Choose...",
+    "active": "Active",
+    "retired": "Retired",
+    "confirmTitle": "Are you sure?",
+    "confirmDelete": "Delete",
+    "confirmDeleteAxis": "Delete the \"{{name}}\" option? Its values are removed too.",
+    "confirmDeleteValue": "Delete the value \"{{name}}\"?",
+    "confirmDeleteVariant": "Delete the \"{{name}}\" variant?",
+    "errLoad": "Unable to load this product's options.",
+    "errSave": "That change could not be saved.",
+    "errAxisName": "The option needs an English name.",
+    "errValueName": "The value needs an English name.",
+    "errPickAll": "Choose one value for every option.",
+    "errCombinationTaken": "A variant for that combination already exists.",
+    "errStock": "Enter a stock amount of 0 or more."
   },
   "vendorOrders": {
     "loading": "Loading orders...",

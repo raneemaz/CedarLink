@@ -464,7 +464,10 @@
     "addToCart": "Ajouter au panier",
     "adding": "Ajout…",
     "addedToCart": "Produit ajouté au panier.",
-    "cartError": "Impossible d'ajouter ce produit à votre panier."
+    "cartError": "Impossible d'ajouter ce produit à votre panier.",
+    "chooseOptions": "Choisissez vos options",
+    "selectAllOptions": "Sélectionnez une option pour continuer",
+    "combinationUnavailable": "Cette combinaison n'est pas disponible."
   },
   "categoriesPage": {
     "title": "Catégories",
@@ -1184,7 +1187,9 @@
     "toastDeleted": "« {{name}} » supprimé.",
     "errLoad": "Impossible de charger vos produits.",
     "errLoadPage": "Impossible de charger cette page.",
-    "errDelete": "Impossible de supprimer ce produit."
+    "errDelete": "Impossible de supprimer ce produit.",
+    "variantCount_one": "{{count}} variante",
+    "variantCount_other": "{{count}} variantes"
   },
   "vendorProductForm": {
     "loading": "Chargement…",
@@ -1238,6 +1243,43 @@
     "errRemove": "Impossible de retirer cette image.",
     "toastUploaded": "Image téléchargée.",
     "toastRemoved": "Image retirée."
+  },
+  "vendorVariants": {
+    "sectionTitle": "Options et variantes",
+    "sectionHint": "Ajoutez des axes d'options (Couleur, Taille) et les combinaisons que vous avez réellement en stock. Un produit à variantes s'achète en en choisissant une ; son propre prix et son stock sont ignorés.",
+    "loading": "Chargement des options…",
+    "addAxis": "Ajouter une option",
+    "addValue": "Ajouter une valeur",
+    "addVariant": "Ajouter une variante",
+    "newAxisPlaceholder": "Nom de la nouvelle option ({{lang}})",
+    "newValuePlaceholder": "Nouvelle valeur ({{lang}})",
+    "deleteAxis": "Supprimer l'option",
+    "deleteValue": "Supprimer la valeur",
+    "deleteVariant": "Supprimer la variante",
+    "variantsHeading": "Variantes",
+    "noVariants": "Aucune variante pour l'instant. Ajoutez-en une à partir des valeurs ci-dessus.",
+    "colCombination": "Combinaison",
+    "colPrice": "Prix",
+    "colStock": "Stock",
+    "colActive": "Statut",
+    "colActions": "Actions",
+    "sameAsProduct": "Comme le produit (${{price}})",
+    "priceOptional": "Prix (facultatif)",
+    "choose": "Choisir…",
+    "active": "Active",
+    "retired": "Retirée",
+    "confirmTitle": "Confirmer ?",
+    "confirmDelete": "Supprimer",
+    "confirmDeleteAxis": "Supprimer l'option « {{name}} » ? Ses valeurs sont également supprimées.",
+    "confirmDeleteValue": "Supprimer la valeur « {{name}} » ?",
+    "confirmDeleteVariant": "Supprimer la variante « {{name}} » ?",
+    "errLoad": "Impossible de charger les options de ce produit.",
+    "errSave": "Cette modification n'a pas pu être enregistrée.",
+    "errAxisName": "L'option a besoin d'un nom en anglais.",
+    "errValueName": "La valeur a besoin d'un nom en anglais.",
+    "errPickAll": "Choisissez une valeur pour chaque option.",
+    "errCombinationTaken": "Une variante pour cette combinaison existe déjà.",
+    "errStock": "Saisissez un stock de 0 ou plus."
   },
   "vendorOrders": {
     "loading": "Chargement des commandes…",

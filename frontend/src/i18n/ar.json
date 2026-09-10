@@ -476,7 +476,10 @@
     "addToCart": "أضف إلى السلة",
     "adding": "جارٍ الإضافة…",
     "addedToCart": "تمت إضافة المنتج إلى السلة.",
-    "cartError": "تعذّرت إضافة هذا المنتج إلى سلتك."
+    "cartError": "تعذّرت إضافة هذا المنتج إلى سلتك.",
+    "chooseOptions": "اختر خياراتك",
+    "selectAllOptions": "اختر خيارًا للمتابعة",
+    "combinationUnavailable": "هذه التوليفة غير متوفّرة."
   },
   "categoriesPage": {
     "title": "الفئات",
@@ -1224,7 +1227,9 @@
     "toastDeleted": "تم حذف \"{{name}}\".",
     "errLoad": "تعذّر تحميل منتجاتك.",
     "errLoadPage": "تعذّر تحميل تلك الصفحة.",
-    "errDelete": "تعذّر حذف هذا المنتج."
+    "errDelete": "تعذّر حذف هذا المنتج.",
+    "variantCount_one": "تشكيلة واحدة",
+    "variantCount_other": "{{count}} تشكيلات"
   },
   "vendorProductForm": {
     "loading": "جارٍ التحميل…",
@@ -1278,6 +1283,43 @@
     "errRemove": "تعذّرت إزالة تلك الصورة.",
     "toastUploaded": "تم رفع الصورة.",
     "toastRemoved": "تمت إزالة الصورة."
+  },
+  "vendorVariants": {
+    "sectionTitle": "الخيارات والتشكيلات",
+    "sectionHint": "أضِف محاور الخيارات (اللون، الحجم) والتوليفات التي تبيعها فعليًا. المنتج الذي له تشكيلات يُشترى باختيار إحداها، ويُتجاهل سعره ومخزونه الخاصان.",
+    "loading": "جارٍ تحميل الخيارات…",
+    "addAxis": "إضافة خيار",
+    "addValue": "إضافة قيمة",
+    "addVariant": "إضافة تشكيلة",
+    "newAxisPlaceholder": "اسم الخيار الجديد ({{lang}})",
+    "newValuePlaceholder": "قيمة جديدة ({{lang}})",
+    "deleteAxis": "حذف الخيار",
+    "deleteValue": "حذف القيمة",
+    "deleteVariant": "حذف التشكيلة",
+    "variantsHeading": "التشكيلات",
+    "noVariants": "لا توجد تشكيلات بعد. أضِف واحدة من القيم أعلاه.",
+    "colCombination": "التوليفة",
+    "colPrice": "السعر",
+    "colStock": "المخزون",
+    "colActive": "الحالة",
+    "colActions": "إجراءات",
+    "sameAsProduct": "مثل المنتج (${{price}})",
+    "priceOptional": "السعر (اختياري)",
+    "choose": "اختر…",
+    "active": "مفعّلة",
+    "retired": "متوقّفة",
+    "confirmTitle": "هل أنت متأكد؟",
+    "confirmDelete": "حذف",
+    "confirmDeleteAxis": "حذف الخيار \"{{name}}\"؟ ستُحذف قيمه أيضًا.",
+    "confirmDeleteValue": "حذف القيمة \"{{name}}\"؟",
+    "confirmDeleteVariant": "حذف التشكيلة \"{{name}}\"؟",
+    "errLoad": "تعذّر تحميل خيارات هذا المنتج.",
+    "errSave": "تعذّر حفظ هذا التغيير.",
+    "errAxisName": "يحتاج الخيار إلى اسم بالإنجليزية.",
+    "errValueName": "تحتاج القيمة إلى اسم بالإنجليزية.",
+    "errPickAll": "اختر قيمة واحدة لكل خيار.",
+    "errCombinationTaken": "توجد تشكيلة لهذه التوليفة بالفعل.",
+    "errStock": "أدخل كمية مخزون تساوي 0 أو أكثر."
   },
   "vendorOrders": {
     "loading": "جارٍ تحميل الطلبات…",

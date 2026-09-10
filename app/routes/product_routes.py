@@ -146,6 +146,10 @@ def get_products():
     query = Product.query.options(
         selectinload(Product.images),
         selectinload(Product.store),
+        # product_card reports variant_count for the vendor list's chip —
+        # one extra batched query for the whole page, not one per row
+        # (ADR 0032 F2 / ADR 0036).
+        selectinload(Product.variants),
     ).filter(Product.deleted_at.is_(None))
 
     sort = request.args.get("sort")

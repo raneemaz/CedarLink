@@ -211,6 +211,13 @@ function VendorProducts() {
                           <span className="font-medium text-ink">
                             {localizedName(product, i18n.language)}
                           </span>
+                          {product.has_variants && (
+                            <span className="shrink-0 rounded-pill bg-paper-sunken px-2 py-0.5 text-micro font-medium text-ink-body">
+                              {t("vendorProducts.variantCount", {
+                                count: product.variant_count,
+                              })}
+                            </span>
+                          )}
                         </div>
                       </td>
 

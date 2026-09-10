@@ -128,6 +128,10 @@ def product_card(product):
         "store_name": product.store.name,
         "category_id": product.category_id,
         "image": product_image_url(first_image),
+        # The vendor list shows a "N variants" chip; the grid card does not
+        # carry the options/variants themselves (ADR 0036).
+        "variant_count": len(product.variants),
+        "has_variants": len(product.variants) > 0,
         **translation_fields(product),
         **rating_fields(product),
     }
