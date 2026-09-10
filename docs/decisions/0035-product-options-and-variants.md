@@ -107,12 +107,17 @@ session.
 
 ## Follow-ups (named, not built)
 
+The vendor console, the customer picker, and the CRUD endpoints they need
+were built in V-2 — see docs/decisions/0036-variant-management-and-picker.md.
+Still open after V-2:
+
 - **Per-variant images.** A red scarf and a black one look different; this
   session did not add variant-specific images. A real feature on its own.
-- **Editing or deleting an option value already used by an order.** Out of
-  scope now. `is_active` lets a vendor retire a variant without deleting
-  its history; a fuller edit/delete story (and what it does to open carts)
-  is future work.
+- **Editing or deleting an option value already used by an order.** V-2's
+  service blocks deleting a value used by a live *variant*; a value
+  referenced only through `order_items` history is the next edge.
+- **Bulk combination generation** — the V-2 manager adds variants one at a
+  time.
 - **`order_items.product_name_*` denormalisation** — the latent gap above.
 
 ## Verified
