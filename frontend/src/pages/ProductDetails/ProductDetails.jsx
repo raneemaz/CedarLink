@@ -7,7 +7,8 @@ import Price from "../../components/common/Price";
 import BackLink from "../../components/common/BackLink";
 import RatingSummary from "../../components/reviews/RatingSummary";
 import ReviewList from "../../components/reviews/ReviewList";
-import { localizedName, localizedDescription } from "../../utils/localize";
+import { localizedName, localizedDescription, localizedField } from "../../utils/localize";
+import { resolveVariant, selectionComplete } from "../../utils/variants";
 
 function ProductDetails() {
   const { id } = useParams();
@@ -18,6 +19,9 @@ function ProductDetails() {
   const [error, setError] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState(0);
+  // { [optionId]: valueId } — the customer's option picks, when the product
+  // has option axes (ADR 0036).
+  const [selection, setSelection] = useState({});
 
   const [addingToCart, setAddingToCart] = useState(false);
   const [cartMessage, setCartMessage] = useState("");
@@ -32,6 +36,8 @@ function ProductDetails() {
 
         setProduct(response.data);
         setActiveImage(0);
+        setSelection({});
+        setQuantity(1);
       } catch (err) {
         console.error("Failed to fetch product:", err);
 
@@ -48,6 +54,23 @@ function ProductDetails() {
     fetchProduct();
   }, [id, t]);
 
+  // When the product has option axes, price and stock come from the chosen
+  // variant — not the product's own price/stock, which for a variants-only
+  // product is a placeholder (the seed sets the parent to stock 0). ADR 0036.
+  const options = product?.options ?? [];
+  const hasOptions = options.length > 0;
+  const selectedVariant = hasOptions
+    ? resolveVariant(product.variants, selection)
+    : null;
+  const activePrice = selectedVariant ? selectedVariant.price : product?.price;
+  const activeStock = hasOptions
+    ? selectedVariant
+      ? selectedVariant.stock
+      : 0
+    : product?.stock ?? 0;
+  const combinationMissing =
+    hasOptions && selectionComplete(options, selection) && !selectedVariant;
+
   const handleAddToCart = async () => {
     const token = localStorage.getItem("token");
 
@@ -63,6 +86,10 @@ function ProductDetails() {
       await api.post("/cart/items", {
         product_id: product.id,
         quantity: quantity,
+        // Only when the product has options — the backend resolves price
+        // and stock from this variant, and refuses a plain add otherwise
+        // ("variant_required").
+        ...(selectedVariant ? { variant_id: selectedVariant.id } : {}),
       });
       window.dispatchEvent(new Event("cartUpdated"));
       setCartMessage(t("productDetails.addedToCart"));
@@ -177,7 +204,7 @@ function ProductDetails() {
             </h1>
 
             <Price
-              amount={product.price}
+              amount={activePrice}
               className="mt-5 text-title font-bold text-cedar"
               approxClassName="text-small"
             />
@@ -198,6 +225,54 @@ function ProductDetails() {
               </p>
             </div>
 
+            {/* Options — one row of buttons per axis. A full pick resolves
+                to a variant, whose price and stock then drive this panel. */}
+            {hasOptions && (
+              <div className="mt-6 border-t border-line-subtle pt-6">
+                <h2 className="text-small font-semibold text-ink">
+                  {t("productDetails.chooseOptions")}
+                </h2>
+                <div className="mt-3 space-y-4">
+                  {options.map((option) => (
+                    <div key={option.id}>
+                      <p className="text-small text-ink-secondary">
+                        {localizedField(option, "name", i18n.language)}
+                      </p>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {option.values.map((value) => {
+                          const picked = selection[option.id] === value.id;
+                          return (
+                            <button
+                              key={value.id}
+                              type="button"
+                              onClick={() =>
+                                setSelection((prev) => ({
+                                  ...prev,
+                                  [option.id]: value.id,
+                                }))
+                              }
+                              className={`rounded-control border px-3 py-1.5 text-small font-medium transition ${
+                                picked
+                                  ? "border-cedar bg-cedar text-on-cedar"
+                                  : "border-line-strong text-ink-body hover:border-cedar hover:text-cedar"
+                              }`}
+                            >
+                              {localizedField(value, "value", i18n.language)}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {combinationMissing && (
+                  <p className="mt-3 text-small text-danger">
+                    {t("productDetails.combinationUnavailable")}
+                  </p>
+                )}
+              </div>
+            )}
+
             <div className="mt-6 grid grid-cols-2 gap-4">
               {/* Availability */}
               <div className="flex items-center justify-between rounded-control bg-paper px-4 py-3">
@@ -205,11 +280,13 @@ function ProductDetails() {
 
                 <span
                   className={`text-small font-semibold ${
-                    product.stock > 0 ? "text-cedar" : "text-danger"
+                    activeStock > 0 ? "text-cedar" : "text-danger"
                   }`}
                 >
-                  {product.stock > 0
-                    ? t("productDetails.availableCount", { count: product.stock })
+                  {hasOptions && !selectedVariant
+                    ? t("productDetails.selectAllOptions")
+                    : activeStock > 0
+                    ? t("productDetails.availableCount", { count: activeStock })
                     : t("productDetails.outOfStock")}
                 </span>
               </div>
@@ -231,12 +308,12 @@ function ProductDetails() {
                   <input
                     type="number"
                     min="1"
-                    max={product.stock}
+                    max={activeStock}
                     value={quantity}
                     onChange={(e) => {
                       const value = Number(e.target.value);
 
-                      if (value >= 1 && value <= product.stock) {
+                      if (value >= 1 && value <= activeStock) {
                         setQuantity(value);
                       }
                     }}
@@ -248,9 +325,9 @@ function ProductDetails() {
                   <button
                     type="button"
                     onClick={() =>
-                      setQuantity((q) => Math.min(product.stock, q + 1))
+                      setQuantity((q) => Math.min(activeStock, q + 1))
                     }
-                    disabled={quantity >= product.stock}
+                    disabled={quantity >= activeStock}
                     className="flex h-8 w-8 cursor-pointer items-center justify-center text-ink-body transition hover:bg-paper-sunken disabled:cursor-not-allowed disabled:text-ink-disabled"
                   >
                     +
@@ -271,9 +348,10 @@ function ProductDetails() {
               <button
                 onClick={handleAddToCart}
                 disabled={
-                  product.stock <= 0 ||
+                  activeStock <= 0 ||
                   addingToCart ||
-                  product.store_accepts_orders === false
+                  product.store_accepts_orders === false ||
+                  (hasOptions && !selectedVariant)
                 }
                 className="flex-1 cursor-pointer rounded-control bg-cedar px-5 py-3 text-small font-semibold text-on-cedar transition hover:bg-cedar-strong disabled:cursor-not-allowed disabled:bg-control-hover"
               >
