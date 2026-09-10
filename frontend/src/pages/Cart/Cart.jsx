@@ -199,6 +199,16 @@ function Cart() {
                           {localizedField(item, "product_name", i18n.language)}
                         </h3>
 
+                        {localizedField(item, "variant_label", i18n.language) && (
+                          <p className="mt-0.5 text-small text-ink-secondary">
+                            {localizedField(
+                              item,
+                              "variant_label",
+                              i18n.language,
+                            )}
+                          </p>
+                        )}
+
                         <p className="mt-1 text-small text-ink-muted">
                           {t("cart.priceEach", {
                             price: `$${Number(item.price).toFixed(2)}`,

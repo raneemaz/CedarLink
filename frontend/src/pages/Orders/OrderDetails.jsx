@@ -133,6 +133,12 @@ const total = Number(order.total_price || 0);
                       {localizedField(item, "product_name", i18n.language)}
                     </h3>
 
+                    {localizedField(item, "variant_label", i18n.language) && (
+                      <p className="mt-0.5 text-small text-ink-secondary">
+                        {localizedField(item, "variant_label", i18n.language)}
+                      </p>
+                    )}
+
                     <p className="mt-1 text-small text-ink-muted">
                       {t("orderDetails.priceLine", {
                         price: `$${(Number(item.subtotal) / Number(item.quantity)).toFixed(2)}`,
