@@ -342,8 +342,13 @@ def get_product(id):
         **_translation_fields(product),
         **_rating_fields(product),
         # options / variants — only present when the product has them, so a
-        # plain product's detail payload is unchanged (ADR 0035).
-        **variant_fields(product),
+        # plain product's detail payload is unchanged (ADR 0035). The
+        # vendor's own edit view needs the retired variants to manage them;
+        # a customer must not see a variant they could then try to pick
+        # (ADR 0036).
+        **variant_fields(
+            product, include_inactive=_owns_store(product.store_id)
+        ),
     }), 200
 
 

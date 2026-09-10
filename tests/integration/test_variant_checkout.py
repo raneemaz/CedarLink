@@ -214,3 +214,32 @@ def test_a_product_with_no_options_is_unchanged(
         f"/api/products/{product.id}", headers=auth(customer)
     ).get_json()
     assert "options" not in detail and "variants" not in detail
+
+
+def test_retired_variant_is_hidden_from_customers_shown_to_the_owner(
+    client, auth, make_store, make_category, make_product, make_variant,
+    make_user,
+):
+    """A non-owner's product detail lists only active variants; the owning
+    vendor still sees the retired one to manage it (ADR 0036)."""
+    vendor = make_user("vendor", email="retire-owner@test.local")
+    store = make_store(owner=vendor)
+    product = make_product(
+        store=store, category=make_category(), price=12.00, stock=0
+    )
+    active = make_variant(product, label="1L", price=12.00, stock=5)
+    retired = make_variant(product, label="2L", price=22.00, stock=5,
+                           is_active=False)
+
+    customer = make_user("customer", email="retire-cust@test.local")
+    seen = client.get(
+        f"/api/products/{product.id}", headers=auth(customer)
+    ).get_json()
+    ids = [v["id"] for v in seen["variants"]]
+    assert ids == [active.id]
+
+    owner_view = client.get(
+        f"/api/products/{product.id}", headers=auth(vendor)
+    ).get_json()
+    owner_ids = sorted(v["id"] for v in owner_view["variants"])
+    assert owner_ids == sorted([active.id, retired.id])
