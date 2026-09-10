@@ -3,6 +3,10 @@ from app.extensions import db
 
 class CartItem(db.Model):
     __tablename__ = "cart_items"
+    __table_args__ = (
+        db.Index("ix_cart_items_variant_id", "variant_id"),
+    )
+
     id = db.Column(db.Integer, primary_key=True)
 
     cart_id = db.Column(
@@ -15,6 +19,14 @@ class CartItem(db.Model):
         db.Integer,
         db.ForeignKey("products.id"),
         nullable=False
+    )
+
+    # Null means "the plain product", exactly like every cart item before
+    # variants existed (ADR 0035).
+    variant_id = db.Column(
+        db.Integer,
+        db.ForeignKey("product_variants.id"),
+        nullable=True
     )
 
     quantity = db.Column(
@@ -32,3 +44,5 @@ class CartItem(db.Model):
         "Product",
         back_populates="cart_items"
     )
+
+    variant = db.relationship("ProductVariant")

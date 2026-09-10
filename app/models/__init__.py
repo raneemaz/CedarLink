@@ -6,6 +6,10 @@ from app.models.store_social_link import StoreSocialLink  # noqa: F401
 from app.models.category import Category  # noqa: F401
 from app.models.product import Product  # noqa: F401
 from app.models.product_image import ProductImage  # noqa: F401
+from app.models.product_option import ProductOption  # noqa: F401
+from app.models.product_option_value import ProductOptionValue  # noqa: F401
+from app.models.product_variant import ProductVariant  # noqa: F401
+from app.models.product_variant_value import ProductVariantValue  # noqa: F401
 from app.models.cart import Cart  # noqa: F401
 from app.models.cart_item import CartItem  # noqa: F401
 from app.models.order import Order  # noqa: F401

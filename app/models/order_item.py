@@ -7,6 +7,7 @@ class OrderItem(db.Model):
         # The dashboard's goods/units figures JOIN order_items to orders;
         # without this the join scans all order_items (ADR 0032 F1).
         db.Index("ix_order_items_order_id", "order_id"),
+        db.Index("ix_order_items_variant_id", "variant_id"),
     )
 
     id = db.Column(db.Integer, primary_key=True)
@@ -33,6 +34,21 @@ class OrderItem(db.Model):
         nullable=False
     )
 
+    # Null means the plain product was ordered. When set, the variant may
+    # later be renamed or retired, so its label is denormalised here at
+    # order time — the customer's history must still read "Red, Medium".
+    # (ADR 0035; the sibling product_name_* denormalisation the plan
+    # assumed does not actually exist yet — see the ADR.)
+    variant_id = db.Column(
+        db.Integer,
+        db.ForeignKey("product_variants.id"),
+        nullable=True
+    )
+
+    variant_label_en = db.Column(db.String(255), nullable=True)
+    variant_label_ar = db.Column(db.String(255), nullable=True)
+    variant_label_fr = db.Column(db.String(255), nullable=True)
+
     order = db.relationship(
         "Order",
         back_populates="items"
@@ -42,3 +58,5 @@ class OrderItem(db.Model):
         "Product",
         back_populates="order_items"
     )
+
+    variant = db.relationship("ProductVariant")

@@ -89,6 +89,24 @@ class Product(db.Model):
         back_populates="product",
         cascade="all, delete-orphan"
     )
+
+    # Options and variants (ADR 0035). Cascade like images: a product with
+    # no option rows serializes and prices exactly as it did before this
+    # feature. Order history is protected because variants are retired via
+    # is_active, never row-deleted while an order references them.
+    options = db.relationship(
+        "ProductOption",
+        back_populates="product",
+        cascade="all, delete-orphan",
+        order_by="ProductOption.display_order",
+    )
+    variants = db.relationship(
+        "ProductVariant",
+        back_populates="product",
+        cascade="all, delete-orphan",
+        order_by="ProductVariant.id",
+    )
+
     created_at = db.Column(db.DateTime, default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
     deleted_at = db.Column(db.DateTime, nullable=True)
