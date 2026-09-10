@@ -127,6 +127,21 @@ STORE_SPECS = (
               "معصور على البارد، من بستان واحد في تلال الكورة.",
               "Pressée à froid, d'un seul domaine des collines du Koura.",
               12.00, 25, "Food"),
+            # The same oil sold in two sizes at two prices — the V-1
+            # price-override demo. A separate product from the 1L above,
+            # which keeps its own reviews and order history untouched. Its
+            # own price is the 1L fall-back; stock is 0 because the variants
+            # are what is actually sold. See ADR 0035.
+            p("Lebanese Extra Virgin Olive Oil",
+              "زيت زيتون لبناني بكر ممتاز",
+              "Huile d'olive vierge extra libanaise",
+              "Cold-pressed, single-estate from the Koura hills. Choose "
+              "your bottle size.",
+              "معصور على البارد، من بستان واحد في تلال الكورة. اختر حجم "
+              "القنينة.",
+              "Pressée à froid, d'un seul domaine des collines du Koura. "
+              "Choisissez la taille.",
+              12.00, 0, "Food"),
             p("Baklava Assortment (12 pcs)", "تشكيلة بقلاوة (١٢ قطعة)",
               "Assortiment de baklava (12 pièces)",
               "Walnut and pistachio, layered and soaked in orange-blossom "
@@ -777,10 +792,48 @@ COUPON_SPECS = (
 )
 
 
-# (customer index, store, status, [(product, qty)], days ago)
+# V-1 (ADR 0035): option axes and the variants a vendor actually stocks,
+# for the two products that prove both halves of the feature. Every other
+# seeded product stays single-price / single-stock and is untouched.
+#   option / values : (en, ar, fr)
+#   variants        : (value_en, price override or None, stock)
+PRODUCT_VARIANT_SPECS = {
+    # Same price across colours (None falls back to the product's price),
+    # different stock per colour — the stock-only case.
+    "Wool Winter Scarf": {
+        "option": ("Colour", "اللون", "Couleur"),
+        "values": (
+            ("Black", "أسود", "Noir"),
+            ("Grey", "رمادي", "Gris"),
+            ("Burgundy", "خمري", "Bordeaux"),
+        ),
+        "variants": (
+            ("Black", None, 9),
+            ("Grey", None, 6),
+            ("Burgundy", None, 3),
+        ),
+    },
+    # Two sizes at two prices — the price-override case.
+    "Lebanese Extra Virgin Olive Oil": {
+        "option": ("Size", "الحجم", "Taille"),
+        "values": (
+            ("1L", "١ لتر", "1 L"),
+            ("2L", "٢ لتر", "2 L"),
+        ),
+        "variants": (
+            ("1L", 12.00, 20),
+            ("2L", 22.00, 10),
+        ),
+    },
+}
+
+
+# (customer index, store, status, [(product, qty) or (product, qty, value_en)],
+#  days ago)
 ORDER_SPECS = (
     (0, "Hamra Grocery", "delivered",
      (("Lebanese Extra Virgin Olive Oil 1L", 2),
+      ("Lebanese Extra Virgin Olive Oil", 1, "2L"),
       ("Zaatar Blend 200g", 3)), 24),
     (0, "Mar Mikhael Books", "delivered",
      (("Lebanese Cookery, Illustrated", 1),), 17),
@@ -790,7 +843,7 @@ ORDER_SPECS = (
      (("Solar Power Bank 20000mAh", 1),
       ("LED Rechargeable Lantern", 2)), 30),
     (1, "Tripoli Threads", "canceled",
-     (("Wool Winter Scarf", 1),), 12),
+     (("Wool Winter Scarf", 1, "Grey"),), 12),
     (2, "Tripoli Threads", "delivered",
      (("Embroidered Cotton Shirt", 1),
       ("Kufiya, Black and White", 2)), 21),
@@ -806,6 +859,7 @@ ORDER_SPECS = (
     # with one review apiece the list is correct and permanently empty.
     (3, "Hamra Grocery", "delivered",
      (("Lebanese Extra Virgin Olive Oil 1L", 1),
+      ("Lebanese Extra Virgin Olive Oil", 1, "1L"),
       ("Zaatar Blend 200g", 2)), 9),
     (1, "Hamra Grocery", "delivered",
      (("Zaatar Blend 200g", 1), ("Tahini 400g", 1)), 6),
@@ -900,6 +954,15 @@ REVIEW_SPECS = (
     (3, ("product", "Lebanese Extra Virgin Olive Oil 1L"), 5,
      "Better than the tinned oil I was buying",
      "Bought it after a friend brought a bottle. I will not go back."),
+    # The sized bottle is its own product (V-1 demo) — two opinions so it
+    # too clears the best-rated minimum.
+    (0, ("product", "Lebanese Extra Virgin Olive Oil"), 5,
+     "The 2L is the one to order",
+     "Same oil as the small bottle, less packaging and a better price. "
+     "It lasts us about a month."),
+    (3, ("product", "Lebanese Extra Virgin Olive Oil"), 4,
+     "Good oil, the litre is plenty",
+     "Peppery and fresh. For two people the 1L lasts weeks."),
     (3, ("product", "Zaatar Blend 200g"), 4,
      "Good on manoushe",
      "Generous with the sesame. A little dry on its own, fine with oil."),

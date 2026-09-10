@@ -22,6 +22,10 @@ from app.models import (
     OrderItem,
     Product,
     ProductImage,
+    ProductOption,
+    ProductOptionValue,
+    ProductVariant,
+    ProductVariantValue,
     Store,
     StoreAnnouncement,
     StoreHours,
@@ -246,6 +250,12 @@ _RESET_ORDER = (
     "shopping_preferences",
     "notifications",
     "notification_preferences",
+    # Variant tables sit between the cart/order children (already cleared
+    # above) and products (cleared below).
+    "product_variant_values",
+    "product_variants",
+    "product_option_values",
+    "product_options",
     "product_images",
     "products",
     "store_announcements",
@@ -468,6 +478,71 @@ def _seed_stores(categories):
     return stores, products
 
 
+def _seed_product_variants(products):
+    """Options and variants for the two V-1 demo products (ADR 0035).
+
+    Idempotent like the rest of the seed — an option, value or variant that
+    already exists is reused. Returns ``{(product name, value_en): variant}``
+    so ``_seed_orders`` can put a real variant line on a delivered order.
+    """
+    variants = {}
+
+    for product_name, spec in seed_data.PRODUCT_VARIANT_SPECS.items():
+        product = products[product_name]
+
+        name_en, name_ar, name_fr = spec["option"]
+        option, _ = _get_or_create(
+            ProductOption,
+            {"name_ar": name_ar, "name_fr": name_fr, "display_order": 0},
+            product_id=product.id,
+            name_en=name_en,
+        )
+        db.session.flush()
+
+        values = {}
+        for order, (value_en, value_ar, value_fr) in enumerate(
+            spec["values"]
+        ):
+            value, _ = _get_or_create(
+                ProductOptionValue,
+                {
+                    "value_ar": value_ar,
+                    "value_fr": value_fr,
+                    "display_order": order,
+                },
+                option_id=option.id,
+                value_en=value_en,
+            )
+            values[value_en] = value
+        db.session.flush()
+
+        for value_en, price, stock in spec["variants"]:
+            value = values[value_en]
+            variant = (
+                ProductVariant.query.join(ProductVariantValue)
+                .filter(
+                    ProductVariant.product_id == product.id,
+                    ProductVariantValue.option_value_id == value.id,
+                )
+                .first()
+            )
+            if variant is None:
+                variant = ProductVariant(
+                    product_id=product.id, price=price, stock=stock
+                )
+                db.session.add(variant)
+                db.session.flush()
+                db.session.add(
+                    ProductVariantValue(
+                        variant_id=variant.id, option_value_id=value.id
+                    )
+                )
+            variants[(product_name, value_en)] = variant
+
+    db.session.commit()
+    return variants
+
+
 def _apply_schedules(stores):
     """Put the real opening hours and the override on, last.
 
@@ -610,7 +685,7 @@ def _seed_coupons(stores):
     return created
 
 
-def _seed_orders(customers, stores, products):
+def _seed_orders(customers, stores, products, variants):
     """History across every status, plus the two orders that must be real.
 
     The plain history is written directly and backdated — a month of past
@@ -634,9 +709,15 @@ def _seed_orders(customers, stores, products):
     ) in seed_data.ORDER_SPECS:
         customer = customers[customer_index]
         store = stores[store_name]
-        line_items = [
-            (products[name], quantity) for name, quantity in line_item_specs
-        ]
+        line_items = []
+        for item_spec in line_item_specs:
+            name, quantity = item_spec[0], item_spec[1]
+            variant = (
+                variants[(name, item_spec[2])]
+                if len(item_spec) > 2
+                else None
+            )
+            line_items.append((products[name], quantity, variant))
         history[(customer_index, store_name)] = _seed_history_order(
             customer, store, status, line_items, days_ago
         )
@@ -742,15 +823,26 @@ def _seed_delivery_assignments(history):
 
 
 def _seed_history_order(customer, store, status, line_items, days_ago):
-    """A past order, written directly and backdated."""
+    """A past order, written directly and backdated.
+
+    ``line_items`` is ``[(product, quantity, variant_or_None)]``. A variant
+    line is priced and labelled exactly as a real checkout would (ADR
+    0035) — resolve_unit_price and the denormalised label — but, like every
+    other history order here, it does not decrement stock: the shelves
+    hold what the seed set, not what a month of invented orders would leave.
+    """
     from datetime import datetime, timedelta, timezone
+
+    from app.models.category import SUPPORTED_LANGUAGES
+    from app.services.order_service import resolve_unit_price
 
     address = customer.addresses[0] if customer.addresses else None
     delivery_city = address.city if address else store.location
     delivery_address = address.address_line if address else "Main Street"
 
     subtotal = sum(
-        float(product.price) * quantity for product, quantity in line_items
+        float(resolve_unit_price(product, variant)) * quantity
+        for product, quantity, variant in line_items
     )
 
     if delivery_city.strip().lower() == store.location.strip().lower():
@@ -776,13 +868,23 @@ def _seed_history_order(customer, store, status, line_items, days_ago):
     db.session.add(order)
     db.session.flush()
 
-    for product, quantity in line_items:
+    for product, quantity, variant in line_items:
+        labels = (
+            {
+                f"variant_label_{lang}": variant.label(lang)
+                for lang in SUPPORTED_LANGUAGES
+            }
+            if variant is not None
+            else {}
+        )
         db.session.add(
             OrderItem(
                 order_id=order.id,
                 product_id=product.id,
                 quantity=quantity,
-                unit_price=product.price,
+                unit_price=resolve_unit_price(product, variant),
+                variant_id=variant.id if variant is not None else None,
+                **labels,
             )
         )
 
@@ -943,9 +1045,10 @@ def seed(reset):
     db.session.commit()
 
     stores, products = _seed_stores(categories)
+    variants = _seed_product_variants(products)
     customers = _seed_customers(categories)
     coupons = _seed_coupons(stores)
-    history = _seed_orders(customers, stores, products)
+    history = _seed_orders(customers, stores, products, variants)
     _seed_delivery_assignments(history)
     _apply_schedules(stores)
     _seed_reviews(customers, products, stores)
