@@ -307,15 +307,20 @@ real on it. **Password for every account below: `Cedar!2026`**
 
 ### What the seed creates
 
-6 categories · 8 stores · 64 products · 60 opening-hours rows ·
-10 announcements · 13 social and contact links · 15 orders ·
-4 delivery assignments · 15 reviews · 6 coupons · 2 coupon redemptions ·
-6 addresses · 6 stated interests · notifications for three customers.
+6 categories · 8 stores · 65 products (2 with option axes and 5 variants
+between them) · 60 opening-hours rows · 10 announcements · 13 social and
+contact links · 15 orders · 4 delivery assignments · 17 reviews ·
+6 coupons · 2 coupon redemptions · 6 addresses · 6 stated interests ·
+notifications for three customers.
 
 Deliberately included so that every state renders somewhere:
 
 - **Products** — 5 out of stock, 8 on low stock, prices $3.50–$140.00, all
   trilingual, all with an image.
+- **Options and variants** (ADR 0035) — the Wool Winter Scarf has a Colour
+  axis (Black / Grey / Burgundy, one price, different stock per colour);
+  "Lebanese Extra Virgin Olive Oil" has a Size axis (1L and 2L at
+  different prices). Every other product stays single-price, single-stock.
 - **Announcements** — live, scheduled and expired, so all badge states appear.
 - **Orders** — pending, processing, delivered and cancelled; one spanning
   two stores; one with a coupon applied so the discount line is visible.
