@@ -1,8 +1,9 @@
 """One guarded wrapper around ``urllib.request.urlopen``.
 
-CedarLink makes exactly two outbound HTTP calls — the currency exchange-rate
-lookup and the Twilio SMS/WhatsApp API — and both use URLs that come from
-configuration or a hardcoded literal, never from a request. Even so, a bare
+CedarLink makes exactly one outbound HTTP call — the currency exchange-rate
+lookup — and its URL comes from configuration, never from a request. (The
+Twilio SMS/WhatsApp calls this also guarded were removed with SMS and
+WhatsApp verification in v1.) Even so, a bare
 ``urlopen`` will follow ``file://``, ``ftp://`` and other schemes if handed
 one, so this refuses anything that is not ``http``/``https`` before the call.
 

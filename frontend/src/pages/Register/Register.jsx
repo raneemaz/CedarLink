@@ -19,8 +19,10 @@ function Register() {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [verificationMethod, setVerificationMethod] =
-    useState("email");
+  // Email is the only verification channel (SMS and WhatsApp were removed
+  // in v1). The API still expects the field, so it is a constant rather
+  // than a choice the customer has to make.
+  const VERIFICATION_METHOD = "email";
 
   const [loading, setLoading] = useState(false);
 
@@ -31,8 +33,7 @@ function Register() {
       !email ||
       !phone ||
       !password ||
-      !confirmPassword ||
-      !verificationMethod
+      !confirmPassword
     ) {
       toast.error(t("register.errFillAll"));
       return;
@@ -54,7 +55,7 @@ function Register() {
         password,
         // The API's own allow-list is the real guard (customer | vendor only).
         role: role === "vendor" ? "vendor" : "customer",
-        verification_method: verificationMethod,
+        verification_method: VERIFICATION_METHOD,
       });
 
       if (!response.data?.challenge_token) {
@@ -200,23 +201,6 @@ function Register() {
           }
         />
 
-        <div className="mb-5">
-          <label className="mb-2 block text-small font-medium text-ink-body">
-            {t("register.verificationMethod")}
-          </label>
-
-          <select
-            value={verificationMethod}
-            onChange={(e) =>
-              setVerificationMethod(e.target.value)
-            }
-            className="w-full rounded-control border border-line-strong px-4 py-3 outline-none transition focus:border-cedar-ring focus:ring-2 focus:ring-cedar-tint"
-          >
-            <option value="email">{t("auth.method_email")}</option>
-            <option value="sms">{t("auth.method_sms")}</option>
-            <option value="whatsapp">{t("auth.method_whatsapp")}</option>
-          </select>
-        </div>
 
         <Input
           label={t("auth.password")}

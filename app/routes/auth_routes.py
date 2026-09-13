@@ -127,25 +127,86 @@ def register():
             "message": "Invalid role. Allowed roles: customer, vendor"
         }), 400
 
-    if verification_method not in [
-        "email",
-        "sms",
-        "whatsapp"
-    ]:
+    # Email is the only delivery channel (SMS and WhatsApp were removed
+    # in v1 -- see DELIVERY_METHODS in two_factor_service).
+    if verification_method not in ["email"]:
         return jsonify({
             "message": "Invalid verification method"
         }), 400
 
-    if User.query.filter_by(email=email).first():
+    existing = User.query.filter_by(email=email).first()
+
+    # An abandoned or failed signup must not lock an address forever. A
+    # row that was never verified belongs to nobody -- whoever holds that
+    # mailbox never proved they wanted the account, and the only way to
+    # prove it is another code. So re-registering an unverified address
+    # restarts the signup rather than being silently swallowed. Without
+    # this, a user who closes the tab before typing the code can never
+    # register again: every retry gets the decoy below, no email is sent,
+    # and no code they enter can work.
+    #
+    # A verified, deleted or suspended account still gets the decoy --
+    # those are the cases where a real account exists and confirming it
+    # would leak something. Both branches return the same status and the
+    # same body shape, so a client still cannot tell them apart.
+    retry_of_abandoned_signup = (
+        existing is not None
+        and not existing.is_verified
+        and existing.deleted_at is None
+        and existing.suspended_at is None
+    )
+
+    if existing is not None and not retry_of_abandoned_signup:
         # Do not confirm the address is taken — that is a free account
         # enumeration oracle (CL-10). Answer exactly as we would for a new
         # email, with a decoy challenge that verifies to nothing. Hash the
         # password anyway so the response time matches the real path.
         generate_password_hash(password)
+
+        # Server-side only. The response below is deliberately
+        # indistinguishable from a real registration, which is right for
+        # security and baffling in development: re-registering a test
+        # address returns 201 and a challenge_token, but no user, no
+        # challenge and no email exist, so every code entered is refused.
+        # The address is not logged -- a log of "who tried to register"
+        # would be the same enumeration oracle by another route.
+        logger.warning(
+            "Registration decoy served for an address that already exists "
+            "-- no user created, no challenge, no email sent"
+        )
+
         return jsonify({
             "message": "Registration successful. Verification is required.",
             "registration_verification_required": True,
             **decoy_registration_challenge(email, phone, verification_method),
+        }), 201
+
+    if retry_of_abandoned_signup:
+        # Overwrite the abandoned attempt with what was just typed --
+        # nothing on that row was ever confirmed, so there is nothing to
+        # protect. If the send fails, _create_delivery_challenge rolls
+        # these edits back along with the challenge.
+        existing.first_name = first_name.strip()
+        existing.last_name = last_name.strip()
+        existing.password = generate_password_hash(password)
+        existing.phone = phone.strip()
+        existing.role = role
+        existing.verification_method = verification_method
+
+        try:
+            challenge = create_registration_challenge(
+                existing,
+                verification_method,
+            )
+
+        except TwoFactorError as error:
+            db.session.rollback()
+            return error_response(error)
+
+        return jsonify({
+            "message": "Registration successful. Verification is required.",
+            "registration_verification_required": True,
+            **challenge
         }), 201
 
     new_user = User(
@@ -160,8 +221,17 @@ def register():
     )
 
     try:
+        # flush, not commit: the user needs an id for the challenge's
+        # user_id, but must not become durable until the code has
+        # actually been sent. _create_delivery_challenge commits the two
+        # together and rolls both back if the send fails -- committing
+        # here defeated that, so a failed send (SMTP down, bad
+        # credentials, a rejected recipient) left an unverified user
+        # squatting the email address, and the retry then hit the
+        # account-enumeration decoy path and appeared to succeed while
+        # verifying to nothing.
         db.session.add(new_user)
-        db.session.commit()
+        db.session.flush()
 
         challenge = create_registration_challenge(
             new_user,

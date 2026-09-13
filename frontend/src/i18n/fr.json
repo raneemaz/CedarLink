@@ -315,8 +315,6 @@
     "verifying": "Vérification…",
     "twoFactorTitle": "Authentification à deux facteurs",
     "method_email": "E-mail",
-    "method_sms": "SMS",
-    "method_whatsapp": "WhatsApp",
     "method_selected": "choisie",
     "genericEmail": "votre e-mail"
   },
@@ -1713,7 +1711,7 @@
       },
       "sharing": {
         "title": "Avec qui vos données sont partagées",
-        "body": "CedarLink ne vend pas de données personnelles et ne les partage pas à des fins publicitaires.\n\nLes données ne sont partagées que dans la mesure où le service l'exige : un vendeur reçoit le nom, le téléphone, l'adresse de livraison et les articles des commandes passées dans sa boutique ; un livreur reçoit l'adresse de livraison et, pendant qu'une livraison est en cours, un numéro de contact ; un administrateur peut voir les données de compte et de commande pour l'assistance et la modération.\n\nDeux services externes peuvent traiter des données pour le compte de CedarLink : un fournisseur d'e-mail achemine les messages de vérification et — seulement si vous choisissez la vérification par téléphone — un fournisseur de SMS achemine les codes vers votre numéro. La source des taux de change ne reçoit aucune donnée personnelle."
+        "body": "CedarLink ne vend pas de données personnelles et ne les partage pas à des fins publicitaires.\n\nLes données ne sont partagées que dans la mesure où le service l'exige : un vendeur reçoit le nom, le téléphone, l'adresse de livraison et les articles des commandes passées dans sa boutique ; un livreur reçoit l'adresse de livraison et, pendant qu'une livraison est en cours, un numéro de contact ; un administrateur peut voir les données de compte et de commande pour l'assistance et la modération.\n\nUn service externe peut traiter des données pour le compte de CedarLink : un fournisseur d'e-mail achemine les messages de vérification. La source des taux de change ne reçoit aucune donnée personnelle."
       },
       "deletion": {
         "title": "Ce que fait la suppression de votre compte",

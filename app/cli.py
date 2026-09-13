@@ -32,7 +32,7 @@ from app.models import (
     User,
 )
 
-VALID_VERIFICATION_METHODS = ("email", "sms", "whatsapp")
+VALID_VERIFICATION_METHODS = ("email",)
 MIN_ADMIN_PASSWORD_LENGTH = 8
 
 

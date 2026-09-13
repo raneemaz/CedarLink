@@ -11,8 +11,6 @@ import { useAuth } from "../../context/AuthContext";
 
 const METHOD_KEYS = {
   email: "auth.method_email",
-  sms: "auth.method_sms",
-  whatsapp: "auth.method_whatsapp",
 };
 
 function RegisterVerify() {

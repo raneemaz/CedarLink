@@ -49,6 +49,17 @@ class Config:
         "false"
     ).lower() == "true"
 
+    # The logo embedded in the verification email, shipped with the
+    # backend rather than read out of frontend/public: a backend-only
+    # deployment has no frontend tree, and the email must not depend on
+    # one. Embedded into the message itself as a CID part, because there
+    # is no public URL to link to yet and mail clients strip data: URIs.
+    # A missing file degrades to a logo-less email, never a failed send.
+    MAIL_LOGO_PATH = os.getenv(
+        "MAIL_LOGO_PATH",
+        os.path.join(BASE_DIR, "assets", "email", "cedarlink-logo.png"),
+    )
+
     SQLALCHEMY_DATABASE_URI = os.getenv(
         "DATABASE_URL",
         "sqlite:///cedarlink.db",

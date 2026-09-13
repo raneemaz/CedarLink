@@ -6,11 +6,9 @@ import hmac
 import secrets
 import smtplib
 import ssl
-import urllib.error
-import urllib.parse
-import urllib.request
 from datetime import datetime, timedelta, timezone
 from email.message import EmailMessage
+from email.utils import make_msgid
 
 import pyotp
 import qrcode
@@ -24,17 +22,22 @@ from app.extensions import db
 from app.models.two_factor_challenge import TwoFactorChallenge
 from app.models.two_factor_recovery_code import TwoFactorRecoveryCode
 from app.models.user import User
-from app.utils.safe_http import safe_urlopen
 
 EMAIL_METHOD = "email"
-SMS_METHOD = "sms"
-WHATSAPP_METHOD = "whatsapp"
 TOTP_METHOD = "totp"
 
+# Email is the only delivery channel. SMS and WhatsApp verification were
+# removed in v1: both need a provider account that in practice requires a
+# registered business entity, and delivery to Lebanese carriers through
+# international aggregators is unreliable even once that exists. The
+# coding plan's "cut permanently" table records the decision; the phone
+# number is still collected, and the UI says it is not verified.
+#
+# Kept as a set rather than collapsed into a bare == comparison: it is
+# what separates a "code was sent somewhere" challenge from a TOTP one
+# throughout this module, and it is the seam a future channel slots into.
 DELIVERY_METHODS = {
     EMAIL_METHOD,
-    SMS_METHOD,
-    WHATSAPP_METHOD,
 }
 
 SUPPORTED_METHODS = {
@@ -179,19 +182,150 @@ def _build_qr_code_data_url(provisioning_uri):
     return "data:image/png;base64," f"{encoded_image}"
 
 
-def _verification_message(code):
+def _challenge_ttl_minutes():
+    """The challenge lifetime in whole minutes, floored at 1 -- the text
+    and HTML halves of the email have to quote the same number."""
     ttl_seconds = current_app.config["TWO_FACTOR_CHALLENGE_TTL_SECONDS"]
 
-    ttl_minutes = max(
+    return max(
         1,
         ttl_seconds // 60,
     )
+
+
+def _verification_message(code):
+    ttl_minutes = _challenge_ttl_minutes()
 
     return (
         f"Your CedarLink verification code is: {code}\n\n"
         f"It expires in {ttl_minutes} minutes. "
         "Do not share this code with anyone."
     )
+
+
+def _load_email_logo():
+    """The CedarLink logo bytes for the verification email, or ``None``.
+
+    Never raises. A decorative asset is not allowed to stand between a
+    user and their account, so a missing or unreadable file degrades to a
+    logo-less email rather than failing the send.
+    """
+    path = current_app.config.get("MAIL_LOGO_PATH")
+
+    if not path:
+        return None
+
+    try:
+        with open(path, "rb") as logo_file:
+            return logo_file.read()
+
+    except OSError:
+        current_app.logger.warning(
+            "Verification email logo could not be read from %s -- "
+            "sending without it",
+            path,
+        )
+
+        return None
+
+
+# Hex, not the oklch() design tokens in frontend/src/index.css: mail
+# clients support neither oklch nor CSS custom properties, so these are
+# the literal equivalents of --color-brand (emerald-700) and friends.
+# Keep them in step with the token file by hand -- there is no build step
+# that can do it for an email.
+_MAIL_BRAND = "#047857"
+_MAIL_BRAND_SUBTLE = "#ecfdf5"
+_MAIL_BRAND_TINT = "#d1fae5"
+_MAIL_TEXT_PRIMARY = "#111827"
+_MAIL_TEXT_SECONDARY = "#4b5563"
+_MAIL_TEXT_MUTED = "#6b7280"
+_MAIL_SURFACE = "#f9fafb"
+_MAIL_BORDER = "#e5e7eb"
+
+_MAIL_FONT = (
+    "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, "
+    "Helvetica, Arial, sans-serif"
+)
+
+
+def _verification_email_html(code, ttl_minutes, logo_cid=None):
+    """The branded HTML alternative for the verification email.
+
+    Tables and inline styles on purpose: mail clients strip <style>
+    blocks unpredictably and flexbox/grid support is patchy, so this is
+    deliberately written like it is 2009. Nothing is loaded from the
+    network -- the only image is the CID part attached alongside.
+    """
+    if logo_cid:
+        # cid: references the part without its angle brackets.
+        logo_block = (
+            f'<img src="cid:{logo_cid[1:-1]}" width="56" alt="CedarLink" '
+            'style="display:block;width:56px;height:auto;border:0;'
+            'margin:0 auto;">'
+        )
+    else:
+        logo_block = ""
+
+    return f"""\
+<!doctype html>
+<html>
+  <body style="margin:0;padding:0;background-color:{_MAIL_SURFACE};">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
+           border="0" style="background-color:{_MAIL_SURFACE};
+           padding:32px 12px;">
+      <tr>
+        <td align="center">
+          <table role="presentation" cellpadding="0" cellspacing="0"
+                 border="0" width="100%"
+                 style="max-width:480px;background-color:#ffffff;
+                 border:1px solid {_MAIL_BORDER};border-radius:12px;">
+            <tr>
+              <td align="center" style="padding:32px 32px 0 32px;">
+                {logo_block}
+                <div style="font-family:{_MAIL_FONT};font-size:20px;
+                     font-weight:700;color:{_MAIL_BRAND};padding-top:12px;">
+                  CedarLink
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:24px 32px 0 32px;font-family:{_MAIL_FONT};
+                  font-size:15px;line-height:22px;
+                  color:{_MAIL_TEXT_SECONDARY};">
+                Use this code to verify your CedarLink account.
+              </td>
+            </tr>
+            <tr>
+              <td align="center" style="padding:20px 32px;">
+                <div style="font-family:'SFMono-Regular',Consolas,
+                     'Liberation Mono',Menlo,monospace;font-size:30px;
+                     font-weight:700;letter-spacing:8px;text-indent:8px;
+                     color:{_MAIL_TEXT_PRIMARY};
+                     background-color:{_MAIL_BRAND_SUBTLE};
+                     border:1px solid {_MAIL_BRAND_TINT};border-radius:8px;
+                     padding:16px 12px;">
+                  {code}
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:0 32px 24px 32px;font-family:{_MAIL_FONT};
+                  font-size:13px;line-height:20px;color:{_MAIL_TEXT_MUTED};">
+                It expires in {ttl_minutes} minutes. Do not share this code
+                with anyone &mdash; CedarLink will never ask you for it.
+              </td>
+            </tr>
+          </table>
+          <div style="font-family:{_MAIL_FONT};font-size:12px;
+               color:{_MAIL_TEXT_MUTED};padding-top:16px;">
+            If you did not request this, you can ignore this email.
+          </div>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>"""
 
 
 def send_email_verification_code(user, code):
@@ -205,7 +339,34 @@ def send_email_verification_code(user, code):
 
     message["To"] = user.email
 
+    # text/plain stays the body; the branded HTML is an alternative, so a
+    # plain-text client still gets a perfectly readable code.
     message.set_content(_verification_message(code))
+
+    logo_bytes = _load_email_logo()
+
+    logo_cid = make_msgid(domain="cedarlink.local") if logo_bytes else None
+
+    message.add_alternative(
+        _verification_email_html(
+            code,
+            _challenge_ttl_minutes(),
+            logo_cid,
+        ),
+        subtype="html",
+    )
+
+    if logo_bytes:
+        # add_related turns the HTML part into multipart/related so the
+        # logo travels inside the message: there is no public URL to link
+        # to yet, and mail clients strip data: URIs.
+        message.get_payload()[-1].add_related(
+            logo_bytes,
+            maintype="image",
+            subtype="png",
+            cid=logo_cid,
+            filename="cedarlink-logo.png",
+        )
 
     if current_app.config.get(
         "MAIL_SUPPRESS_SEND",
@@ -279,170 +440,9 @@ def send_email_verification_code(user, code):
         ) from error
 
 
-def _twilio_request(url, account_sid, auth_token, data):
-    encoded_data = urllib.parse.urlencode(data).encode("utf-8")
-
-    credentials = base64.b64encode(
-        f"{account_sid}:{auth_token}".encode()
-    ).decode("utf-8")
-
-    request_object = urllib.request.Request(
-        url,
-        data=encoded_data,
-        method="POST",
-        headers={
-            "Authorization": (f"Basic {credentials}"),
-            "Content-Type": ("application/x-www-form-urlencoded"),
-        },
-    )
-
-    try:
-        with safe_urlopen(request_object, timeout=15) as response:
-            return response.read()
-
-    except (
-        urllib.error.HTTPError,
-        urllib.error.URLError,
-        OSError,
-    ) as error:
-        raise TwoFactorConfigurationError(
-            "Unable to send the verification code. " "Please try again later."
-        ) from error
-
-
-def send_sms_verification_code(user, code):
-    if not user.phone:
-        raise TwoFactorError("A phone number is required for SMS verification")
-
-    if current_app.config.get(
-        "SMS_SUPPRESS_SEND",
-        False,
-    ):
-        current_app.logger.warning(
-            "Development SMS verification code " "for %s: %s",
-            user.phone,
-            code,
-        )
-
-        return
-
-    account_sid = current_app.config.get("TWILIO_ACCOUNT_SID")
-
-    auth_token = current_app.config.get("TWILIO_AUTH_TOKEN")
-
-    from_number = current_app.config.get("TWILIO_SMS_FROM")
-
-    if not all(
-        [
-            account_sid,
-            auth_token,
-            from_number,
-        ]
-    ):
-        raise TwoFactorConfigurationError(
-            "SMS verification requires "
-            "TWILIO_ACCOUNT_SID, "
-            "TWILIO_AUTH_TOKEN, and "
-            "TWILIO_SMS_FROM"
-        )
-
-    url = (
-        "https://api.twilio.com/2010-04-01/"
-        f"Accounts/{account_sid}/Messages.json"
-    )
-
-    _twilio_request(
-        url,
-        account_sid,
-        auth_token,
-        {
-            "To": user.phone,
-            "From": from_number,
-            "Body": _verification_message(code),
-        },
-    )
-
-
-def send_whatsapp_verification_code(user, code):
-    if not user.phone:
-        raise TwoFactorError(
-            "A phone number is required for WhatsApp verification"
-        )
-
-    if current_app.config.get(
-        "WHATSAPP_SUPPRESS_SEND",
-        False,
-    ):
-        current_app.logger.warning(
-            "Development WhatsApp verification code " "for %s: %s",
-            user.phone,
-            code,
-        )
-
-        return
-
-    account_sid = current_app.config.get("TWILIO_ACCOUNT_SID")
-
-    auth_token = current_app.config.get("TWILIO_AUTH_TOKEN")
-
-    from_number = current_app.config.get("TWILIO_WHATSAPP_FROM")
-
-    if not all(
-        [
-            account_sid,
-            auth_token,
-            from_number,
-        ]
-    ):
-        raise TwoFactorConfigurationError(
-            "WhatsApp verification requires "
-            "TWILIO_ACCOUNT_SID, "
-            "TWILIO_AUTH_TOKEN, and "
-            "TWILIO_WHATSAPP_FROM"
-        )
-
-    url = (
-        "https://api.twilio.com/2010-04-01/"
-        f"Accounts/{account_sid}/Messages.json"
-    )
-
-    _twilio_request(
-        url,
-        account_sid,
-        auth_token,
-        {
-            "To": (
-                user.phone
-                if user.phone.startswith("whatsapp:")
-                else f"whatsapp:{user.phone}"
-            ),
-            "From": (
-                from_number
-                if from_number.startswith("whatsapp:")
-                else f"whatsapp:{from_number}"
-            ),
-            "Body": _verification_message(code),
-        },
-    )
-
-
 def _send_verification_code(user, method, code):
     if method == EMAIL_METHOD:
         send_email_verification_code(
-            user,
-            code,
-        )
-        return
-
-    if method == SMS_METHOD:
-        send_sms_verification_code(
-            user,
-            code,
-        )
-        return
-
-    if method == WHATSAPP_METHOD:
-        send_whatsapp_verification_code(
             user,
             code,
         )
@@ -540,12 +540,6 @@ def _create_delivery_challenge(user, purpose, method):
     if method == EMAIL_METHOD:
         extra["email"] = user.email
 
-    if method in {
-        SMS_METHOD,
-        WHATSAPP_METHOD,
-    }:
-        extra["phone"] = user.phone
-
     return _challenge_payload(
         challenge,
         challenge_token,
@@ -599,8 +593,6 @@ def decoy_registration_challenge(email, phone, method):
 
     if method == EMAIL_METHOD:
         payload["email"] = email
-    elif method in {SMS_METHOD, WHATSAPP_METHOD}:
-        payload["phone"] = phone
 
     return payload
 
@@ -803,6 +795,13 @@ def create_login_challenge(user):
         "verification_method",
         None,
     )
+
+    # An account confirmed by SMS or WhatsApp before those channels were
+    # removed must not be locked out of its own login: the stored method
+    # can no longer deliver, so fall back to the email address the
+    # account already has. Registration verified the person either way.
+    if method and method not in DELIVERY_METHODS and method != TOTP_METHOD:
+        method = EMAIL_METHOD
 
     if method in DELIVERY_METHODS:
         return _create_delivery_challenge(

@@ -315,8 +315,6 @@
     "verifying": "Verifying...",
     "twoFactorTitle": "Two-Factor Authentication",
     "method_email": "Email",
-    "method_sms": "SMS",
-    "method_whatsapp": "WhatsApp",
     "method_selected": "selected",
     "genericEmail": "your email"
   },
@@ -1713,7 +1711,7 @@
       },
       "sharing": {
         "title": "Who your data is shared with",
-        "body": "CedarLink does not sell personal data and does not share it for advertising.\n\nData is shared only as the service requires: a vendor receives the name, phone, delivery address and items for orders placed with their store; a driver receives the delivery address and, while a delivery is in progress, a contact number; an administrator can see account and order data for support and moderation.\n\nTwo external services may process data on CedarLink's behalf: an email provider delivers verification messages, and — only if you choose phone verification — an SMS provider delivers codes to your number. The currency exchange-rate source receives no personal data."
+        "body": "CedarLink does not sell personal data and does not share it for advertising.\n\nData is shared only as the service requires: a vendor receives the name, phone, delivery address and items for orders placed with their store; a driver receives the delivery address and, while a delivery is in progress, a contact number; an administrator can see account and order data for support and moderation.\n\nOne external service may process data on CedarLink's behalf: an email provider delivers verification messages. The currency exchange-rate source receives no personal data."
       },
       "deletion": {
         "title": "What deleting your account does",
