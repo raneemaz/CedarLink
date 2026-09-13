@@ -3,7 +3,7 @@
 number_hash held an unsalted SHA-256 of the full card number. A PAN is
 low-entropy — a known BIN plus a Luhn check digit leaves on the order of
 a billion candidates — so that digest is reversible in seconds and the
-column stored the card number in practice, against the CLAUDE.md rule.
+column stored the card number in practice, against the project rule.
 
 The drop is deliberate destruction and it is the point: there is no
 backfill and the downgrade cannot restore the digests, only re-create an

@@ -32,7 +32,7 @@ def _backfill():
     """delivery_fee = total_price - goods + discount, per order.
 
     Done in Python rather than one UPDATE ... FROM so the arithmetic stays
-    Decimal end to end (CLAUDE.md: money is never float) and the SQL stays
+    Decimal end to end (money is never float) and the SQL stays
     portable — SQLite's two-argument MAX and Postgres's GREATEST are not
     the same function.
     """

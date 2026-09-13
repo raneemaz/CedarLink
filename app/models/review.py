@@ -4,7 +4,7 @@ from app.extensions import db
 
 
 def _utc_now():
-    """Timezone-aware UTC now — never ``datetime.utcnow`` (CLAUDE.md)."""
+    """Timezone-aware UTC now — never ``datetime.utcnow`` (convention)."""
     return datetime.now(timezone.utc)
 
 

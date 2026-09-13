@@ -1,6 +1,6 @@
 """product & category name/description translations (C.5)
 
-CLAUDE.md described Product / Category as carrying name_en / name_ar /
+Product / Category were documented as carrying name_en / name_ar /
 name_fr columns; they did not — each had a single `name`. This makes the
 schema match that description.
 

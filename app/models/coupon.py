@@ -4,7 +4,7 @@ from app.extensions import db
 
 
 def _utc_now():
-    """Timezone-aware UTC now — never ``datetime.utcnow`` (CLAUDE.md)."""
+    """Timezone-aware UTC now — never ``datetime.utcnow`` (convention)."""
     return datetime.now(timezone.utc)
 
 
@@ -83,7 +83,7 @@ class Coupon(db.Model):
 
     discount_type = db.Column(db.String(20), nullable=False)
 
-    # Money and percentages are both Decimal — never float (CLAUDE.md).
+    # Money and percentages are both Decimal — never float (convention).
     value = db.Column(db.Numeric(10, 2), nullable=False)
 
     min_order_total = db.Column(db.Numeric(10, 2), nullable=True)

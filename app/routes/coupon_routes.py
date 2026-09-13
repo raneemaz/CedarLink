@@ -304,7 +304,7 @@ def admin_list_coupons():
 
     ``store_name`` is added here rather than in ``Coupon.to_dict``: the
     base serializer is an allowlist, and this is the one caller that needs
-    to label somebody else's coupon (CLAUDE.md). Joined rather than looked
+    to label somebody else's coupon (convention). Joined rather than looked
     up per row — an administrator scanning the marketplace should not cost
     one query per coupon.
     """

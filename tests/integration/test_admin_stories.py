@@ -64,7 +64,7 @@ def test_approval_note_never_reaches_the_public_storefront(
     client, auth, admin, make_store
 ):
     """approval_note is admin-authored — the storefront must not carry it,
-    but the owner and admin must (CLAUDE.md: allowlist, not dump)."""
+    but the owner and admin must (allowlist, not dump)."""
     store = make_store(approval_status="approved")
     client.patch(
         f"/api/admin/stores/{store.id}/approve",
