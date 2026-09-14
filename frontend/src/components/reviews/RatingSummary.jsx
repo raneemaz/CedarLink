@@ -20,10 +20,17 @@ function RatingSummary({
 
   if (n === 0) {
     if (compact) return null;
+
+    // A block, not an inline span. Every caller passes a top margin in
+    // `className` (mt-2 / mt-3), and a vertical margin does nothing on an
+    // inline box -- so on a product with no reviews yet this line sat
+    // flush against the price above it, rendering as "$24.00No reviews
+    // yet". The n > 0 branch below was already a block, which is why the
+    // gap only ever went missing on unreviewed products.
     return (
-      <span className={`text-small text-ink-faint ${className}`}>
+      <div className={`text-small text-ink-faint ${className}`}>
         {t("reviews.none")}
-      </span>
+      </div>
     );
   }
 
