@@ -73,10 +73,17 @@ function AdminOverview() {
         </div>
       </Section>
 
+      {/* All five buckets the reports endpoint returns, not three. With
+          `pending` and `rejected` left out the numbers did not add up to
+          the number of stores on the platform, and a store waiting for
+          approval was invisible on the page an admin lands on -- the one
+          figure that should prompt them to act. */}
       <Section title={t("adminOverview.sectionStores")}>
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
+          <StatCard label={t("adminOverview.statPending")} value={reports.stores.pending} />
           <StatCard label={t("adminOverview.statActive")} value={reports.stores.active} />
           <StatCard label={t("adminOverview.statInactive")} value={reports.stores.inactive} />
+          <StatCard label={t("adminOverview.statRejected")} value={reports.stores.rejected} />
           <StatCard label={t("adminOverview.statRemoved")} value={reports.stores.removed} />
         </div>
       </Section>
