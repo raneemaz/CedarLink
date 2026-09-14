@@ -17,6 +17,7 @@ from datetime import datetime, timezone
 from app.extensions import db
 from app.models.delivery_assignment import DeliveryAssignment
 from app.services.notification_service import notify_delivery_update
+from app.utils.phone import PhoneNumberError, international_digits
 
 
 # The only forward moves. A status with no entry here is terminal.
@@ -64,6 +65,20 @@ def assign_driver(order, driver_name, driver_phone):
 
     if not driver_phone:
         raise DeliveryError("driver_phone is required")
+
+    # The same check a store's public contact number goes through. Until
+    # this was here the field only had to be non-empty, so "abc" saved --
+    # and this is the number the customer is shown to call while the
+    # delivery is in progress (ADR 0019), on a row that is written once
+    # and never updated. An unusable number was therefore permanent.
+    #
+    # Validated, not rewritten: the digits are checked and the vendor's
+    # own spacing is what gets stored, because this number is displayed
+    # to a person rather than dialled by the system.
+    try:
+        international_digits(driver_phone, "driver phone")
+    except PhoneNumberError as exc:
+        raise DeliveryError(str(exc)) from exc
 
     existing = DeliveryAssignment.query.filter_by(order_id=order.id).first()
 

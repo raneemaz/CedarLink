@@ -38,6 +38,7 @@ from app.utils.geo import (
     haversine_km,
     validate_coords,
 )
+from app.utils.phone import PhoneNumberError, international_digits
 
 BEIRUT = ZoneInfo("Asia/Beirut")
 
@@ -563,10 +564,6 @@ _EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s.]+(\.[^@\s.]+)+$")
 
 _MAX_VALUE_LENGTH = 500
 
-# 7 is the shortest national number in use anywhere; 15 is the E.164 ceiling.
-_MIN_PHONE_DIGITS = 7
-_MAX_PHONE_DIGITS = 15
-
 
 def _clean_input(raw):
     """Trim, and refuse anything with a control character in it.
@@ -661,37 +658,20 @@ def _normalize_profile(platform, value):
     return prefix + handle
 
 
-def _digits_of(value):
-    return "".join(ch for ch in value if ch.isdigit())
-
-
 def _international_digits(value, field):
     """A typed phone number as bare international digits.
 
-    Accepts ``+961 3 100 001``, ``00961-3-100-001`` and ``9613100001``. A
-    number that still starts with a trunk ``0`` after that is a national
-    format we cannot expand without guessing the country, so it is refused
-    with an explanation rather than stored as something undialable.
+    The digit rules live in ``app.utils.phone`` so that the delivery
+    service validates a driver's number exactly the same way; only the
+    scheme guard below is specific to a *link* field, where a value like
+    ``javascript:...`` would otherwise reach the browser.
     """
     _assert_safe_scheme(value)
 
-    if not re.match(r"^\+?[0-9 ()./-]+$", value):
-        raise SocialLinkError(f"'{value}' is not a valid {field} number")
-
-    digits = _digits_of(value)
-
-    if digits.startswith("00"):
-        digits = digits[2:]
-
-    if digits.startswith("0"):
-        raise SocialLinkError(
-            "Include the country code, for example +961 3 123 456"
-        )
-
-    if not _MIN_PHONE_DIGITS <= len(digits) <= _MAX_PHONE_DIGITS:
-        raise SocialLinkError(f"'{value}' is not a valid {field} number")
-
-    return digits
+    try:
+        return international_digits(value, field)
+    except PhoneNumberError as exc:
+        raise SocialLinkError(str(exc)) from exc
 
 
 def _normalize_website(value):

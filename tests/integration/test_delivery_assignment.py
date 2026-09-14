@@ -157,3 +157,72 @@ def test_disclosure_rule_is_the_service_answering_not_the_route(
     a.status = "delivered"
     assert not delivery_service.may_disclose_phone(a, is_vendor=False)
     assert delivery_service.may_disclose_phone(a, is_vendor=True)
+
+
+# The driver's number used to only have to be non-empty, so "abc" saved --
+# on a row that is written once and never updated, and that the customer
+# is shown in order to phone the driver. These pin the shared rule from
+# app/utils/phone.py to this caller.
+@pytest.mark.parametrize(
+    "bad",
+    [
+        "abc",
+        "+961 3 abc 222",
+        "03 111 222",  # national format, no country code
+        "12345",  # too short to be a real number
+    ],
+)
+def test_service_refuses_a_driver_phone_that_is_not_dialable(
+    db, make_order, bad
+):
+    order = make_order(status="processing")
+
+    with pytest.raises(delivery_service.DeliveryError):
+        delivery_service.assign_driver(order, "Ziad Ayoub", bad)
+
+    assert DeliveryAssignment.query.filter_by(order_id=order.id).count() == 0
+
+
+def test_a_national_number_is_refused_with_the_country_code_hint(
+    db, make_order
+):
+    order = make_order(status="processing")
+
+    with pytest.raises(delivery_service.DeliveryError) as exc:
+        delivery_service.assign_driver(order, "Ziad Ayoub", "03 111 222")
+
+    assert "country code" in exc.value.payload["error"]
+
+
+@pytest.mark.parametrize(
+    "typed",
+    ["+961 3 111 222", "00961-3-111-222", "9613111222"],
+)
+def test_the_number_is_stored_exactly_as_the_vendor_typed_it(
+    db, make_order, typed
+):
+    """Validated, not rewritten — a person reads this number off a screen."""
+    order = make_order(status="processing")
+
+    a = delivery_service.assign_driver(order, "Ziad Ayoub", typed)
+
+    assert a.driver_phone == typed
+
+
+def test_the_route_reports_a_bad_driver_phone_as_a_400(
+    client, auth, make_order
+):
+    order = make_order(status="processing")
+
+    res = client.post(
+        "/api/delivery/assignments",
+        json={
+            "order_id": order.id,
+            "driver_name": "Karim Aoun",
+            "driver_phone": "abc",
+        },
+        headers=auth(order.store.owner),
+    )
+
+    assert res.status_code == 400
+    assert DeliveryAssignment.query.filter_by(order_id=order.id).count() == 0
