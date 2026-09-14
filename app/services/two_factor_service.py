@@ -869,7 +869,26 @@ def _get_active_challenge(challenge_token, purpose):
 
 
 def _record_failed_attempt(challenge):
-    challenge.attempt_count += 1
+    """Count one wrong code, then lock the challenge if that was the last.
+
+    The increment is a conditional UPDATE rather than ``+= 1`` in Python,
+    for the same reason the stock decrement is (CL-06): two wrong codes
+    submitted at the same moment both read the old count and both write
+    old+1, so one attempt vanishes and the attacker gets a free guess.
+    ``UPDATE ... SET attempt_count = attempt_count + 1`` is atomic, so
+    every attempt is counted exactly once however many arrive together.
+
+    The row is then expired and re-read inside the same transaction, so
+    the limit is judged on the true post-increment count.
+    """
+    db.session.execute(
+        update(TwoFactorChallenge)
+        .where(TwoFactorChallenge.id == challenge.id)
+        .values(attempt_count=TwoFactorChallenge.attempt_count + 1)
+        .execution_options(synchronize_session=False)
+    )
+
+    db.session.expire(challenge, ["attempt_count"])
 
     if (
         challenge.attempt_count
@@ -1142,6 +1161,10 @@ def _resend_delivery_code(challenge_token, purpose):
 
     cooldown = current_app.config["TWO_FACTOR_EMAIL_RESEND_COOLDOWN_SECONDS"]
 
+    # Report the cooldown before doing any work, so the caller still gets
+    # a retry_after to show. This read is advisory only -- the binding
+    # check is the conditional UPDATE below, which re-tests both the
+    # cooldown and the send limit inside the statement.
     if challenge.last_sent_at:
         elapsed_seconds = (now - challenge.last_sent_at).total_seconds()
 
@@ -1159,15 +1182,46 @@ def _resend_delivery_code(challenge_token, purpose):
 
     code = _generate_verification_code()
 
-    challenge.code_hash = generate_password_hash(code)
+    # Claim the send in one conditional statement, the way the checkout
+    # claims stock (CL-06) and a coupon use (ADR 0021). Read-then-write
+    # let two simultaneous resends both pass the checks above and both
+    # send, so a 3-send limit delivered 4 codes and the cooldown could be
+    # skipped entirely by firing the requests together. Everything the
+    # resend changes -- the new code's hash, the fresh expiry, the reset
+    # attempt counter -- moves in the same UPDATE, so the loser of a race
+    # cannot overwrite the winner's code with one that was never emailed.
+    cutoff = now - timedelta(seconds=cooldown)
 
-    challenge.expires_at = _challenge_expiration()
+    claimed = db.session.execute(
+        update(TwoFactorChallenge)
+        .where(
+            TwoFactorChallenge.id == challenge.id,
+            TwoFactorChallenge.send_count < current_app.config[
+                "TWO_FACTOR_MAX_EMAIL_SENDS"
+            ],
+            or_(
+                TwoFactorChallenge.last_sent_at.is_(None),
+                TwoFactorChallenge.last_sent_at <= cutoff,
+            ),
+        )
+        .values(
+            code_hash=generate_password_hash(code),
+            expires_at=_challenge_expiration(),
+            attempt_count=0,
+            send_count=TwoFactorChallenge.send_count + 1,
+            last_sent_at=now,
+        )
+        .execution_options(synchronize_session=False)
+    )
 
-    challenge.attempt_count = 0
+    if claimed.rowcount == 0:
+        db.session.rollback()
+        raise TwoFactorRateLimitError(
+            "Too many verification codes requested"
+        )
 
-    challenge.send_count += 1
-
-    challenge.last_sent_at = now
+    # The in-memory row still holds the pre-UPDATE values.
+    db.session.expire(challenge)
 
     try:
         _send_verification_code(

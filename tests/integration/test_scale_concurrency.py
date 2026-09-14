@@ -509,3 +509,162 @@ def test_50_redemptions_by_one_customer_of_a_per_user_limit_1_coupon(scale_app):
         coupon_id=cid, user_id=uid
     ).count() == 1
     assert _db.session.get(Coupon, cid).used_count == 1
+
+
+def test_50_wrong_codes_are_all_counted(scale_app, monkeypatch):
+    """Every simultaneous wrong guess is counted exactly once.
+
+    ``attempt_count`` was ``+= 1`` in Python: fifty guesses arriving
+    together all read the same old value and all wrote old+1, so most of
+    the attempts vanished and the max-attempts lock never tripped. The
+    increment is now a conditional UPDATE, so the count is exact however
+    many arrive at once — the same guard the stock decrement uses.
+    """
+    user = _user()
+    uid = user.id
+    raw = "resend-attempts-token"
+
+    _db.session.add(
+        TwoFactorChallenge(
+            user_id=uid,
+            token_hash=two_factor_service._token_hash(raw),
+            purpose=two_factor_service.REGISTRATION_PURPOSE,
+            method="email",
+            code_hash=generate_password_hash("000000", method=_FAST_HASH),
+            expires_at=datetime.utcnow() + timedelta(minutes=10),
+            send_count=1,
+        )
+    )
+    _db.session.commit()
+
+    gate = _barrier(N)
+
+    def always_wrong(*_a, **_k):
+        _wait(gate)
+        return False
+
+    monkeypatch.setattr(
+        two_factor_service, "_verify_challenge_code", always_wrong
+    )
+
+    def do(_i):
+        with scale_app.app_context():
+            try:
+                two_factor_service.verify_registration_challenge(
+                    raw, "999999"
+                )
+            except Exception:  # noqa: BLE001 - the failure is the point
+                pass
+
+    _run(N, do)
+
+    _db.session.expire_all()
+    challenge = TwoFactorChallenge.query.filter_by(user_id=uid).one()
+    assert challenge.attempt_count == N, (
+        f"{N - challenge.attempt_count} attempts were lost to the race"
+    )
+    assert challenge.consumed_at is not None, "the challenge should be locked"
+
+
+def _resend_challenge(uid, raw, send_count=1, last_sent_ago=timedelta(hours=1)):
+    _db.session.add(
+        TwoFactorChallenge(
+            user_id=uid,
+            token_hash=two_factor_service._token_hash(raw),
+            purpose=two_factor_service.REGISTRATION_PURPOSE,
+            method="email",
+            code_hash=generate_password_hash("000000", method=_FAST_HASH),
+            expires_at=datetime.utcnow() + timedelta(minutes=10),
+            send_count=send_count,
+            last_sent_at=datetime.utcnow() - last_sent_ago,
+        )
+    )
+    _db.session.commit()
+
+
+def _race_resends(scale_app, monkeypatch, raw):
+    """Fire N resends of one challenge, all released together."""
+    sent = []
+    gate = _barrier(N)
+
+    def counting_send(*_a, **_k):
+        sent.append(1)
+
+    def synced_code():
+        _wait(gate)
+        return "123456"
+
+    monkeypatch.setattr(
+        two_factor_service, "_send_verification_code", counting_send
+    )
+    monkeypatch.setattr(
+        two_factor_service, "_generate_verification_code", synced_code
+    )
+
+    outcomes = []
+
+    def do(_i):
+        with scale_app.app_context():
+            try:
+                two_factor_service.resend_registration_code(raw)
+                outcomes.append("sent")
+            except Exception as exc:  # noqa: BLE001 - outcome is the data
+                outcomes.append(type(exc).__name__)
+
+    _run(N, do)
+    return outcomes, sent
+
+
+def test_50_simultaneous_resends_send_one_email(scale_app, monkeypatch):
+    """The resend cooldown holds when every request arrives at once.
+
+    The cooldown was read-then-written: fifty resends fired together all
+    read the same old ``last_sent_at``, all decided the window had passed,
+    and all sent. One request per cooldown is the whole point of the
+    control, so that is fifty emails from a guard meant to allow one.
+    The window is now re-tested inside the claiming UPDATE.
+    """
+    user = _user()
+    uid = user.id
+    raw = "cooldown-race-token"
+    _resend_challenge(uid, raw)
+
+    outcomes, sent = _race_resends(scale_app, monkeypatch, raw)
+
+    assert outcomes.count("sent") == 1, outcomes.count("sent")
+    assert len(sent) == 1, f"{len(sent)} emails escaped a one-per-cooldown gate"
+
+    _db.session.expire_all()
+    challenge = TwoFactorChallenge.query.filter_by(user_id=uid).one()
+    assert challenge.send_count == 2
+
+
+def test_50_simultaneous_resends_respect_the_send_limit(
+    scale_app, monkeypatch
+):
+    """With the cooldown out of the way, the send cap is still exact.
+
+    A negative cooldown makes that guard always pass, so the only thing
+    left holding the line is ``send_count < TWO_FACTOR_MAX_EMAIL_SENDS``
+    -- which is the condition being tested. Read-then-write let all fifty
+    through; as a WHERE clause it admits exactly the remaining allowance.
+    """
+    monkeypatch.setitem(
+        scale_app.config, "TWO_FACTOR_EMAIL_RESEND_COOLDOWN_SECONDS", -1
+    )
+    limit = scale_app.config["TWO_FACTOR_MAX_EMAIL_SENDS"]
+
+    user = _user()
+    uid = user.id
+    raw = "send-limit-race-token"
+    _resend_challenge(uid, raw, send_count=1)
+
+    outcomes, sent = _race_resends(scale_app, monkeypatch, raw)
+
+    remaining = limit - 1  # the challenge was created having sent one
+    assert outcomes.count("sent") == remaining, outcomes.count("sent")
+    assert len(sent) == remaining, f"{len(sent)} emails for a {limit} cap"
+
+    _db.session.expire_all()
+    challenge = TwoFactorChallenge.query.filter_by(user_id=uid).one()
+    assert challenge.send_count == limit
