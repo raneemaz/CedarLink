@@ -40,6 +40,7 @@ class Review(db.Model):
 
     __tablename__ = "reviews"
     __table_args__ = (
+        db.Index("ix_reviews_order_id", "order_id"),
         db.CheckConstraint(
             "(product_id IS NOT NULL AND store_id IS NULL) OR "
             "(product_id IS NULL AND store_id IS NOT NULL)",

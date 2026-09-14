@@ -27,6 +27,7 @@ class ReviewReport(db.Model):
 
     __tablename__ = "review_reports"
     __table_args__ = (
+        db.Index("ix_review_reports_user_id", "user_id"),
         db.UniqueConstraint(
             "review_id", "user_id", name="uq_review_reports_review_user"
         ),

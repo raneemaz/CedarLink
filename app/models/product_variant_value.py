@@ -16,6 +16,7 @@ class ProductVariantValue(db.Model):
 
     __tablename__ = "product_variant_values"
     __table_args__ = (
+        db.Index("ix_product_variant_values_option_value_id", "option_value_id"),
         db.UniqueConstraint(
             "variant_id",
             "option_value_id",

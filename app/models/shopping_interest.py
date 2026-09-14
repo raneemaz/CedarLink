@@ -17,6 +17,7 @@ class ShoppingInterest(db.Model):
 
     __tablename__ = "shopping_interests"
     __table_args__ = (
+        db.Index("ix_shopping_interests_category_id", "category_id"),
         db.UniqueConstraint(
             "preferences_id", "category_id",
             name="uq_shopping_interests_preferences_category",

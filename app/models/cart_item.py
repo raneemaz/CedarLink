@@ -4,6 +4,8 @@ from app.extensions import db
 class CartItem(db.Model):
     __tablename__ = "cart_items"
     __table_args__ = (
+        db.Index("ix_cart_items_cart_id", "cart_id"),
+        db.Index("ix_cart_items_product_id", "product_id"),
         db.Index("ix_cart_items_variant_id", "variant_id"),
     )
 

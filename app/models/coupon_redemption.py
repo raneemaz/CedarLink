@@ -34,6 +34,8 @@ class CouponRedemption(db.Model):
 
     __tablename__ = "coupon_redemptions"
     __table_args__ = (
+        db.Index("ix_coupon_redemptions_order_id", "order_id"),
+        db.Index("ix_coupon_redemptions_user_id", "user_id"),
         # The per-user limit counts rows here for one (coupon, user) pair;
         # this is the index that read serves.
         db.Index(

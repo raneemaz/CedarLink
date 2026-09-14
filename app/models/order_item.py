@@ -4,6 +4,7 @@ from app.extensions import db
 class OrderItem(db.Model):
     __tablename__ = "order_items"
     __table_args__ = (
+        db.Index("ix_order_items_product_id", "product_id"),
         # The dashboard's goods/units figures JOIN order_items to orders;
         # without this the join scans all order_items (ADR 0032 F1).
         db.Index("ix_order_items_order_id", "order_id"),

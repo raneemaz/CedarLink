@@ -5,6 +5,9 @@ from app.extensions import db
 
 class Address(db.Model):
     __tablename__ = "addresses"
+    __table_args__ = (
+        db.Index("ix_addresses_user_id", "user_id"),
+    )
 
     id = db.Column(
         db.Integer,

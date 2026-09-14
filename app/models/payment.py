@@ -5,6 +5,9 @@ from app.extensions import db
 
 class Payment(db.Model):
     __tablename__ = "payments"
+    __table_args__ = (
+        db.Index("ix_payments_payment_method_id", "payment_method_id"),
+    )
 
     id = db.Column(
         db.Integer,
