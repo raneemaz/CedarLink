@@ -479,3 +479,31 @@ export const lebanonLocations = [
     ],
   },
 ];
+
+/**
+ * Every city in the country, flattened, de-duplicated and sorted.
+ *
+ * This is the single vocabulary for *one* pair of fields: a store's
+ * `location` and a customer's delivery city. The backend decides the
+ * delivery fee by comparing those two as strings
+ * (`order_service.assert_...` / the `inside_city` branch), so they have
+ * to be drawn from the same list or the comparison can never be true.
+ *
+ * It used not to be. The vendor form offered these city names while
+ * checkout offered the 25 district names, and only 17 of those districts
+ * happen to also be a city — so a store in Amchit, Jounieh or Zouk
+ * Mosbeh charged every customer the outside-city fee, including one
+ * standing in the same town. Seeded data hid it: "Saida Electronics" is
+ * in Saida and checkout only ever offered "Sidon".
+ *
+ * De-duplicated because eight names appear under more than one district
+ * (Batroun is in both Matn and Batroun; Bint Jbeil in both Tyre and Bint
+ * Jbeil), and a <select> must not offer the same value twice.
+ */
+export const lebanonCities = Array.from(
+  new Set(
+    lebanonLocations.flatMap((governorate) =>
+      governorate.districts.flatMap((district) => district.cities),
+    ),
+  ),
+).sort((a, b) => a.localeCompare(b));

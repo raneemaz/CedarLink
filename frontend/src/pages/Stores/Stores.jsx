@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 
 import api from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
-import { lebanonLocations } from "../../data/lebanonLocations";
+import { lebanonCities } from "../../data/lebanonLocations";
 import StoreStatusBadge from "../../components/store/StoreStatusBadge";
 import RatingSummary from "../../components/reviews/RatingSummary";
 import NearbySearch from "./NearbySearch";
@@ -14,14 +14,6 @@ import { formattingLocale } from "../../utils/helpers";
 
 const PAGE_SIZE = 12;
 const DEFAULT_RADIUS_KM = 5;
-
-const CITY_OPTIONS = Array.from(
-  new Set(
-    lebanonLocations.flatMap((governorate) =>
-      governorate.districts.flatMap((district) => district.cities),
-    ),
-  ),
-).sort((a, b) => a.localeCompare(b));
 
 function Stores() {
   const { t, i18n } = useTranslation();
@@ -193,7 +185,7 @@ function Stores() {
               className="rounded-control border border-line-strong px-3 py-2 outline-none focus:border-cedar-ring"
             >
               <option value="">{t("storesPage.allLocations")}</option>
-              {CITY_OPTIONS.map((city) => (
+              {lebanonCities.map((city) => (
                 <option key={city} value={city}>
                   {city}
                 </option>

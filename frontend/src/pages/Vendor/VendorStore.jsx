@@ -5,24 +5,13 @@ import { toast } from "react-toastify";
 import api from "../../services/api";
 import Button from "../../components/common/Button/Button";
 import Toggle from "../../components/common/Toggle/Toggle";
-import { lebanonLocations } from "../../data/lebanonLocations";
+import { lebanonCities } from "../../data/lebanonLocations";
 import StoreHoursEditor from "./StoreHoursEditor";
 import StoreOverridePanel from "./StoreOverridePanel";
 import StoreClosedOrdersPanel from "./StoreClosedOrdersPanel";
 import StoreAnnouncementsManager from "./StoreAnnouncementsManager";
 import StoreLocationSection from "./StoreLocationSection";
 import StoreSocialLinksSection from "./StoreSocialLinksSection";
-
-// Flattened, de-duplicated list of Lebanese cities. The store location must
-// come from the same vocabulary as customer addresses — delivery-fee logic
-// matches a customer's delivery_city against store.location by string.
-const CITY_OPTIONS = Array.from(
-  new Set(
-    lebanonLocations.flatMap((governorate) =>
-      governorate.districts.flatMap((district) => district.cities),
-    ),
-  ),
-).sort((a, b) => a.localeCompare(b));
 
 export const fieldClass =
   "w-full rounded-control border border-line-strong px-4 py-3 text-small outline-none " +
@@ -164,7 +153,7 @@ function StoreDetailFields({ values, onChange }) {
           className={fieldClass}
         >
           <option value="">{t("vendorStore.selectCity")}</option>
-          {CITY_OPTIONS.map((city) => (
+          {lebanonCities.map((city) => (
             <option key={city} value={city}>
               {city}
             </option>

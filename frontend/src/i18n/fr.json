@@ -723,7 +723,6 @@
     "addressPlaceholder": "Saisissez votre adresse de livraison complète",
     "city": "Ville",
     "selectCity": "Sélectionnez votre ville",
-    "cityOption": "{{governorate}} - {{district}}",
     "paymentMethod": "Mode de paiement",
     "manageCards": "Gérer les cartes",
     "loadingMethods": "Chargement des modes de paiement…",
@@ -1218,7 +1217,9 @@
     "toastUpdated": "Produit mis à jour.",
     "errNameEn": "Un nom en anglais est obligatoire.",
     "nameLangLabel": "Nom ({{lang}})",
-    "descriptionLangLabel": "Description ({{lang}})"
+    "descriptionLangLabel": "Description ({{lang}})",
+    "infoSectionTitle": "Détails du produit",
+    "partialSaveHint": "Le produit a été créé, mais tout n'a pas été enregistré sur cette page. Terminez ou réessayez le reste ici."
   },
   "productImages": {
     "sectionTitle": "Images du produit",

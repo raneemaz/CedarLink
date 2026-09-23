@@ -723,7 +723,6 @@
     "addressPlaceholder": "Enter your full delivery address",
     "city": "City",
     "selectCity": "Select your city",
-    "cityOption": "{{governorate}} - {{district}}",
     "paymentMethod": "Payment Method",
     "manageCards": "Manage cards",
     "loadingMethods": "Loading payment methods...",
@@ -1218,7 +1217,9 @@
     "toastUpdated": "Product updated.",
     "errNameEn": "An English name is required.",
     "nameLangLabel": "Name ({{lang}})",
-    "descriptionLangLabel": "Description ({{lang}})"
+    "descriptionLangLabel": "Description ({{lang}})",
+    "infoSectionTitle": "Product details",
+    "partialSaveHint": "The product was created, but not everything on this page made it in. Finish or retry the rest here."
   },
   "productImages": {
     "sectionTitle": "Product images",

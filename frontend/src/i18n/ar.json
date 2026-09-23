@@ -759,7 +759,6 @@
     "addressPlaceholder": "أدخل عنوان التوصيل الكامل",
     "city": "المدينة",
     "selectCity": "اختر مدينتك",
-    "cityOption": "{{governorate}} - {{district}}",
     "paymentMethod": "طريقة الدفع",
     "manageCards": "إدارة البطاقات",
     "loadingMethods": "جارٍ تحميل طرق الدفع…",
@@ -1258,7 +1257,9 @@
     "toastUpdated": "تم تحديث المنتج.",
     "errNameEn": "الاسم بالإنجليزية مطلوب.",
     "nameLangLabel": "الاسم ({{lang}})",
-    "descriptionLangLabel": "الوصف ({{lang}})"
+    "descriptionLangLabel": "الوصف ({{lang}})",
+    "infoSectionTitle": "تفاصيل المنتج",
+    "partialSaveHint": "تم إنشاء المنتج، لكن لم يتم حفظ كل شيء في هذه الصفحة. أكمل الباقي أو أعد المحاولة من هنا."
   },
   "productImages": {
     "sectionTitle": "صور المنتج",

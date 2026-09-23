@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import BackLink from "../../components/common/BackLink";
 import api from "../../services/api";
 import CouponField from "../../components/coupon/CouponField";
-import { lebanonLocations } from "../../data/lebanonLocations";
+import { lebanonCities } from "../../data/lebanonLocations";
 import { localizedField } from "../../utils/localize";
 
 function Checkout() {
@@ -66,23 +66,17 @@ function Checkout() {
       }
     };
 
-    // Return an exact district name from the checkout city <select> that
-    // corresponds to `raw` (a stored city or district string).
+    // Return the option from the city select that `raw` names, or "" when
+    // nothing in the list matches. `raw` is whatever was stored -- a saved
+    // address's city is a free-text field, so it may be a neighbourhood,
+    // a misspelling, or blank. An unmatched value simply leaves the
+    // select on its placeholder for the customer to answer themselves.
     const matchCity = (raw) => {
       if (!raw) return "";
       const lower = String(raw).trim().toLowerCase();
-      for (const location of lebanonLocations) {
-        for (const district of location.districts) {
-          const name = district.name.toLowerCase();
-          if (
-            name === lower ||
-            district.cities.some((c) => c.toLowerCase() === lower)
-          ) {
-            return district.name;
-          }
-        }
-      }
-      return "";
+      return (
+        lebanonCities.find((city) => city.toLowerCase() === lower) || ""
+      );
     };
 
     const load = async () => {
@@ -354,19 +348,17 @@ function Checkout() {
                 >
                   <option value="">{t("checkout.selectCity")}</option>
 
-                  {lebanonLocations.flatMap((location) =>
-                    location.districts.map((district) => (
-                      <option
-                        key={`${location.governorate}-${district.name}`}
-                        value={district.name}
-                      >
-                        {t("checkout.cityOption", {
-                          governorate: location.governorate,
-                          district: district.name,
-                        })}
-                      </option>
-                    )),
-                  )}
+                  {/* Cities, not districts. This value is compared to
+                      the store's `location` by the backend to decide
+                      between the inside-city and outside-city delivery
+                      fee, and the vendor picks that location from this
+                      same list -- so both sides have to be drawn from
+                      it or the comparison can never be true. */}
+                  {lebanonCities.map((city) => (
+                    <option key={city} value={city}>
+                      {city}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>

@@ -116,6 +116,27 @@ def rating_fields(entity):
     }
 
 
+def sellable_stock(product):
+    """How many units a customer could actually buy right now.
+
+    ADR 0035: once a product has active variants, ``products.stock`` stops
+    being consulted for purchasing it — the variant rows are authoritative.
+    The card went on reporting the column anyway, so a product whose stock
+    had moved onto its variants advertised 0 while its units sat behind the
+    option picker, and the "in stock only" filter hid it from the grid
+    outright. Retired variants are excluded because they cannot be bought.
+
+    Reads ``product.variants``, which the listing and the home sections
+    both eager-load, so this adds no query.
+    """
+    active = [variant for variant in product.variants if variant.is_active]
+
+    if active:
+        return sum(variant.stock for variant in active)
+
+    return product.stock
+
+
 def product_card(product):
     """One product as the storefront grid renders it."""
     first_image = product.images[0].image_url if product.images else None
@@ -123,7 +144,7 @@ def product_card(product):
     return {
         "id": product.id,
         "price": float(product.price),
-        "stock": product.stock,
+        "stock": sellable_stock(product),
         "store_id": product.store_id,
         "store_name": product.store.name,
         "category_id": product.category_id,

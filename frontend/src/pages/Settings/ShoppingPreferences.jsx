@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 
 import api from "../../services/api";
 import Toggle from "../../components/common/Toggle/Toggle";
-import { lebanonLocations } from "../../data/lebanonLocations";
+import { lebanonCities } from "../../data/lebanonLocations";
 import BackLink from "../../components/common/BackLink";
 import { localizedField } from "../../utils/localize";
 
@@ -269,28 +269,16 @@ function ShoppingPreferences() {
                     <option value="">
                       {t("shoppingPreferences.cityNone")}
                     </option>
-                    {/* Districts, not governorates. The checkout city
-                        dropdown is built from district names and its
-                        `matchCity` resolves a stored district or town
-                        into one of them -- a governorate matches
-                        neither, so a preference saved here used to
-                        silently fail to pre-select anything at
-                        checkout for five of the eight governorates.
-                        Same option label as checkout, deliberately:
-                        it is the same list, so it reads the same. */}
-                    {lebanonLocations.flatMap((location) =>
-                      location.districts.map((district) => (
-                        <option
-                          key={`${location.governorate}-${district.name}`}
-                          value={district.name}
-                        >
-                          {t("checkout.cityOption", {
-                            governorate: location.governorate,
-                            district: district.name,
-                          })}
-                        </option>
-                      )),
-                    )}
+                    {/* The same city list checkout offers, so a saved
+                        preference can actually pre-select there. It
+                        used to offer the eight governorate names, which
+                        match nothing in that select -- the preference
+                        was stored and then silently ignored. */}
+                    {lebanonCities.map((city) => (
+                      <option key={city} value={city}>
+                        {city}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>

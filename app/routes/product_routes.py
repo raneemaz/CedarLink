@@ -5,9 +5,10 @@ from app.extensions import db
 from app.models.product import Product
 from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
 from app.models.store import Store
-from sqlalchemy import or_
+from sqlalchemy import case, func, or_, select
 from sqlalchemy.orm import selectinload
 from app.models.category import Category
+from app.models.product_variant import ProductVariant
 from app.services import shopping_preferences_service
 from app.utils.file_utils import product_image_url
 from app.utils.product_payload import (
@@ -28,6 +29,46 @@ _LANGUAGES = ("en", "ar", "fr")
 
 # Shared with the home page's sections, which render the same card.
 _translation_fields = translation_fields
+
+
+def _sellable_stock_clause():
+    """``sellable_stock`` from app.utils.product_payload, in SQL.
+
+    The listing has to filter on the same number the card displays, or
+    "in stock only" hides a product the grid is about to advertise as
+    available — which is exactly what it did while this read
+    ``products.stock`` and the card read the variants (ADR 0035).
+
+    Correlated subqueries rather than a join: a join would multiply the
+    product rows by their variants and break both the pagination count
+    and the one-query-per-page guarantee that
+    tests/integration/test_product_listing_query_count.py pins.
+    """
+    active_variants = (
+        select(ProductVariant.id)
+        .where(
+            ProductVariant.product_id == Product.id,
+            ProductVariant.is_active.is_(True),
+        )
+        .correlate(Product)
+    )
+
+    active_variant_stock = (
+        select(func.coalesce(func.sum(ProductVariant.stock), 0))
+        .where(
+            ProductVariant.product_id == Product.id,
+            ProductVariant.is_active.is_(True),
+        )
+        .correlate(Product)
+        .scalar_subquery()
+    )
+
+    return case(
+        (active_variants.exists(), active_variant_stock),
+        else_=Product.stock,
+    )
+
+
 _rating_fields = rating_fields
 
 
@@ -243,9 +284,9 @@ def get_products():
     in_stock_param = request.args.get("in_stock", "").lower()
 
     if in_stock_param == "true":
-        query = query.filter(Product.stock > 0)
+        query = query.filter(_sellable_stock_clause() > 0)
     elif in_stock_param == "" and _hides_out_of_stock():
-        query = query.filter(Product.stock > 0)
+        query = query.filter(_sellable_stock_clause() > 0)
     if min_price is not None and max_price is not None:
         if min_price > max_price:
             return jsonify({
