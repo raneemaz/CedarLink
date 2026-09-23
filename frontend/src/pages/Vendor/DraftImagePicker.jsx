@@ -27,7 +27,9 @@ function DraftImagePicker({ images, onChange }) {
   // Object URLs are only good for this tab's lifetime -- release them when
   // the picker (and with it, the add-product page) goes away.
   const imagesRef = useRef(images);
-  imagesRef.current = images;
+  useEffect(() => {
+    imagesRef.current = images;
+  }, [images]);
   useEffect(() => {
     return () => {
       imagesRef.current.forEach((image) => URL.revokeObjectURL(image.previewUrl));
