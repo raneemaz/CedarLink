@@ -9,6 +9,10 @@ from app.services.order_service import OrderError
 from app.utils.db_retry import with_write_retry
 from app.utils.decorators import role_required
 from app.utils.errors import internal_error
+from app.utils.idempotency import IdempotencyInProgress
+from app.utils.idempotency import begin as idempotency_begin
+from app.utils.idempotency import fail as idempotency_fail
+from app.utils.idempotency import finish as idempotency_finish
 from app.utils.rate_limit import user_or_ip_key
 
 
@@ -94,6 +98,30 @@ def checkout():
     if not delivery_city or not delivery_city.strip():
         return jsonify({"error": "Delivery city is required"}), 400
 
+    # Idempotency key: the client attaches one per checkout attempt (the
+    # same key on every retry of that attempt) so that a double-click on
+    # "Place order", or a resend after a timeout that hid a real success
+    # from the client, replays the first attempt's response instead of
+    # placing a second order and taking a second payment. Optional so
+    # callers that do not send one (existing tests, other clients) get
+    # the old, unprotected behaviour unchanged.
+    idempotency_key = request.headers.get("Idempotency-Key")
+
+    if idempotency_key:
+        try:
+            cached = idempotency_begin(user_id, "checkout", idempotency_key)
+        except IdempotencyInProgress:
+            return jsonify({
+                "error": (
+                    "This order is already being placed. "
+                    "Please wait for it to finish."
+                )
+            }), 409
+
+        if cached is not None:
+            status_code, body = cached
+            return jsonify(body), status_code
+
     try:
         # Only the code is read from the body. Any "discount" the client
         # cares to send is ignored — the amount is computed server-side
@@ -113,13 +141,22 @@ def checkout():
         )
     except OrderError as exc:
         db.session.rollback()
+        if idempotency_key:
+            idempotency_fail(user_id, "checkout", idempotency_key)
         return jsonify(exc.payload), exc.status_code
     except CouponError as exc:
         db.session.rollback()
+        if idempotency_key:
+            idempotency_fail(user_id, "checkout", idempotency_key)
         return jsonify(exc.payload), exc.status_code
     except Exception as exc:
         db.session.rollback()
+        if idempotency_key:
+            idempotency_fail(user_id, "checkout", idempotency_key)
         return internal_error(exc, "checkout failed")
+
+    if idempotency_key:
+        idempotency_finish(user_id, "checkout", idempotency_key, 201, result)
 
     return jsonify(result), 201
 

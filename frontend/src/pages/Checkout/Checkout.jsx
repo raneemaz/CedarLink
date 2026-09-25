@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import BackLink from "../../components/common/BackLink";
@@ -31,6 +31,18 @@ function Checkout() {
 
   const [placingOrder, setPlacingOrder] = useState(false);
   const [orderError, setOrderError] = useState("");
+
+  // One key per checkout attempt on this page, reused across every retry
+  // of that same attempt -- a double-click on "Place order", or a resend
+  // after a slow network hid the first response. The backend replays the
+  // first attempt's result for a repeated key instead of placing a
+  // second order. A fresh key only appears on the next page load (a new
+  // attempt), which happens naturally once a successful order navigates
+  // away.
+  const idempotencyKeyRef = useRef();
+  if (idempotencyKeyRef.current === undefined) {
+    idempotencyKeyRef.current = crypto.randomUUID();
+  }
 
   // Load cart
   useEffect(() => {
@@ -277,11 +289,19 @@ function Checkout() {
               payment_method_id: Number(selectedPaymentMethod),
             };
 
-      const response = await api.post("/orders", {
-        delivery_address: deliveryAddress.trim(),
-        delivery_city: deliveryCity,
-        ...paymentSelection,
-      });
+      const response = await api.post(
+        "/orders",
+        {
+          delivery_address: deliveryAddress.trim(),
+          delivery_city: deliveryCity,
+          ...paymentSelection,
+        },
+        {
+          headers: {
+            "Idempotency-Key": idempotencyKeyRef.current,
+          },
+        },
+      );
 
       console.log("ORDER RESPONSE:", response.data);
 

@@ -29,3 +29,4 @@ from app.models.shopping_interest import ShoppingInterest  # noqa: F401
 from app.models.token_denylist import TokenDenylist  # noqa: F401
 from app.models.coupon import Coupon  # noqa: F401
 from app.models.coupon_redemption import CouponRedemption  # noqa: F401
+from app.models.idempotency_key import IdempotencyKey  # noqa: F401
