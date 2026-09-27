@@ -146,16 +146,16 @@ function ProductDetails() {
       : [];
 
   return (
-    <div className="min-h-screen bg-paper px-6 py-10 lg:px-10">
+    <div className="min-h-screen bg-paper px-4 py-6 sm:px-6 sm:py-10 lg:px-10">
       <div className="mx-auto max-w-6xl">
         {/* Back */}
         <BackLink to="/products">{t("backLink.products")}</BackLink>
 
         {/* Product */}
-        <div className="mt-6 grid overflow-hidden rounded-card border border-line bg-paper-raised md:grid-cols-2">
+        <div className="mt-4 grid overflow-hidden rounded-card border border-line bg-paper-raised sm:mt-6 md:grid-cols-2">
           {/* Image */}
           {images.length > 0 ? (
-            <div className="flex flex-col gap-3 bg-paper-sunken p-4">
+            <div className="flex flex-col gap-3 bg-paper-sunken p-3 sm:p-4">
               <div className="flex min-h-[360px] flex-1 items-center justify-center overflow-hidden rounded-control bg-paper-raised">
                 <img
                   src={images[activeImage]}
@@ -196,7 +196,7 @@ function ProductDetails() {
           )}
 
           {/* Information */}
-          <div className="p-8 lg:p-10">
+          <div className="p-5 sm:p-8 lg:p-10">
             <p className="text-small font-medium text-cedar">{t("productDetails.eyebrow")}</p>
 
             <h1 className="mt-2 text-title font-bold text-ink">
@@ -273,7 +273,7 @@ function ProductDetails() {
               </div>
             )}
 
-            <div className="mt-6 grid grid-cols-2 gap-4">
+            <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
               {/* Availability */}
               <div className="flex items-center justify-between rounded-control bg-paper px-4 py-3">
                 <span className="text-small text-ink-secondary">{t("productDetails.availability")}</span>
